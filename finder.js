@@ -453,11 +453,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (!searchResponse.ok) {
                 let errorMsg = 'Failed to search profiles';
+                const clonedResponse = searchResponse.clone();
                 try {
                     const errData = await searchResponse.json();
                     errorMsg = errData.error || errorMsg;
                 } catch (e) {
-                    const text = await searchResponse.text();
+                    const text = await clonedResponse.text();
                     errorMsg = text.trim().substring(0, 150) || `HTTP Error ${searchResponse.status}`;
                 }
                 throw new Error(errorMsg);
