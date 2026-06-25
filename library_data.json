@@ -1,0 +1,44 @@
+{
+  "articles": [
+    {
+      "id": "negotiation-b2b",
+      "title": "Nghệ thuật đàm phán hợp đồng thương mại B2B",
+      "description": "Làm thế nào để thương lượng giá trị hợp đồng B2B mà không rơi vào bẫy phá giá? 3 chiến lược định vị vị thế chuyên gia.",
+      "category": "Kỹ năng Sale",
+      "date": "2026-06-20",
+      "author": "Peter Vo",
+      "linkedinUrl": "https://www.linkedin.com/posts/petervo-bd_b2b-negotiation-tips",
+      "content": "### Nghệ thuật đàm phán hợp đồng thương mại B2B\n\nTrong đàm phán B2B, sai lầm lớn nhất của các Business Development (BD) non trẻ là **phá giá ngay khi khách hàng chê đắt**. Khi bạn giảm giá quá nhanh, bạn vô tình kích hoạt sự nghi ngờ từ phía đối tác: *'Liệu sản phẩm này có thực sự tốt?', 'Chi phí ẩn là gì?', 'Dịch vụ hậu mãi có bị cắt giảm không?'*.\n\nĐể đàm phán thành công và giữ vững biên lợi nhuận, hãy áp dụng 3 nguyên tắc sau:\n\n#### 1. Chuyển đổi từ \"Giá cả\" sang \"Bài toán tài chính\"\nThay vì nói *'Bên em giá rẻ nhất thị trường'*, hãy nói *'Bên em cung cấp phương án tối ưu chi phí vận hành nhất cho anh/chị'*. Hãy chứng minh bằng số liệu cụ thể: giải pháp của bạn giúp họ tiết kiệm bao nhiêu giờ làm việc, giảm bao nhiêu tỷ lệ lỗi, và tăng tốc độ ra thị trường như thế nào.\n\n#### 2. Nguyên tắc trao đổi giá trị (Trade-offs)\nKhông bao giờ giảm giá mà không yêu cầu khách hàng đánh đổi điều gì đó. Ví dụ:\n- *'Nếu anh/chị cam kết ký hợp đồng 2 năm thay vì 1 năm, bên em mới áp dụng được mức chiết khấu này.'*\n- *'Nếu anh/chị thanh toán trước 100% thay vì chia làm 3 đợt, bên em sẽ tặng thêm 2 tháng sử dụng dịch vụ miễn phí.'*\nViệc này giúp giữ vững vị thế chuyên gia và ngăn chặn việc khách hàng tiếp tục ép giá vô lý.\n\n#### 3. Tập trung vào Thế mạnh lõi thay vì bù đắp thiếu hụt\nKhi khách hàng hỏi về tính năng bạn chưa có, đừng trả lời *'Thực ra bên em không có...'*. Hãy điều hướng sự chú ý: *'Hiện tại giải pháp bên em đang tập trung tối ưu cực mạnh vào tính năng X giúp tăng doanh số của anh/chị lên 30%, thay vì phân tán vào các tính năng phụ.'*"
+    },
+    {
+      "id": "find-pic-linkedin",
+      "title": "Cách định vị đúng Person-in-Charge (PIC) trên LinkedIn",
+      "description": "Hướng dẫn chi tiết cách tìm kiếm người ra quyết định (C-Level, Director, Manager) của doanh nghiệp mục tiêu bằng các bộ lọc nâng cao.",
+      "category": "Tìm kiếm khách hàng",
+      "date": "2026-06-18",
+      "author": "Peter Vo",
+      "linkedinUrl": "https://www.linkedin.com/posts/petervo-bd_how-to-find-pic",
+      "content": "### Cách định vị đúng Person-in-Charge (PIC) trên LinkedIn\n\nTìm sai người tiếp cận là nguyên nhân khiến 90% chiến dịch outreach thất bại. Trong B2B, bạn cần tiếp cận đúng **Người chịu trách nhiệm chính (Person-in-Charge - PIC)** cho vấn đề mà giải pháp của bạn giải quyết. Dưới đây là quy trình 3 bước định vị PIC hiệu quả:\n\n#### Bước 1: Vẽ chân dung PIC (Buyer Persona)\nĐừng chỉ tìm chung chung là 'Sales' hay 'Marketing'. Hãy xác định rõ:\n- **Seniority (Cấp bậc):** C-Level (CEO, CMO, CRO) cho các hợp đồng chiến lược lớn; Director/Manager cho các quyết định vận hành và chuyên môn.\n- **Department (Phòng ban):** Ví dụ: Enterprise B2B, Channel Sales, Growth, Partnerships.\n\n#### Bước 2: Sử dụng bộ lọc nâng cao (Advanced Filters)\nTrên LinkedIn hoặc các công cụ hỗ trợ (như Apollo.io / B2B PIC Finder), hãy kết hợp:\n1. **Company Name / Domain:** Khoanh vùng chính xác doanh nghiệp mục tiêu (ví dụ: FPT Software, VNG).\n2. **Job Titles (Chức danh):** Sử dụng toán tử tìm kiếm hoặc các tag chức danh cụ thể (ví dụ: `\"Director of Partnerships\" OR \"VP of Growth\"`).\n3. **Location (Địa lý):** Hạn chế khu vực hoạt động để phù hợp với thị trường của bạn (ví dụ: `Vietnam` hoặc `Singapore`).\n\n#### Bước 3: Xác thực thông tin liên hệ và SMTP\nSau khi có hồ sơ LinkedIn, việc tiếp theo là tìm kiếm email và số điện thoại công việc của họ. Đừng gửi email đoán mò! Hãy sử dụng công cụ kiểm tra hộp thư (SMTP Handshake) để xác minh xem email đó có thực sự tồn tại (`Deliverable`) hay không trước khi gửi tin nhắn chào hàng."
+    },
+    {
+      "id": "avoid-sales-phrases",
+      "title": "5 cụm từ bán hàng B2B cần loại bỏ ngay lập tức",
+      "description": "Những từ ngữ tưởng chừng lịch sự nhưng lại dập tắt cơ hội chốt deal của bạn. Hãy nâng cấp lên ngôn từ thế chuyên gia.",
+      "category": "Ngôn từ B2B",
+      "date": "2026-06-15",
+      "author": "Peter Vo",
+      "linkedinUrl": "https://www.linkedin.com/posts/petervo-bd_b2b-language-shifts",
+      "content": "### 5 cụm từ bán hàng B2B cần loại bỏ ngay lập tức\n\nTrong giao tiếp B2B, ngôn từ bạn chọn sẽ quyết định bạn là một người bán hàng đang nài nỉ xin deal, hay một chuyên gia đang giúp khách hàng gỡ rối. Hãy gạch bỏ ngay 5 cụm từ sau và thay thế bằng ngôn từ thế chuyên gia:\n\n| Tư duy nghiệp dư (Nên tránh) | Vị thế chuyên gia (Nên dùng) | Tại sao? |\n|---|---|---|\n| \"Bên em giá rẻ nhất thị trường\" | \"Bên em có mức giá tối ưu và phù hợp nhất\" | Tránh kích hoạt sự nghi ngờ về chất lượng dịch vụ hoặc chi phí ẩn. |\n| \"Để em về thử cách này xem sao\" | \"Em sẽ tìm kiếm phương án tốt nhất cho anh/chị\" | Khách hàng cần chuyên gia gánh vác trách nhiệm, không cần chuột bạch thử nghiệm. |\n| \"Em nghĩ là sản phẩm này tốt\" | \"Dựa trên dữ liệu thực tế triển khai ở dự án X...\" | Bán hàng B2B cần dữ liệu và sự thật, không dựa trên cảm tính cá nhân. |\n| \"Thực ra tính năng này bên em không có\" | \"Hiện tại bên em đang tập trung nguồn lực tối ưu tính năng Y...\" | Định hướng khách hàng tập trung vào thế mạnh lõi của bạn thay vì nêu bật thiếu hụt. |\n| \"Anh/chị cứ cân nhắc đi ạ\" | \"Bước tiếp theo trong kế hoạch triển khai của chúng ta là...\" | Chủ động dẫn dắt cuộc chơi và kết thúc bằng một lộ trình rõ ràng, thay vì tạo khoảng trống vô định. |"
+    },
+    {
+      "id": "personal-branding-linkedin",
+      "title": "Xây dựng thương hiệu cá nhân trên LinkedIn cho BD",
+      "description": "Tại sao Social Selling là vũ khí tối thượng của B2B BD hiện đại? Công thức 3C giúp thu hút inbox từ các đối tác lớn.",
+      "category": "Thương hiệu cá nhân",
+      "date": "2026-06-12",
+      "author": "Peter Vo",
+      "linkedinUrl": "https://www.linkedin.com/posts/petervo-bd_linkedin-personal-brand",
+      "content": "### Xây dựng thương hiệu cá nhân trên LinkedIn cho BD\n\nBD truyền thống dựa vào cold call và cold email đang ngày càng kém hiệu quả. BD hiện đại áp dụng **Social Selling** - xây dựng thương hiệu cá nhân để khách hàng tự tìm đến. Dưới đây là công thức **3C** giúp bạn nổi bật trên LinkedIn:\n\n#### 1. Content (Nội dung giá trị)\nĐừng chỉ share link website công ty hoặc đăng bài tuyển dụng. Hãy viết về:\n- Các bài học rút ra từ các deal thất bại/thành công thực tế.\n- Phân tích xu hướng thị trường trong ngành bạn đang bán.\n- Hướng dẫn giải quyết các 'nỗi đau' thường gặp của khách hàng mục tiêu.\n\n#### 2. Connection (Kết nối đúng tệp)\nChủ động kết nối với các đối tác, khách hàng tiềm năng, và đồng nghiệp trong ngành. Khi gửi lời mời kết nối, hãy viết một lời chào ngắn gọn thể hiện lý do kết nối cụ thể (Personalized Note) thay vì dùng tin nhắn tự động.\n\n#### 3. Consistency (Sự nhất quán)\nĐăng bài đều đặn ít nhất 2-3 bài một tuần. Tương tác nhiệt tình dưới các bài viết của những chuyên gia khác bằng các bình luận có chiều sâu chuyên môn. Sự xuất hiện thường xuyên giúp thương hiệu của bạn ghim sâu vào tâm trí đối tác (Top-of-mind)."
+    }
+  ]
+}
