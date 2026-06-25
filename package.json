@@ -9,7 +9,9 @@
   },
   "dependencies": {
     "cheerio": "^1.0.0-rc.12",
-    "cors": "^2.8.5",
+    "cors": "^2.8.5"
+  },
+  "devDependencies": {
     "express": "^4.19.2",
     "puppeteer": "^25.1.0",
     "puppeteer-extra": "^3.3.6",

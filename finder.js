@@ -452,8 +452,15 @@ document.addEventListener('DOMContentLoaded', () => {
             });
 
             if (!searchResponse.ok) {
-                const errData = await searchResponse.json();
-                throw new Error(errData.error || 'Failed to search profiles');
+                let errorMsg = 'Failed to search profiles';
+                try {
+                    const errData = await searchResponse.json();
+                    errorMsg = errData.error || errorMsg;
+                } catch (e) {
+                    const text = await searchResponse.text();
+                    errorMsg = text.trim().substring(0, 150) || `HTTP Error ${searchResponse.status}`;
+                }
+                throw new Error(errorMsg);
             }
 
             const searchData = await searchResponse.json();
