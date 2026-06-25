@@ -1,14 +1,4 @@
 {
   "version": 2,
-  "cleanUrls": true,
-  "rewrites": [
-    {
-      "source": "/api/search",
-      "destination": "/api/search.js"
-    },
-    {
-      "source": "/api/enrich",
-      "destination": "/api/enrich.js"
-    }
-  ]
+  "cleanUrls": true
 }
