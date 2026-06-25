@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thư Viện B2B | Cẩm Nang & Bài Viết Business Development</title>
+    <meta name="description" content="Thư viện lưu trữ các bài viết chuyên môn, ebook, cẩm nang thực chiến dành cho B2B BD được viết bởi Peter Vo.">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@400;600;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="library.css">
+    <link rel="stylesheet" href="ai-chat.css">
+</head>
+<body class="dark-theme">
+    <!-- Navbar -->
+    <header class="app-nav">
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo">
+                <span class="logo-accent">B2B</span> BD Portal
+            </a>
+            <nav class="nav-links">
+                <a href="index.html">Ngôn Từ B2B</a>
+                <a href="finder.html">PIC Finder</a>
+                <a href="library.html" class="active">Thư Viện</a>
+                <a href="labor-law.html">Luật Lao Động</a>
+                <a href="salary.html">Tính Lương</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container library-main">
+        <!-- Hero Section -->
+        <section class="library-hero">
+            <h1 class="hero-title">THƯ VIỆN <span class="highlight">B2B BD</span></h1>
+            <p class="hero-subtitle">Tổng hợp bài viết chuyên môn, newsletter và cẩm nang thực chiến chốt deal doanh nghiệp</p>
+        </section>
+
+        <!-- Search and Filter Bar -->
+        <div class="glass-panel filter-panel">
+            <div class="filter-bar">
+                <div class="search-box">
+                    <input type="text" id="library-search" placeholder="Tìm kiếm bài viết, tài liệu...">
+                </div>
+                <div class="category-tabs" id="category-tabs">
+                    <button class="tab-btn active" data-category="All">Tất Cả</button>
+                    <button class="tab-btn" data-category="Ngôn từ B2B">Ngôn từ B2B</button>
+                    <button class="tab-btn" data-category="Kỹ năng Sale">Kỹ năng Sale</button>
+                    <button class="tab-btn" data-category="Tìm kiếm khách hàng">Tìm kiếm khách hàng</button>
+                    <button class="tab-btn" data-category="Thương hiệu cá nhân">Thương hiệu cá nhân</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Library Content Grid -->
+        <div class="library-grid-layout">
+            <!-- Left: Card Grid -->
+            <div class="cards-grid" id="articles-container">
+                <!-- Loaded dynamically -->
+            </div>
+
+            <!-- Right: Guide Panel -->
+            <div class="glass-panel guide-sidebar">
+                <h3 class="sidebar-title">Đồng bộ từ LinkedIn</h3>
+                <p class="sidebar-desc">Bạn muốn kết nối và hiển thị tự động các bài viết từ hồ sơ LinkedIn cá nhân lên thư viện này?</p>
+                <div class="guide-steps">
+                    <div class="step-item">
+                        <span class="step-num">1</span>
+                        <div class="step-text">
+                            <strong>Trích xuất RSS Feed:</strong> Sử dụng các dịch vụ bên thứ ba (như RSS.app hoặc Publer) để chuyển đổi Bản tin (Newsletter) hoặc Feed LinkedIn của bạn thành nguồn cấp RSS công khai.
+                        </div>
+                    </div>
+                    <div class="step-item">
+                        <span class="step-num">2</span>
+                        <div class="step-text">
+                            <strong>Cấu hình API:</strong> Cập nhật liên kết RSS Feed vào tệp cấu hình hoặc sử dụng N8n/Zapier để tự động gửi bài viết mới về cơ sở dữ liệu `library_data.json` của hệ thống.
+                        </div>
+                    </div>
+                    <div class="step-item">
+                        <span class="step-num">3</span>
+                        <div class="step-text">
+                            <strong>Quản lý trực tiếp:</strong> Bạn cũng có thể mở rộng cơ sở dữ liệu bằng cách cập nhật thủ công các bài viết mới trực tiếp vào tệp dữ liệu bài viết để lưu trữ cẩm nang có chọn lọc.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Reading Modal -->
+    <div class="modal-backdrop hidden" id="reader-modal">
+        <div class="modal-card glass-panel reader-card">
+            <button class="modal-close" id="reader-close-btn">&times;</button>
+            <div class="modal-meta">
+                <span class="article-category" id="reader-category">Ngôn từ B2B</span>
+                <span class="article-date" id="reader-date">2026-06-25</span>
+            </div>
+            <h2 class="modal-title" id="reader-title">Tiêu Đề Bài Viết</h2>
+            <div class="article-author-info">
+                Tác giả: <strong id="reader-author">Peter Vo</strong>
+            </div>
+
+            <div class="reader-content" id="reader-content-body">
+                <!-- Rendered Markdown/HTML contents -->
+            </div>
+
+            <div class="modal-actions reader-actions">
+                <a id="reader-linkedin-link" href="#" target="_blank" class="btn btn-primary">Xem trên LinkedIn</a>
+                <button class="btn btn-secondary" id="btn-reader-close">Đóng Lại</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container text-center">
+            <blockquote class="final-quote">
+                "Trong B2B, bạn không chỉ thuyết phục bằng sản phẩm. Bạn định vị bản thân bằng sự sắc bén của ngôn từ."
+            </blockquote>
+            <p class="author-name">B2B BD Tips Portal &copy; 2026</p>
+        </div>
+    </footer>
+
+    <script src="library.js"></script>
+    <script src="ai-chat.js"></script>
+</body>
+</html>
