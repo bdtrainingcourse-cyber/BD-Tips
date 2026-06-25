@@ -8,6 +8,46 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@400;600;800;900&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="finder.css">
+    <style>
+        /* Force black background and light text for the results table to avoid caching or override issues */
+        body.dark-theme, 
+        body.dark-theme .results-section, 
+        body.dark-theme .table-responsive,
+        body.dark-theme .results-table,
+        body.dark-theme .results-table tr, 
+        body.dark-theme .results-table td {
+            background-color: #000000 !important;
+            background-image: none !important;
+        }
+        body.dark-theme .results-table td {
+            color: #f8fafc !important;
+        }
+        body.dark-theme .results-table th {
+            background-color: #050505 !important;
+            color: #f8fafc !important;
+        }
+        body.dark-theme .results-table tbody tr:hover, 
+        body.dark-theme .results-table tbody tr:hover td {
+            background-color: #111111 !important;
+        }
+        /* Preserve badge and link styling */
+        body.dark-theme .linkedin-badge-link {
+            color: #60a5fa !important;
+        }
+        body.dark-theme .status-badge.verified {
+            color: #34d399 !important;
+        }
+        body.dark-theme .status-badge.guessed {
+            color: #fbbf24 !important;
+        }
+        body.dark-theme .status-badge.scraped {
+            color: #60a5fa !important;
+        }
+        body.dark-theme .status-badge.undeliverable {
+            color: #f87171 !important;
+        }
+    </style>
+    <link rel="stylesheet" href="ai-chat.css">
 </head>
 <body class="dark-theme">
     <!-- Navbar -->
@@ -17,9 +57,12 @@
                 <span class="logo-accent">B2B</span> BD Portal
             </a>
             <nav class="nav-links">
-                <a href="index.html">Language Shifts</a>
-                <a href="index.html#minigame-section">BD Challenge</a>
+                <a href="index.html">Ngôn Từ B2B</a>
+                <a href="index.html#minigame-section">B2B Challenge</a>
                 <a href="finder.html" class="active">PIC Finder</a>
+                <a href="library.html">Thư Viện</a>
+                <a href="labor-law.html">Luật Lao Động</a>
+                <a href="salary.html">Tính Lương</a>
             </nav>
         </div>
     </header>
@@ -278,5 +321,6 @@
     </footer>
 
     <script src="finder.js"></script>
+    <script src="ai-chat.js"></script>
 </body>
 </html>
