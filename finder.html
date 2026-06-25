@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>B2B PIC Finder | LinkedIn Lead Search & Enrichment Tool</title>
+    <meta name="description" content="Search and find contact information (email & phone) for target company decision makers via LinkedIn and public search engines.">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@400;600;800;900&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="finder.css">
+</head>
+<body class="dark-theme">
+    <!-- Navbar -->
+    <header class="app-nav">
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo">
+                <span class="logo-accent">B2B</span> BD Portal
+            </a>
+            <nav class="nav-links">
+                <a href="index.html">Language Shifts</a>
+                <a href="index.html#minigame-section">BD Challenge</a>
+                <a href="finder.html" class="active">PIC Finder</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container finder-main">
+        <!-- Hero Section -->
+        <section class="finder-hero">
+            <h1 class="hero-title">LINKEDIN <span class="highlight">PIC FINDER</span></h1>
+            <p class="hero-subtitle">Search & locate Person-in-Charge contact details (Email & Phone) for B2B Business Development</p>
+        </section>
+
+        <!-- Configuration Grid -->
+        <div class="dashboard-grid">
+            <!-- Left panel: Search & Filters -->
+            <div class="glass-panel search-config">
+                <h2 class="panel-title">Search Parameters</h2>
+                
+                <form id="search-form" class="form-grid">
+                    <div class="form-group">
+                        <label for="company-name">Target Company <span class="required">*</span></label>
+                        <input type="text" id="company-name" placeholder="e.g. FPT Software, VNG, Stripe" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="company-domain">Company Domain <span class="help-text">(optional)</span></label>
+                        <input type="text" id="company-domain" placeholder="e.g. fpt.com, stripe.com">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Target Job Titles <span class="help-text">(press Enter to add)</span></label>
+                        <div class="tag-input-container" id="tag-input-container">
+                            <div class="tags-wrapper" id="tags-wrapper">
+                                <!-- Preloaded default tags -->
+                                <span class="tag" data-val="Business Development">Business Development <span class="tag-close">&times;</span></span>
+                                <span class="tag" data-val="B2B">B2B <span class="tag-close">&times;</span></span>
+                                <span class="tag" data-val="Sales">Sales <span class="tag-close">&times;</span></span>
+                                <span class="tag" data-val="Partnerships">Partnerships <span class="tag-close">&times;</span></span>
+                            </div>
+                            <input type="text" id="tag-input" placeholder="Add custom title...">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Seniority Level</label>
+                        <div class="filter-pill-grid">
+                            <label class="filter-pill">
+                                <input type="checkbox" name="seniority" value="C-Level">
+                                <span>C-Level</span>
+                            </label>
+                            <label class="filter-pill">
+                                <input type="checkbox" name="seniority" value="VP">
+                                <span>VP</span>
+                            </label>
+                            <label class="filter-pill">
+                                <input type="checkbox" name="seniority" value="Director">
+                                <span>Director</span>
+                            </label>
+                            <label class="filter-pill">
+                                <input type="checkbox" name="seniority" value="Manager">
+                                <span>Manager</span>
+                            </label>
+                            <label class="filter-pill">
+                                <input type="checkbox" name="seniority" value="Lead">
+                                <span>Lead</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Department</label>
+                        <div class="filter-pill-grid">
+                            <label class="filter-pill">
+                                <input type="checkbox" name="department" value="Enterprise B2B">
+                                <span>Enterprise B2B</span>
+                            </label>
+                            <label class="filter-pill">
+                                <input type="checkbox" name="department" value="Channel Sales">
+                                <span>Channel Sales</span>
+                            </label>
+                            <label class="filter-pill">
+                                <input type="checkbox" name="department" value="Partnerships">
+                                <span>Partnerships</span>
+                            </label>
+                            <label class="filter-pill">
+                                <input type="checkbox" name="department" value="Growth">
+                                <span>Growth</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group half">
+                            <label for="location-preset">Geography Preset</label>
+                            <select id="location-preset">
+                                <option value="Global">Global</option>
+                                <option value="Vietnam">Vietnam</option>
+                                <option value="Singapore">Singapore</option>
+                                <option value="APAC">APAC</option>
+                                <option value="Custom">Custom</option>
+                            </select>
+                        </div>
+                        <div class="form-group half">
+                            <label for="search-pages">Search Depth</label>
+                            <select id="search-pages">
+                                <option value="1">1 Page (~30 profiles)</option>
+                                <option value="2">2 Pages (~60 profiles)</option>
+                                <option value="3">3 Pages (~90 profiles)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="location">Location Query <span class="help-text">(optional)</span></label>
+                        <input type="text" id="location" placeholder="e.g. Vietnam, Singapore">
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group half">
+                            <label for="search-method">Search Provider</label>
+                            <select id="search-method">
+                                <option value="apollo">Apollo.io Database</option>
+                                <option value="scraper">Public Search Scraper</option>
+                            </select>
+                        </div>
+                        <div class="form-group half" id="apollo-key-group">
+                            <label for="apollo-api-key">Apollo API Key <span class="required">*</span></label>
+                            <input type="password" id="apollo-api-key" placeholder="Paste key here...">
+                        </div>
+                    </div>
+                    <div class="form-group" id="search-method-info" style="margin-top: 8px;">
+                        <p class="input-info-text">Apollo requires an API key but returns richer profiles. Public Scraper uses search engines and does not require an API key.</p>
+                    </div>
+
+                    <button type="submit" id="search-btn" class="btn btn-primary btn-block">
+                        <span class="btn-text">Find Company PICs</span>
+                        <span class="btn-loader hidden"></span>
+                    </button>
+                </form>
+            </div>
+
+            <!-- Right panel: Live Activity & Status Logger -->
+            <div class="glass-panel live-console">
+                <div class="console-header">
+                    <h2 class="panel-title">Activity Terminal</h2>
+                    <span class="status-indicator" id="terminal-status">Idle</span>
+                </div>
+                <div class="console-body" id="console-logs">
+                    <div class="log-line system">[System] Welcome to B2B PIC Finder Terminal. Enter company parameters and search depth to begin.</div>
+                    <div class="log-line system">[System] Fallback scraper ready: Web search + Regex extractor + SMTP validator.</div>
+                </div>
+                <!-- Progress bar -->
+                <div class="progress-bar-container hidden" id="progress-container">
+                    <div class="progress-meta">
+                        <span id="progress-step-name">Initializing search...</span>
+                        <span id="progress-percent">0%</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progress-fill" style="width: 0%;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Results Section -->
+        <section class="glass-panel results-section hidden" id="results-panel">
+            <div class="results-header">
+                <div>
+                    <h2 class="panel-title">Search Results</h2>
+                    <p class="results-subtitle" id="results-count">Found 0 profiles matching conditions</p>
+                </div>
+                <div class="search-results-filter">
+                    <input type="text" id="table-search" placeholder="Filter results...">
+                </div>
+                <div class="action-buttons">
+                    <button class="btn btn-secondary btn-icon" id="btn-copy-emails">
+                        📋 Copy All Emails
+                    </button>
+                    <button class="btn btn-secondary" id="btn-export-csv">
+                        📥 Export CSV
+                    </button>
+                    <button class="btn btn-secondary" id="btn-export-json">
+                        📥 Export JSON
+                    </button>
+                </div>
+            </div>
+
+            <div class="table-responsive">
+                <table class="results-table" id="results-table">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Job Title</th>
+                            <th>LinkedIn</th>
+                            <th>Emails (Confidence)</th>
+                            <th>Phones</th>
+                            <th>Verification Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="results-tbody">
+                        <!-- Dynamic content -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+
+    <!-- Details Modal -->
+    <div class="modal-backdrop hidden" id="detail-modal">
+        <div class="modal-card glass-panel">
+            <button class="modal-close" id="modal-close-btn">&times;</button>
+            <h2 class="modal-title" id="modal-person-name">Jane Doe</h2>
+            <p class="modal-subtitle" id="modal-person-title">Business Development Director</p>
+            <p class="modal-company" id="modal-person-company">Stripe</p>
+
+            <div class="modal-section">
+                <h3>LinkedIn Profile</h3>
+                <a id="modal-person-linkedin" href="#" target="_blank" class="linkedin-link">View Profile &rarr;</a>
+            </div>
+
+            <div class="modal-section">
+                <h3>Contact Emails</h3>
+                <div class="contact-list" id="modal-email-list">
+                    <!-- Email list with tags -->
+                </div>
+            </div>
+
+            <div class="modal-section">
+                <h3>Contact Phone Numbers</h3>
+                <div class="contact-list" id="modal-phone-list">
+                    <!-- Phone list -->
+                </div>
+            </div>
+
+            <div class="modal-section">
+                <h3>Enrichment Intelligence</h3>
+                <div class="enrich-notes" id="modal-enrich-notes">
+                    No advanced intelligence generated. Default scraper heuristics used.
+                </div>
+            </div>
+            
+            <div class="modal-actions">
+                <button class="btn btn-primary" id="btn-modal-copy-all">Copy Contact Info</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container text-center">
+            <blockquote class="final-quote">
+                "In B2B, the accuracy of contact info determines the response rate of your outreach."
+            </blockquote>
+            <p class="author-name">B2B Lead Finder Portal &copy; 2026</p>
+        </div>
+    </footer>
+
+    <script src="finder.js"></script>
+</body>
+</html>

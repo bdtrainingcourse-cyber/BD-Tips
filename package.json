@@ -1,0 +1,19 @@
+{
+  "name": "b2b-pic-finder",
+  "version": "1.0.0",
+  "description": "Interactive Web Tool to Search and Find Company PIC information via LinkedIn",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "test": "node -r ./tests/mock-network.js --test tests/e2e.test.js"
+  },
+  "dependencies": {
+    "cheerio": "^1.0.0-rc.12",
+    "cors": "^2.8.5",
+    "express": "^4.19.2",
+    "puppeteer": "^25.1.0",
+    "puppeteer-extra": "^3.3.6",
+    "puppeteer-extra-plugin-stealth": "^2.11.2"
+  },
+  "private": true
+}
