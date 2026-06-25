@@ -564,3 +564,107 @@ h1, h2, h3, h4 {
     font-size: 1.2rem;
     margin-bottom: 30px;
 }
+
+/* ==========================================================================
+   Features Showcase & Navigation Styles
+   ========================================================================== */
+
+.features-showcase {
+    padding: 60px 0 20px;
+    animation: fadeInUp 1s ease-out 0.4s backwards;
+}
+
+.features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 25px;
+    margin-top: 40px;
+}
+
+.feature-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    text-align: left;
+    padding: 30px;
+    transition: var(--transition);
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    background: var(--card-bg);
+}
+
+.feature-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 15px 35px rgba(11, 138, 79, 0.12);
+    border-color: rgba(11, 138, 79, 0.3);
+}
+
+.feature-icon {
+    font-size: 2.5rem;
+    margin-bottom: 20px;
+}
+
+.feature-card h3 {
+    font-size: 1.3rem;
+    font-weight: 700;
+    margin-bottom: 12px;
+    color: var(--text-main);
+}
+
+.feature-card p {
+    font-size: 0.95rem;
+    color: var(--text-light);
+    margin-bottom: 20px;
+    flex-grow: 1;
+    line-height: 1.5;
+}
+
+.feature-link {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--primary);
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    transition: color 0.3s;
+}
+
+.feature-link:hover {
+    color: var(--primary-dark);
+}
+
+.feature-badge {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 20px;
+    background: #f1f5f9;
+    color: #64748b;
+}
+
+.feature-badge.badge-hot {
+    background: #fee2e2;
+    color: #ef4444;
+}
+
+/* Responsive Navigation for style.css */
+@media (max-width: 768px) {
+    .nav-container {
+        flex-direction: column;
+        gap: 12px;
+        padding: 15px 10px;
+        text-align: center;
+    }
+    .nav-links {
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 12px 15px;
+    }
+    .nav-links a {
+        font-size: 0.9rem;
+    }
+}
+
