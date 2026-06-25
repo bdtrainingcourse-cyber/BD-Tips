@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tra Cứu Luật Lao Động B2B | Quyền Lợi Người Lao Động</title>
+    <meta name="description" content="Cổng tra cứu nhanh quy định Bộ luật Lao động 2019 cập nhật mới nhất và các tình huống giải quyết tranh chấp hợp đồng thực tế.">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@400;600;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="labor-law.css">
+    <link rel="stylesheet" href="ai-chat.css">
+</head>
+<body class="dark-theme">
+    <!-- Navbar -->
+    <header class="app-nav">
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo">
+                <span class="logo-accent">B2B</span> BD Portal
+            </a>
+            <nav class="nav-links">
+                <a href="index.html">Ngôn Từ B2B</a>
+                <a href="finder.html">PIC Finder</a>
+                <a href="library.html">Thư Viện</a>
+                <a href="labor-law.html" class="active">Luật Lao Động</a>
+                <a href="salary.html">Tính Lương</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container labor-main">
+        <!-- Hero Section -->
+        <section class="labor-hero">
+            <h1 class="hero-title">BẢN ĐỒ <span class="highlight">LUẬT LAO ĐỘNG</span></h1>
+            <p class="hero-subtitle">Tra cứu nhanh quy định pháp lý & Tình huống tranh chấp lao động thực tế dành cho B2B Employee</p>
+        </section>
+
+        <!-- Search & Filter Options -->
+        <div class="glass-panel filter-panel">
+            <div class="search-and-pills">
+                <div class="search-box">
+                    <input type="text" id="labor-search" placeholder="Tìm kiếm điều luật, chủ đề (thử việc, nghỉ phép, thôi việc...)...">
+                </div>
+                <div class="filter-pill-grid" id="labor-filters">
+                    <button class="filter-pill active" data-category="All">Tất Cả</button>
+                    <button class="filter-pill" data-category="Thử việc">Thử Việc</button>
+                    <button class="filter-pill" data-category="Thời giờ làm việc & Nghỉ ngơi">Nghỉ Phép & Làm Việc</button>
+                    <button class="filter-pill" data-category="Nghỉ việc & Báo trước">Nghỉ Việc & Báo Trước</button>
+                    <button class="filter-pill" data-category="Bảo hiểm xã hội">Bảo Hiểm Xã Hội</button>
+                    <button class="filter-pill" data-category="Trợ cấp thôi việc">Trợ Cấp Thôi Việc</button>
+                    <button class="filter-pill" data-category="Case Study">Tình Huống Thực Tế</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dashboard Layout -->
+        <div class="labor-dashboard-layout">
+            <!-- Left: Legal Rules List -->
+            <div class="rules-section">
+                <h2 class="section-heading">📌 Quy Định Pháp Lý Hiện Hành</h2>
+                <div class="rules-list" id="rules-container">
+                    <!-- Populated dynamically -->
+                </div>
+            </div>
+
+            <!-- Right: Interactive Case Studies -->
+            <div class="cases-section">
+                <h2 class="section-heading">💼 Tình Huống Thực Tế (Case Studies)</h2>
+                <div class="cases-list" id="cases-container">
+                    <!-- Populated dynamically -->
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Case Study Detail Modal -->
+    <div class="modal-backdrop hidden" id="case-modal">
+        <div class="modal-card glass-panel case-detail-card">
+            <button class="modal-close" id="case-close-btn">&times;</button>
+            <span class="status-badge verified" id="case-badge">Case Study</span>
+            <h2 class="modal-title" id="case-title" style="margin-top: 15px;">Tên tình huống thực tế</h2>
+            
+            <div class="case-section-box scenario-box">
+                <h4>⚠️ Tình huống (Scenario)</h4>
+                <p id="case-scenario">Nội dung tình huống thực tế xảy ra ở doanh nghiệp...</p>
+            </div>
+
+            <div class="case-section-box analysis-box">
+                <h4>⚖️ Phân tích pháp lý (Legal Analysis)</h4>
+                <p id="case-analysis">Phân tích dựa trên các điều khoản của Bộ luật Lao động...</p>
+            </div>
+
+            <div class="case-section-box resolution-box">
+                <h4>💡 Giải pháp cho Nhân viên (Employee Resolution)</h4>
+                <p id="case-resolution">Các bước hành động cụ thể để người lao động bảo vệ quyền lợi...</p>
+            </div>
+
+            <div class="modal-actions">
+                <button class="btn btn-primary" id="btn-case-close">Đã Hiểu</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container text-center">
+            <blockquote class="final-quote">
+                "Trong lao động, sự hiểu biết về luật pháp là tấm khiên bảo vệ vững chắc nhất cho sự nghiệp của bạn."
+            </blockquote>
+            <p class="author-name">B2B BD Tips Portal &copy; 2026</p>
+        </div>
+    </footer>
+
+    <script src="labor-law.js"></script>
+    <script src="ai-chat.js"></script>
+</body>
+</html>
