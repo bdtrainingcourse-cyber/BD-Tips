@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Công Cụ Tính Lương Gross - Net | Chuẩn Luật Lao Động 2026</title>
+    <meta name="description" content="Tính toán lương Gross sang Net và Net sang Gross chuẩn xác nhất theo quy định thuế TNCN và bảo hiểm bắt buộc mới nhất năm 2026.">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@400;600;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="salary.css">
+    <link rel="stylesheet" href="ai-chat.css">
+</head>
+<body class="dark-theme">
+    <!-- Navbar -->
+    <header class="app-nav">
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo">
+                <span class="logo-accent">B2B</span> BD Portal
+            </a>
+            <nav class="nav-links">
+                <a href="index.html">Ngôn Từ B2B</a>
+                <a href="finder.html">PIC Finder</a>
+                <a href="library.html">Thư Viện</a>
+                <a href="labor-law.html">Luật Lao Động</a>
+                <a href="salary.html" class="active">Tính Lương</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container salary-main">
+        <!-- Hero Section -->
+        <section class="salary-hero">
+            <h1 class="hero-title">TÍNH LƯƠNG <span class="highlight">GROSS &harr; NET</span></h1>
+            <p class="hero-subtitle">Công cụ quy đổi lương và phân tích chi tiết bảo hiểm, thuế TNCN theo cập nhật Luật Lao Động mới nhất</p>
+        </section>
+
+        <!-- Main Dashboard Layout -->
+        <div class="salary-grid">
+            <!-- Left: Calculator Form -->
+            <div class="glass-panel calculator-panel">
+                <h2 class="panel-title">🧮 Trình Quy Đổi Lương</h2>
+                <form id="salary-form" class="form-grid">
+                    <!-- Conversion Direction -->
+                    <div class="form-group">
+                        <label>Phương thức quy đổi</label>
+                        <div class="radio-toggle-group">
+                            <label class="radio-label">
+                                <input type="radio" name="calc-direction" value="gross-to-net" checked>
+                                <span class="radio-button-custom">Gross &rarr; Net</span>
+                            </label>
+                            <label class="radio-label">
+                                <input type="radio" name="calc-direction" value="net-to-gross">
+                                <span class="radio-button-custom">Net &rarr; Gross</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Salary Input -->
+                    <div class="form-group">
+                        <label for="salary-amount">Thu nhập hàng tháng (VND)</label>
+                        <div class="input-with-suffix">
+                            <input type="text" id="salary-amount" placeholder="Nhập số tiền..." required autocomplete="off">
+                            <span class="suffix">VND</span>
+                        </div>
+                        <span id="salary-text-helper" class="text-helper">0 đồng</span>
+                    </div>
+
+                    <!-- Insurance Salary Config -->
+                    <div class="form-group">
+                        <label>Lương đóng bảo hiểm</label>
+                        <div class="radio-toggle-group">
+                            <label class="radio-label">
+                                <input type="radio" name="ins-type" value="full" checked>
+                                <span class="radio-button-custom">Trên lương thực tế</span>
+                            </label>
+                            <label class="radio-label">
+                                <input type="radio" name="ins-type" value="custom">
+                                <span class="radio-button-custom">Mức khác</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Custom Insurance Salary Input -->
+                    <div class="form-group hidden" id="custom-ins-group">
+                        <label for="ins-salary-amount">Mức lương đóng bảo hiểm (VND)</label>
+                        <div class="input-with-suffix">
+                            <input type="text" id="ins-salary-amount" placeholder="Nhập mức đóng bảo hiểm..." autocomplete="off">
+                            <span class="suffix">VND</span>
+                        </div>
+                        <span id="ins-text-helper" class="text-helper">0 đồng</span>
+                    </div>
+
+                    <div class="form-row">
+                        <!-- Dependents -->
+                        <div class="form-group half">
+                            <label for="dependents">Số người phụ thuộc</label>
+                            <div class="counter-input">
+                                <button type="button" class="counter-btn" id="dep-dec">&minus;</button>
+                                <input type="number" id="dependents" value="0" min="0" max="20" readonly>
+                                <button type="button" class="counter-btn" id="dep-inc">+</button>
+                            </div>
+                            <span class="text-helper">Giảm trừ: 4.4M / người</span>
+                        </div>
+
+                        <!-- Minimum Salary Region -->
+                        <div class="form-group half">
+                            <label for="region">Vùng đóng bảo hiểm</label>
+                            <select id="region">
+                                <option value="1">Vùng I (4.96M)</option>
+                                <option value="2">Vùng II (4.41M)</option>
+                                <option value="3">Vùng III (3.86M)</option>
+                                <option value="4">Vùng IV (3.45M)</option>
+                            </select>
+                            <span class="text-helper">Ảnh hưởng trần BHTN</span>
+                        </div>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <button type="submit" class="btn btn-primary btn-block" style="margin-top: 10px;">
+                        ⚡ Bắt Đầu Quy Đổi
+                    </button>
+                </form>
+            </div>
+
+            <!-- Right: Chart and Summary Brief -->
+            <div class="glass-panel summary-panel">
+                <h2 class="panel-title">📊 Biểu Đồ Phân Phối Lương</h2>
+                <div class="chart-container">
+                    <div class="donut-chart-box">
+                        <svg viewBox="0 0 36 36" class="circular-chart">
+                            <path class="circle-bg"
+                                d="M18 2.0845
+                                    a 15.9155 15.9155 0 0 1 0 31.831
+                                    a 15.9155 15.9155 0 0 1 0 -31.831"
+                            />
+                            <path id="chart-net" class="circle-segment net-segment" stroke-dasharray="100, 100"
+                                d="M18 2.0845
+                                    a 15.9155 15.9155 0 0 1 0 31.831
+                                    a 15.9155 15.9155 0 0 1 0 -31.831"
+                            />
+                            <path id="chart-ins" class="circle-segment ins-segment" stroke-dasharray="0, 100"
+                                d="M18 2.0845
+                                    a 15.9155 15.9155 0 0 1 0 31.831
+                                    a 15.9155 15.9155 0 0 1 0 -31.831"
+                            />
+                            <path id="chart-tax" class="circle-segment tax-segment" stroke-dasharray="0, 100"
+                                d="M18 2.0845
+                                    a 15.9155 15.9155 0 0 1 0 31.831
+                                    a 15.9155 15.9155 0 0 1 0 -31.831"
+                            />
+                        </svg>
+                        <div class="donut-inner-text">
+                            <span class="label">Thực Nhận</span>
+                            <span class="value" id="donut-net-percent">100%</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="chart-legend">
+                    <div class="legend-item">
+                        <span class="legend-dot color-net"></span>
+                        <span class="legend-label">Thực nhận (Net)</span>
+                        <strong class="legend-val" id="legend-net-val">0 VND</strong>
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-dot color-ins"></span>
+                        <span class="legend-label">Bảo hiểm bắt buộc</span>
+                        <strong class="legend-val" id="legend-ins-val">0 VND</strong>
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-dot color-tax"></span>
+                        <span class="legend-label">Thuế thu nhập (TNCN)</span>
+                        <strong class="legend-val" id="legend-tax-val">0 VND</strong>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Detailed Breakdown Section -->
+        <div class="glass-panel results-panel hidden" id="results-panel">
+            <h2 class="panel-title">📋 Bảng Phân Tích Chi Tiết (VND)</h2>
+            
+            <div class="results-tabs">
+                <button class="result-tab active" data-target="nl-breakdown">Người Lao Động (NLĐ)</button>
+                <button class="result-tab" data-target="nsd-breakdown">Người Sử Dụng Lao Động (NSDLĐ)</button>
+            </div>
+
+            <!-- Employee Breakdown -->
+            <div class="breakdown-content active-content" id="nl-breakdown">
+                <div class="breakdown-grid-layout">
+                    <!-- Details Table -->
+                    <table class="breakdown-table">
+                        <thead>
+                            <tr>
+                                <th>Khoản mục</th>
+                                <th class="text-right">Số tiền (VND)</th>
+                                <th>Chi tiết tính toán</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Lương Gross (Lương tổng)</strong></td>
+                                <td class="text-right font-semibold text-primary" id="nl-gross">0</td>
+                                <td class="text-muted">Mức lương thỏa thuận ban đầu</td>
+                            </tr>
+                            <tr>
+                                <td>Bảo hiểm xã hội (BHXH)</td>
+                                <td class="text-right text-danger" id="nl-bhxh">0</td>
+                                <td class="text-muted">8% (Trần đóng tối đa: 46,800,000đ)</td>
+                            </tr>
+                            <tr>
+                                <td>Bảo hiểm y tế (BHYT)</td>
+                                <td class="text-right text-danger" id="nl-bhyt">0</td>
+                                <td class="text-muted">1.5% (Trần đóng tối đa: 46,800,000đ)</td>
+                            </tr>
+                            <tr>
+                                <td>Bảo hiểm thất nghiệp (BHTN)</td>
+                                <td class="text-right text-danger" id="nl-bhtn">0</td>
+                                <td class="text-muted" id="nl-bhtn-detail">1% (Trần đóng theo vùng)</td>
+                            </tr>
+                            <tr class="highlight-row">
+                                <td><strong>Thu nhập trước thuế (TNTT)</strong></td>
+                                <td class="text-right font-semibold" id="nl-tntt">0</td>
+                                <td class="text-muted">Lương Gross &minus; Tổng bảo hiểm đóng</td>
+                            </tr>
+                            <tr>
+                                <td>Giảm trừ gia cảnh bản thân</td>
+                                <td class="text-right text-success" id="nl-deduct-self">11,000,000</td>
+                                <td class="text-muted">Định mức cố định theo quy định</td>
+                            </tr>
+                            <tr>
+                                <td>Giảm trừ người phụ thuộc</td>
+                                <td class="text-right text-success" id="nl-deduct-dep">0</td>
+                                <td class="text-muted" id="nl-deduct-dep-detail">4,400,000đ &times; 0 người</td>
+                            </tr>
+                            <tr class="highlight-row">
+                                <td><strong>Thu nhập tính thuế (TNTT)</strong></td>
+                                <td class="text-right font-semibold" id="nl-tntt-tax">0</td>
+                                <td class="text-muted">TNTT &minus; Giảm trừ gia cảnh (nếu âm = 0)</td>
+                            </tr>
+                            <tr>
+                                <td>Thuế thu nhập cá nhân (TNCN)</td>
+                                <td class="text-right text-danger" id="nl-pit">0</td>
+                                <td class="text-muted">Tính theo lũy tiến từng phần (chi tiết bên dưới)</td>
+                            </tr>
+                            <tr class="final-net-row">
+                                <td><strong>LƯƠNG THỰC NHẬN (NET)</strong></td>
+                                <td class="text-right font-bold text-success" id="nl-net" style="font-size: 1.3rem;">0</td>
+                                <td class="text-muted font-semibold">Số tiền thực tế nhận về tài khoản</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <!-- PIT Brackets Visual Breakdown -->
+                    <div class="pit-brackets-container">
+                        <h3>⚡ Chi Tiết Thuế Lũy Tiến Từng Phần</h3>
+                        <div class="brackets-list" id="pit-brackets-list">
+                            <!-- Populated by JS -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Employer Breakdown -->
+            <div class="breakdown-content" id="nsd-breakdown">
+                <table class="breakdown-table">
+                    <thead>
+                        <tr>
+                            <th>Khoản mục chi phí</th>
+                            <th class="text-right">Tỷ lệ đóng</th>
+                            <th class="text-right">Số tiền (VND)</th>
+                            <th>Ghi chú giải thích</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Lương Gross của Nhân viên</strong></td>
+                            <td class="text-right">-</td>
+                            <td class="text-right font-semibold text-primary" id="nsd-gross">0</td>
+                            <td class="text-muted">Lương thỏa thuận trả cho nhân viên</td>
+                        </tr>
+                        <tr>
+                            <td>Bảo hiểm xã hội (BHXH)</td>
+                            <td class="text-right text-danger">17.5%</td>
+                            <td class="text-right text-danger" id="nsd-bhxh">0</td>
+                            <td class="text-muted">Trần đóng tối đa: 46,800,000đ</td>
+                        </tr>
+                        <tr>
+                            <td>Bảo hiểm y tế (BHYT)</td>
+                            <td class="text-right text-danger">3%</td>
+                            <td class="text-right text-danger" id="nsd-bhyt">0</td>
+                            <td class="text-muted">Trần đóng tối đa: 46,800,000đ</td>
+                        </tr>
+                        <tr>
+                            <td>Bảo hiểm thất nghiệp (BHTN)</td>
+                            <td class="text-right text-danger">1%</td>
+                            <td class="text-right text-danger" id="nsd-bhtn">0</td>
+                            <td class="text-muted">Trần đóng tối đa theo vùng tuyển dụng</td>
+                        </tr>
+                        <tr class="final-net-row">
+                            <td><strong>TỔNG CHI PHÍ DOANH NGHIỆP</strong></td>
+                            <td class="text-right"><strong>121.5%</strong></td>
+                            <td class="text-right font-bold text-success" id="nsd-total-cost" style="font-size: 1.3rem;">0</td>
+                            <td class="text-muted font-semibold">Tổng ngân sách doanh nghiệp chi trả cho nhân sự</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container text-center">
+            <blockquote class="final-quote">
+                "Thương lượng tổng chi phí (Total Package) luôn hiệu quả hơn việc chỉ nhìn vào lương Net."
+            </blockquote>
+            <p class="author-name">B2B BD Portal &copy; 2026</p>
+        </div>
+    </footer>
+
+    <script src="salary.js"></script>
+    <script src="ai-chat.js"></script>
+</body>
+</html>
