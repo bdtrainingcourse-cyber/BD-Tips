@@ -1,0 +1,273 @@
+/* B2B Labor Law Styles (Premium Dark Glass Theme) */
+
+body.dark-theme {
+    --bg-dark: #000000;
+    --panel-bg: rgba(18, 18, 24, 0.85);
+    --border-color: rgba(255, 255, 255, 0.08);
+    --text-primary: #f8fafc;
+    --text-muted: #94a3b8;
+    --primary-glow: #10b981;
+    --accent-glow: #6366f1;
+    --warning-glow: #f59e0b;
+    --danger-glow: #ef4444;
+    
+    background-color: var(--bg-dark);
+    background-image: none;
+    color: var(--text-primary);
+    min-height: 100vh;
+}
+
+.labor-main {
+    padding-top: 40px;
+    padding-bottom: 80px;
+}
+
+.labor-hero {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.labor-hero .hero-title {
+    font-family: 'Outfit', sans-serif;
+    font-weight: 900;
+    font-size: 3rem;
+    margin-bottom: 10px;
+    letter-spacing: -1px;
+}
+
+.labor-hero .hero-subtitle {
+    font-size: 1.2rem;
+    color: var(--text-muted);
+    max-width: 700px;
+    margin: 0 auto;
+}
+
+/* Filter Section */
+.filter-panel {
+    margin-bottom: 30px;
+    padding: 20px !important;
+}
+
+.search-and-pills {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.search-box input {
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.filter-pill-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.filter-pill {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid var(--border-color);
+    color: var(--text-muted);
+    padding: 6px 14px;
+    border-radius: 50px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-family: 'Inter', sans-serif;
+}
+
+.filter-pill:hover, .filter-pill.active {
+    background: rgba(16, 185, 129, 0.15);
+    border-color: var(--primary-glow);
+    color: var(--text-primary);
+    box-shadow: 0 0 10px rgba(16, 185, 129, 0.2);
+}
+
+/* Dashboard Layout */
+.labor-dashboard-layout {
+    display: grid;
+    grid-template-columns: 1.1fr 0.9fr;
+    gap: 30px;
+    margin-bottom: 40px;
+}
+
+.section-heading {
+    font-family: 'Outfit', sans-serif;
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 20px;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 10px;
+}
+
+/* Rules Section */
+.rules-list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.law-card {
+    border-left: 4px solid var(--accent-glow);
+    padding: 20px !important;
+}
+
+.law-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 10px;
+    gap: 15px;
+}
+
+.law-title-box h3 {
+    font-family: 'Outfit', sans-serif;
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.law-article-code {
+    font-family: 'Fira Code', monospace;
+    font-size: 0.8rem;
+    background: rgba(255, 255, 255, 0.05);
+    padding: 2px 6px;
+    border-radius: 4px;
+    color: #818cf8;
+    margin-top: 4px;
+    display: inline-block;
+}
+
+.law-body {
+    font-size: 0.95rem;
+    line-height: 1.6;
+    color: var(--text-muted);
+}
+
+.law-body ul {
+    margin-top: 10px;
+    padding-left: 20px;
+}
+
+.law-body li {
+    margin-bottom: 6px;
+}
+
+.law-body strong {
+    color: var(--text-primary);
+}
+
+/* Case Study Cards */
+.cases-list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.case-card {
+    border-left: 4px solid var(--warning-glow);
+    padding: 20px !important;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.case-card:hover {
+    transform: translateX(4px);
+    box-shadow: 0 10px 20px rgba(245, 158, 11, 0.1);
+    border-color: var(--warning-glow);
+}
+
+.case-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.case-card h3 {
+    font-family: 'Outfit', sans-serif;
+    font-size: 1.15rem;
+    font-weight: 700;
+}
+
+.case-card-desc {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    line-height: 1.5;
+    margin-bottom: 15px;
+}
+
+.case-card-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.85rem;
+}
+
+.resolve-badge {
+    color: var(--warning-glow);
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+/* Case Study Modal */
+.case-detail-card {
+    max-width: 650px !important;
+}
+
+.case-section-box {
+    background: rgba(0, 0, 0, 0.4);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 15px;
+    margin-top: 15px;
+}
+
+.case-section-box h4 {
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.95rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 8px;
+}
+
+.scenario-box {
+    border-left: 3px solid var(--danger-glow);
+}
+
+.scenario-box h4 {
+    color: #f87171;
+}
+
+.analysis-box {
+    border-left: 3px solid var(--accent-glow);
+}
+
+.analysis-box h4 {
+    color: #818cf8;
+}
+
+.resolution-box {
+    border-left: 3px solid var(--primary-glow);
+}
+
+.resolution-box h4 {
+    color: #34d399;
+}
+
+.case-section-box p {
+    font-size: 0.95rem;
+    line-height: 1.6;
+    color: #e2e8f0;
+}
+
+/* Responsive */
+@media (max-width: 992px) {
+    .labor-dashboard-layout {
+        grid-template-columns: 1fr;
+    }
+}
