@@ -15,8 +15,19 @@ document.addEventListener('DOMContentLoaded', () => {
     const readerContentBody = document.getElementById('reader-content-body');
     const readerLinkedinLink = document.getElementById('reader-linkedin-link');
 
+    // Download Modal Elements
+    const downloadModal = document.getElementById('download-modal');
+    const downloadCloseBtn = document.getElementById('download-close-btn');
+    const downloadEbookTitle = document.getElementById('download-ebook-title');
+    const downloadForm = document.getElementById('download-form');
+    const regFirstName = document.getElementById('reg-first-name');
+    const regEmail = document.getElementById('reg-email');
+    const regExperience = document.getElementById('reg-experience');
+
     // State
     let articles = [];
+    let ebooks = [];
+    let currentSelectedEbook = null;
     let activeCategory = 'All';
     let searchQuery = '';
 
@@ -29,6 +40,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             const data = await response.json();
             articles = data.articles || [];
+            ebooks = data.ebooks || [];
             renderArticles();
         } catch (error) {
             console.error('Error loading library:', error);
@@ -136,6 +148,48 @@ document.addEventListener('DOMContentLoaded', () => {
     function renderArticles() {
         articlesContainer.innerHTML = '';
         
+        if (activeCategory === 'Ebooks') {
+            const filteredEbooks = ebooks.filter(e => {
+                const matchesSearch = e.title.toLowerCase().includes(searchQuery) || 
+                                      e.description.toLowerCase().includes(searchQuery);
+                return matchesSearch;
+            });
+
+            if (filteredEbooks.length === 0) {
+                articlesContainer.innerHTML = `<div class="glass-panel" style="grid-column: 1/-1; text-align: center; color: var(--text-muted);">Không tìm thấy ebook nào phù hợp với bộ lọc của bạn.</div>`;
+                return;
+            }
+
+            filteredEbooks.forEach(ebook => {
+                const card = document.createElement('div');
+                card.className = 'glass-panel article-card ebook-card';
+                card.style.cursor = 'pointer';
+                
+                card.innerHTML = `
+                    <div class="card-meta">
+                        <span class="category-badge" style="background: rgba(99, 102, 241, 0.15); border: 1px solid var(--accent-glow); color: #a5b4fc; padding: 4px 8px; border-radius: 4px; font-size: 0.75rem; font-weight: 700;">Ebook</span>
+                        <span class="article-date-text">${ebook.date} (${ebook.fileSize})</span>
+                    </div>
+                    <h3 class="card-title">${ebook.title}</h3>
+                    <p class="card-desc">${ebook.description}</p>
+                    <div class="card-footer" style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+                        <span class="author-name-text">Tác giả: <strong>${ebook.author}</strong></span>
+                        <button class="btn btn-primary download-trigger-btn" style="padding: 6px 16px; font-size: 0.85rem; font-weight:700;">Tải Ebook &darr;</button>
+                    </div>
+                `;
+                
+                const downloadBtn = card.querySelector('.download-trigger-btn');
+                downloadBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    handleEbookDownload(ebook);
+                });
+                
+                card.addEventListener('click', () => handleEbookDownload(ebook));
+                articlesContainer.appendChild(card);
+            });
+            return;
+        }
+        
         const filtered = articles.filter(a => {
             const matchesCategory = activeCategory === 'All' || a.category === activeCategory;
             const matchesSearch = a.title.toLowerCase().includes(searchQuery) || 
@@ -197,9 +251,127 @@ document.addEventListener('DOMContentLoaded', () => {
     readerModal.addEventListener('click', (e) => {
         if (e.target === readerModal) closeReader();
     });
+
+    // --- Ebook Download Flow & Registration ---
+    
+    function handleEbookDownload(ebook) {
+        currentSelectedEbook = ebook;
+        const registered = localStorage.getItem('b2b_user_registration');
+        if (registered) {
+            triggerDownload(ebook);
+        } else {
+            downloadEbookTitle.textContent = ebook.title;
+            downloadModal.classList.remove('hidden');
+        }
+    }
+
+    function triggerDownload(ebook) {
+        const link = document.createElement('a');
+        link.href = ebook.fileUrl;
+        link.download = ebook.fileUrl.split('/').pop();
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        
+        showToast(`Đang bắt đầu tải xuống: ${ebook.title}`);
+    }
+
+    function showToast(message) {
+        let toast = document.getElementById('library-toast');
+        if (!toast) {
+            toast = document.createElement('div');
+            toast.id = 'library-toast';
+            toast.style.position = 'fixed';
+            toast.style.bottom = '30px';
+            toast.style.right = '30px';
+            toast.style.background = '#10b981';
+            toast.style.color = '#ffffff';
+            toast.style.padding = '14px 28px';
+            toast.style.borderRadius = '10px';
+            toast.style.boxShadow = '0 10px 30px rgba(16, 185, 129, 0.2)';
+            toast.style.zIndex = '1100';
+            toast.style.fontWeight = '600';
+            toast.style.fontSize = '0.95rem';
+            toast.style.fontFamily = "'Inter', sans-serif";
+            toast.style.transition = 'all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
+            toast.style.transform = 'translateY(20px)';
+            toast.style.opacity = '0';
+            document.body.appendChild(toast);
+        }
+        
+        toast.textContent = message;
+        // Trigger reflow to apply animation
+        toast.offsetHeight;
+        toast.style.transform = 'translateY(0)';
+        toast.style.opacity = '1';
+        
+        setTimeout(() => {
+            toast.style.transform = 'translateY(20px)';
+            toast.style.opacity = '0';
+        }, 3500);
+    }
+
+    function closeDownloadModal() {
+        downloadModal.classList.add('hidden');
+        downloadForm.reset();
+    }
+
+    // Download registration form submission
+    downloadForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        
+        const firstName = regFirstName.value.trim();
+        const email = regEmail.value.trim();
+        const experience = regExperience.value.trim();
+        
+        if (!firstName || !email || !experience) {
+            return;
+        }
+
+        // Email validation regex
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+            alert('Vui lòng nhập địa chỉ email hợp lệ.');
+            return;
+        }
+
+        const expNum = parseInt(experience, 10);
+        if (isNaN(expNum) || expNum < 0) {
+            alert('Số năm kinh nghiệm không hợp lệ.');
+            return;
+        }
+
+        // Save profile
+        const registrationData = {
+            firstName,
+            email,
+            experience: expNum,
+            registeredAt: new Date().toISOString()
+        };
+        
+        localStorage.setItem('b2b_user_registration', JSON.stringify(registrationData));
+        
+        closeDownloadModal();
+        
+        if (currentSelectedEbook) {
+            triggerDownload(currentSelectedEbook);
+        }
+    });
+
+    // Close download modal listeners
+    downloadCloseBtn.addEventListener('click', closeDownloadModal);
+    downloadModal.addEventListener('click', (e) => {
+        if (e.target === downloadModal) closeDownloadModal();
+    });
+
     document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape' && !readerModal.classList.contains('hidden')) {
-            closeReader();
+        if (e.key === 'Escape') {
+            if (!readerModal.classList.contains('hidden')) {
+                closeReader();
+            }
+            if (!downloadModal.classList.contains('hidden')) {
+                closeDownloadModal();
+            }
         }
     });
 
