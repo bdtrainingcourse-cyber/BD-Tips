@@ -47,6 +47,7 @@
                     <button class="tab-btn" data-category="Kỹ năng Sale">Kỹ năng Sale</button>
                     <button class="tab-btn" data-category="Tìm kiếm khách hàng">Tìm kiếm khách hàng</button>
                     <button class="tab-btn" data-category="Thương hiệu cá nhân">Thương hiệu cá nhân</button>
+                    <button class="tab-btn" data-category="Ebooks">Ebooks & Tài Liệu</button>
                 </div>
             </div>
         </div>
@@ -107,6 +108,34 @@
                 <a id="reader-linkedin-link" href="#" target="_blank" class="btn btn-primary">Xem trên LinkedIn</a>
                 <button class="btn btn-secondary" id="btn-reader-close">Đóng Lại</button>
             </div>
+        </div>
+    </div>
+
+    <!-- Download Modal -->
+    <div class="modal-backdrop hidden" id="download-modal">
+        <div class="modal-card glass-panel registration-card">
+            <button class="modal-close" id="download-close-btn">&times;</button>
+            <h2 class="modal-title">Đăng Ký Nhận Ebook</h2>
+            <p class="modal-subtitle" id="download-ebook-title">Tên sách</p>
+            
+            <form id="download-form" class="form-grid">
+                <div class="form-group">
+                    <label for="reg-first-name">Tên của bạn <span class="required">*</span></label>
+                    <input type="text" id="reg-first-name" placeholder="Nhập tên của bạn" required>
+                </div>
+                <div class="form-group">
+                    <label for="reg-email">Email công việc <span class="required">*</span></label>
+                    <input type="email" id="reg-email" placeholder="Nhập email của bạn" required>
+                </div>
+                <div class="form-group">
+                    <label for="reg-experience">Số năm kinh nghiệm làm BD/Sales <span class="required">*</span></label>
+                    <input type="number" id="reg-experience" min="0" max="50" placeholder="Nhập số năm kinh nghiệm (ví dụ: 3)" required>
+                </div>
+                
+                <div class="modal-actions" style="margin-top: 15px;">
+                    <button type="submit" class="btn btn-primary btn-block">Đăng Ký & Tải Xuống</button>
+                </div>
+            </form>
         </div>
     </div>
 
