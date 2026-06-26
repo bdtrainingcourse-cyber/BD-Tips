@@ -124,21 +124,12 @@
   "ebooks": [
     {
       "id": "ebook-negotiation",
-      "title": "Cẩm nang Đàm phán B2B: Vị Thế Chuyên Gia",
-      "description": "Bản đồ hướng dẫn chi tiết cách đối phó với sức ép ép giá của khách hàng doanh nghiệp và bảo vệ biên lợi nhuận.",
+      "title": "Mindset BD Ebook",
+      "description": "Với tinh thần Mindsets- Keeps you winning của Ebook này hy vọng sẽ giúp ích được các bạn vực dậy trong giai đoạn khó khăn này của nghề siêu khó- BD nè nhé",
       "author": "Peter Vo",
       "date": "2026-06-25",
-      "fileUrl": "ebooks/Cam_nang_Dam_phan_B2B.pdf",
-      "fileSize": "2.4 MB"
-    },
-    {
-      "id": "ebook-social-selling",
-      "title": "Xây dựng Hệ thống Social Selling trên LinkedIn",
-      "description": "Chiến lược 30 ngày định vị thương hiệu cá nhân, thu hút đối tác tự tìm đến và chốt hợp đồng lớn.",
-      "author": "Peter Vo",
-      "date": "2026-06-24",
-      "fileUrl": "ebooks/Social_Selling_LinkedIn.pdf",
-      "fileSize": "1.8 MB"
+      "fileUrl": "ebooks/Mindset_BD_Ebook.pdf",
+      "fileSize": "8.38 KB"
     }
   ]
 }
