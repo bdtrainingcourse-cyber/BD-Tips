@@ -1,86 +1,6 @@
 {
   "articles": [
     {
-      "id": "10th-bd-tips-gui-anh-bang-gia-tham-khao-uoc-khong-cam-bay-ngot-ngao-nhat-trong-b2b-sales-va-cach-lat-nguoc-the-co",
-      "title": "10th BD Tips: \"Gửi anh bảng giá tham khảo được không?\" – Cạm bẫy ngọt ngào nhất trong B2B Sales và cách lật ngược thế cờ",
-      "description": "...",
-      "category": "Ngôn từ B2B",
-      "date": "2026-06-17",
-      "author": "Peter Vo",
-      "linkedinUrl": "https://vn.linkedin.com/pulse/10th-bd-tips-g%E1%BB%ADi-anh-b%E1%BA%A3ng-gi%C3%A1-tham-kh%E1%BA%A3o-%C4%91%C6%B0%E1%BB%A3c-kh%C3%B4ng-c%E1%BA%A1m-t%C3%A2n-v%C3%B5-ph%C6%B0%E1%BB%9Bc-jwrxc",
-      "content": ""
-    },
-    {
-      "id": "9th-bd-tips-gioi-giao-tiep-chua-chac-gioi-chot-deal-bay-tam-ly-khien-nhieu-bd-miet-mai-nhung-let-et-so",
-      "title": "9th BD Tips : \"Giỏi giao tiếp\" chưa chắc \"giỏi chốt deal\" – Bẫy tâm lý khiến nhiều BD miệt mài nhưng... lẹt đẹt số",
-      "description": "...",
-      "category": "Ngôn từ B2B",
-      "date": "2026-06-10",
-      "author": "Peter Vo",
-      "linkedinUrl": "https://vn.linkedin.com/pulse/9th-bd-tips-gi%E1%BB%8Fi-giao-ti%E1%BA%BFp-ch%C6%B0a-ch%E1%BA%AFc-ch%E1%BB%91t-deal-b%E1%BA%ABy-t%C3%A2m-t%C3%A2n-v%C3%B5-ph%C6%B0%E1%BB%9Bc-m66re",
-      "content": ""
-    },
-    {
-      "id": "8th-bd-tips-khi-nao-mot-bd-chuyen-nghiep-can-dung-cam-noi-khong",
-      "title": "8th BD Tips : Khi nào một BD chuyên nghiệp cần dũng cảm nói \"KHÔNG\"?",
-      "description": "...",
-      "category": "Ngôn từ B2B",
-      "date": "2026-05-28",
-      "author": "Peter Vo",
-      "linkedinUrl": "https://vn.linkedin.com/pulse/8th-bd-tips-khi-n%C3%A0o-m%E1%BB%99t-chuy%C3%AAn-nghi%E1%BB%87p-c%E1%BA%A7n-d%C5%A9ng-c%E1%BA%A3m-n%C3%B3i-t%C3%A2n-v%C3%B5-ph%C6%B0%E1%BB%9Bc-deryc",
-      "content": ""
-    },
-    {
-      "id": "7th-bd-tips-lam-sao-e-ra-ong-moi-quan-he-bi-ghosting-trong-b2b",
-      "title": "7th BD Tips : làm sao để “RÃ ĐÔNG” mối quan hệ bị GHOSTING trong B2B?",
-      "description": "...",
-      "category": "Ngôn từ B2B",
-      "date": "2026-04-20",
-      "author": "Peter Vo",
-      "linkedinUrl": "https://vn.linkedin.com/pulse/7th-bd-tips-l%C3%A0m-sao-%C4%91%E1%BB%83-r%C3%A3-%C4%91%C3%B4ng-m%E1%BB%91i-quan-h%E1%BB%87-b%E1%BB%8B-trong-b2b-t%C3%A2n-v%C3%B5-ph%C6%B0%E1%BB%9Bc-okhic",
-      "content": ""
-    },
-    {
-      "id": "6th-bd-tips-tinh-hoa-vay-tin-b2b-khi-nao-dung-linkedin-khi-nao-dung-zalo-e-khach-khong-bo",
-      "title": "6th BD Tips : Tinh hoa \"vẩy tin\" B2B: Khi nào dùng LinkedIn, khi nào dùng Zalo để khách không \"bơ\"? 🤫",
-      "description": "...",
-      "category": "Ngôn từ B2B",
-      "date": "2026-04-16",
-      "author": "Peter Vo",
-      "linkedinUrl": "https://vn.linkedin.com/pulse/6th-bd-tips-tinh-hoa-v%E1%BA%A9y-tin-b2b-khi-n%C3%A0o-d%C3%B9ng-zalo-%C4%91%E1%BB%83-t%C3%A2n-v%C3%B5-ph%C6%B0%E1%BB%9Bc-cbj7c",
-      "content": ""
-    },
-    {
-      "id": "5th-bd-tip-ung-e-khach-hang-biet-ban-la-tan-binh-3-chieu-hoa-thanthanh-chuyen-gia-trong-5-phut",
-      "title": "5th BD Tip: Đừng để khách hàng biết bạn là \"TÂN BINH\": 3 CHIÊU \"HÓA THÂN\"thành chuyên gia trong 5 PHÚT 🎩",
-      "description": "...",
-      "category": "Ngôn từ B2B",
-      "date": "2026-04-09",
-      "author": "Peter Vo",
-      "linkedinUrl": "https://vn.linkedin.com/pulse/5th-bd-tip-%C4%91%E1%BB%ABng-%C4%91%E1%BB%83-kh%C3%A1ch-h%C3%A0ng-bi%E1%BA%BFt-b%E1%BA%A1n-l%C3%A0-t%C3%A2n-binh-3-chi%C3%AAu-v%C3%B5-ph%C6%B0%E1%BB%9Bc-q9rzc",
-      "content": ""
-    },
-    {
-      "id": "4th-bd-tips-3-dau-tick-xanh-quyet-inh-van-menh-cua-mot-ban-proposal-b2b",
-      "title": "4th BD tips : 3 Dấu \"Tick xanh\" quyết định vận mệnh của một bản Proposal B2B. ✅",
-      "description": "...",
-      "category": "Ngôn từ B2B",
-      "date": "2026-03-30",
-      "author": "Peter Vo",
-      "linkedinUrl": "https://vn.linkedin.com/pulse/4th-bd-tips-3-d%E1%BA%A5u-tick-xanh-quy%E1%BA%BFt-%C4%91%E1%BB%8Bnh-v%E1%BA%ADn-m%E1%BB%87nh-c%E1%BB%A7a-m%E1%BB%99t-t%C3%A2n-v%C3%B5-ph%C6%B0%E1%BB%9Bc-oecqc",
-      "content": ""
-    },
-    {
-      "id": "3rd-bd-tips-tai-sao-co-nhung-bd-cang-lam-cang-nhan-con-ban-cang-lam-cang-uoi",
-      "title": "3rd BD Tips: Tại sao có những BD CÀNG LÀM CÀNG NHÀN, còn bạn CÀNG LÀM CÀNG ĐUỐI?",
-      "description": "...",
-      "category": "Ngôn từ B2B",
-      "date": "2026-03-25",
-      "author": "Peter Vo",
-      "linkedinUrl": "https://vn.linkedin.com/pulse/3rd-bd-tips-t%E1%BA%A1i-sao-c%C3%B3-nh%E1%BB%AFng-c%C3%A0ng-l%C3%A0m-nh%C3%A0n-c%C3%B2n-b%E1%BA%A1n-%C4%91u%E1%BB%91i-t%C3%A2n-v%C3%B5-ph%C6%B0%E1%BB%9Bc-vb5kc",
-      "content": ""
-    },
-    {
       "id": "negotiation-b2b",
       "title": "Nghệ thuật đàm phán hợp đồng thương mại B2B",
       "description": "Làm thế nào để thương lượng giá trị hợp đồng B2B mà không rơi vào bẫy phá giá? 3 chiến lược định vị vị thế chuyên gia.",
@@ -124,12 +44,21 @@
   "ebooks": [
     {
       "id": "ebook-negotiation",
-      "title": "Mindset BD Ebook",
-      "description": "Với tinh thần Mindsets- Keeps you winning của Ebook này hy vọng sẽ giúp ích được các bạn vực dậy trong giai đoạn khó khăn này của nghề siêu khó- BD nè nhé",
+      "title": "Cẩm nang Đàm phán B2B: Vị Thế Chuyên Gia",
+      "description": "Bản đồ hướng dẫn chi tiết cách đối phó với sức ép ép giá của khách hàng doanh nghiệp và bảo vệ biên lợi nhuận.",
       "author": "Peter Vo",
       "date": "2026-06-25",
-      "fileUrl": "ebooks/Mindset_BD_Ebook.pdf",
-      "fileSize": "8.38 KB"
+      "fileUrl": "ebooks/Cam_nang_Dam_phan_B2B.pdf",
+      "fileSize": "2.4 MB"
+    },
+    {
+      "id": "ebook-social-selling",
+      "title": "Xây dựng Hệ thống Social Selling trên LinkedIn",
+      "description": "Chiến lược 30 ngày định vị thương hiệu cá nhân, thu hút đối tác tự tìm đến và chốt hợp đồng lớn.",
+      "author": "Peter Vo",
+      "date": "2026-06-24",
+      "fileUrl": "ebooks/Social_Selling_LinkedIn.pdf",
+      "fileSize": "1.8 MB"
     }
   ]
 }
