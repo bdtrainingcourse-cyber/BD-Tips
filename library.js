@@ -34,7 +34,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Fetch articles from library_data.json
     async function loadArticles() {
         try {
-            const response = await fetch('library_data.json');
+            const response = await fetch('/library_data.json');
             if (!response.ok) {
                 throw new Error('Failed to fetch library data');
             }
