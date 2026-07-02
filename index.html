@@ -195,12 +195,42 @@
 
     <!-- Mini Game Section -->
     <section class="minigame container" id="minigame-section">
-        <h2 class="section-title">Thử Thách B2B: Bạn là Tân Binh hay Chuyên Gia?</h2>
+        <h2 class="section-title">B2B CHALLENGE</h2>
         <div class="game-container glass-effect">
-            <div id="game-intro">
-                <p style="font-size: 1.2rem; margin-bottom: 20px;">Cùng đánh giá năng lực qua 5 tình huống thực tế nhé!</p>
-                <button id="start-btn" class="btn btn-primary">Bắt Đầu Thử Thách</button>
+            <!-- Selector Panel -->
+            <div id="game-selector" class="game-selector">
+                <p style="font-size: 1.1rem; margin-bottom: 25px; text-align: center; color: var(--text-light);">Chọn thử thách bạn muốn tham gia để đánh giá năng lực B2B Sales / Business Development:</p>
+                <div class="selector-grid">
+                    <div class="game-card glass-panel" style="padding: 20px; display: flex; flex-direction: column; gap: 10px; cursor: pointer; border: 1px solid var(--border-color); border-radius: 12px; background: rgba(255, 255, 255, 0.6);" data-game-index="0">
+                        <div style="font-size: 1.8rem; margin-bottom: 5px;">🧠</div>
+                        <h4 style="font-size: 1.1rem; font-weight: 700; margin: 0; color: var(--text-main);">Bạn là Tân Binh hay Chuyên Gia?</h4>
+                        <p style="font-size: 0.85rem; color: var(--text-light); flex: 1; margin: 5px 0 0 0;">Đánh giá khả năng phản xạ và xử lý tình huống thực tế của BD khi đàm phán thương lượng với đối tác.</p>
+                        <button class="btn btn-primary" style="padding: 8px 12px; font-size: 0.85rem; margin-top: 15px; width: 100%;">Chơi Ngay</button>
+                    </div>
+                    <div class="game-card glass-panel" style="padding: 20px; display: flex; flex-direction: column; gap: 10px; cursor: pointer; border: 1px solid var(--border-color); border-radius: 12px; background: rgba(255, 255, 255, 0.6);" data-game-index="1">
+                        <div style="font-size: 1.8rem; margin-bottom: 5px;">⚙️</div>
+                        <h4 style="font-size: 1.1rem; font-weight: 700; margin: 0; color: var(--text-main);">BD 'Thủ Công' hay 'Hệ Thống'?</h4>
+                        <p style="font-size: 0.85rem; color: var(--text-light); flex: 1; margin: 5px 0 0 0;">Đo lường phương pháp làm việc của bạn đang ở mức nỗ lực cơ bắp thủ công hay quy trình hệ thống hóa.</p>
+                        <button class="btn btn-primary" style="padding: 8px 12px; font-size: 0.85rem; margin-top: 15px; width: 100%;">Chơi Ngay</button>
+                    </div>
+                    <div class="game-card glass-panel" style="padding: 20px; display: flex; flex-direction: column; gap: 10px; cursor: pointer; border: 1px solid var(--border-color); border-radius: 12px; background: rgba(255, 255, 255, 0.6);" data-game-index="2">
+                        <div style="font-size: 1.8rem; margin-bottom: 5px;">🧗</div>
+                        <h4 style="font-size: 1.1rem; font-weight: 700; margin: 0; color: var(--text-main);">Nhảy qua làm BD có dễ ko ta?</h4>
+                        <p style="font-size: 0.85rem; color: var(--text-light); flex: 1; margin: 5px 0 0 0;">Đánh giá mức độ phù hợp về tố chất bản thân (chịu áp lực, khả năng research, chủ động) với nghề BD.</p>
+                        <button class="btn btn-primary" style="padding: 8px 12px; font-size: 0.85rem; margin-top: 15px; width: 100%;">Chơi Ngay</button>
+                    </div>
+                </div>
             </div>
+
+            <!-- Intro Panel -->
+            <div id="game-intro" class="hidden">
+                <button id="back-to-selector" class="btn btn-secondary" style="padding: 6px 16px; font-size: 0.85rem; margin: 0 auto 20px auto; display: block; width: fit-content;">&larr; Quay lại chọn game khác</button>
+                <h3 id="intro-game-title" style="font-size: 1.6rem; font-weight: 800; margin-bottom: 12px; color: var(--text-main);"></h3>
+                <p id="intro-game-desc" style="font-size: 1.1rem; margin-bottom: 25px; color: var(--text-light); max-width: 600px; margin-left: auto; margin-right: auto;"></p>
+                <button id="start-btn" class="btn btn-primary" style="padding: 12px 40px; font-size: 1.1rem;">Bắt Đầu Chơi</button>
+            </div>
+
+            <!-- Play Panel -->
             <div id="game-play" class="hidden">
                 <div class="progress-bar">
                     <div id="progress" class="progress"></div>
@@ -211,12 +241,17 @@
                     <!-- Options injected via JS -->
                 </div>
                 <div id="feedback-msg" class="feedback-msg hidden"></div>
-                <button id="next-btn" class="btn btn-secondary hidden">Câu tiếp theo &rarr;</button>
+                <button id="next-btn" class="btn btn-secondary hidden" style="margin-top: 20px;">Câu tiếp theo &rarr;</button>
             </div>
+
+            <!-- Result Panel -->
             <div id="game-result" class="hidden">
-                <h3 id="result-title"></h3>
-                <p id="result-text"></p>
-                <button id="restart-btn" class="btn btn-primary">Chơi Lại</button>
+                <h3 id="result-title" style="font-size: 2.2rem; font-weight: 800; margin-bottom: 15px;"></h3>
+                <p id="result-text" style="font-size: 1.15rem; color: var(--text-main); max-width: 600px; margin: 0 auto 30px auto; line-height: 1.6;"></p>
+                <div style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap;">
+                    <button id="restart-btn" class="btn btn-primary" style="padding: 10px 30px; font-size: 1rem;">Chơi Lại</button>
+                    <button id="selector-btn" class="btn btn-secondary" style="padding: 10px 30px; font-size: 1rem; margin: 0;">Đổi Game Khác</button>
+                </div>
             </div>
         </div>
     </section>
