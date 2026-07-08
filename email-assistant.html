@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Email Assistant - B2B BD Portal</title>
+    <meta name="description" content="Đánh giá hiệu quả email bán hàng B2B và soạn thảo outreach tự động bằng trí tuệ nhân tạo.">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@700;800&display=swap" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="style.css?v=1.3.0">
+    <link rel="stylesheet" href="email-assistant.css?v=1.3.0">
+    <link rel="stylesheet" href="ai-chat.css?v=1.3.0">
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="container navbar-container">
+            <a href="index.html" class="logo">B2B BD Portal</a>
+            <div class="nav-menu">
+                <a href="index.html" class="nav-link">Ngôn Từ B2B</a>
+                <a href="index.html#minigame-section" class="nav-link">B2B Challenge</a>
+                <a href="finder.html" class="nav-link">PIC Finder</a>
+                <a href="library.html" class="nav-link">Thư Viện</a>
+                <a href="labor-law.html" class="nav-link">Luật Lao Động</a>
+                <a href="salary.html" class="nav-link">Tính Lương</a>
+                <a href="email-assistant.html" class="nav-link active">Email Assistant</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Dashboard Container -->
+    <main class="container assistant-container">
+        <div class="assistant-header">
+            <h1>B2B Email Assistant</h1>
+            <p>Đánh giá hiệu quả cold email và tự động soạn thảo mẫu tiếp cận đối tác đạt tỷ lệ chuyển đổi cao</p>
+        </div>
+
+        <!-- Settings Button Bar -->
+        <div class="settings-bar">
+            <button class="settings-btn" id="open-settings-btn">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="3"/>
+                    <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+                </svg>
+                Cấu hình API Key (Gemini)
+            </button>
+        </div>
+
+        <!-- Offline Warning Banner -->
+        <div class="offline-banner hidden" id="offline-warn-banner">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+                <line x1="12" y1="9" x2="12" y2="13"/>
+                <line x1="12" y1="17" x2="12.01" y2="17"/>
+            </svg>
+            <span><strong>Chế độ Ngoại tuyến:</strong> Bạn chưa nhập API Key. Hệ thống đang chạy bộ phân tích quy tắc cục bộ (local heuristics). Nhập API Key ở phần Cấu hình để mở khóa AI chấm điểm chi tiết.</span>
+        </div>
+
+        <!-- Functional Toggle Tabs -->
+        <div class="assistant-tabs">
+            <button class="tab-btn active" data-tab="tab-evaluate">
+                🛡️ Đánh Giá Email
+            </button>
+            <button class="tab-btn" data-tab="tab-generate">
+                ✍️ Soạn Email AI
+            </button>
+        </div>
+
+        <!-- Left/Right Interaction Layout -->
+        <div class="assistant-grid">
+            <!-- Left panel: Inputs -->
+            <div>
+                <!-- TAB 1: EVALUATE -->
+                <div class="panel-card tab-content active" id="tab-evaluate">
+                    <h3>🔍 Phân Tích & Chấm Điểm Email</h3>
+                    <form id="evaluate-form">
+                        <div class="form-group">
+                            <label for="eval-content">Nội dung email cần đánh giá *</label>
+                            <textarea id="eval-content" class="form-control" placeholder="Dán toàn bộ tiêu đề và nội dung email nháp của bạn vào đây..." required></textarea>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="eval-role">Chức vụ đối tác (PIC)</label>
+                                <select id="eval-role" class="form-control">
+                                    <option value="CTO/Tech Lead">CTO / Tech Lead</option>
+                                    <option value="CEO/Founder">CEO / Founder</option>
+                                    <option value="HR Director/HR Manager">HR Director / HR Manager</option>
+                                    <option value="Sales/Marketing Director">Sales/Marketing Director</option>
+                                    <option value="Partnership/BD Manager">Partnership / BD Manager</option>
+                                    <option value="Purchasing/Procurement">Purchasing / Procurement</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="eval-industry">Ngành nghề doanh nghiệp</label>
+                                <select id="eval-industry" class="form-control">
+                                    <option value="Công nghệ/SaaS">Công nghệ / Phần mềm</option>
+                                    <option value="Bán lẻ/Retail">Bán lẻ / F&B</option>
+                                    <option value="Tài chính/Banking">Tài chính / Ngân hàng</option>
+                                    <option value="Logistics/Vận tải">Logistics / Chuỗi cung ứng</option>
+                                    <option value="Sản xuất/Manufacturing">Sản xuất / Công nghiệp</option>
+                                    <option value="Giáo dục/Edtech">Giáo dục / Đào tạo</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="eval-tone">Giọng văn chủ đạo</label>
+                                <select id="eval-tone" class="form-control">
+                                    <option value="Trang trọng, Chuyên nghiệp (Professional)">Trang trọng / Chuyên nghiệp</option>
+                                    <option value="Thân thiện, Cởi mở (Friendly)">Thân thiện / Cởi mở</option>
+                                    <option value="Ngắn gọn, Trực diện (Concise)">Ngắn gọn / Đi thẳng vấn đề</option>
+                                    <option value="Mạnh mẽ, Thuyết phục (Bold)">Mạnh mẽ / Thuyết phục</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="eval-lang">Ngôn ngữ phân tích</label>
+                                <select id="eval-lang" class="form-control">
+                                    <option value="vi">Tiếng Việt</option>
+                                    <option value="en">English</option>
+                                </select>
+                            </div>
+                        </div>
+                        <button type="submit" class="submit-btn" id="eval-submit-btn">
+                            Phân Tích Email Ngay
+                        </button>
+                    </form>
+                </div>
+
+                <!-- TAB 2: GENERATE -->
+                <div class="panel-card tab-content" id="tab-generate">
+                    <h3>✨ Soạn Email Tiếp Cận Bằng AI</h3>
+                    <form id="generate-form">
+                        <div class="form-group">
+                            <label for="gen-prompt">Ý tưởng chính hoặc đề xuất cốt lõi của bạn *</label>
+                            <textarea id="gen-prompt" class="form-control" placeholder="Ví dụ: Đề xuất giải pháp kiểm thử phần mềm tự động giúp FPT Software giảm 20% chi phí vận hành..." required></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="gen-company">Tên doanh nghiệp đối tác tiếp cận</label>
+                            <input type="text" id="gen-company" class="form-control" placeholder="Ví dụ: VNG Corporation, Stripe, Shopee...">
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="gen-role">Chức vụ đối tác (PIC)</label>
+                                <select id="gen-role" class="form-control">
+                                    <option value="CTO/Tech Lead">CTO / Tech Lead</option>
+                                    <option value="CEO/Founder">CEO / Founder</option>
+                                    <option value="HR Director/HR Manager">HR Director / HR Manager</option>
+                                    <option value="Sales/Marketing Director">Sales/Marketing Director</option>
+                                    <option value="Partnership/BD Manager">Partnership / BD Manager</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="gen-industry">Ngành nghề doanh nghiệp</label>
+                                <select id="gen-industry" class="form-control">
+                                    <option value="Công nghệ/SaaS">Công nghệ / Phần mềm</option>
+                                    <option value="Bán lẻ/Retail">Bán lẻ / F&B</option>
+                                    <option value="Tài chính/Banking">Tài chính / Ngân hàng</option>
+                                    <option value="Logistics/Vận tải">Logistics / Chuỗi cung ứng</option>
+                                    <option value="Sản xuất/Manufacturing">Sản xuất / Công nghiệp</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="gen-tone">Giọng văn chủ đạo</label>
+                                <select id="gen-tone" class="form-control">
+                                    <option value="Trang trọng, Chuyên nghiệp (Professional)">Trang trọng / Chuyên nghiệp</option>
+                                    <option value="Thân thiện, Cởi mở (Friendly)">Thân thiện / Cởi mở</option>
+                                    <option value="Ngắn gọn, Trực diện (Concise)">Ngắn gọn / Đi thẳng vấn đề</option>
+                                    <option value="Mạnh mẽ, Thuyết phục (Bold)">Mạnh mẽ / Thuyết phục</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="gen-lang">Ngôn ngữ soạn thảo</label>
+                                <select id="gen-lang" class="form-control">
+                                    <option value="vi">Tiếng Việt</option>
+                                    <option value="en">English</option>
+                                </select>
+                            </div>
+                        </div>
+                        <button type="submit" class="submit-btn" id="gen-submit-btn">
+                            Soạn Email AI
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Right panel: Outputs -->
+            <div class="panel-card" style="min-height: 500px; display: flex; flex-direction: column;">
+                <h3>📊 Kết Quả Phân Tích & Soạn Thảo</h3>
+                
+                <!-- 1. Empty State -->
+                <div class="output-empty-state" id="output-empty">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
+                    </svg>
+                    <p>Nhập thông tin bên trái và nhấn nút xử lý để nhận kết quả phân tích hoặc mẫu email tự động từ AI.</p>
+                </div>
+
+                <!-- 2. Loading State -->
+                <div class="loading-overlay hidden" id="output-loading">
+                    <div class="spinner"></div>
+                    <div class="loading-text">BeeDee AI đang xử lý...</div>
+                    <div class="loading-subtext">Quá trình này mất khoảng 2-5 giây</div>
+                </div>
+
+                <!-- 3. Result Content Area -->
+                <div id="output-result" class="hidden" style="flex-grow: 1;">
+                    <!-- Evaluation results placeholder -->
+                    <div id="eval-result-section" class="hidden">
+                        <div class="evaluation-header">
+                            <div class="score-badge-circle" id="score-circle">
+                                <div id="score-value">85</div>
+                                <span>Điểm</span>
+                            </div>
+                            <div class="meta-stats">
+                                <div class="meta-stat-item">
+                                    <strong>Từ khóa Spam</strong>
+                                    <span id="spam-count">0 từ</span>
+                                </div>
+                                <div class="meta-stat-item">
+                                    <strong>Thời gian đọc</strong>
+                                    <span id="reading-time">35s</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="critique-list" id="critique-list">
+                            <!-- Bullet critiques injected here -->
+                        </div>
+                    </div>
+
+                    <!-- Generated Subject Lines (Shows for both Evaluate and Generate) -->
+                    <div id="subject-lines-section" class="hidden" style="margin-top: 25px;">
+                        <h4 style="margin: 0 0 10px 0; font-size: 1rem; color: var(--text-main);">Gợi ý dòng Tiêu đề (Subject lines):</h4>
+                        <div class="subject-options-list" id="subject-options-list">
+                            <!-- Subject cards injected here -->
+                        </div>
+                    </div>
+
+                    <!-- Main Polished / Generated Draft -->
+                    <div class="draft-container">
+                        <h4 id="draft-title" style="margin: 0 0 10px 0; font-size: 1rem; color: var(--text-main);">Bản email đề xuất tối ưu:</h4>
+                        <button class="copy-btn" id="copy-draft-btn">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+                            </svg>
+                            Copy bản nháp
+                        </button>
+                        <div class="draft-box" id="draft-content">
+                            <!-- Draft text here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Settings API Key Modal -->
+    <div class="modal-overlay hidden" id="settings-modal">
+        <div class="modal-content glass-effect">
+            <button class="close-modal-btn" id="close-settings-btn">&times;</button>
+            <h3 class="modal-title">Cấu hình API Key (Gemini)</h3>
+            <p style="font-size: 0.88rem; color: var(--text-light); margin-bottom: 20px;">Để sử dụng tính năng chấm điểm và soạn thảo AI tốt nhất, vui lòng cung cấp Gemini API Key cá nhân của bạn. Key được lưu an toàn cục bộ trong trình duyệt của bạn (localStorage) và chỉ gửi tới API Gemini của Google.</p>
+            
+            <div class="form-group">
+                <label for="gemini-key-input">Gemini API Key của bạn</label>
+                <input type="password" id="gemini-key-input" class="form-control" placeholder="AIzaSy...">
+            </div>
+            
+            <div style="display: flex; gap: 15px; margin-top: 25px;">
+                <button class="btn btn-secondary" style="flex: 1;" id="clear-key-btn">Xóa Key hiện có</button>
+                <button class="btn btn-primary" style="flex: 1;" id="save-key-btn">Lưu API Key</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container text-center">
+            <blockquote class="final-quote">
+                "Trong B2B, bạn không chỉ thuyết phục bằng sản phẩm. Bạn định vị bản thân bằng sự sắc bén của ngôn từ."
+            </blockquote>
+            <div class="author">
+                <p class="author-name">BD khó có Peter lo</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Chat Widget script -->
+    <script src="ai-chat.js?v=1.3.0"></script>
+    <!-- Custom Page Script -->
+    <script src="email-assistant.js?v=1.3.0"></script>
+</body>
+</html>
