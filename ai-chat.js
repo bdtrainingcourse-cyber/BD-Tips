@@ -103,9 +103,9 @@ document.addEventListener('DOMContentLoaded', () => {
         },
         {
             keywords: [/ebook/, /thư viện/, /bài viết/, /sách/, /newsletter/, /linkedin post/i],
-            reply: "Mục **Thư Viện** lưu trữ các bài viết, cẩm nang thực chiến chuyên sâu về kỹ năng Sales B2B, đàm phán hợp đồng thương mại và xây dựng thương hiệu cá nhân của Peter Vo.",
+            reply: "Bản tin **Bài Viết BD** (LinkedIn Newsletter) chia sẻ các bài viết, cẩm nang thực chiến chuyên sâu về kỹ năng Sales B2B, đàm phán hợp đồng thương mại và xây dựng thương hiệu cá nhân của Peter Vo.",
             navTarget: "library",
-            navLabel: "📚 Truy Cập Thư Viện"
+            navLabel: "📰 Đọc Bài Viết BD"
         }
     ];
 
@@ -242,7 +242,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (aiNavTarget === 'salary') aiNavLabel = '⚡ Tính Lương Ngay';
             else if (aiNavTarget === 'labor-law') aiNavLabel = '⚖️ Xem Luật Lao Động';
             else if (aiNavTarget === 'finder') aiNavLabel = '🔍 Mở PIC Finder';
-            else if (aiNavTarget === 'library') aiNavLabel = '📚 Vào Thư Viện';
+            else if (aiNavTarget === 'library') aiNavLabel = '📰 Đọc Bài Viết BD';
         }
 
         let bubbleHtml = '';
@@ -259,9 +259,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 'salary': 'salary.html',
                 'labor-law': 'labor-law.html',
                 'finder': 'finder.html',
-                'library': 'library.html'
+                'library': 'https://www.linkedin.com/newsletters/bd-b2b-b%C3%ACnh-d%C3%A2n-h%E1%BB%8Dc-v%E1%BB%A5-7254739965526360064/'
             };
-            bubbleHtml += `<a href="${linkMap[aiNavTarget]}" class="chat-router-btn">${aiNavLabel} &rarr;</a>`;
+            bubbleHtml += `<a href="${linkMap[aiNavTarget]}" class="chat-router-btn" ${aiNavTarget === 'library' ? 'target="_blank" rel="noopener noreferrer"' : ''}>${aiNavLabel} &rarr;</a>`;
         }
         bubbleHtml += `</div>`;
 
