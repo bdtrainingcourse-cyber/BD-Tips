@@ -8,28 +8,32 @@ document.addEventListener('DOMContentLoaded', () => {
     chatContainer.innerHTML = `
         <!-- Floating Launcher -->
         <div class="ai-chat-launcher" id="ai-chat-launcher" title="Hỏi Trợ Lý B2B">
-            <svg viewBox="0 0 24 24">
-                <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H6l-2 2V4h16v12z"/>
-                <path d="M7 9h10v2H7zm0-3h10v2H7zm0 6h7v2H7z"/>
-            </svg>
+            <img src="bd_mascot.png" alt="BeeDee Mascot" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
+            <span class="launcher-online-dot"></span>
         </div>
-
+ 
         <!-- Chat Widget Panel -->
         <div class="ai-chat-widget" id="ai-chat-widget">
             <!-- Header -->
             <div class="chat-header">
-                <div class="chat-header-info">
-                    <h3>Trợ Lý B2B AI</h3>
-                    <span>Tự động phản hồi & Điều hướng</span>
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <img src="bd_mascot.png" alt="BeeDee" style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover; border: 1.5px solid var(--chat-primary);">
+                    <div class="chat-header-info">
+                        <h3 style="margin: 0; display: flex; align-items: center; gap: 6px;">BeeDee AI</h3>
+                        <span style="font-size: 0.72rem; color: var(--chat-text-muted);">Trợ Lý B2B Cá Nhân</span>
+                    </div>
                 </div>
                 <button class="chat-close-btn" id="chat-close-btn">&times;</button>
             </div>
-
+ 
             <!-- Messages Area -->
             <div class="chat-messages" id="chat-messages">
                 <div class="chat-bubble-container bot">
-                    <div class="chat-bubble">
-                        Xin chào! Tôi là Trợ lý ảo của **B2B BD Portal**. Tôi có thể giúp bạn giải đáp các kỹ năng bán hàng B2B, tra cứu Luật Lao động nhanh hoặc hướng dẫn sử dụng các công cụ tính lương, tìm kiếm email PIC.
+                    <img src="bd_mascot.png" class="chat-bot-avatar" alt="BeeDee">
+                    <div class="chat-bubble-content">
+                        <div class="chat-bubble">
+                            Xin chào! Tôi là **BeeDee**, trợ lý ảo của **B2B BD Portal**. Tôi có thể giúp bạn giải đáp các kỹ năng bán hàng B2B, tra cứu nhanh Luật Lao động, hoặc hướng dẫn sử dụng các công cụ tính lương, tìm kiếm email PIC.
+                        </div>
                     </div>
                 </div>
                 
@@ -241,7 +245,13 @@ document.addEventListener('DOMContentLoaded', () => {
             else if (aiNavTarget === 'library') aiNavLabel = '📚 Vào Thư Viện';
         }
 
-        let bubbleHtml = `<div class="chat-bubble">${parseBubbleMarkdown(cleanedText)}</div>`;
+        let bubbleHtml = '';
+        if (sender === 'bot') {
+            bubbleHtml += `<img src="bd_mascot.png" class="chat-bot-avatar" alt="BeeDee">`;
+        }
+        
+        bubbleHtml += `<div class="chat-bubble-content">`;
+        bubbleHtml += `<div class="chat-bubble">${parseBubbleMarkdown(cleanedText)}</div>`;
 
         // If there is a navigation target, append action button
         if (aiNavTarget && aiNavLabel) {
@@ -253,6 +263,7 @@ document.addEventListener('DOMContentLoaded', () => {
             };
             bubbleHtml += `<a href="${linkMap[aiNavTarget]}" class="chat-router-btn">${aiNavLabel} &rarr;</a>`;
         }
+        bubbleHtml += `</div>`;
 
         bubbleContainer.innerHTML = bubbleHtml;
         messagesContainer.appendChild(bubbleContainer);
@@ -267,11 +278,14 @@ document.addEventListener('DOMContentLoaded', () => {
         bubbleContainer.className = 'chat-bubble-container bot';
         bubbleContainer.id = id;
         bubbleContainer.innerHTML = `
-            <div class="chat-bubble">
-                <div class="typing-indicator">
-                    <span class="typing-dot"></span>
-                    <span class="typing-dot"></span>
-                    <span class="typing-dot"></span>
+            <img src="bd_mascot.png" class="chat-bot-avatar" alt="BeeDee">
+            <div class="chat-bubble-content">
+                <div class="chat-bubble">
+                    <div class="typing-indicator">
+                        <span class="typing-dot"></span>
+                        <span class="typing-dot"></span>
+                        <span class="typing-dot"></span>
+                    </div>
                 </div>
             </div>
         `;
