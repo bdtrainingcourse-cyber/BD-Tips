@@ -849,22 +849,34 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function startGame() {
+        console.log('startGame() called, activeGameIndex =', activeGameIndex);
+        console.log('gameIntro before:', gameIntro ? gameIntro.className : 'null');
+        console.log('gamePlay before:', gamePlay ? gamePlay.className : 'null');
         currentQIndex = 0;
         score = 0;
         gameIntro.classList.add('hidden');
         gameResult.classList.add('hidden');
         gamePlay.classList.remove('hidden');
-        loadQuestion();
+        console.log('gameIntro after:', gameIntro ? gameIntro.className : 'null');
+        console.log('gamePlay after:', gamePlay ? gamePlay.className : 'null');
+        try {
+            loadQuestion();
+        } catch (e) {
+            console.error('CRASH IN loadQuestion():', e.message, e.stack);
+        }
     }
 
     function loadQuestion() {
+        console.log('loadQuestion() called, currentQIndex =', currentQIndex);
         nextBtn.classList.add('hidden');
         feedbackMsg.classList.add('hidden');
         optionsContainer.innerHTML = '';
         clearInterval(timerInterval);
         
         const activeGame = games[activeGameIndex];
+        console.log('activeGame =', activeGame ? activeGame.id : 'none');
         const q = activeGame.questions[currentQIndex];
+        console.log('q =', q ? q.context : 'none');
         questionText.textContent = `Câu ${currentQIndex + 1}/${activeGame.questions.length}: ${q.context}`;
         progressBar.style.width = `${((currentQIndex) / activeGame.questions.length) * 100}%`;
 
@@ -887,11 +899,9 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }, 1000);
 
-        // Shuffle options only for scenario challenge
+        // Shuffle options for all games to mix up the answers
         let displayOptions = [...q.options];
-        if (activeGame.type === 'scenario_challenge') {
-            displayOptions.sort(() => Math.random() - 0.5);
-        }
+        displayOptions.sort(() => Math.random() - 0.5);
 
         displayOptions.forEach(opt => {
             const btn = document.createElement('button');
