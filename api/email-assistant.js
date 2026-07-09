@@ -105,6 +105,8 @@ function localGenerateFallback(prompt, company, recipientRole, industry, tone, l
   };
 }
 
+const ipRequests = {}; // In-memory rate limiting store
+
 module.exports = async (req, res) => {
   // Enable CORS
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -114,12 +116,42 @@ module.exports = async (req, res) => {
     return res.status(200).end();
   }
 
+  // Support GET request to check shared key availability
+  if (req.method === 'GET') {
+    return res.status(200).json({ hasSharedKey: !!process.env.GEMINI_API_KEY });
+  }
+
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
   const { action, emailContent, recipientRole, industry, tone, language, prompt, company, geminiApiKey } = req.body;
   const apiKey = geminiApiKey || process.env.GEMINI_API_KEY;
+
+  // Rate Limiting for Shared API Key usage
+  if (!geminiApiKey && process.env.GEMINI_API_KEY) {
+    const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress || 'unknown';
+    const now = Date.now();
+    
+    // Clean up expired entries to prevent memory growth
+    for (const key in ipRequests) {
+      if (now > ipRequests[key].resetTime) {
+        delete ipRequests[key];
+      }
+    }
+
+    if (!ipRequests[ip]) {
+      ipRequests[ip] = { count: 0, resetTime: now + 24 * 60 * 60 * 1000 }; // 24 hour window
+    }
+
+    if (ipRequests[ip].count >= 10) {
+      return res.status(429).json({ 
+        error: 'Giới hạn dùng thử miễn phí trong ngày đã hết. Vui lòng tự cấu hình API Key Gemini của bạn để tiếp tục sử dụng không giới hạn.' 
+      });
+    }
+
+    ipRequests[ip].count++;
+  }
 
   if (action === 'evaluate') {
     if (!emailContent) {
