@@ -129,11 +129,14 @@ document.addEventListener('DOMContentLoaded', () => {
     evaluateForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         const content = document.getElementById('eval-content').value.trim();
-        const role = document.getElementById('eval-role').value;
+        const level = document.getElementById('eval-level').value;
+        const dept = document.getElementById('eval-dept').value;
         const industry = document.getElementById('eval-industry').value;
         const tone = document.getElementById('eval-tone').value;
         const lang = document.getElementById('eval-lang').value;
         const key = localStorage.getItem('gemini_api_key');
+
+        const role = `${level} - ${dept}`;
 
         showLoading(true);
 
@@ -169,11 +172,14 @@ document.addEventListener('DOMContentLoaded', () => {
         e.preventDefault();
         const promptVal = document.getElementById('gen-prompt').value.trim();
         const companyVal = document.getElementById('gen-company').value.trim();
-        const role = document.getElementById('gen-role').value;
+        const level = document.getElementById('gen-level').value;
+        const dept = document.getElementById('gen-dept').value;
         const industry = document.getElementById('gen-industry').value;
         const tone = document.getElementById('gen-tone').value;
         const lang = document.getElementById('gen-lang').value;
         const key = localStorage.getItem('gemini_api_key');
+
+        const role = `${level} - ${dept}`;
 
         showLoading(true);
 
