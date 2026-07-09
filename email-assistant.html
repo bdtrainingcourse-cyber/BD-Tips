@@ -85,16 +85,29 @@
                         </div>
                         <div class="form-row">
                             <div class="form-group">
-                                <label for="eval-role">Chức vụ đối tác (PIC)</label>
-                                <select id="eval-role" class="form-control">
-                                    <option value="CTO/Tech Lead">CTO / Tech Lead</option>
-                                    <option value="CEO/Founder">CEO / Founder</option>
-                                    <option value="HR Director/HR Manager">HR Director / HR Manager</option>
-                                    <option value="Sales/Marketing Director">Sales/Marketing Director</option>
-                                    <option value="Partnership/BD Manager">Partnership / BD Manager</option>
-                                    <option value="Purchasing/Procurement">Purchasing / Procurement</option>
+                                <label for="eval-level">Cấp bậc đối tác (Level)</label>
+                                <select id="eval-level" class="form-control">
+                                    <option value="C-Level (CEO/CTO/CFO/...)">C-Level (CEO, CTO, CIO, ...)</option>
+                                    <option value="VP / Director (Phó Chủ Tịch / Giám Đốc)">VP / Director (Phó Chủ Tịch / Giám Đốc)</option>
+                                    <option value="Manager (Trưởng Phòng / Quản Lý)">Manager (Trưởng Phòng / Quản Lý)</option>
+                                    <option value="Team Lead / Specialist (Trưởng Nhóm / Chuyên Viên)">Team Lead / Specialist (Trưởng Nhóm / Chuyên Viên)</option>
+                                    <option value="Executive / Associate (Nhân Viên / Trợ Lý)">Executive / Associate (Nhân Viên / Trợ Lý)</option>
                                 </select>
                             </div>
+                            <div class="form-group">
+                                <label for="eval-dept">Bộ phận đối tác (Department)</label>
+                                <select id="eval-dept" class="form-control">
+                                    <option value="Enterprise B2B / Sales (Kinh Doanh)">Enterprise B2B / Sales (Kinh Doanh)</option>
+                                    <option value="Partnerships / BD (Hợp Tác / Phát Triển Kinh Doanh)">Partnerships / BD (Hợp Tác / Phát Triển Kinh Doanh)</option>
+                                    <option value="Growth / Marketing (Tiếp Thị)">Growth / Marketing (Tiếp Thị)</option>
+                                    <option value="Technology / Product (Công Nghệ / Sản Phẩm)">Technology / Product (Công Nghệ / Sản Phẩm)</option>
+                                    <option value="Human Resources (HR / Nhân Sự)">Human Resources (HR / Nhân Sự)</option>
+                                    <option value="Procurement / Purchasing (Thu Mua / Cung Ứng)">Procurement / Purchasing (Thu Mua / Cung Ứng)</option>
+                                    <option value="Finance / Legal (Tài Chính / Pháp Lý)">Finance / Legal (Tài Chính / Pháp Lý)</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-row">
                             <div class="form-group">
                                 <label for="eval-industry">Ngành nghề doanh nghiệp</label>
                                 <select id="eval-industry" class="form-control">
@@ -106,8 +119,6 @@
                                     <option value="Giáo dục/Edtech">Giáo dục / Đào tạo</option>
                                 </select>
                             </div>
-                        </div>
-                        <div class="form-row">
                             <div class="form-group">
                                 <label for="eval-tone">Giọng văn chủ đạo</label>
                                 <select id="eval-tone" class="form-control">
@@ -117,12 +128,17 @@
                                     <option value="Mạnh mẽ, Thuyết phục (Bold)">Mạnh mẽ / Thuyết phục</option>
                                 </select>
                             </div>
+                        </div>
+                        <div class="form-row">
                             <div class="form-group">
                                 <label for="eval-lang">Ngôn ngữ phân tích</label>
                                 <select id="eval-lang" class="form-control">
                                     <option value="vi">Tiếng Việt</option>
                                     <option value="en">English</option>
                                 </select>
+                            </div>
+                            <div class="form-group">
+                                <!-- Layout Balancer -->
                             </div>
                         </div>
                         <button type="submit" class="submit-btn" id="eval-submit-btn">
@@ -145,15 +161,29 @@
                         </div>
                         <div class="form-row">
                             <div class="form-group">
-                                <label for="gen-role">Chức vụ đối tác (PIC)</label>
-                                <select id="gen-role" class="form-control">
-                                    <option value="CTO/Tech Lead">CTO / Tech Lead</option>
-                                    <option value="CEO/Founder">CEO / Founder</option>
-                                    <option value="HR Director/HR Manager">HR Director / HR Manager</option>
-                                    <option value="Sales/Marketing Director">Sales/Marketing Director</option>
-                                    <option value="Partnership/BD Manager">Partnership / BD Manager</option>
+                                <label for="gen-level">Cấp bậc đối tác (Level)</label>
+                                <select id="gen-level" class="gen-control form-control">
+                                    <option value="C-Level (CEO/CTO/CFO/...)">C-Level (CEO, CTO, CIO, ...)</option>
+                                    <option value="VP / Director (Phó Chủ Tịch / Giám Đốc)">VP / Director (Phó Chủ Tịch / Giám Đốc)</option>
+                                    <option value="Manager (Trưởng Phòng / Quản Lý)">Manager (Trưởng Phòng / Quản Lý)</option>
+                                    <option value="Team Lead / Specialist (Trưởng Nhóm / Chuyên Viên)">Team Lead / Specialist (Trưởng Nhóm / Chuyên Viên)</option>
+                                    <option value="Executive / Associate (Nhân Viên / Trợ Lý)">Executive / Associate (Nhân Viên / Trợ Lý)</option>
                                 </select>
                             </div>
+                            <div class="form-group">
+                                <label for="gen-dept">Bộ phận đối tác (Department)</label>
+                                <select id="gen-dept" class="gen-control form-control">
+                                    <option value="Enterprise B2B / Sales (Kinh Doanh)">Enterprise B2B / Sales (Kinh Doanh)</option>
+                                    <option value="Partnerships / BD (Hợp Tác / Phát Triển Kinh Doanh)">Partnerships / BD (Hợp Tác / Phát Triển Kinh Doanh)</option>
+                                    <option value="Growth / Marketing (Tiếp Thị)">Growth / Marketing (Tiếp Thị)</option>
+                                    <option value="Technology / Product (Công Nghệ / Sản Phẩm)">Technology / Product (Công Nghệ / Sản Phẩm)</option>
+                                    <option value="Human Resources (HR / Nhân Sự)">Human Resources (HR / Nhân Sự)</option>
+                                    <option value="Procurement / Purchasing (Thu Mua / Cung Ứng)">Procurement / Purchasing (Thu Mua / Cung Ứng)</option>
+                                    <option value="Finance / Legal (Tài Chính / Pháp Lý)">Finance / Legal (Tài Chính / Pháp Lý)</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-row">
                             <div class="form-group">
                                 <label for="gen-industry">Ngành nghề doanh nghiệp</label>
                                 <select id="gen-industry" class="form-control">
@@ -164,8 +194,6 @@
                                     <option value="Sản xuất/Manufacturing">Sản xuất / Công nghiệp</option>
                                 </select>
                             </div>
-                        </div>
-                        <div class="form-row">
                             <div class="form-group">
                                 <label for="gen-tone">Giọng văn chủ đạo</label>
                                 <select id="gen-tone" class="form-control">
@@ -175,12 +203,17 @@
                                     <option value="Mạnh mẽ, Thuyết phục (Bold)">Mạnh mẽ / Thuyết phục</option>
                                 </select>
                             </div>
+                        </div>
+                        <div class="form-row">
                             <div class="form-group">
                                 <label for="gen-lang">Ngôn ngữ soạn thảo</label>
                                 <select id="gen-lang" class="form-control">
                                     <option value="vi">Tiếng Việt</option>
                                     <option value="en">English</option>
                                 </select>
+                            </div>
+                            <div class="form-group">
+                                <!-- Layout Balancer -->
                             </div>
                         </div>
                         <button type="submit" class="submit-btn" id="gen-submit-btn">
