@@ -36,17 +36,73 @@ document.addEventListener('DOMContentLoaded', () => {
     const copyDraftBtn = document.getElementById('copy-draft-btn');
 
     // --- 2. Initialize Settings & Key Warning ---
+    let hasSharedKey = false;
+
+    async function initSharedKeyStatus() {
+        try {
+            const res = await fetch('/api/email-assistant');
+            if (res.ok) {
+                const data = await res.json();
+                hasSharedKey = !!data.hasSharedKey;
+            }
+        } catch (e) {
+            console.error('Failed to check shared key status:', e);
+        }
+        checkApiKeyStatus();
+    }
+    initSharedKeyStatus();
+
     function checkApiKeyStatus() {
         const key = localStorage.getItem('gemini_api_key');
         if (key) {
             offlineWarnBanner.classList.add('hidden');
             geminiKeyInput.value = key;
+        } else if (hasSharedKey) {
+            // Shared mode: green color theme
+            offlineWarnBanner.style.background = 'rgba(16, 185, 129, 0.08)';
+            offlineWarnBanner.style.borderColor = 'var(--primary)';
+            offlineWarnBanner.style.color = '#34d399';
+            offlineWarnBanner.querySelector('span').innerHTML = '<strong>Chế độ Hệ thống:</strong> Đang dùng chung API Key (Giới hạn 5 lượt gọi/ngày). Nhập API Key cá nhân trong phần Cấu hình để sử dụng không giới hạn.';
+            offlineWarnBanner.classList.remove('hidden');
+            geminiKeyInput.value = '';
         } else {
+            // Offline fallback mode: default orange warning
+            offlineWarnBanner.style.background = '';
+            offlineWarnBanner.style.borderColor = '';
+            offlineWarnBanner.style.color = '';
+            offlineWarnBanner.querySelector('span').innerHTML = '<strong>Chế độ Ngoại tuyến:</strong> Bạn chưa nhập API Key. Hệ thống đang chạy bộ phân tích quy tắc cục bộ (local heuristics). Nhập API Key ở phần Cấu hình để mở khóa AI chấm điểm chi tiết.';
             offlineWarnBanner.classList.remove('hidden');
             geminiKeyInput.value = '';
         }
     }
-    checkApiKeyStatus();
+
+    function checkAndIncrementRateLimit() {
+        const key = localStorage.getItem('gemini_api_key');
+        if (key) return true; // user key = unlimited
+        if (!hasSharedKey) return true; // offline fallback = unlimited (no cost)
+
+        const today = new Date().toDateString();
+        let limitData = localStorage.getItem('gemini_usage_limit');
+        try {
+            limitData = limitData ? JSON.parse(limitData) : { date: today, count: 0 };
+        } catch (e) {
+            limitData = { date: today, count: 0 };
+        }
+
+        if (limitData.date !== today) {
+            limitData.date = today;
+            limitData.count = 0;
+        }
+
+        if (limitData.count >= 5) {
+            alert('Bạn đã dùng hết 5 lượt gọi AI miễn phí trong ngày hôm nay.\n\nĐể tiếp tục sử dụng không giới hạn, vui lòng click vào nút "⚙ Cấu hình API Key (Gemini)" ở góc trên bên phải để nhập API Key cá nhân của bạn (hoàn toàn miễn phí!).');
+            return false;
+        }
+
+        limitData.count++;
+        localStorage.setItem('gemini_usage_limit', JSON.stringify(limitData));
+        return true;
+    }
 
     // Modal Events
     openSettingsBtn.addEventListener('click', () => settingsModal.classList.remove('hidden'));
@@ -128,6 +184,11 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- 6. Form Handlers ---
     evaluateForm.addEventListener('submit', async (e) => {
         e.preventDefault();
+        
+        if (!checkAndIncrementRateLimit()) {
+            return;
+        }
+
         const content = document.getElementById('eval-content').value.trim();
         const level = document.getElementById('eval-level').value;
         const dept = document.getElementById('eval-dept').value;
@@ -155,13 +216,19 @@ document.addEventListener('DOMContentLoaded', () => {
                 })
             });
 
-            if (!res.ok) throw new Error(`Status error: ${res.status}`);
+            if (!res.ok) {
+                if (res.status === 429) {
+                    const errData = await res.json();
+                    throw new Error(errData.error || 'Rate limit exceeded');
+                }
+                throw new Error(`Status error: ${res.status}`);
+            }
             const data = await res.json();
             
             renderEvaluation(data);
         } catch (error) {
             console.error('Evaluation failed:', error);
-            alert('Gặp lỗi khi kết nối hệ thống AI. Vui lòng thử lại.');
+            alert(error.message || 'Gặp lỗi khi kết nối hệ thống AI. Vui lòng thử lại.');
             outputEmpty.classList.remove('hidden');
         } finally {
             showLoading(false);
@@ -170,6 +237,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     generateForm.addEventListener('submit', async (e) => {
         e.preventDefault();
+
+        if (!checkAndIncrementRateLimit()) {
+            return;
+        }
+
         const promptVal = document.getElementById('gen-prompt').value.trim();
         const companyVal = document.getElementById('gen-company').value.trim();
         const level = document.getElementById('gen-level').value;
@@ -199,13 +271,19 @@ document.addEventListener('DOMContentLoaded', () => {
                 })
             });
 
-            if (!res.ok) throw new Error(`Status error: ${res.status}`);
+            if (!res.ok) {
+                if (res.status === 429) {
+                    const errData = await res.json();
+                    throw new Error(errData.error || 'Rate limit exceeded');
+                }
+                throw new Error(`Status error: ${res.status}`);
+            }
             const data = await res.json();
 
             renderGeneration(data);
         } catch (error) {
             console.error('Generation failed:', error);
-            alert('Gặp lỗi khi soạn email bằng AI. Vui lòng thử lại.');
+            alert(error.message || 'Gặp lỗi khi soạn email bằng AI. Vui lòng thử lại.');
             outputEmpty.classList.remove('hidden');
         } finally {
             showLoading(false);
