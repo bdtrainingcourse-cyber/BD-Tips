@@ -172,6 +172,11 @@
     box-shadow: 0 0 10px rgba(16, 185, 129, 0.15);
 }
 
+select.form-control option {
+    color: #1e293b !important;
+    background-color: #ffffff !important;
+}
+
 textarea.form-control {
     resize: vertical;
     min-height: 180px;
