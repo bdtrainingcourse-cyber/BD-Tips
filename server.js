@@ -347,6 +347,14 @@ app.post('/api/search', searchHandler);
 const enrichHandler = require('./api/enrich');
 app.post('/api/enrich', enrichHandler);
 
+// 4. AI Chat Bot Assistant
+const chatHandler = require('./api/chat');
+app.post('/api/chat', chatHandler);
+
+// 5. B2B Email Assistant (AI Email Copilot)
+const emailAssistantHandler = require('./api/email-assistant');
+app.use('/api/email-assistant', emailAssistantHandler);
+
 // Start express server
 const serverInstance = app.listen(PORT, () => {
   console.log(`=======================================================`);
