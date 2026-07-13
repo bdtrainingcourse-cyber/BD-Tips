@@ -355,14 +355,38 @@
 
 @media (max-width: 480px) {
     .ai-chat-widget {
-        right: 15px;
-        bottom: 90px;
-        width: calc(100vw - 30px);
-        height: 480px;
+        right: 12px;
+        bottom: 85px;
+        width: calc(100vw - 24px);
+        height: calc(100vh - 110px);
+        max-height: 480px;
+        border-radius: 12px;
     }
     .ai-chat-launcher {
         right: 15px;
         bottom: 15px;
+        width: 54px;
+        height: 54px;
+    }
+    .chat-messages {
+        padding: 12px;
+        gap: 12px;
+    }
+    .chat-bubble {
+        padding: 10px 12px;
+        font-size: 0.85rem;
+    }
+    .chat-input-area {
+        padding: 8px 12px;
+        gap: 8px;
+    }
+    .chat-input-area input {
+        padding: 8px 12px;
+        font-size: 0.85rem;
+    }
+    .chat-send-btn {
+        width: 34px;
+        height: 34px;
     }
 }
 
