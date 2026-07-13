@@ -115,7 +115,7 @@ document.addEventListener('DOMContentLoaded', () => {
         },
         {
             keywords: [/cảm ơn/, /tạm biệt/, /thanks/, /bye/i],
-            reply: "Dạ không có gì ạ! Rất vui được đồng hành cùng bạn. Hy vọng những thông tin của BeeDee hữu ích cho công việc của bạn. Để nâng tầm kỹ năng Sales và chinh phục các hợp đồng B2B triệu đô, đừng quên đăng ký [Khóa Học BD B2B Thực Chiến của Peter Vo](https://www.canva.com/design/DAG6UW_IIsA/1C-o0r4Ggrl5ydV4y-ZjKA/edit) nhé. Chúc bạn một ngày làm việc tràn đầy năng lượng và chốt được nhiều deal lớn! Tạm biệt và hẹn gặp lại bạn!",
+            reply: "Dạ không có gì ạ! Rất vui được đồng hành cùng bạn. Hy vọng những thông tin của BeeDee hữu ích cho công việc của bạn. Chúc bạn một ngày làm việc tràn đầy năng lượng và chốt được nhiều deal lớn! Tạm biệt và hãy hỏi tôi bất kỳ khi nào bạn cần nhé!",
             navTarget: null,
             navLabel: null
         },
@@ -218,8 +218,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         if (!matched) {
-            // Contextual general B2B fallback with Course CTA
-            const fallbackReply = "Tôi chưa tìm thấy từ khóa khớp trực tiếp với câu hỏi của bạn. Hãy thử hỏi các chủ đề cụ thể như: *lương net, thời gian thử việc, cách tìm email PIC, hoặc các bài viết đàm phán B2B* để tôi có thể hỗ trợ và điều hướng bạn tốt nhất.\n\nNgoài ra, bạn cũng có thể tham khảo [Khóa Học BD B2B Thực Chiến của Peter Vo](https://www.canva.com/design/DAG6UW_IIsA/1C-o0r4Ggrl5ydV4y-ZjKA/edit) để được học và huấn luyện 1-1 trực tiếp nhé! Bạn có muốn tìm hiểu thêm về khóa học này không?";
+            const fallbackReply = "Tôi chưa tìm thấy từ khóa khớp trực tiếp với câu hỏi của bạn. Hãy thử hỏi các chủ đề cụ thể như: *lương net, thời gian thử việc, cách tìm email PIC, hoặc các bài viết đàm phán B2B* để tôi có thể hỗ trợ và điều hướng bạn tốt nhất.";
             appendMessage('bot', fallbackReply);
         }
     }
