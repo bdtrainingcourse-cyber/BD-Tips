@@ -32,7 +32,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     <img src="bd_mascot.png" class="chat-bot-avatar" alt="BeeDee">
                     <div class="chat-bubble-content">
                         <div class="chat-bubble">
-                            Xin chào! Tôi là **BeeDee**, trợ lý ảo của **B2B BD Portal**. Tôi có thể giúp bạn giải đáp các kỹ năng bán hàng B2B, tra cứu nhanh Luật Lao động (với 15 tình huống thực tế), hoặc hướng dẫn sử dụng các công cụ tính lương, tìm kiếm email PIC.<br><br>Đặc biệt, để làm chủ quy trình Sales B2B thực chiến, bạn có thể xem thêm [Khóa Học BD B2B Thực Chiến của Peter Vo](https://www.canva.com/design/DAG6UW_IIsA/1C-o0r4Ggrl5ydV4y-ZjKA/edit). Bạn muốn tôi hỗ trợ chủ đề gì hôm nay?
+                            Xin chào! Tôi là <strong>BeeDee</strong>, trợ lý ảo của bạn. Tôi có thể giúp bạn giải đáp các kỹ năng Sales B2B, tra cứu nhanh Luật Lao động (với 15 tình huống thực tế) hoặc hướng dẫn sử dụng các công cụ trên Portal. Hôm nay tôi có thể hỗ trợ gì cho bạn?
                         </div>
                     </div>
                 </div>
