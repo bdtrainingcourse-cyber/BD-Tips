@@ -32,7 +32,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     <img src="bd_mascot.png" class="chat-bot-avatar" alt="BeeDee">
                     <div class="chat-bubble-content">
                         <div class="chat-bubble">
-                            Xin chào! Tôi là **BeeDee**, trợ lý ảo của **B2B BD Portal**. Tôi có thể giúp bạn giải đáp các kỹ năng bán hàng B2B, tra cứu nhanh Luật Lao động, hoặc hướng dẫn sử dụng các công cụ tính lương, tìm kiếm email PIC.
+                            Xin chào! Tôi là **BeeDee**, trợ lý ảo của **B2B BD Portal**. Tôi có thể giúp bạn giải đáp các kỹ năng bán hàng B2B, tra cứu nhanh Luật Lao động (với 15 tình huống thực tế), hoặc hướng dẫn sử dụng các công cụ tính lương, tìm kiếm email PIC.<br><br>Đặc biệt, để làm chủ quy trình Sales B2B thực chiến, bạn có thể xem thêm [Khóa Học BD B2B Thực Chiến của Peter Vo](https://www.canva.com/design/DAG6UW_IIsA/1C-o0r4Ggrl5ydV4y-ZjKA/edit). Bạn muốn tôi hỗ trợ chủ đề gì hôm nay?
                         </div>
                     </div>
                 </div>
@@ -73,39 +73,57 @@ document.addEventListener('DOMContentLoaded', () => {
     const offlineDatabase = [
         {
             keywords: [/lương/, /salary/, /net/, /gross/, /tính tiền/i],
-            reply: "Bạn có thể sử dụng **Trình Quy Đổi Lương Gross - Net** của chúng tôi. Công cụ hỗ trợ tính toán lương thực nhận, bảo hiểm đóng bắt buộc (BHXH 8%, BHYT 1.5%, BHTN 1%) và thuế TNCN lũy tiến từng phần mới nhất.",
+            reply: "Bạn có thể sử dụng **Trình Quy Đổi Lương Gross - Net** của chúng tôi. Công cụ hỗ trợ tính toán lương thực nhận, bảo hiểm đóng bắt buộc và thuế TNCN lũy tiến từng phần mới nhất.\n\n*Gợi ý thêm:* Bạn có muốn tôi hướng dẫn cách tính lương OT làm thêm giờ ngày chủ nhật không?",
             navTarget: "salary",
             navLabel: "⚡ Quy Đổi Lương Ngay"
         },
         {
             keywords: [/thử việc/i],
-            reply: "Theo Điều 25 & 26 Bộ luật Lao động 2019, thời gian thử việc tối đa là **60 ngày** đối với vị trí chuyên môn (như BD/Sales) và mức lương thử việc phải đạt **ít nhất 85%** mức lương chính thức. Nếu công ty im lặng sau thử việc, bạn mặc nhiên trở thành nhân sự chính thức.",
+            reply: "Theo Điều 25 & 26 Bộ luật Lao động 2019, thời gian thử việc tối đa là **60 ngày** đối với vị trí chuyên môn (như BD/Sales) và mức lương thử việc phải đạt **ít nhất 85%** mức lương chính thức. Nếu công ty im lặng sau thử việc, bạn mặc nhiên trở thành nhân sự chính thức.\n\n*Gợi ý thêm:* Hãy tra cứu Tình huống 1 và Tình huống 9 trong Cổng Luật Lao Động để biết thêm quyền lợi thử việc nhé!",
             navTarget: "labor-law",
             navLabel: "⚖️ Xem Chi Tiết Luật Thử Việc"
         },
         {
             keywords: [/nghỉ việc/, /thôi việc/, /báo trước/, /đơn phương chấm dứt/i],
-            reply: "Theo quy định Điều 35 Bộ luật Lao động, thời hạn báo trước bắt buộc khi người lao động nghỉ việc là:\n- Ít nhất **45 ngày** (Hợp đồng không xác định thời hạn).\n- Ít nhất **30 ngày** (Hợp đồng xác định thời hạn 12-36 tháng).\nTự ý nghỉ đột ngột không báo trước sẽ không được hưởng trợ cấp thôi việc và phải bồi thường.",
+            reply: "Theo quy định Điều 35 Bộ luật Lao động, thời hạn báo trước bắt buộc khi người lao động nghỉ việc là:\n- Ít nhất **45 ngày** (Hợp đồng không xác định thời hạn).\n- Ít nhất **30 ngày** (Hợp đồng xác định thời hạn 12-36 tháng).\nTự ý nghỉ đột ngột không báo trước sẽ không được hưởng trợ cấp thôi việc và phải bồi thường.\n\n*Gợi ý thêm:* Bạn có muốn tra cứu trường hợp được đơn phương nghỉ việc ngay lập tức không cần báo trước (như khi bị nợ lương) không?",
             navTarget: "labor-law",
             navLabel: "📋 Xem Luật Nghỉ Việc & Đền Bù"
         },
         {
             keywords: [/luật/, /bảo hiểm/, /sa thải/, /bồi thường/i],
-            reply: "Cổng tra cứu **Luật Lao Động** của chúng tôi cung cấp đầy đủ các quy định về thử việc, thời giờ nghỉ ngơi, báo trước thôi việc và bảo hiểm xã hội, đi kèm các **Case Study** tranh chấp thực tế để bạn đối chiếu.",
+            reply: "Cổng tra cứu **Luật Lao Động** của chúng tôi cung cấp đầy đủ các quy định về thử việc, thời giờ nghỉ ngơi, báo trước thôi việc và bảo hiểm xã hội, đi kèm **15 Case Study** tình huống tranh chấp lao động thực tế có dẫn link nguồn Thư Viện Pháp Luật uy tín để bạn đối chiếu.",
             navTarget: "labor-law",
             navLabel: "⚖️ Mở Cổng Luật Lao Động"
         },
         {
             keywords: [/tìm email/, /finder/, /email/, /linkedin/, /sđt/, /pic/i],
-            reply: "Công cụ **LinkedIn PIC Finder** giúp bạn tìm kiếm thông tin liên hệ (Email, Chức danh) của Người chịu trách nhiệm chính (PIC) thuộc các doanh nghiệp mục tiêu bằng cách quét các bộ lọc nâng cao.",
+            reply: "Công cụ **LinkedIn PIC Finder** giúp bạn tìm kiếm thông tin liên hệ (Email, Chức danh) của Người chịu trách nhiệm chính (PIC) thuộc các doanh nghiệp mục tiêu bằng cách quét các bộ lọc nâng cao.\n\n*Mẹo nhỏ:* Sau khi tìm được email PIC, bạn có thể dùng **Email Assistant** để soạn một bức Cold Email chuẩn chỉ để tiếp cận nhé!",
             navTarget: "finder",
             navLabel: "🔍 Mở Trình Tìm Kiếm PIC"
         },
         {
-            keywords: [/ebook/, /thư viện/, /bài viết/, /sách/, /newsletter/, /linkedin post/i],
-            reply: "Bản tin **Bài Viết BD** (LinkedIn Newsletter) chia sẻ các bài viết, cẩm nang thực chiến chuyên sâu về kỹ năng Sales B2B, đàm phán hợp đồng thương mại và xây dựng thương hiệu cá nhân của Peter Vo.",
+            keywords: [/ebook/, /thư viện/, /bài viết/, /sách/, /cẩm nang/i],
+            reply: "Trang **Thư Viện** của chúng tôi cung cấp các Ebook cẩm nang đàm phán B2B và Social Selling trên LinkedIn viết bởi Peter Vo, cùng hàng loạt bài viết chia sẻ thực tế.\n\n*Gợi ý thêm:* Nếu bạn muốn học chuyên sâu bài bản hơn, đừng bỏ lỡ [Khóa Học BD B2B Thực Chiến của Peter Vo](https://www.canva.com/design/DAG6UW_IIsA/1C-o0r4Ggrl5ydV4y-ZjKA/edit) nhé!",
             navTarget: "library",
             navLabel: "📰 Đọc Bài Viết BD"
+        },
+        {
+            keywords: [/chào/, /hello/, /hi/, /xin chào/i],
+            reply: "Xin chào! Rất vui được hỗ trợ bạn. Tôi có thể giúp bạn tìm hiểu về các tính năng tính lương, tra cứu luật lao động, tìm kiếm email PIC, hay chia sẻ kinh nghiệm BD B2B. Bạn đang quan tâm đến tính năng nào của hệ thống?",
+            navTarget: null,
+            navLabel: null
+        },
+        {
+            keywords: [/cảm ơn/, /tạm biệt/, /thanks/, /bye/i],
+            reply: "Dạ không có gì ạ! Rất vui được đồng hành cùng bạn. Hy vọng những thông tin của BeeDee hữu ích cho công việc của bạn. Để nâng tầm kỹ năng Sales và chinh phục các hợp đồng B2B triệu đô, đừng quên đăng ký [Khóa Học BD B2B Thực Chiến của Peter Vo](https://www.canva.com/design/DAG6UW_IIsA/1C-o0r4Ggrl5ydV4y-ZjKA/edit) nhé. Chúc bạn một ngày làm việc tràn đầy năng lượng và chốt được nhiều deal lớn! Tạm biệt và hẹn gặp lại bạn!",
+            navTarget: null,
+            navLabel: null
+        },
+        {
+            keywords: [/khóa học/, /học bd/, /peter vo/, /canva/i],
+            reply: "Để đồng hành và trang bị đầy đủ bộ kỹ năng từ nghiên cứu thị trường, tiếp cận PIC doanh nghiệp, soạn thảo cold email tỷ lệ mở cao đến thương thuyết ký kết hợp đồng, bạn hãy đăng ký ngay [Khóa Học BD B2B Thực Chiến của Peter Vo](https://www.canva.com/design/DAG6UW_IIsA/1C-o0r4Ggrl5ydV4y-ZjKA/edit). Đây là cẩm nang đúc kết từ nhiều năm kinh nghiệm thực tế của chuyên gia.",
+            navTarget: null,
+            navLabel: null
         }
     ];
 
@@ -188,9 +206,10 @@ document.addEventListener('DOMContentLoaded', () => {
     // Offline logic parsing keywords
     function processLocalFallback(query) {
         let matched = false;
+        const cleanQuery = query.toLowerCase().trim();
 
         for (const rule of offlineDatabase) {
-            const matches = rule.keywords.some(regex => regex.test(query));
+            const matches = rule.keywords.some(regex => regex.test(cleanQuery));
             if (matches) {
                 appendMessage('bot', rule.reply, rule.navTarget, rule.navLabel);
                 matched = true;
@@ -199,7 +218,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         if (!matched) {
-            const fallbackReply = "Tôi chưa tìm thấy từ khóa khớp trực tiếp với câu hỏi của bạn. Hãy thử hỏi các chủ đề cụ thể như: *lương net, thời gian thử việc, cách tìm email PIC, hoặc các bài viết đàm phán B2B* để tôi có thể hỗ trợ và điều hướng bạn tốt nhất.";
+            // Contextual general B2B fallback with Course CTA
+            const fallbackReply = "Tôi chưa tìm thấy từ khóa khớp trực tiếp với câu hỏi của bạn. Hãy thử hỏi các chủ đề cụ thể như: *lương net, thời gian thử việc, cách tìm email PIC, hoặc các bài viết đàm phán B2B* để tôi có thể hỗ trợ và điều hướng bạn tốt nhất.\n\nNgoài ra, bạn cũng có thể tham khảo [Khóa Học BD B2B Thực Chiến của Peter Vo](https://www.canva.com/design/DAG6UW_IIsA/1C-o0r4Ggrl5ydV4y-ZjKA/edit) để được học và huấn luyện 1-1 trực tiếp nhé! Bạn có muốn tìm hiểu thêm về khóa học này không?";
             appendMessage('bot', fallbackReply);
         }
     }
@@ -213,6 +233,9 @@ document.addEventListener('DOMContentLoaded', () => {
             .replace(/&/g, '&amp;')
             .replace(/</g, '&lt;')
             .replace(/>/g, '&gt;');
+
+        // Markdown Links: [text](url) -> <a href="url" target="_blank" rel="noopener noreferrer" class="chat-inline-link">text</a>
+        html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer" class="chat-inline-link">$1</a>');
 
         // Bold
         html = html.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
@@ -259,9 +282,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 'salary': 'salary.html',
                 'labor-law': 'labor-law.html',
                 'finder': 'finder.html',
-                'library': 'https://www.linkedin.com/newsletters/bd-b2b-b%C3%ACnh-d%C3%A2n-h%E1%BB%8Dc-v%E1%BB%A5-7254739965526360064/'
+                'library': 'library.html'
             };
-            bubbleHtml += `<a href="${linkMap[aiNavTarget]}" class="chat-router-btn" ${aiNavTarget === 'library' ? 'target="_blank" rel="noopener noreferrer"' : ''}>${aiNavLabel} &rarr;</a>`;
+            bubbleHtml += `<a href="${linkMap[aiNavTarget]}" class="chat-router-btn" ${aiNavTarget === 'library' ? '' : ''}>${aiNavLabel} &rarr;</a>`;
         }
         bubbleHtml += `</div>`;
 
