@@ -88,25 +88,39 @@
     <div class="modal-backdrop hidden" id="case-modal">
         <div class="modal-card glass-panel case-detail-card">
             <button class="modal-close" id="case-close-btn">&times;</button>
-            <span class="status-badge verified" id="case-badge">Case Study</span>
-            <h2 class="modal-title" id="case-title" style="margin-top: 15px;">Tên tình huống thực tế</h2>
+            <div class="modal-meta">
+                <span class="status-badge verified" id="case-badge">Tình Huống Thực Tế</span>
+                <span class="modal-category-badge" id="case-category">Thử việc</span>
+            </div>
+            <h2 class="modal-title" id="case-title" style="margin-top: 10px; margin-bottom: 20px;">Tên tình huống thực tế</h2>
             
-            <div class="case-section-box scenario-box">
-                <h4>⚠️ Tình huống (Scenario)</h4>
-                <p id="case-scenario">Nội dung tình huống thực tế xảy ra ở doanh nghiệp...</p>
+            <div class="modal-detail-grid">
+                <!-- Mục 1: Quy Định Pháp Lý Hiện Hành -->
+                <div class="modal-section-card regulation-card">
+                    <h3 class="section-title"><span class="section-num">1</span> Qui Định Pháp Lý Hiện Hành</h3>
+                    <div class="section-body">
+                        <div class="legal-article" id="case-article">Điều khoản áp dụng</div>
+                        <p id="case-analysis">Phân tích pháp lý lý thuyết...</p>
+                    </div>
+                </div>
+
+                <!-- Mục 2: Tình Huống Thực Tế -->
+                <div class="modal-section-card situation-card">
+                    <h3 class="section-title"><span class="section-num">2</span> Tình Huống Thực Tế</h3>
+                    <div class="section-body">
+                        <div class="scenario-text">
+                            <strong>Bối cảnh thực tế:</strong>
+                            <p id="case-scenario">Nội dung tình huống thực tế xảy ra ở doanh nghiệp...</p>
+                        </div>
+                        <div class="resolution-steps">
+                            <strong>Hướng giải quyết khuyến nghị:</strong>
+                            <p id="case-resolution">Các bước hành động cụ thể...</p>
+                        </div>
+                    </div>
+                </div>
             </div>
 
-            <div class="case-section-box analysis-box">
-                <h4>⚖️ Phân tích pháp lý (Legal Analysis)</h4>
-                <p id="case-analysis">Phân tích dựa trên các điều khoản của Bộ luật Lao động...</p>
-            </div>
-
-            <div class="case-section-box resolution-box">
-                <h4>💡 Giải pháp cho Nhân viên (Employee Resolution)</h4>
-                <p id="case-resolution">Các bước hành động cụ thể để người lao động bảo vệ quyền lợi...</p>
-            </div>
-
-            <div class="modal-actions">
+            <div class="modal-actions" style="margin-top: 25px; display: flex; justify-content: flex-end;">
                 <button class="btn btn-primary" id="btn-case-close">Đã Hiểu</button>
             </div>
         </div>
