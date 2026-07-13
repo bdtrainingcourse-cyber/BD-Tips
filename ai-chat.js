@@ -43,7 +43,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     <div class="suggestion-chip" data-question="Hết thử việc công ty im lặng thì sao?">Hết thử việc im lặng?</div>
                     <div class="suggestion-chip" data-question="Thời hạn báo trước khi thôi việc?">Thời hạn báo trước thôi việc?</div>
                     <div class="suggestion-chip" data-question="Làm sao tìm email PIC doanh nghiệp?">Tìm email PIC như thế nào?</div>
-                    <div class="suggestion-chip" data-question="Xem cẩm nang đàm phán B2B?">Cẩm nang đàm phán B2B?</div>
+                    <div class="suggestion-chip" data-question="Tìm hiểu Khóa Học BD B2B Thực Chiến?">Khóa Học BD Thực Chiến?</div>
                 </div>
             </div>
 
@@ -102,8 +102,8 @@ document.addEventListener('DOMContentLoaded', () => {
             navLabel: "🔍 Mở Trình Tìm Kiếm PIC"
         },
         {
-            keywords: [/ebook/, /thư viện/, /bài viết/, /sách/, /cẩm nang/i],
-            reply: "Trang **Thư Viện** của chúng tôi cung cấp các Ebook cẩm nang đàm phán B2B và Social Selling trên LinkedIn viết bởi Peter Vo, cùng hàng loạt bài viết chia sẻ thực tế.\n\n*Gợi ý thêm:* Nếu bạn muốn học chuyên sâu bài bản hơn, đừng bỏ lỡ [Khóa Học BD B2B Thực Chiến của Peter Vo](https://www.canva.com/design/DAG6UW_IIsA/1C-o0r4Ggrl5ydV4y-ZjKA/edit) nhé!",
+            keywords: [/ebook/, /thư viện/, /bài viết/, /sách/i],
+            reply: "Trang **Thư Viện** của chúng tôi cung cấp các Ebook chia sẻ thực chiến và Social Selling trên LinkedIn viết bởi Peter Vo, cùng hàng loạt bài viết chia sẻ thực tế.",
             navTarget: "library",
             navLabel: "📰 Đọc Bài Viết BD"
         },
@@ -120,8 +120,8 @@ document.addEventListener('DOMContentLoaded', () => {
             navLabel: null
         },
         {
-            keywords: [/khóa học/, /học bd/, /peter vo/, /canva/i],
-            reply: "Để đồng hành và trang bị đầy đủ bộ kỹ năng từ nghiên cứu thị trường, tiếp cận PIC doanh nghiệp, soạn thảo cold email tỷ lệ mở cao đến thương thuyết ký kết hợp đồng, bạn hãy đăng ký ngay [Khóa Học BD B2B Thực Chiến của Peter Vo](https://www.canva.com/design/DAG6UW_IIsA/1C-o0r4Ggrl5ydV4y-ZjKA/edit). Đây là cẩm nang đúc kết từ nhiều năm kinh nghiệm thực tế của chuyên gia.",
+            keywords: [/khóa học/, /học bd/, /peter vo/, /canva/, /cẩm nang đàm phán/, /cẩm nang/i],
+            reply: "Để đồng hành và trang bị đầy đủ bộ kỹ năng từ nghiên cứu thị trường, tiếp cận PIC doanh nghiệp, soạn thảo cold email tỷ lệ mở cao đến thương thuyết ký kết hợp đồng, bạn hãy đăng ký ngay [Khóa Học BD B2B Thực Chiến của Peter Vo](https://www.canva.com/design/DAG6UW_IIsA/1C-o0r4Ggrl5ydV4y-ZjKA/edit). Đây là khóa học thực tế giúp bạn nâng tầm tư duy (Mindset), bộ kỹ năng (Skillset) và công cụ/AI (Toolset) với sự hỗ trợ đồng hành trọn đời.",
             navTarget: null,
             navLabel: null
         }
