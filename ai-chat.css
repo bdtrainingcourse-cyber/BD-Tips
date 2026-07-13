@@ -365,3 +365,15 @@
         bottom: 15px;
     }
 }
+
+/* Inline Links inside AI Chat Bubble */
+.chat-inline-link {
+    color: #10b981 !important;
+    text-decoration: underline;
+    font-weight: 600;
+    transition: color 0.2s;
+}
+
+.chat-inline-link:hover {
+    color: #34d399 !important;
+}
