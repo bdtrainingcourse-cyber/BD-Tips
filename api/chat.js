@@ -84,27 +84,27 @@ Câu hỏi của người dùng: "${message}"`
       apiRes.on('end', () => {
         try {
           const parsed = JSON.parse(responseBody);
-          let text = '';
           if (parsed.candidates && parsed.candidates[0] && parsed.candidates[0].content && parsed.candidates[0].content.parts[0]) {
-            text = parsed.candidates[0].content.parts[0].text;
+            const text = parsed.candidates[0].content.parts[0].text;
+            res.status(200).json({ reply: text });
           } else {
-            text = 'Xin lỗi, tôi gặp sự cố khi kết nối tới AI. Hãy thử lại.';
+            // Gemini API returned error/quota/empty candidate - trigger fallback
+            res.status(200).json({ useFallback: true, reply: 'AI response candidates empty' });
           }
-          res.status(200).json({ reply: text });
         } catch (e) {
-          res.status(500).json({ error: 'Failed to parse AI response', details: responseBody });
+          res.status(200).json({ useFallback: true, reply: 'AI response parse failed' });
         }
       });
     });
 
     apiReq.on('error', (e) => {
-      res.status(500).json({ error: 'API Request failed', details: e.message });
+      res.status(200).json({ useFallback: true, reply: `AI connection request failed: ${e.message}` });
     });
 
     apiReq.write(postData);
     apiReq.end();
 
   } catch (error) {
-    res.status(500).json({ error: 'Server error', details: error.message });
+    res.status(200).json({ useFallback: true, reply: `AI server request failed: ${error.message}` });
   }
 };
