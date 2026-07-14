@@ -58,6 +58,16 @@ document.addEventListener('DOMContentLoaded', () => {
     const resultTabs = document.querySelectorAll('.result-tab');
     const breakdownContents = document.querySelectorAll('.breakdown-content');
 
+    // Tab pills
+    const directionPills = document.querySelectorAll('#direction-tabs .tab-pill');
+    const calcDirectionInput = document.getElementById('calc-direction');
+
+    // Accordion elements
+    const explanationToggle = document.getElementById('explanation-toggle');
+    const explanationContainer = document.getElementById('explanation-container');
+    const explanationBody = document.getElementById('explanation-body');
+    const copyExplanationBtn = document.getElementById('copy-explanation-btn');
+
     // Chart elements
     const chartNet = document.getElementById('chart-net');
     const chartIns = document.getElementById('chart-ins');
@@ -122,6 +132,15 @@ document.addEventListener('DOMContentLoaded', () => {
         formatNumberInput(insSalaryAmountInput, insTextHelper);
     });
 
+    // Direction Tab Toggle
+    directionPills.forEach(pill => {
+        pill.addEventListener('click', () => {
+            directionPills.forEach(p => p.classList.remove('active'));
+            pill.classList.add('active');
+            calcDirectionInput.value = pill.dataset.value;
+        });
+    });
+
     // Insurance type toggle
     insTypeRadios.forEach(radio => {
         radio.addEventListener('change', (e) => {
@@ -160,6 +179,31 @@ document.addEventListener('DOMContentLoaded', () => {
             
             tab.classList.add('active');
             document.getElementById(tab.dataset.target).classList.add('active-content');
+        });
+    });
+
+    // Accordion Toggle
+    explanationToggle.addEventListener('click', (e) => {
+        if (e.target.closest('#copy-explanation-btn')) return;
+        explanationContainer.classList.toggle('expanded');
+        explanationBody.classList.toggle('hidden');
+    });
+
+    // Copy to Clipboard
+    copyExplanationBtn.addEventListener('click', () => {
+        const textToCopy = explanationBody.innerText || explanationBody.textContent;
+        navigator.clipboard.writeText(textToCopy).then(() => {
+            const originalText = copyExplanationBtn.textContent;
+            copyExplanationBtn.textContent = '✅ Đã sao chép!';
+            copyExplanationBtn.style.background = 'var(--primary-glow)';
+            copyExplanationBtn.style.color = '#ffffff';
+            setTimeout(() => {
+                copyExplanationBtn.textContent = originalText;
+                copyExplanationBtn.style.background = '';
+                copyExplanationBtn.style.color = '';
+            }, 2000);
+        }).catch(err => {
+            console.error('Failed to copy text: ', err);
         });
     });
 
@@ -308,6 +352,105 @@ document.addEventListener('DOMContentLoaded', () => {
         return calculateGrossToNet(gross, insSalaryInput, dependentsCount, region);
     }
 
+    // Mathematical Explanation Builder
+    function generateStepByStepExplanation(res, direction) {
+        let html = '';
+        
+        if (direction === 'gross-to-net') {
+            // STEP 1: Insurances
+            html += `
+                <div class="explanation-step">
+                    <h4>Bước 1: Tính các khoản bảo hiểm bắt buộc (Người lao động đóng)</h4>
+                    <p>Mức lương đóng bảo hiểm cơ sở: <code>${formatNumber(res.gross)}đ</code></p>
+                    <p>Mức trần tính BHXH/BHYT (20 lần lương cơ sở): <code>${formatNumber(BHXH_CAP)}đ</code>.</p>
+                    <ul>
+                         <li>Bảo hiểm xã hội (BHXH): <code>${formatNumber(res.insuranceEmployee.bhxh)}đ</code> (8% mức đóng)</li>
+                         <li>Bảo hiểm y tế (BHYT): <code>${formatNumber(res.insuranceEmployee.bhyt)}đ</code> (1.5% mức đóng)</li>
+                         <li>Bảo hiểm thất nghiệp (BHTN): <code>${formatNumber(res.insuranceEmployee.bhtn)}đ</code> (1% mức đóng, giới hạn trần tối đa theo Vùng)</li>
+                    </ul>
+                    <p><strong>&rArr; Tổng bảo hiểm đóng: <code>${formatNumber(res.insuranceEmployee.total)}đ</code></strong></p>
+                </div>
+            `;
+            
+            // STEP 2: Income before tax
+            html += `
+                <div class="explanation-step">
+                    <h4>Bước 2: Xác định Thu nhập trước thuế</h4>
+                    <p>TNTT = Lương Gross &minus; Bảo hiểm đóng</p>
+                    <p><code>${formatNumber(res.gross)}đ &minus; ${formatNumber(res.insuranceEmployee.total)}đ = ${formatNumber(res.incomeBeforeTax)}đ</code></p>
+                </div>
+            `;
+            
+            // STEP 3: Deductions
+            html += `
+                <div class="explanation-step">
+                    <h4>Bước 3: Xác định Các khoản giảm trừ gia cảnh</h4>
+                    <ul>
+                         <li>Giảm trừ bản thân: <code>${formatNumber(res.deductSelf)}đ</code> (Định mức quy định của luật thuế TNCN)</li>
+                         <li>Giảm trừ người phụ thuộc: <code>${formatNumber(res.deductDependents)}đ</code> (${formatNumber(DEDUCT_DEPENDENT)}đ &times; ${parseInt(dependentsInput.value)} người)</li>
+                    </ul>
+                    <p><strong>&rArr; Tổng giảm trừ gia cảnh: <code>${formatNumber(res.deductSelf + res.deductDependents)}đ</code></strong></p>
+                </div>
+            `;
+            
+            // STEP 4: Taxable Income
+            html += `
+                <div class="explanation-step">
+                    <h4>Bước 4: Tính Thu nhập tính thuế (TNTT)</h4>
+                    <p>Thu nhập tính thuế = Thu nhập trước thuế &minus; Tổng giảm trừ gia cảnh (nếu âm mặc định = 0)</p>
+                    <p><code>${formatNumber(res.incomeBeforeTax)}đ &minus; ${formatNumber(res.deductSelf + res.deductDependents)}đ = ${formatNumber(res.taxableIncome)}đ</code></p>
+                </div>
+            `;
+            
+            // STEP 5: PIT Brackets
+            html += `
+                <div class="explanation-step">
+                    <h4>Bước 5: Tính Thuế thu nhập cá nhân (TNCN)</h4>
+            `;
+            if (res.pit === 0) {
+                html += `<p>Thu nhập tính thuế bằng 0đ, do đó <strong>Thuế TNCN phải nộp là: <code>0đ</code></strong></p>`;
+            } else {
+                html += `<p>Áp dụng biểu thuế lũy tiến từng phần trên mức thu nhập tính thuế <code>${formatNumber(res.taxableIncome)}đ</code>:</p><ul>`;
+                res.pitBrackets.forEach((b, idx) => {
+                    if (b.amountInBracket > 0) {
+                        html += `<li>Bậc ${idx + 1} (${b.rate * 100}%): <code>${formatNumber(b.amountInBracket)}đ &times; ${b.rate * 100}% = ${formatNumber(b.taxInBracket)}đ</code></li>`;
+                    }
+                });
+                html += `</ul>`;
+                html += `<p><strong>&rArr; Tổng thuế TNCN phải đóng: <code>${formatNumber(res.pit)}đ</code></strong></p>`;
+            }
+            html += `</div>`;
+            
+            // STEP 6: Net salary
+            html += `
+                <div class="explanation-step">
+                    <h4>Bước 6: Xác định lương Net nhận về tài khoản</h4>
+                    <p>Lương Net = Thu nhập trước thuế &minus; Thuế TNCN</p>
+                    <p><code>${formatNumber(res.incomeBeforeTax)}đ &minus; ${formatNumber(res.pit)}đ = ${formatNumber(res.net)}đ</code></p>
+                    <p>Quy đổi thành công: <strong>Thực nhận Net: ${formatNumber(res.net)}đ</strong></p>
+                </div>
+            `;
+        } else {
+            html += `
+                <div class="explanation-step">
+                    <h4>Quy đổi ngược Net &rarr; Gross</h4>
+                    <p>Từ mức lương Net mong muốn nhận về: <code>${formatNumber(res.net)}đ</code></p>
+                    <p>Hệ thống tự động sử dụng thuật toán tìm kiếm nhị phân tối ưu để quy đổi ra mức Gross trước thuế và bảo hiểm:</p>
+                    <ul>
+                         <li>Mức Gross tương ứng: <code>${formatNumber(res.gross)}đ</code></li>
+                         <li>Bảo hiểm xã hội (NLĐ đóng 8%): <code>${formatNumber(res.insuranceEmployee.bhxh)}đ</code></li>
+                         <li>Bảo hiểm y tế (NLĐ đóng 1.5%): <code>${formatNumber(res.insuranceEmployee.bhyt)}đ</code></li>
+                         <li>Bảo hiểm thất nghiệp (NLĐ đóng 1%): <code>${formatNumber(res.insuranceEmployee.bhtn)}đ</code></li>
+                         <li>Thuế TNCN lũy tiến phải đóng: <code>${formatNumber(res.pit)}đ</code></li>
+                    </ul>
+                    <p>Kiểm chứng tính toán xuôi: <code>Gross (${formatNumber(res.gross)}đ) &minus; Bảo hiểm (${formatNumber(res.insuranceEmployee.total)}đ) &minus; Thuế TNCN (${formatNumber(res.pit)}đ) = Net (${formatNumber(res.net)}đ)</code> (Chính xác 100%).</p>
+                </div>
+            `;
+        }
+        
+        return html;
+    }
+
     // --- UI Update Functions ---
     function updateUI(res) {
         // Unhide the panel
@@ -341,6 +484,10 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('nsd-bhtn').textContent = formatNumber(res.insuranceEmployer.bhtn);
         document.getElementById('nsd-total-cost').textContent = formatNumber(res.employerCost);
 
+        // Update Step-by-Step Explanation Accordion
+        const direction = calcDirectionInput.value;
+        explanationBody.innerHTML = generateStepByStepExplanation(res, direction);
+
         // Render PIT brackets details
         renderPITBracketsUI(res.pitBrackets);
 
@@ -365,16 +512,23 @@ document.addEventListener('DOMContentLoaded', () => {
         brackets.forEach((b, idx) => {
             const div = document.createElement('div');
             div.className = 'bracket-item';
+            
+            let progressPercent = 0;
             if (b.amountInBracket > 0) {
                 div.className += ' active-bracket';
+                progressPercent = (b.amountInBracket / b.range) * 100;
+                if (b.limit === Infinity) {
+                    progressPercent = 100;
+                }
             }
 
             div.innerHTML = `
                 <span class="bracket-label">${labelMap[idx]}</span>
-                <div style="text-align: right;">
+                <div style="text-align: right; z-index: 2; position: relative;">
                     <div class="bracket-val">${formatNumber(b.taxInBracket)}đ</div>
                     ${b.amountInBracket > 0 ? `<small style="font-size:0.75rem; color:var(--text-muted);">Thu nhập tính thuế: ${formatNumber(b.amountInBracket)}đ</small>` : ''}
                 </div>
+                <div class="bracket-progress-bar" style="width: ${progressPercent.toFixed(1)}%"></div>
             `;
             container.appendChild(div);
         });
@@ -391,7 +545,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const taxPercent = total > 0 ? (tax / total) * 100 : 0;
 
         // Circular dash arrays calculation
-        // Total circumference is 100.
         chartNet.setAttribute('stroke-dasharray', `${netPercent.toFixed(2)}, 100`);
         
         chartIns.setAttribute('stroke-dasharray', `${insPercent.toFixed(2)}, 100`);
@@ -411,7 +564,7 @@ document.addEventListener('DOMContentLoaded', () => {
     salaryForm.addEventListener('submit', (e) => {
         e.preventDefault();
 
-        const direction = document.querySelector('input[name="calc-direction"]:checked').value;
+        const direction = calcDirectionInput.value;
         const amount = parseNumber(salaryAmountInput.value);
         if (amount <= 0) return;
 
