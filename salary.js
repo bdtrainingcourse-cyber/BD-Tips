@@ -60,6 +60,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const directionPills = document.querySelectorAll('#direction-tabs .tab-pill');
     const calcDirectionInput = document.getElementById('calc-direction');
 
+    // Main view tabs
+    const viewTabs = document.querySelectorAll('.view-tab');
+    const viewContainers = document.querySelectorAll('.view-container');
+
     // Accordion elements
     const explanationToggle = document.getElementById('explanation-toggle');
     const explanationContainer = document.getElementById('explanation-container');
@@ -222,6 +226,18 @@ document.addEventListener('DOMContentLoaded', () => {
                 item.classList.add('active');
                 icon.textContent = '−';
             }
+        });
+    });
+
+    // Main View Tab Switcher
+    viewTabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+            viewTabs.forEach(t => t.classList.remove('active'));
+            viewContainers.forEach(c => c.classList.add('hidden'));
+            
+            tab.classList.add('active');
+            const target = document.getElementById(tab.dataset.tab);
+            target.classList.remove('hidden');
         });
     });
 
@@ -602,4 +618,193 @@ document.addEventListener('DOMContentLoaded', () => {
 
         updateUI(result);
     });
+
+    // ==========================================
+    // --- B2B Salary Lookup Intelligence Section ---
+    // ==========================================
+
+    function querySalaryDatabase(role, exp, sector) {
+        const baseRoles = {
+            'account-executive': {
+                title: 'Account Executive (AE)',
+                base_median: 25000000,
+                base_min: 18000000,
+                base_max: 40000000,
+                ratio: '60/40',
+                commission: '4-6% giá trị hợp đồng (ACV)',
+                quota: '300.000.000đ / tháng'
+            },
+            'business-development': {
+                title: 'Business Development Exec/Manager (BDM)',
+                base_median: 28000000,
+                base_min: 20000000,
+                base_max: 45000000,
+                ratio: '60/40',
+                commission: '3-5% doanh thu hợp đồng mới',
+                quota: '350.000.000đ / tháng'
+            },
+            'sdr-bdr': {
+                title: 'Sales/Business Development Representative (SDR/BDR)',
+                base_median: 15000000,
+                base_min: 10000000,
+                base_max: 22000000,
+                ratio: '70/30',
+                commission: '200.000đ - 500.000đ / mỗi cuộc hẹn thành công',
+                quota: '15 SQLs (Lịch hẹn chất lượng) / tháng'
+            },
+            'customer-success': {
+                title: 'Customer Success Manager (CSM)',
+                base_median: 22000000,
+                base_min: 16000000,
+                base_max: 32000000,
+                ratio: '80/20',
+                commission: '2-4% giá trị gia hạn hợp đồng (Renewal)',
+                quota: '90% tỷ lệ giữ chân khách hàng (Net Retention Rate)'
+            },
+            'pre-sales': {
+                title: 'Pre-sales / Solution Consultant',
+                base_median: 30000000,
+                base_min: 22000000,
+                base_max: 50000000,
+                ratio: '80/20',
+                commission: '0.5% - 1% giá trị hợp đồng hỗ trợ kỹ thuật',
+                quota: 'Hỗ trợ kỹ thuật chốt thắng 5 deals lớn / quý'
+            },
+            'partnerships': {
+                title: 'Strategic Alliance / Partnerships Manager',
+                base_median: 32000000,
+                base_min: 24000000,
+                base_max: 55000000,
+                ratio: '70/30',
+                commission: '5% - 8% doanh thu từ kênh đối tác liên kết',
+                quota: 'Phát triển mới 5 đối tác tích hợp sản phẩm / quý'
+            }
+        };
+
+        const expMultipliers = {
+            'junior': { base: 0.65 },
+            'mid': { base: 1.0 },
+            'senior': { base: 1.45 },
+            'director': { base: 2.1 }
+        };
+
+        const sectorMultipliers = {
+            'saas-tech': 1.1,
+            'logistics': 0.9,
+            'agency': 0.85,
+            'finance': 1.05,
+            'manufacturing': 0.95
+        };
+
+        const baseData = baseRoles[role];
+        const expMult = expMultipliers[exp];
+        const sectorMult = sectorMultipliers[sector];
+
+        const finalBaseMedian = baseData.base_median * expMult.base * sectorMult;
+        const finalBaseMin = baseData.base_min * expMult.base * sectorMult;
+        const finalBaseMax = baseData.base_max * expMult.base * sectorMult;
+
+        const parts = baseData.ratio.split('/');
+        const baseRatio = parseInt(parts[0]) / 100;
+        const finalOte = finalBaseMedian / baseRatio;
+
+        return {
+            title: baseData.title,
+            baseMedian: finalBaseMedian,
+            baseMin: finalBaseMin,
+            baseMax: finalBaseMax,
+            ratio: baseData.ratio,
+            commission: baseData.commission,
+            quota: exp === 'junior' ? 'Thỏa thuận / Không áp quota cứng' : baseData.quota,
+            ote: finalOte
+        };
+    }
+
+    const lookupForm = document.getElementById('lookup-form');
+    const lookupResultsPanel = document.getElementById('lookup-results-panel');
+    const btnSyncToCalc = document.getElementById('btn-sync-to-calc');
+
+    let lastSearchedSalary = 0;
+
+    if (lookupForm) {
+        lookupForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+
+            const role = document.getElementById('lookup-role').value;
+            const exp = document.getElementById('lookup-exp').value;
+            const sector = document.getElementById('lookup-sector').value;
+
+            const data = querySalaryDatabase(role, exp, sector);
+            lastSearchedSalary = data.baseMedian;
+
+            // Unhide details panel
+            lookupResultsPanel.classList.remove('hidden');
+
+            // Update UI Elements
+            document.getElementById('lookup-median-val').textContent = formatNumber(data.baseMedian) + ' VND';
+            document.getElementById('lookup-split-val').textContent = data.ratio + ' (Cố định/Biến động)';
+
+            // Percentiles labels
+            document.getElementById('p-min').textContent = spellVietnameseNumber(data.baseMin);
+            document.getElementById('p-median').textContent = spellVietnameseNumber(data.baseMedian);
+            document.getElementById('p-max').textContent = spellVietnameseNumber(data.baseMax);
+
+            // Adjust percentile progress bar fill width
+            const fillElement = document.getElementById('percentile-bar-fill');
+            fillElement.style.width = '50%';
+
+            // Quota table
+            document.getElementById('det-quota').textContent = data.quota;
+            document.getElementById('det-comm-rate').textContent = data.commission;
+            document.getElementById('det-ratio').textContent = data.ratio + ' (Cố định/Biến động)';
+            document.getElementById('det-ote').textContent = formatNumber(data.ote) + ' VND / tháng';
+
+            // Custom Advice Card based on exp level
+            const adviceContainer = document.getElementById('det-advice');
+            let adviceHtml = '';
+            if (exp === 'junior') {
+                adviceHtml = `
+                    Mức lương cho cấp độ Junior ở vị trí <strong>${data.title}</strong> thường tập trung xây dựng năng lực nền tảng. 
+                    <br><br>
+                    💡 <strong>Khuyến nghị:</strong> Bạn nên tập trung đàm phán cơ hội đào tạo thực chiến và lộ trình thăng tiến rõ ràng. Tham gia <a href="https://www.canva.com/design/DAG6UW_IIsA/1C-o0r4Ggrl5ydV4y-ZjKA/edit" target="_blank" rel="noopener noreferrer">Khóa học B2B BD Thực Chiến</a> để rút ngắn 2 năm thử sai, trang bị tư duy đàm phán hợp đồng lớn và bứt phá nhanh lên cấp bậc Mid-level với mức lương nhân đôi.
+                `;
+            } else if (exp === 'mid') {
+                adviceHtml = `
+                    Ở cấp bậc Mid-level cho vị trí <strong>${data.title}</strong>, bạn đã có năng lực độc lập tác chiến và chịu quota cá nhân.
+                    <br><br>
+                    💡 <strong>Khuyến nghị:</strong> Hãy đàm phán nâng tỷ lệ hoa hồng (Commission rate) thay vì chỉ nhìn vào lương cứng cơ bản. Sở hữu kỹ năng phân tích chân dung khách hàng tổ chức và viết Cold Email chuyên nghiệp tại <a href="https://www.canva.com/design/DAG6UW_IIsA/1C-o0r4Ggrl5ydV4y-ZjKA/edit" target="_blank" rel="noopener noreferrer">Khóa học B2B BD Thực Chiến</a> sẽ giúp bạn liên tục vượt chỉ tiêu (Overachieving Quota) và nhận thưởng accelerators.
+                `;
+            } else {
+                adviceHtml = `
+                    Với cấp bậc Senior/Director cho vị trí <strong>${data.title}</strong>, thù lao OTE của bạn chịu ảnh hưởng trực tiếp bởi doanh thu toàn bộ phận hoặc giá trị các hợp đồng Enterprise lớn.
+                    <br><br>
+                    💡 <strong>Khuyến nghị:</strong> Đảm bảo cấu trúc gói thù lao có thưởng theo quý/năm và các điều khoản thưởng vượt chỉ tiêu (Accelerators) hấp dẫn. Để đàm phán sắc bén các gói hợp đồng lớn triệu đô và tối ưu hóa chi phí vận hành phòng ban, hãy tham khảo các tình huống thực chiến tại <a href="https://www.canva.com/design/DAG6UW_IIsA/1C-o0r4Ggrl5ydV4y-ZjKA/edit" target="_blank" rel="noopener noreferrer">Khóa học B2B BD Thực Chiến</a>.
+                `;
+            }
+            adviceContainer.innerHTML = adviceHtml;
+
+            // Scroll to results panel smoothly
+            lookupResultsPanel.scrollIntoView({ behavior: 'smooth' });
+        });
+    }
+
+    if (btnSyncToCalc) {
+        btnSyncToCalc.addEventListener('click', () => {
+            if (lastSearchedSalary <= 0) return;
+            
+            // 1. Populate salary input in calculator
+            salaryAmountInput.value = lastSearchedSalary.toLocaleString('vi-VN');
+            formatNumberInput(salaryAmountInput, salaryTextHelper);
+
+            // 2. Switch Tab to Calculator
+            viewTabs.forEach(t => t.classList.remove('active'));
+            viewContainers.forEach(c => c.classList.add('hidden'));
+            
+            document.getElementById('view-tab-calc').classList.add('active');
+            document.getElementById('calc-view').classList.remove('hidden');
+
+            // 3. Trigger submit event on calculator form
+            salaryForm.dispatchEvent(new Event('submit'));
+        });
+    }
 });
