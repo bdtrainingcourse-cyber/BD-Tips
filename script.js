@@ -1020,7 +1020,7 @@ document.addEventListener('DOMContentLoaded', () => {
             registered: 480,
             online: 12,
             host: 'Vietnam SaaS Alliance',
-            link: 'https://canva.link/plgyedwezllyrjr'
+            link: 'https://www.topcv.vn/'
         },
         {
             id: 'evt-2',
@@ -1033,7 +1033,7 @@ document.addEventListener('DOMContentLoaded', () => {
             registered: 320,
             online: 8,
             host: 'Vietnam Logistics Association',
-            link: 'https://canva.link/plgyedwezllyrjr'
+            link: 'https://vla.com.vn/'
         },
         {
             id: 'evt-3',
@@ -1046,7 +1046,7 @@ document.addEventListener('DOMContentLoaded', () => {
             registered: 250,
             online: 5,
             host: 'B2B Marketing Hub',
-            link: 'https://canva.link/plgyedwezllyrjr'
+            link: 'https://vinalink.com/'
         },
         {
             id: 'evt-4',
@@ -1059,7 +1059,7 @@ document.addEventListener('DOMContentLoaded', () => {
             registered: 550,
             online: 18,
             host: 'Fintech Vietnam Forum',
-            link: 'https://canva.link/plgyedwezllyrjr'
+            link: 'https://vietnamfintech.vn/'
         },
         {
             id: 'evt-5',
@@ -1072,7 +1072,7 @@ document.addEventListener('DOMContentLoaded', () => {
             registered: 720,
             online: 22,
             host: 'VCCI Vietnam',
-            link: 'https://canva.link/plgyedwezllyrjr'
+            link: 'https://secc.com.vn/'
         },
         {
             id: 'evt-6',
@@ -1085,7 +1085,7 @@ document.addEventListener('DOMContentLoaded', () => {
             registered: 150,
             online: 6,
             host: 'Peter Vo & Partners',
-            link: 'https://canva.link/plgyedwezllyrjr'
+            link: 'https://www.linkedin.com/'
         }
     ];
 
