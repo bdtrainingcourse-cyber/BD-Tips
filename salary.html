@@ -42,18 +42,13 @@
             <div class="glass-panel calculator-panel">
                 <h2 class="panel-title">🧮 Trình Quy Đổi Lương</h2>
                 <form id="salary-form" class="form-grid">
-                    <!-- Conversion Direction -->
+                    <!-- Conversion Direction Tabs -->
                     <div class="form-group">
                         <label>Phương thức quy đổi</label>
-                        <div class="radio-toggle-group">
-                            <label class="radio-label">
-                                <input type="radio" name="calc-direction" value="gross-to-net" checked>
-                                <span class="radio-button-custom">Gross &rarr; Net</span>
-                            </label>
-                            <label class="radio-label">
-                                <input type="radio" name="calc-direction" value="net-to-gross">
-                                <span class="radio-button-custom">Net &rarr; Gross</span>
-                            </label>
+                        <div class="salary-tab-pills" id="direction-tabs">
+                            <button type="button" class="tab-pill active" data-value="gross-to-net">Gross &rarr; Net</button>
+                            <button type="button" class="tab-pill" data-value="net-to-gross">Net &rarr; Gross</button>
+                            <input type="hidden" id="calc-direction" value="gross-to-net">
                         </div>
                     </div>
 
@@ -308,6 +303,21 @@
                     </tbody>
                 </table>
             </div>
+            
+            <!-- Step-by-Step Explanation Accordion -->
+            <div class="explanation-container" id="explanation-container">
+                <div class="explanation-header" id="explanation-toggle">
+                    <span class="explanation-title">📖 Diễn giải chi tiết cách tính toán</span>
+                    <div style="display: flex; align-items: center; gap: 15px;">
+                        <button type="button" class="copy-explanation-btn" id="copy-explanation-btn">📋 Sao chép</button>
+                        <span class="explanation-arrow" id="explanation-arrow">&darr;</span>
+                    </div>
+                </div>
+                <div class="explanation-body hidden" id="explanation-body">
+                    <!-- Populated dynamically by JS -->
+                </div>
+            </div>
+        </div>
         <!-- Course CTA Bottom Banner -->
         <div class="course-bottom-banner">
             <div class="course-bottom-img-container">
