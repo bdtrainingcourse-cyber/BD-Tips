@@ -1006,4 +1006,201 @@ document.addEventListener('DOMContentLoaded', () => {
         resultTitle.style.color = result.color;
         resultText.textContent = result.text;
     }
+
+    // --- B2B Events Data Model ---
+    const b2bEvents = [
+        {
+            id: 'evt-1',
+            title: 'Vietnam SaaS Summit 2026',
+            sector: 'tech',
+            sectorLabel: 'Công nghệ / SaaS',
+            badgeClass: 'badge-tech',
+            date: '25/08/2026 - 08:30',
+            location: 'GEM Center, Quận 1, TP.HCM',
+            registered: 480,
+            online: 12,
+            host: 'Vietnam SaaS Alliance',
+            link: 'https://canva.link/plgyedwezllyrjr'
+        },
+        {
+            id: 'evt-2',
+            title: 'B2B Logistics & Supply Chain Forum',
+            sector: 'logistics',
+            sectorLabel: 'Vận tải / Logistics',
+            badgeClass: 'badge-logistics',
+            date: '10/09/2026 - 13:30',
+            location: 'Lotte Hotel, Ba Đình, Hà Nội',
+            registered: 320,
+            online: 8,
+            host: 'Vietnam Logistics Association',
+            link: 'https://canva.link/plgyedwezllyrjr'
+        },
+        {
+            id: 'evt-3',
+            title: 'Digital Marketing B2B Agency Show',
+            sector: 'agency',
+            sectorLabel: 'Agency / Marketing',
+            badgeClass: 'badge-agency',
+            date: '18/09/2026 - 09:00',
+            location: 'Adora Center, Tân Bình, TP.HCM',
+            registered: 250,
+            online: 5,
+            host: 'B2B Marketing Hub',
+            link: 'https://canva.link/plgyedwezllyrjr'
+        },
+        {
+            id: 'evt-4',
+            title: 'Vietnam FinTech Trade Conference',
+            sector: 'finance',
+            sectorLabel: 'Tài chính / FinTech',
+            badgeClass: 'badge-finance',
+            date: '05/10/2026 - 08:00',
+            location: 'InterContinental, Tây Hồ, Hà Nội',
+            registered: 550,
+            online: 18,
+            host: 'Fintech Vietnam Forum',
+            link: 'https://canva.link/plgyedwezllyrjr'
+        },
+        {
+            id: 'evt-5',
+            title: 'Smart Manufacturing & Industrial B2B Expo',
+            sector: 'manufacturing',
+            sectorLabel: 'Sản xuất / Công nghiệp',
+            badgeClass: 'badge-manufacturing',
+            date: '22/10/2026 - 09:00',
+            location: 'SECC, Quận 7, TP.HCM',
+            registered: 720,
+            online: 22,
+            host: 'VCCI Vietnam',
+            link: 'https://canva.link/plgyedwezllyrjr'
+        },
+        {
+            id: 'evt-6',
+            title: 'B2B Partnership & Channel Sales Masterclass',
+            sector: 'tech',
+            sectorLabel: 'Công nghệ / Partnerships',
+            badgeClass: 'badge-tech',
+            date: '12/11/2026 - 14:00',
+            location: 'Khách sạn Caravelle, Quận 1, TP.HCM',
+            registered: 150,
+            online: 6,
+            host: 'Peter Vo & Partners',
+            link: 'https://canva.link/plgyedwezllyrjr'
+        }
+    ];
+
+    const eventsGrid = document.getElementById('events-grid');
+    const eventSearch = document.getElementById('event-search');
+    const eventFilter = document.getElementById('event-filter');
+    const liveUpdateTimer = document.getElementById('live-update-timer');
+
+    function renderEvents() {
+        if (!eventsGrid) return;
+
+        const searchQuery = eventSearch.value.toLowerCase().trim();
+        const filterQuery = eventFilter.value;
+
+        const filtered = b2bEvents.filter(evt => {
+            const matchesSearch = evt.title.toLowerCase().includes(searchQuery) ||
+                                 evt.location.toLowerCase().includes(searchQuery) ||
+                                 evt.host.toLowerCase().includes(searchQuery);
+            const matchesFilter = filterQuery === 'all' || evt.sector === filterQuery;
+            return matchesSearch && matchesFilter;
+        });
+
+        if (filtered.length === 0) {
+            eventsGrid.innerHTML = `
+                <div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: var(--text-muted);">
+                    📭 Không tìm thấy sự kiện B2B nào phù hợp với bộ lọc của bạn.
+                </div>
+            `;
+            return;
+        }
+
+        eventsGrid.innerHTML = filtered.map(evt => `
+            <div class="event-card glass-effect" id="${evt.id}">
+                <div class="event-header">
+                    <span class="event-badge ${evt.badgeClass}">${evt.sectorLabel}</span>
+                    <span class="event-status ${evt.online > 0 ? 'live' : ''}">
+                        ${evt.online > 0 ? '<span class="live-dot" style="display:inline-block; width:6px; height:6px; background:#ef4444; border-radius:50%; box-shadow:0 0 6px #ef4444; animation:pulse 1.5s infinite;"></span> ' + evt.online + ' Online' : 'Đăng ký mở'}
+                    </span>
+                </div>
+                <h3 class="event-title">${evt.title}</h3>
+                <div class="event-meta">
+                    <div class="meta-item">
+                        <span>📅</span>
+                        <span>${evt.date}</span>
+                    </div>
+                    <div class="meta-item">
+                        <span>📍</span>
+                        <span>${evt.location}</span>
+                    </div>
+                    <div class="meta-item" style="font-size: 0.8rem; color: var(--accent-glow);">
+                        <span>🏢 Host:</span>
+                        <span>${evt.host}</span>
+                    </div>
+                </div>
+                <div class="event-live-stats">
+                    <div class="attendees-count" id="count-${evt.id}">
+                        👥 <strong>${evt.registered}</strong> Đã đăng ký
+                    </div>
+                    <a href="${evt.link}" target="_blank" rel="noopener noreferrer" class="event-register-btn">
+                        Đăng Ký &rarr;
+                    </a>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    if (eventSearch) eventSearch.addEventListener('input', renderEvents);
+    if (eventFilter) eventFilter.addEventListener('change', renderEvents);
+
+    // Initial render
+    renderEvents();
+
+    // --- Real-time updates simulation ---
+    let timerCountdown = 15;
+    if (liveUpdateTimer) {
+        setInterval(() => {
+            timerCountdown--;
+            if (timerCountdown <= 0) {
+                timerCountdown = 15;
+                
+                // Simulate new attendee registrations
+                b2bEvents.forEach(evt => {
+                    if (Math.random() < 0.6) {
+                        const increment = Math.floor(Math.random() * 3) + 1;
+                        evt.registered += increment;
+                        
+                        evt.online = Math.floor(Math.random() * 15) + 3;
+
+                        const countEl = document.getElementById(`count-${evt.id}`);
+                        if (countEl) {
+                            countEl.classList.add('pulse-glow');
+                            const strongEl = countEl.querySelector('strong');
+                            if (strongEl) {
+                                strongEl.textContent = evt.registered;
+                            }
+                            setTimeout(() => {
+                                countEl.classList.remove('pulse-glow');
+                            }, 1200);
+                        }
+                    }
+                });
+
+                // Update online status in cards
+                b2bEvents.forEach(evt => {
+                    const card = document.getElementById(evt.id);
+                    if (card) {
+                        const statusEl = card.querySelector('.event-status');
+                        if (statusEl) {
+                            statusEl.innerHTML = `${evt.online > 0 ? '<span class="live-dot" style="display:inline-block; width:6px; height:6px; background:#ef4444; border-radius:50%; box-shadow:0 0 6px #ef4444; animation:pulse 1.5s infinite;"></span> ' + evt.online + ' Online' : 'Đăng ký mở'}`;
+                            statusEl.className = `event-status ${evt.online > 0 ? 'live' : ''}`;
+                        }
+                    }
+                });
+            }
+            liveUpdateTimer.textContent = `Tự động cập nhật: ${timerCountdown}s`;
+        }, 1000);
+    }
 });
