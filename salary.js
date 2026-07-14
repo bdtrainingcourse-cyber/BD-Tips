@@ -766,19 +766,19 @@ document.addEventListener('DOMContentLoaded', () => {
                 adviceHtml = `
                     Mức lương cho cấp độ Junior ở vị trí <strong>${data.title}</strong> thường tập trung xây dựng năng lực nền tảng. 
                     <br><br>
-                    💡 <strong>Khuyến nghị:</strong> Bạn nên tập trung đàm phán cơ hội đào tạo thực chiến và lộ trình thăng tiến rõ ràng. Tham gia <a href="https://www.canva.com/design/DAG6UW_IIsA/1C-o0r4Ggrl5ydV4y-ZjKA/edit" target="_blank" rel="noopener noreferrer">Khóa học B2B BD Thực Chiến</a> để rút ngắn 2 năm thử sai, trang bị tư duy đàm phán hợp đồng lớn và bứt phá nhanh lên cấp bậc Mid-level với mức lương nhân đôi.
+                    💡 <strong>Khuyến nghị:</strong> Bạn nên tập trung đàm phán cơ hội đào tạo thực chiến và lộ trình thăng tiến rõ ràng. Tham gia <a href="https://canva.link/plgyedwezllyrjr" target="_blank" rel="noopener noreferrer">Khóa học B2B BD Thực Chiến</a> để rút ngắn 2 năm thử sai, trang bị tư duy đàm phán hợp đồng lớn và bứt phá nhanh lên cấp bậc Mid-level với mức lương nhân đôi.
                 `;
             } else if (exp === 'mid') {
                 adviceHtml = `
                     Ở cấp bậc Mid-level cho vị trí <strong>${data.title}</strong>, bạn đã có năng lực độc lập tác chiến và chịu quota cá nhân.
                     <br><br>
-                    💡 <strong>Khuyến nghị:</strong> Hãy đàm phán nâng tỷ lệ hoa hồng (Commission rate) thay vì chỉ nhìn vào lương cứng cơ bản. Sở hữu kỹ năng phân tích chân dung khách hàng tổ chức và viết Cold Email chuyên nghiệp tại <a href="https://www.canva.com/design/DAG6UW_IIsA/1C-o0r4Ggrl5ydV4y-ZjKA/edit" target="_blank" rel="noopener noreferrer">Khóa học B2B BD Thực Chiến</a> sẽ giúp bạn liên tục vượt chỉ tiêu (Overachieving Quota) và nhận thưởng accelerators.
+                    💡 <strong>Khuyến nghị:</strong> Hãy đàm phán nâng tỷ lệ hoa hồng (Commission rate) thay vì chỉ nhìn vào lương cứng cơ bản. Sở hữu kỹ năng phân tích chân dung khách hàng tổ chức và viết Cold Email chuyên nghiệp tại <a href="https://canva.link/plgyedwezllyrjr" target="_blank" rel="noopener noreferrer">Khóa học B2B BD Thực Chiến</a> sẽ giúp bạn liên tục vượt chỉ tiêu (Overachieving Quota) và nhận thưởng accelerators.
                 `;
             } else {
                 adviceHtml = `
                     Với cấp bậc Senior/Director cho vị trí <strong>${data.title}</strong>, thù lao OTE của bạn chịu ảnh hưởng trực tiếp bởi doanh thu toàn bộ phận hoặc giá trị các hợp đồng Enterprise lớn.
                     <br><br>
-                    💡 <strong>Khuyến nghị:</strong> Đảm bảo cấu trúc gói thù lao có thưởng theo quý/năm và các điều khoản thưởng vượt chỉ tiêu (Accelerators) hấp dẫn. Để đàm phán sắc bén các gói hợp đồng lớn triệu đô và tối ưu hóa chi phí vận hành phòng ban, hãy tham khảo các tình huống thực chiến tại <a href="https://www.canva.com/design/DAG6UW_IIsA/1C-o0r4Ggrl5ydV4y-ZjKA/edit" target="_blank" rel="noopener noreferrer">Khóa học B2B BD Thực Chiến</a>.
+                    💡 <strong>Khuyến nghị:</strong> Đảm bảo cấu trúc gói thù lao có thưởng theo quý/năm và các điều khoản thưởng vượt chỉ tiêu (Accelerators) hấp dẫn. Để đàm phán sắc bén các gói hợp đồng lớn triệu đô và tối ưu hóa chi phí vận hành phòng ban, hãy tham khảo các tình huống thực chiến tại <a href="https://canva.link/plgyedwezllyrjr" target="_blank" rel="noopener noreferrer">Khóa học B2B BD Thực Chiến</a>.
                 `;
             }
             adviceContainer.innerHTML = adviceHtml;
