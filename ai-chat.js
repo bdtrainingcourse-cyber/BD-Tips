@@ -121,7 +121,7 @@ document.addEventListener('DOMContentLoaded', () => {
         },
         {
             keywords: [/khóa học/, /học bd/, /peter vo/, /canva/, /cẩm nang đàm phán/, /cẩm nang/i],
-            reply: "Để đồng hành và trang bị đầy đủ bộ kỹ năng từ nghiên cứu thị trường, tiếp cận PIC doanh nghiệp, soạn thảo cold email tỷ lệ mở cao đến thương thuyết ký kết hợp đồng, bạn hãy đăng ký ngay [Khóa Học BD B2B Thực Chiến của Peter Vo](https://www.canva.com/design/DAG6UW_IIsA/1C-o0r4Ggrl5ydV4y-ZjKA/edit). Đây là khóa học thực tế giúp bạn nâng tầm tư duy (Mindset), bộ kỹ năng (Skillset) và công cụ/AI (Toolset) với sự hỗ trợ đồng hành trọn đời.",
+            reply: "Để đồng hành và trang bị đầy đủ bộ kỹ năng từ nghiên cứu thị trường, tiếp cận PIC doanh nghiệp, soạn thảo cold email tỷ lệ mở cao đến thương thuyết ký kết hợp đồng, bạn hãy đăng ký ngay [Khóa Học BD B2B Thực Chiến của Peter Vo](https://canva.link/plgyedwezllyrjr). Đây là khóa học thực tế giúp bạn nâng tầm tư duy (Mindset), bộ kỹ năng (Skillset) và công cụ/AI (Toolset) với sự hỗ trợ đồng hành trọn đời.",
             navTarget: null,
             navLabel: null
         }
