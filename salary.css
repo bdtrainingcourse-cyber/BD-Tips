@@ -504,3 +504,153 @@ input[type="text"]:focus, select:focus {
         grid-template-columns: 1fr;
     }
 }
+
+/* Custom Tab-Pills Segment Selector */
+.salary-tab-pills {
+    display: flex;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--border-color);
+    padding: 4px;
+    border-radius: 10px;
+    gap: 4px;
+}
+
+.salary-tab-pills .tab-pill {
+    flex: 1;
+    background: transparent;
+    border: none;
+    padding: 10px 16px;
+    border-radius: 8px;
+    color: var(--text-muted);
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    font-family: inherit;
+    text-align: center;
+}
+
+.salary-tab-pills .tab-pill:hover {
+    color: var(--text-primary);
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.salary-tab-pills .tab-pill.active {
+    background: var(--primary-glow);
+    color: #ffffff;
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+/* Step-by-Step Explanation Accordion */
+.explanation-container {
+    margin-top: 25px;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.explanation-header {
+    padding: 16px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    background: rgba(255, 255, 255, 0.03);
+    user-select: none;
+    transition: background-color 0.2s ease;
+}
+
+.explanation-header:hover {
+    background: rgba(255, 255, 255, 0.06);
+}
+
+.explanation-title {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.explanation-arrow {
+    font-size: 1.1rem;
+    color: var(--text-muted);
+    transition: transform 0.3s ease;
+    display: inline-block;
+}
+
+.explanation-container.expanded .explanation-arrow {
+    transform: rotate(180deg);
+}
+
+.copy-explanation-btn {
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    border-radius: 6px;
+    padding: 4px 10px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.copy-explanation-btn:hover {
+    background: var(--primary-glow);
+    color: #ffffff;
+    border-color: var(--primary-glow);
+}
+
+.explanation-body {
+    padding: 20px;
+    border-top: 1px solid var(--border-color);
+    font-size: 0.92rem;
+    line-height: 1.6;
+    color: var(--text-primary);
+    background: rgba(0, 0, 0, 0.2);
+}
+
+.explanation-step {
+    margin-bottom: 20px;
+}
+
+.explanation-step:last-child {
+    margin-bottom: 0;
+}
+
+.explanation-step h4 {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--primary-glow);
+    margin-top: 0;
+    margin-bottom: 6px;
+}
+
+.explanation-step p {
+    margin: 0 0 4px 0;
+}
+
+.explanation-step code {
+    font-family: Consolas, Monaco, monospace;
+    background: rgba(255, 255, 255, 0.08);
+    padding: 2px 6px;
+    border-radius: 4px;
+    color: #34d399;
+}
+
+/* Progress indicator inside bracket items */
+.bracket-item {
+    position: relative;
+    overflow: hidden;
+}
+
+.bracket-progress-bar {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 3px;
+    background: var(--accent-glow);
+    transition: width 0.5s ease-out;
+    width: 0%;
+}
+
