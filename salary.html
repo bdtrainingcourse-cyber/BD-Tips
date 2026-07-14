@@ -36,8 +36,16 @@
             <p class="hero-subtitle">Công cụ quy đổi lương và phân tích chi tiết bảo hiểm, thuế TNCN theo cập nhật Luật Lao Động mới nhất</p>
         </section>
 
-        <!-- Main Dashboard Layout -->
-        <div class="salary-grid">
+        <!-- Main View Switcher Tabs -->
+        <div class="salary-view-tabs">
+            <button type="button" class="view-tab active" id="view-tab-calc" data-tab="calc-view">🧮 Quy Đổi Gross - Net</button>
+            <button type="button" class="view-tab" id="view-tab-lookup" data-tab="lookup-view">💼 Tra Cứu Mức Lương B2B</button>
+        </div>
+
+        <!-- Calc View Container -->
+        <div class="view-container active-view" id="calc-view">
+            <!-- Main Dashboard Layout -->
+            <div class="salary-grid">
             <!-- Left: Calculator Form -->
             <div class="glass-panel calculator-panel">
                 <h2 class="panel-title">🧮 Trình Quy Đổi Lương</h2>
@@ -315,6 +323,138 @@
                 </div>
                 <div class="explanation-body hidden" id="explanation-body">
                     <!-- Populated dynamically by JS -->
+                </div>
+            </div>
+        </div>
+        </div> <!-- End calc-view -->
+
+        <!-- Lookup View Container -->
+        <div class="view-container hidden" id="lookup-view">
+            <div class="salary-grid">
+                <!-- Left: Lookup Form -->
+                <div class="glass-panel lookup-panel">
+                    <h2 class="panel-title">🔍 Tra Cứu Mức Lương B2B / BD</h2>
+                    <form id="lookup-form" class="form-grid">
+                        <!-- Job Role Selector -->
+                        <div class="form-group">
+                            <label for="lookup-role">Vị trí công việc</label>
+                            <select id="lookup-role">
+                                <option value="account-executive">Account Executive (AE)</option>
+                                <option value="business-development">Business Development Exec/Manager (BDM)</option>
+                                <option value="sdr-bdr">Sales/Business Development Representative (SDR/BDR)</option>
+                                <option value="customer-success">Customer Success Manager (CSM)</option>
+                                <option value="pre-sales">Pre-sales / Solution Consultant</option>
+                                <option value="partnerships">Strategic Alliance / Partnerships Manager</option>
+                            </select>
+                        </div>
+
+                        <!-- Experience Level -->
+                        <div class="form-group">
+                            <label for="lookup-exp">Cấp bậc / Kinh nghiệm</label>
+                            <select id="lookup-exp">
+                                <option value="junior">Junior (0 - 2 năm kinh nghiệm)</option>
+                                <option value="mid">Mid-level (2 - 5 năm kinh nghiệm)</option>
+                                <option value="senior">Senior / Lead (5+ năm kinh nghiệm)</option>
+                                <option value="director">Director / Head of (8+ năm kinh nghiệm)</option>
+                            </select>
+                        </div>
+
+                        <!-- Lĩnh vực / Industry -->
+                        <div class="form-group">
+                            <label for="lookup-sector">Lĩnh vực hoạt động</label>
+                            <select id="lookup-sector">
+                                <option value="saas-tech">Công nghệ / SaaS / FinTech</option>
+                                <option value="logistics">Vận tải / Logistics / Supply Chain</option>
+                                <option value="agency">Quảng cáo / Agency / Media</option>
+                                <option value="finance">Dịch vụ Tài chính / Ngân hàng</option>
+                                <option value="manufacturing">Sản xuất / Công nghiệp</option>
+                            </select>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary btn-block" style="margin-top: 10px;">
+                            🔎 Tra Cứu Mức Lương
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Right: Distribution Brief -->
+                <div class="glass-panel lookup-brief-panel">
+                    <h2 class="panel-title">📈 Phân Khúc Thu Nhập</h2>
+                    <div class="lookup-kpis">
+                        <div class="kpi-card">
+                            <span class="kpi-label">Trung vị lương cố định</span>
+                            <span class="kpi-value" id="lookup-median-val">0 VND</span>
+                        </div>
+                        <div class="kpi-card">
+                            <span class="kpi-label">Cơ cấu thu nhập cố định</span>
+                            <span class="kpi-value" id="lookup-split-val">0 / 0</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Progress Scale Percentiles -->
+                    <div class="percentile-scale-container" style="margin-top: 25px;">
+                        <label>Biểu đồ phân phối lương cố định (VND)</label>
+                        <div class="percentile-bar-track">
+                            <div class="percentile-bar-fill" id="percentile-bar-fill" style="width: 0%;"></div>
+                        </div>
+                        <div class="percentile-labels">
+                            <div class="p-label">
+                                <span class="num" id="p-min">0</span>
+                                <span class="txt">T.Nhất</span>
+                            </div>
+                            <div class="p-label active-label">
+                                <span class="num" id="p-median">0</span>
+                                <span class="txt">Trung Vị</span>
+                            </div>
+                            <div class="p-label">
+                                <span class="num" id="p-max">0</span>
+                                <span class="txt">Cao Nhất</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Detailed Lookup Results -->
+            <div class="glass-panel lookup-details-panel hidden" id="lookup-results-panel">
+                <h2 class="panel-title">💼 Gói Thu Nhập Chi Tiết & Khuyến Nghị Chỉ Tiêu (OTE)</h2>
+                
+                <div class="lookup-details-grid">
+                    <div class="detail-card">
+                        <h3>📊 Đặc thù doanh số & chỉ tiêu (B2B Quota)</h3>
+                        <table class="breakdown-table">
+                            <tbody>
+                                <tr>
+                                    <td><strong>Chỉ tiêu doanh số phổ biến (Quota)</strong></td>
+                                    <td class="font-semibold text-primary" id="det-quota">0</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Tỷ lệ hoa hồng (Commission Rate)</strong></td>
+                                    <td id="det-comm-rate">0%</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Tỷ lệ cố định / Biến động</strong></td>
+                                    <td id="det-ratio">60/40</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Tổng thu nhập OTE trung bình</strong></td>
+                                    <td class="font-bold text-success" id="det-ote">0</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div class="detail-card advice-card">
+                        <h3>💡 Khuyến nghị đàm phán thù lao</h3>
+                        <div class="negotiation-advice" id="det-advice">
+                            Vui lòng tra cứu thông tin lương để nhận khuyến nghị đàm phán tương ứng cho vị trí này.
+                        </div>
+                        <div class="lookup-actions" style="margin-top: 25px; display: flex; gap: 15px;">
+                            <button type="button" class="btn btn-primary" id="btn-sync-to-calc" style="flex: 1;">
+                                ⚡ Đồng bộ sang Gross &harr; Net
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
