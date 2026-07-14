@@ -745,4 +745,205 @@ input[type="text"]:focus, select:focus {
     padding-top: 10px;
 }
 
+/* Main View Switcher Tabs */
+.salary-view-tabs {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-bottom: 30px;
+}
+
+.view-tab {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--border-color);
+    padding: 12px 24px;
+    border-radius: 12px;
+    color: var(--text-muted);
+    font-size: 1.05rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-family: inherit;
+}
+
+.view-tab:hover {
+    color: var(--text-primary);
+    background: rgba(255, 255, 255, 0.06);
+    border-color: rgba(255, 255, 255, 0.15);
+}
+
+.view-tab.active {
+    background: rgba(16, 185, 129, 0.1);
+    color: var(--primary-glow);
+    border-color: var(--primary-glow);
+    box-shadow: 0 0 15px rgba(16, 185, 129, 0.15);
+}
+
+/* View Containers */
+.view-container {
+    transition: opacity 0.3s ease;
+}
+
+.view-container.hidden {
+    display: none !important;
+}
+
+/* Salary Lookup KPIs */
+.lookup-kpis {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+}
+
+.kpi-card {
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    text-align: center;
+}
+
+.kpi-label {
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+
+.kpi-value {
+    font-size: 1.35rem;
+    font-weight: 800;
+    color: var(--primary-glow);
+}
+
+/* Percentile Scale Visualizer */
+.percentile-bar-track {
+    background: rgba(255, 255, 255, 0.05);
+    height: 10px;
+    border-radius: 5px;
+    position: relative;
+    margin: 15px 0 25px 0;
+    border: 1px solid var(--border-color);
+    overflow: hidden;
+}
+
+.percentile-bar-fill {
+    background: linear-gradient(90deg, var(--accent-glow) 0%, var(--primary-glow) 100%);
+    height: 100%;
+    border-radius: 5px;
+    transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.percentile-labels {
+    display: flex;
+    justify-content: space-between;
+}
+
+.p-label {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.8rem;
+    opacity: 0.6;
+    transition: opacity 0.3s ease;
+}
+
+.p-label.active-label {
+    opacity: 1;
+}
+
+.p-label .num {
+    font-family: Consolas, Monaco, monospace;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.p-label .txt {
+    color: var(--text-muted);
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    font-weight: 600;
+}
+
+/* Detailed Lookup Results */
+.lookup-details-panel {
+    margin-top: 30px;
+    animation: fadeIn 0.4s ease-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.lookup-details-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+    margin-top: 20px;
+}
+
+.detail-card {
+    background: rgba(255, 255, 255, 0.01);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 20px;
+}
+
+.detail-card h3 {
+    font-size: 1.05rem;
+    font-weight: 700;
+    margin-top: 0;
+    margin-bottom: 15px;
+    color: var(--text-primary);
+}
+
+.advice-card {
+    border-color: rgba(16, 185, 129, 0.15);
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.02) 0%, rgba(99, 102, 241, 0.02) 100%);
+    display: flex;
+    flex-direction: column;
+}
+
+.negotiation-advice {
+    font-size: 0.95rem;
+    line-height: 1.65;
+    color: var(--text-muted);
+    flex: 1;
+}
+
+.negotiation-advice strong {
+    color: var(--primary-glow);
+}
+
+.negotiation-advice a {
+    color: var(--accent-glow);
+    text-decoration: underline;
+    font-weight: 600;
+}
+
+.negotiation-advice a:hover {
+    color: var(--primary-glow);
+}
+
+@media (max-width: 900px) {
+    .salary-view-tabs {
+        flex-direction: column;
+        gap: 10px;
+    }
+    .lookup-details-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+    .lookup-kpis {
+        grid-template-columns: 1fr;
+    }
+}
+
+
 
