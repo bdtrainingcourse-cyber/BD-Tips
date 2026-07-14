@@ -32,9 +32,12 @@
         <div class="container text-center">
             <h1 class="hero-title">ĐỪNG ĐỂ <span class="highlight">"CÁI MIỆNG HẠI CÁI DEAL"</span></h1>
             <p class="hero-subtitle">5 Pha Chuyển Mình Về Ngôn Từ Dành Cho B2B Business Development</p>
-            <div style="margin-top: 30px;">
+            <div style="margin-top: 30px; display: flex; justify-content: center; gap: 15px; flex-wrap: wrap;">
                 <a href="finder.html" class="btn btn-primary" style="display: inline-flex; align-items: center; gap: 8px; text-decoration: none; font-size: 1rem;">
                     ⚡ NEW: B2B LinkedIn PIC Finder Tool &rarr;
+                </a>
+                <a href="#events-section" class="btn btn-secondary" style="display: inline-flex; align-items: center; gap: 8px; text-decoration: none; font-size: 1rem; background: rgba(16, 185, 129, 0.1); border: 1px solid var(--primary-glow); color: var(--primary-glow);">
+                    📅 Sự Kiện B2B Các Ngành &rarr;
                 </a>
             </div>
         </div>
@@ -351,6 +354,42 @@
                     </tr>
                 </tbody>
             </table>
+        </div>
+    </section>
+
+    <!-- B2B Events Section -->
+    <section class="events-section container" id="events-section" style="margin-top: 50px; margin-bottom: 50px;">
+        <h2 class="section-title">📅 Sự Kiện B2B Các Ngành</h2>
+        <p class="section-subtitle text-center" style="color: var(--text-muted); margin-bottom: 30px; text-align: center;">
+            Theo dõi và kết nối trực tiếp tại các hội thảo, triển lãm và tọa đàm B2B hàng đầu tại Việt Nam.
+        </p>
+
+        <!-- Events Control Bar (Filter & Search) -->
+        <div class="glass-effect events-control-bar" style="padding: 20px; border-radius: 12px; margin-bottom: 30px; display: flex; gap: 15px; align-items: center; flex-wrap: wrap; border: 1px solid var(--border-color);">
+            <div class="search-box" style="flex: 1; min-width: 250px; position: relative;">
+                <input type="text" id="event-search" placeholder="🔍 Tìm tên sự kiện, địa điểm, đơn vị tổ chức..." style="width: 100%; padding: 12px 15px; border-radius: 8px; border: 1px solid var(--border-color); background: rgba(255,255,255,0.03); color: var(--text-primary); font-family: inherit;">
+            </div>
+            
+            <div class="filter-box" style="min-width: 200px;">
+                <select id="event-filter" style="width: 100%; padding: 12px 15px; border-radius: 8px; border: 1px solid var(--border-color); background: rgba(255,255,255,0.03); color: var(--text-primary); font-family: inherit; cursor: pointer;">
+                    <option value="all">Tất cả ngành nghề</option>
+                    <option value="tech">Công nghệ / SaaS / Tech</option>
+                    <option value="logistics">Vận tải / Logistics / Supply Chain</option>
+                    <option value="agency">Agency / Marketing / Media</option>
+                    <option value="finance">Tài chính / FinTech / Đầu tư</option>
+                    <option value="manufacturing">Sản xuất / Công nghiệp</option>
+                </select>
+            </div>
+
+            <div class="live-update-status" style="display: flex; align-items: center; gap: 8px; font-size: 0.85rem; color: var(--text-muted); margin-left: auto;">
+                <span class="live-dot" style="display: inline-block; width: 8px; height: 8px; background-color: #ef4444; border-radius: 50%; box-shadow: 0 0 8px #ef4444; animation: pulse 1.5s infinite;"></span>
+                <span id="live-update-timer">Tự động cập nhật: 15s</span>
+            </div>
+        </div>
+
+        <!-- Events Grid -->
+        <div class="events-grid" id="events-grid">
+            <!-- Rendered dynamically by JS -->
         </div>
     </section>
 
