@@ -96,17 +96,17 @@
                                 <input type="number" id="dependents" value="0" min="0" max="20" readonly>
                                 <button type="button" class="counter-btn" id="dep-inc">+</button>
                             </div>
-                            <span class="text-helper">Giảm trừ: 4.4M / người</span>
+                            <span class="text-helper">Giảm trừ: 6.2M / người</span>
                         </div>
 
                         <!-- Minimum Salary Region -->
                         <div class="form-group half">
                             <label for="region">Vùng đóng bảo hiểm</label>
                             <select id="region">
-                                <option value="1">Vùng I (4.96M)</option>
-                                <option value="2">Vùng II (4.41M)</option>
-                                <option value="3">Vùng III (3.86M)</option>
-                                <option value="4">Vùng IV (3.45M)</option>
+                                <option value="1">Vùng I (5.31M)</option>
+                                <option value="2">Vùng II (4.73M)</option>
+                                <option value="3">Vùng III (4.14M)</option>
+                                <option value="4">Vùng IV (3.70M)</option>
                             </select>
                             <span class="text-helper">Ảnh hưởng trần BHTN</span>
                         </div>
@@ -203,12 +203,12 @@
                             <tr>
                                 <td>Bảo hiểm xã hội (BHXH)</td>
                                 <td class="text-right text-danger" id="nl-bhxh">0</td>
-                                <td class="text-muted">8% (Trần đóng tối đa: 46,800,000đ)</td>
+                                <td class="text-muted">8% (Trần đóng tối đa: 50,600,000đ)</td>
                             </tr>
                             <tr>
                                 <td>Bảo hiểm y tế (BHYT)</td>
                                 <td class="text-right text-danger" id="nl-bhyt">0</td>
-                                <td class="text-muted">1.5% (Trần đóng tối đa: 46,800,000đ)</td>
+                                <td class="text-muted">1.5% (Trần đóng tối đa: 50,600,000đ)</td>
                             </tr>
                             <tr>
                                 <td>Bảo hiểm thất nghiệp (BHTN)</td>
@@ -222,13 +222,13 @@
                             </tr>
                             <tr>
                                 <td>Giảm trừ gia cảnh bản thân</td>
-                                <td class="text-right text-success" id="nl-deduct-self">11,000,000</td>
+                                <td class="text-right text-success" id="nl-deduct-self">15,500,000</td>
                                 <td class="text-muted">Định mức cố định theo quy định</td>
                             </tr>
                             <tr>
                                 <td>Giảm trừ người phụ thuộc</td>
                                 <td class="text-right text-success" id="nl-deduct-dep">0</td>
-                                <td class="text-muted" id="nl-deduct-dep-detail">4,400,000đ &times; 0 người</td>
+                                <td class="text-muted" id="nl-deduct-dep-detail">6.200.000đ &times; 0 người</td>
                             </tr>
                             <tr class="highlight-row">
                                 <td><strong>Thu nhập tính thuế (TNTT)</strong></td>
@@ -280,13 +280,13 @@
                             <td>Bảo hiểm xã hội (BHXH)</td>
                             <td class="text-right text-danger">17.5%</td>
                             <td class="text-right text-danger" id="nsd-bhxh">0</td>
-                            <td class="text-muted">Trần đóng tối đa: 46,800,000đ</td>
+                            <td class="text-muted">Trần đóng tối đa: 50,600,000đ</td>
                         </tr>
                         <tr>
                             <td>Bảo hiểm y tế (BHYT)</td>
                             <td class="text-right text-danger">3%</td>
                             <td class="text-right text-danger" id="nsd-bhyt">0</td>
-                            <td class="text-muted">Trần đóng tối đa: 46,800,000đ</td>
+                            <td class="text-muted">Trần đóng tối đa: 50,600,000đ</td>
                         </tr>
                         <tr>
                             <td>Bảo hiểm thất nghiệp (BHTN)</td>
@@ -318,6 +318,93 @@
                 </div>
             </div>
         </div>
+
+        <!-- FAQ Section -->
+        <section class="glass-panel faq-section" style="margin-top: 40px; margin-bottom: 40px;">
+            <h2 class="panel-title">❓ Các câu hỏi thường gặp (FAQs)</h2>
+            <div class="faq-list">
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span>Lương Gross là gì?</span>
+                        <span class="faq-icon">+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Lương Gross là tổng số tiền mà người lao động nhận được trước khi trừ các khoản thuế, bảo hiểm, phụ cấp và các chi phí khác. Đây là số tiền thường được đưa ra khi đàm phán về mức lương và được thông báo trong hợp đồng lao động.</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span>Lương Net là gì?</span>
+                        <span class="faq-icon">+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Lương Net là mức lương thực nhận mà người lao động được công ty chuyển khoản vào tài khoản ngân hàng sau khi đã khấu trừ hết bảo hiểm bắt buộc và thuế TNCN.</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span>Công thức tính lương Gross là gì?</span>
+                        <span class="faq-icon">+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Công thức tính: <code>Lương Gross = Lương Net + Bảo hiểm bắt buộc (NLĐ đóng) + Thuế TNCN (nếu có)</code>.</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span>Công thức tính lương Net là gì?</span>
+                        <span class="faq-icon">+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Công thức tính: <code>Lương Net = Lương Gross - Bảo hiểm bắt buộc (NLĐ đóng) - Thuế TNCN (nếu có)</code>.</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span>Cách tính lương Gross sang Net?</span>
+                        <span class="faq-icon">+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Quy trình tính:</p>
+                        <ol>
+                            <li>Tính các khoản bảo hiểm bắt buộc: BHXH (8%), BHYT (1.5%), BHTN (1%).</li>
+                            <li>Tính Thu nhập trước thuế = Lương Gross - Tổng bảo hiểm.</li>
+                            <li>Tính Thu nhập tính thuế = Thu nhập trước thuế - Các khoản giảm trừ gia cảnh (bản thân 15.5M, người phụ thuộc 6.2M/người).</li>
+                            <li>Tính Thuế TNCN lũy tiến theo biểu thuế 5 bậc mới.</li>
+                            <li>Lương Net = Thu nhập trước thuế - Thuế TNCN.</li>
+                        </ol>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span>Cách quy đổi lương Net sang Gross?</span>
+                        <span class="faq-icon">+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Sử dụng thuật toán quy đổi ngược để tìm mức Gross tương ứng từ mức Net đích. Khi tính toán xuôi theo các bước khấu trừ của mức Gross này, kết quả nhận được sẽ trùng khớp với số Net ban đầu.</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span>Lương Net có bao gồm thuế thu nhập cá nhân không?</span>
+                        <span class="faq-icon">+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Lương Net là phần thực nhận sau thuế, do đó nó đã khấu trừ thuế TNCN. Công ty tuyển dụng có nghĩa vụ khấu trừ tại nguồn và nộp khoản thuế này trực tiếp cho cơ quan thuế thay cho bạn.</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span>Nên deal lương Gross hay Net?</span>
+                        <span class="faq-icon">+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Khuyến nghị nên deal lương <strong>Gross</strong>. Lương Gross giúp đảm bảo các quyền lợi bảo hiểm, thai sản, và thất nghiệp được tính đúng trên tổng thu nhập thực tế. Nếu deal Net, hãy yêu cầu ghi rõ điều khoản doanh nghiệp đóng bảo hiểm trên thực tế lương Net để tránh bị đóng bảo hiểm theo mức tối thiểu.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
         <!-- Course CTA Bottom Banner -->
         <div class="course-bottom-banner">
             <div class="course-bottom-img-container">
