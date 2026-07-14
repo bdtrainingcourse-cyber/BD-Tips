@@ -1,16 +1,16 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // --- Constant Configurations ---
-    const STATUTORY_BASIC_SALARY = 2340000; // Mức lương cơ sở: 2.340.000đ (từ 01/07/2024 đến nay)
+    // --- Constant Configurations (Updated for 2026 Regulations) ---
+    const STATUTORY_BASIC_SALARY = 2530000; // Mức lương cơ sở mới nhất có hiệu lực từ ngày 01/07/2026
     const INS_CAP_MULTIPLIER = 20;
-    const BHXH_CAP = STATUTORY_BASIC_SALARY * INS_CAP_MULTIPLIER; // 46.800.000đ
-    const BHYT_CAP = STATUTORY_BASIC_SALARY * INS_CAP_MULTIPLIER; // 46.800.000đ
+    const BHXH_CAP = STATUTORY_BASIC_SALARY * INS_CAP_MULTIPLIER; // 50.600.000đ
+    const BHYT_CAP = STATUTORY_BASIC_SALARY * INS_CAP_MULTIPLIER; // 50.600.000đ
 
-    // Lương tối thiểu vùng năm 2026
+    // Lương tối thiểu vùng mới nhất từ 01/01/2026 (Nghị định 293/2025/NĐ-CP)
     const REGIONAL_MINIMUMS = {
-        1: 4960000,
-        2: 4410000,
-        3: 3860000,
-        4: 3450000
+        1: 5310000,
+        2: 4730000,
+        3: 4140000,
+        4: 3700000
     };
 
     // Tỷ lệ đóng bảo hiểm (Người lao động)
@@ -27,19 +27,17 @@ document.addEventListener('DOMContentLoaded', () => {
         BHTN: 0.01
     };
 
-    // Giảm trừ gia cảnh
-    const DEDUCT_SELF = 11000000;
-    const DEDUCT_DEPENDENT = 4400000;
+    // Giảm trừ gia cảnh mới nhất từ năm 2026 (Nghị quyết 110/2025/UBTVQH15)
+    const DEDUCT_SELF = 15500000; // 15.5 triệu đồng/tháng
+    const DEDUCT_DEPENDENT = 6200000; // 6.2 triệu đồng/tháng
 
-    // Biểu thuế lũy tiến từng phần năm 2026
+    // Biểu thuế lũy tiến từng phần mới gồm 5 bậc (Luật Thuế TNCN số 109/2025/QH15 áp dụng từ kỳ tính thuế 2026)
     const PIT_BRACKETS = [
-        { limit: 5000000, rate: 0.05, subtract: 0 },
-        { limit: 10000000, rate: 0.10, subtract: 250000 },
-        { limit: 18000000, rate: 0.15, subtract: 750000 },
-        { limit: 32000000, rate: 0.20, subtract: 1650000 },
-        { limit: 52000000, rate: 0.25, subtract: 3250000 },
-        { limit: 80000000, rate: 0.30, subtract: 5850000 },
-        { limit: Infinity, rate: 0.35, subtract: 9850000 }
+        { limit: 10000000, rate: 0.05, subtract: 0 },
+        { limit: 30000000, rate: 0.10, subtract: 500000 },
+        { limit: 60000000, rate: 0.20, subtract: 3500000 },
+        { limit: 100000000, rate: 0.30, subtract: 9500000 },
+        { limit: Infinity, rate: 0.35, subtract: 14500000 }
     ];
 
     // --- DOM Elements ---
@@ -207,6 +205,26 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
+    // FAQ Toggle Accordion
+    const faqItems = document.querySelectorAll('.faq-item');
+    faqItems.forEach(item => {
+        const question = item.querySelector('.faq-question');
+        const icon = item.querySelector('.faq-icon');
+        question.addEventListener('click', () => {
+            const isActive = item.classList.contains('active');
+            
+            faqItems.forEach(i => {
+                i.classList.remove('active');
+                i.querySelector('.faq-icon').textContent = '+';
+            });
+            
+            if (!isActive) {
+                item.classList.add('active');
+                icon.textContent = '−';
+            }
+        });
+    });
+
     // --- Core Salary Calculation Functions ---
 
     // Social, Health, and Unemployment insurances for Employee
@@ -246,7 +264,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return { bhxh, bhyt, bhtn, total };
     }
 
-    // Calculates PIT details
+    // Calculates PIT details (Updated for new 5-bracket structure)
     function calculatePIT(taxableIncome) {
         if (taxableIncome <= 0) {
             return { totalTax: 0, bracketBreakdown: PIT_BRACKETS.map(b => ({ ...b, amountInBracket: 0, taxInBracket: 0 })) };
@@ -352,7 +370,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return calculateGrossToNet(gross, insSalaryInput, dependentsCount, region);
     }
 
-    // Mathematical Explanation Builder
+    // Mathematical Explanation Builder (Updated for new 2026 regulations)
     function generateStepByStepExplanation(res, direction) {
         let html = '';
         
@@ -362,7 +380,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 <div class="explanation-step">
                     <h4>Bước 1: Tính các khoản bảo hiểm bắt buộc (Người lao động đóng)</h4>
                     <p>Mức lương đóng bảo hiểm cơ sở: <code>${formatNumber(res.gross)}đ</code></p>
-                    <p>Mức trần tính BHXH/BHYT (20 lần lương cơ sở): <code>${formatNumber(BHXH_CAP)}đ</code>.</p>
+                    <p>Mức trần tính BHXH/BHYT (20 lần lương cơ sở mới 2.53M): <code>${formatNumber(BHXH_CAP)}đ</code>.</p>
                     <ul>
                          <li>Bảo hiểm xã hội (BHXH): <code>${formatNumber(res.insuranceEmployee.bhxh)}đ</code> (8% mức đóng)</li>
                          <li>Bảo hiểm y tế (BHYT): <code>${formatNumber(res.insuranceEmployee.bhyt)}đ</code> (1.5% mức đóng)</li>
@@ -384,9 +402,9 @@ document.addEventListener('DOMContentLoaded', () => {
             // STEP 3: Deductions
             html += `
                 <div class="explanation-step">
-                    <h4>Bước 3: Xác định Các khoản giảm trừ gia cảnh</h4>
+                    <h4>Bước 3: Xác định Các khoản giảm trừ gia cảnh (Mới 2026)</h4>
                     <ul>
-                         <li>Giảm trừ bản thân: <code>${formatNumber(res.deductSelf)}đ</code> (Định mức quy định của luật thuế TNCN)</li>
+                         <li>Giảm trừ bản thân: <code>${formatNumber(res.deductSelf)}đ</code> (Định mức mới 15.5 triệu đồng)</li>
                          <li>Giảm trừ người phụ thuộc: <code>${formatNumber(res.deductDependents)}đ</code> (${formatNumber(DEDUCT_DEPENDENT)}đ &times; ${parseInt(dependentsInput.value)} người)</li>
                     </ul>
                     <p><strong>&rArr; Tổng giảm trừ gia cảnh: <code>${formatNumber(res.deductSelf + res.deductDependents)}đ</code></strong></p>
@@ -405,12 +423,12 @@ document.addEventListener('DOMContentLoaded', () => {
             // STEP 5: PIT Brackets
             html += `
                 <div class="explanation-step">
-                    <h4>Bước 5: Tính Thuế thu nhập cá nhân (TNCN)</h4>
+                    <h4>Bước 5: Tính Thuế thu nhập cá nhân (TNCN) (Mới 5 bậc)</h4>
             `;
             if (res.pit === 0) {
                 html += `<p>Thu nhập tính thuế bằng 0đ, do đó <strong>Thuế TNCN phải nộp là: <code>0đ</code></strong></p>`;
             } else {
-                html += `<p>Áp dụng biểu thuế lũy tiến từng phần trên mức thu nhập tính thuế <code>${formatNumber(res.taxableIncome)}đ</code>:</p><ul>`;
+                html += `<p>Áp dụng biểu thuế lũy tiến từng phần 5 bậc mới trên mức thu nhập tính thuế <code>${formatNumber(res.taxableIncome)}đ</code>:</p><ul>`;
                 res.pitBrackets.forEach((b, idx) => {
                     if (b.amountInBracket > 0) {
                         html += `<li>Bậc ${idx + 1} (${b.rate * 100}%): <code>${formatNumber(b.amountInBracket)}đ &times; ${b.rate * 100}% = ${formatNumber(b.taxInBracket)}đ</code></li>`;
@@ -433,9 +451,9 @@ document.addEventListener('DOMContentLoaded', () => {
         } else {
             html += `
                 <div class="explanation-step">
-                    <h4>Quy đổi ngược Net &rarr; Gross</h4>
+                    <h4>Quy đổi ngược Net &rarr; Gross (Quy định 2026)</h4>
                     <p>Từ mức lương Net mong muốn nhận về: <code>${formatNumber(res.net)}đ</code></p>
-                    <p>Hệ thống tự động sử dụng thuật toán tìm kiếm nhị phân tối ưu để quy đổi ra mức Gross trước thuế và bảo hiểm:</p>
+                    <p>Hệ thống tự động sử dụng thuật toán tìm kiếm nhị phân tối ưu để quy đổi ra mức Gross trước thuế và bảo hiểm theo luật 2026:</p>
                     <ul>
                          <li>Mức Gross tương ứng: <code>${formatNumber(res.gross)}đ</code></li>
                          <li>Bảo hiểm xã hội (NLĐ đóng 8%): <code>${formatNumber(res.insuranceEmployee.bhxh)}đ</code></li>
@@ -472,7 +490,7 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('nl-tntt').textContent = formatNumber(res.incomeBeforeTax);
         document.getElementById('nl-deduct-self').textContent = formatNumber(res.deductSelf);
         document.getElementById('nl-deduct-dep').textContent = formatNumber(res.deductDependents);
-        document.getElementById('nl-deduct-dep-detail').textContent = `4.400.000đ \u00D7 ${parseInt(dependentsInput.value)} người`;
+        document.getElementById('nl-deduct-dep-detail').textContent = `6.200.000đ \u00D7 ${parseInt(dependentsInput.value)} người`;
         document.getElementById('nl-tntt-tax').textContent = formatNumber(res.taxableIncome);
         document.getElementById('nl-pit').textContent = formatNumber(res.pit);
         document.getElementById('nl-net').textContent = formatNumber(res.net);
@@ -500,13 +518,11 @@ document.addEventListener('DOMContentLoaded', () => {
         container.innerHTML = '';
 
         const labelMap = [
-            'Bậc 1: Đến 5 triệuđ (5%)',
-            'Bậc 2: Trên 5 đến 10 triệuđ (10%)',
-            'Bậc 3: Trên 10 đến 18 triệuđ (15%)',
-            'Bậc 4: Trên 18 đến 32 triệuđ (20%)',
-            'Bậc 5: Trên 32 đến 52 triệuđ (25%)',
-            'Bậc 6: Trên 52 đến 80 triệuđ (30%)',
-            'Bậc 7: Trên 80 triệuđ (35%)'
+            'Bậc 1: Đến 10 triệuđ (5%)',
+            'Bậc 2: Trên 10 đến 30 triệuđ (10%)',
+            'Bậc 3: Trên 30 đến 60 triệuđ (20%)',
+            'Bậc 4: Trên 60 đến 100 triệuđ (30%)',
+            'Bậc 5: Trên 100 triệuđ (35%)'
         ];
 
         brackets.forEach((b, idx) => {
