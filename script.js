@@ -1116,15 +1116,20 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!eventsGrid) return;
 
         const searchQuery = eventSearch.value.toLowerCase().trim();
-        const filterQuery = eventFilter.value;
+        const sectorQuery = eventFilter.value;
+        
+        // Get the selected format filter value (default to 'all' if element not found)
+        const formatFilterEl = document.getElementById('event-format-filter');
+        const formatQuery = formatFilterEl ? formatFilterEl.value : 'all';
 
         const filtered = b2bEvents.filter(evt => {
             const matchesSearch = evt.title.toLowerCase().includes(searchQuery) ||
                                  evt.location.toLowerCase().includes(searchQuery) ||
                                  evt.host.toLowerCase().includes(searchQuery) ||
                                  evt.sectorLabel.toLowerCase().includes(searchQuery);
-            const matchesFilter = filterQuery === 'all' || evt.sector === filterQuery;
-            return matchesSearch && matchesFilter;
+            const matchesSector = sectorQuery === 'all' || evt.sector === sectorQuery;
+            const matchesFormat = formatQuery === 'all' || evt.format === formatQuery;
+            return matchesSearch && matchesSector && matchesFormat;
         });
 
         if (filtered.length === 0) {
@@ -1181,6 +1186,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (eventSearch) eventSearch.addEventListener('input', renderEvents);
     if (eventFilter) eventFilter.addEventListener('change', renderEvents);
+    
+    const eventFormatFilter = document.getElementById('event-format-filter');
+    if (eventFormatFilter) eventFormatFilter.addEventListener('change', renderEvents);
 
     // Initial render
     renderEvents();
