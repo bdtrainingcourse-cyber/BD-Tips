@@ -1026,8 +1026,8 @@ document.addEventListener('DOMContentLoaded', () => {
             registered: 1850,
             online: 12,
             host: 'Informa Markets Vietnam',
-            link: 'https://www.informamarkets.com/en/home.html',
-            realtimeLink: 'https://www.informamarkets.com/en/home.html'
+            link: 'https://events.informamarkets.com/en/event-listing.html',
+            realtimeLink: 'https://events.informamarkets.com/en/event-listing.html'
         },
         {
             id: 'evt-2',
@@ -1216,8 +1216,8 @@ document.addEventListener('DOMContentLoaded', () => {
             registered: 1250,
             online: 18,
             host: 'Informa Markets Vietnam',
-            link: 'https://www.informamarkets.com/en/home.html',
-            realtimeLink: 'https://www.informamarkets.com/en/home.html'
+            link: 'https://events.informamarkets.com/en/event-listing.html',
+            realtimeLink: 'https://events.informamarkets.com/en/event-listing.html'
         },
         {
             id: 'evt-12',
