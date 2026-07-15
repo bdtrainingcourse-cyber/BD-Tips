@@ -1228,17 +1228,18 @@ h1, h2, h3, h4 {
     font-size: 0.82rem;
     font-weight: 700;
     color: #ffffff;
-    background: rgba(255, 255, 255, 0.04);
-    border: 1px solid var(--border-color);
+    background: var(--primary);
+    border: 1px solid var(--primary);
     text-decoration: none;
     transition: all 0.3s ease;
+    cursor: pointer;
 }
 
 .event-register-btn:hover {
-    background: var(--primary);
-    border-color: var(--primary);
+    background: var(--primary-glow);
+    border-color: var(--primary-glow);
     color: #ffffff;
-    box-shadow: 0 0 10px rgba(16, 185, 129, 0.2);
+    box-shadow: 0 0 10px rgba(16, 185, 129, 0.3);
 }
 
 @keyframes pulse {
