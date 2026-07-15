@@ -1012,7 +1012,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const b2bEvents = [
         {
             id: 'evt-1',
-            title: 'MTA Vietnam 2026 (Precision Engineering)',
+            title: 'Triển lãm Quốc tế lần thứ 18 về Máy công cụ, Cơ khí chính xác và Gia công kim loại (MTA Vietnam 2026)',
             sector: 'industrial',
             sectorLabel: 'Sản xuất & Công nghiệp',
             badgeClass: 'badge-manufacturing',
@@ -1031,7 +1031,7 @@ document.addEventListener('DOMContentLoaded', () => {
         },
         {
             id: 'evt-2',
-            title: 'Vietnam PFA 2026 (Food & Agriculture)',
+            title: 'Triển lãm Quốc tế về Công nghệ Chế biến, Đóng gói và Bảo quản Nông sản Thực phẩm (Vietnam PFA 2026)',
             sector: 'hospitality',
             sectorLabel: 'F&B, Nhà hàng & Khách sạn',
             badgeClass: 'badge-logistics',
@@ -1050,7 +1050,7 @@ document.addEventListener('DOMContentLoaded', () => {
         },
         {
             id: 'evt-3',
-            title: 'Vietnam Beautycare Expo 2026',
+            title: 'Triển lãm Quốc tế về Sản phẩm, Công nghệ & Dịch vụ Làm đẹp (Beautycare Expo 2026)',
             sector: 'health-beauty',
             sectorLabel: 'Y tế, Dược phẩm & Làm đẹp',
             badgeClass: 'badge-agency',
@@ -1069,7 +1069,7 @@ document.addEventListener('DOMContentLoaded', () => {
         },
         {
             id: 'evt-4',
-            title: 'InnoEx 2026 - Business Innovation Forum',
+            title: 'Diễn đàn Đổi mới Sáng tạo và Xúc tiến Thương mại Doanh nghiệp (InnoEx 2026)',
             sector: 'tech',
             sectorLabel: 'Công nghệ & Khởi nghiệp',
             badgeClass: 'badge-tech',
@@ -1088,7 +1088,7 @@ document.addEventListener('DOMContentLoaded', () => {
         },
         {
             id: 'evt-5',
-            title: 'EuroCham B2B Investment Webinar',
+            title: 'Hội thảo Trực tuyến về Hợp tác Đầu tư và Xúc tiến B2B Châu Âu (EuroCham B2B Webinar 2026)',
             sector: 'trade-logistics',
             sectorLabel: 'Thương mại & Xúc tiến',
             badgeClass: 'badge-finance',
@@ -1107,7 +1107,7 @@ document.addEventListener('DOMContentLoaded', () => {
         },
         {
             id: 'evt-6',
-            title: 'Vietbuild HCMC Exhibition 2026',
+            title: 'Triển lãm Quốc tế Xây dựng, Vật liệu Xây dựng & Trang trí Nội ngoại thất (Vietbuild HCMC 2026)',
             sector: 'construction',
             sectorLabel: 'Xây dựng & Nội thất',
             badgeClass: 'badge-manufacturing',
@@ -1126,7 +1126,7 @@ document.addEventListener('DOMContentLoaded', () => {
         },
         {
             id: 'evt-7',
-            title: 'Vietnam International Sourcing 2026',
+            title: 'Chuỗi Sự kiện Kết nối Chuỗi Cung ứng Hàng hóa Quốc tế (Vietnam International Sourcing 2026)',
             sector: 'trade-logistics',
             sectorLabel: 'Thương mại & Xúc tiến',
             badgeClass: 'badge-finance',
@@ -1145,7 +1145,7 @@ document.addEventListener('DOMContentLoaded', () => {
         },
         {
             id: 'evt-8',
-            title: 'FBC ASEAN 2026 Manufacturing',
+            title: 'Hội nghị Giao thương B2B Công nghiệp và Chế tạo ASEAN (FBC ASEAN 2026)',
             sector: 'industrial',
             sectorLabel: 'Sản xuất & Công nghiệp',
             badgeClass: 'badge-manufacturing',
@@ -1164,7 +1164,7 @@ document.addEventListener('DOMContentLoaded', () => {
         },
         {
             id: 'evt-9',
-            title: 'VietnamPlas 2026 Exhibition',
+            title: 'Triển lãm Quốc tế lần thứ 24 về Ngành Nhựa và Thiết bị Cao su (VietnamPlas 2026)',
             sector: 'industrial',
             sectorLabel: 'Sản xuất & Công nghiệp',
             badgeClass: 'badge-manufacturing',
@@ -1183,7 +1183,7 @@ document.addEventListener('DOMContentLoaded', () => {
         },
         {
             id: 'evt-10',
-            title: 'Vietnam VTG 2026 (Textile & Garment)',
+            title: 'Triển lãm Quốc tế lần thứ 24 về Thiết bị & Ngành Công nghiệp Dệt may (Vietnam VTG 2026)',
             sector: 'industrial',
             sectorLabel: 'Sản xuất & Công nghiệp',
             badgeClass: 'badge-manufacturing',
@@ -1202,7 +1202,7 @@ document.addEventListener('DOMContentLoaded', () => {
         },
         {
             id: 'evt-11',
-            title: 'Vietwater B2B Exhibition 2026',
+            title: 'Triển lãm Quốc tế về Công nghệ Lọc nước, Cấp thoát nước & Môi trường (Vietwater 2026)',
             sector: 'industrial',
             sectorLabel: 'Sản xuất & Công nghiệp',
             badgeClass: 'badge-manufacturing',
@@ -1221,7 +1221,7 @@ document.addEventListener('DOMContentLoaded', () => {
         },
         {
             id: 'evt-12',
-            title: 'Vietnam Expo HCMC 2026',
+            title: 'Hội chợ Thương mại Quốc tế Việt Nam lần thứ 24 tại TP.HCM (Vietnam Expo HCMC 2026)',
             sector: 'trade-logistics',
             sectorLabel: 'Thương mại & Xúc tiến',
             badgeClass: 'badge-finance',
