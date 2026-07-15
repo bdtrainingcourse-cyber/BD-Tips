@@ -1008,102 +1008,197 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // --- B2B Events Data Model ---
+    // --- B2B Events Data Model ---
     const b2bEvents = [
         {
             id: 'evt-1',
+            title: 'VIFA EXPO 2026 (Furniture Fair)',
+            sector: 'manufacturing',
+            sectorLabel: 'Sản xuất / Đồ gỗ Export',
+            badgeClass: 'badge-manufacturing',
+            format: 'offline',
+            formatLabel: 'Offline / Trực tiếp',
+            date: '08/03/2026 - 11/03/2026',
+            month: '3',
+            monthNum: '03',
+            day: '08',
+            location: 'SECC, Quận 7, TP.HCM',
+            registered: 2100,
+            online: 35,
+            host: 'HAWA & Alliance',
+            link: 'https://secc.com.vn/events/',
+            realtimeLink: 'https://secc.com.vn/events/'
+        },
+        {
+            id: 'evt-2',
+            title: 'ProPak Vietnam 2026 (Packaging)',
+            sector: 'manufacturing',
+            sectorLabel: 'Sản xuất / Bao bì',
+            badgeClass: 'badge-manufacturing',
+            format: 'offline',
+            formatLabel: 'Offline / Trực tiếp',
+            date: '31/03/2026 - 02/04/2026',
+            month: '3',
+            monthNum: '03',
+            day: '31',
+            location: 'SECC, Quận 7, TP.HCM',
+            registered: 1450,
+            online: 18,
+            host: 'Informa Markets Vietnam',
+            link: 'https://www.informamarkets.com/en/home.html',
+            realtimeLink: 'https://www.informamarkets.com/en/home.html'
+        },
+        {
+            id: 'evt-3',
+            title: 'Plastics & Rubber Vietnam 2026',
+            sector: 'manufacturing',
+            sectorLabel: 'Sản xuất / Nhựa',
+            badgeClass: 'badge-manufacturing',
+            format: 'offline',
+            formatLabel: 'Offline / Trực tiếp',
+            date: '31/03/2026 - 02/04/2026',
+            month: '3',
+            monthNum: '03',
+            day: '31',
+            location: 'SECC, Quận 7, TP.HCM',
+            registered: 1100,
+            online: 12,
+            host: 'Informa Markets Vietnam',
+            link: 'https://www.informamarkets.com/en/home.html',
+            realtimeLink: 'https://www.informamarkets.com/en/home.html'
+        },
+        {
+            id: 'evt-4',
+            title: 'Vietnam Beautycare Expo 2026',
+            sector: 'agency',
+            sectorLabel: 'Agency / Tiêu dùng',
+            badgeClass: 'badge-agency',
+            format: 'offline',
+            formatLabel: 'Offline / Trực tiếp',
+            date: '23/07/2026 - 25/07/2026',
+            month: '7',
+            monthNum: '07',
+            day: '23',
+            location: 'SECC, Quận 7, TP.HCM',
+            registered: 780,
+            online: 15,
+            host: 'ADPEX Joint Stock Company',
+            link: 'https://secc.com.vn/events/',
+            realtimeLink: 'https://secc.com.vn/events/'
+        },
+        {
+            id: 'evt-5',
+            title: 'InnoEx 2026 - Business Innovation Forum',
+            sector: 'tech',
+            sectorLabel: 'Công nghệ / Innovation',
+            badgeClass: 'badge-tech',
+            format: 'hybrid',
+            formatLabel: 'Hybrid (Online & Offline)',
+            date: '27/08/2026 - 28/08/2026',
+            month: '8',
+            monthNum: '08',
+            day: '27',
+            location: 'Riverside Palace, Quận 4, TP.HCM',
+            registered: 1200,
+            online: 65,
+            host: 'BSSC & YBA HCM',
+            link: 'https://innoex.vn/',
+            realtimeLink: 'https://innoex.vn/'
+        },
+        {
+            id: 'evt-6',
+            title: 'EuroCham B2B Investment Webinar',
+            sector: 'finance',
+            sectorLabel: 'Tài chính / Đầu tư',
+            badgeClass: 'badge-finance',
+            format: 'online',
+            formatLabel: 'Online / Trực tuyến',
+            date: '18/08/2026 - 14:00',
+            month: '8',
+            monthNum: '08',
+            day: '18',
+            location: 'Zoom Meetings / Trực tuyến',
+            registered: 350,
+            online: 110,
+            host: 'EuroCham Vietnam',
+            link: 'https://www.eurocham-vietnam.org/',
+            realtimeLink: 'https://www.eurocham-vietnam.org/'
+        },
+        {
+            id: 'evt-7',
             title: 'Vietnam International Sourcing 2026',
             sector: 'logistics',
             sectorLabel: 'Sourcing / Supply Chain',
             badgeClass: 'badge-logistics',
             format: 'offline',
             formatLabel: 'Offline / Trực tiếp',
-            date: '03/09/2026 - 09:00',
+            date: '03/09/2026 - 05/09/2026',
+            month: '9',
+            monthNum: '09',
+            day: '03',
             location: 'SECC, Quận 7, TP.HCM',
-            registered: 1250,
-            online: 18,
+            registered: 1650,
+            online: 28,
             host: 'Bộ Công Thương (MoIT)',
-            link: 'https://vietnamsourcingexpo.vn/',
-            realtimeLink: 'https://vietnamsourcingexpo.vn/en/b2b-registration/'
+            link: 'https://secc.com.vn/events/',
+            realtimeLink: 'https://secc.com.vn/events/'
         },
         {
-            id: 'evt-2',
-            title: 'InnoEx 2026 - Business Innovation',
-            sector: 'tech',
-            sectorLabel: 'Công nghệ / Innovation',
-            badgeClass: 'badge-tech',
-            format: 'hybrid',
-            formatLabel: 'Hybrid (Online & Offline)',
-            date: '27/08/2026 - 08:30',
-            location: 'Riverside Palace, Quận 4, TP.HCM',
-            registered: 890,
-            online: 45,
-            host: 'BSSC & YBA HCM',
-            link: 'https://innoex.vn/',
-            realtimeLink: 'https://innoex.vn/en/innoex-ticket/'
-        },
-        {
-            id: 'evt-3',
-            title: 'Vietnam Expo 2026 (Hà Nội)',
-            sector: 'manufacturing',
-            sectorLabel: 'Sản xuất / Multi-sector',
-            badgeClass: 'badge-manufacturing',
-            format: 'offline',
-            formatLabel: 'Offline / Trực tiếp',
-            date: '03/12/2026 - 08:30',
-            location: 'I.C.E. Exhibition Center, Hoàn Kiếm, Hà Nội',
-            registered: 1540,
-            online: 22,
-            host: 'VINEXAD',
-            link: 'https://vietnamexpo.com.vn/',
-            realtimeLink: 'https://vietnamexpo.com.vn/en/tin-tuc-su-kien/'
-        },
-        {
-            id: 'evt-4',
+            id: 'evt-8',
             title: 'FBC ASEAN 2026 Manufacturing',
             sector: 'manufacturing',
             sectorLabel: 'Sản xuất / Chế tạo',
             badgeClass: 'badge-manufacturing',
             format: 'offline',
             formatLabel: 'Offline / Trực tiếp',
-            date: '16/09/2026 - 09:00',
+            date: '16/09/2026 - 18/09/2026',
+            month: '9',
+            monthNum: '09',
+            day: '16',
             location: 'I.C.E. Exhibition Center, Hà Nội',
-            registered: 670,
+            registered: 690,
             online: 14,
             host: 'Factory Network Asia',
             link: 'https://fbcasean.vn/',
-            realtimeLink: 'https://fbcasean.vn/en/contact-us/'
+            realtimeLink: 'https://fbcasean.vn/'
         },
         {
-            id: 'evt-5',
-            title: 'VIFA EXPO 2026 Furniture Fair',
+            id: 'evt-9',
+            title: 'Vietnam VTG 2026 (Textile & Garment)',
             sector: 'manufacturing',
-            sectorLabel: 'Đồ gỗ / Export',
+            sectorLabel: 'Sản xuất / Dệt may',
             badgeClass: 'badge-manufacturing',
             format: 'offline',
             formatLabel: 'Offline / Trực tiếp',
-            date: '08/03/2026 - 08:00',
+            date: '14/10/2026 - 17/10/2026',
+            month: '10',
+            monthNum: '10',
+            day: '14',
             location: 'SECC, Quận 7, TP.HCM',
-            registered: 2100,
-            online: 35,
-            host: 'Liên minh Gỗ Việt Nam (HAWA)',
-            link: 'https://www.vifafair.com/',
-            realtimeLink: 'https://www.vifafair.com/home/vifa-expo-visitor-registration/'
+            registered: 1350,
+            online: 20,
+            host: 'Chan Chao & VINEXAD',
+            link: 'https://vinexad.com.vn/',
+            realtimeLink: 'https://vinexad.com.vn/'
         },
         {
-            id: 'evt-6',
-            title: 'Pharmedi Vietnam 2026 Healthcare',
-            sector: 'finance',
-            sectorLabel: 'Y tế / Healthcare B2B',
-            badgeClass: 'badge-finance',
-            format: 'hybrid',
-            formatLabel: 'Hybrid (Online & Offline)',
-            date: '22/09/2026 - 09:00',
+            id: 'evt-10',
+            title: 'Vietnam Expo HCMC 2026',
+            sector: 'manufacturing',
+            sectorLabel: 'Sản xuất / Giao thương',
+            badgeClass: 'badge-manufacturing',
+            format: 'offline',
+            formatLabel: 'Offline / Trực tiếp',
+            date: '03/12/2026 - 05/12/2026',
+            month: '12',
+            monthNum: '12',
+            day: '03',
             location: 'SECC, Quận 7, TP.HCM',
-            registered: 950,
-            online: 26,
-            host: 'ADPEX Joint Stock Company',
-            link: 'https://www.pharmed.vn/',
-            realtimeLink: 'https://www.pharmed.vn/en/page/pre-register'
+            registered: 2400,
+            online: 52,
+            host: 'VINEXAD',
+            link: 'https://vietnamexpo.com.vn/',
+            realtimeLink: 'https://vietnamexpo.com.vn/'
         }
     ];
 
@@ -1111,6 +1206,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const eventSearch = document.getElementById('event-search');
     const eventFilter = document.getElementById('event-filter');
     const liveUpdateTimer = document.getElementById('live-update-timer');
+    let selectedMonth = 'all';
 
     function renderEvents() {
         if (!eventsGrid) return;
@@ -1129,7 +1225,8 @@ document.addEventListener('DOMContentLoaded', () => {
                                  evt.sectorLabel.toLowerCase().includes(searchQuery);
             const matchesSector = sectorQuery === 'all' || evt.sector === sectorQuery;
             const matchesFormat = formatQuery === 'all' || evt.format === formatQuery;
-            return matchesSearch && matchesSector && matchesFormat;
+            const matchesMonth = selectedMonth === 'all' || evt.month === selectedMonth;
+            return matchesSearch && matchesSector && matchesFormat && matchesMonth;
         });
 
         if (filtered.length === 0) {
@@ -1144,6 +1241,11 @@ document.addEventListener('DOMContentLoaded', () => {
         eventsGrid.innerHTML = filtered.map(evt => `
             <div class="event-card glass-effect" id="${evt.id}">
                 <div class="event-header" style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-bottom: 12px; width: 100%;">
+                    <!-- Calendar Date Block -->
+                    <div style="display: flex; align-items: center; gap: 8px; background: rgba(255,255,255,0.08); padding: 4px 10px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1);">
+                        <span style="font-size: 1.1rem; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));">📅</span>
+                        <span style="font-size: 0.8rem; font-weight: 800; color: var(--primary-light);">T.${evt.monthNum}/${evt.day}</span>
+                    </div>
                     <span class="event-badge ${evt.badgeClass}" style="margin: 0;">${evt.sectorLabel}</span>
                     <span class="format-badge ${evt.format}" style="font-size: 0.7rem; font-weight: 800; padding: 4px 8px; border-radius: 6px; text-transform: uppercase; background: rgba(255,255,255,0.05); border: 1px solid ${evt.format === 'online' ? 'rgba(16,185,129,0.3)' : evt.format === 'hybrid' ? 'rgba(245,158,11,0.3)' : 'rgba(59,130,246,0.3)'}; color: ${evt.format === 'online' ? '#10b981' : evt.format === 'hybrid' ? '#f59e0b' : '#3b82f6'};">
                         ${evt.formatLabel}
@@ -1189,6 +1291,27 @@ document.addEventListener('DOMContentLoaded', () => {
     
     const eventFormatFilter = document.getElementById('event-format-filter');
     if (eventFormatFilter) eventFormatFilter.addEventListener('change', renderEvents);
+
+    const monthTabs = document.querySelectorAll('.month-tab');
+    monthTabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+            monthTabs.forEach(t => {
+                t.classList.remove('active');
+                t.style.background = 'rgba(255,255,255,0.05)';
+                t.style.color = 'var(--text-primary)';
+                t.style.borderColor = 'var(--border-color)';
+                t.style.boxShadow = 'none';
+            });
+            tab.classList.add('active');
+            tab.style.background = 'var(--primary)';
+            tab.style.color = '#fff';
+            tab.style.borderColor = 'var(--primary)';
+            tab.style.boxShadow = 'var(--shadow-sm)';
+            
+            selectedMonth = tab.getAttribute('data-month');
+            renderEvents();
+        });
+    });
 
     // Initial render
     renderEvents();
