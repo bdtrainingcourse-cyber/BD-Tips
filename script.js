@@ -1020,7 +1020,8 @@ document.addEventListener('DOMContentLoaded', () => {
             registered: 480,
             online: 12,
             host: 'Vietnam SaaS Alliance',
-            link: 'https://www.topcv.vn/'
+            link: 'https://ticketbox.vn/',
+            realtimeLink: 'https://ticketbox.vn/search?q=SaaS'
         },
         {
             id: 'evt-2',
@@ -1033,7 +1034,8 @@ document.addEventListener('DOMContentLoaded', () => {
             registered: 320,
             online: 8,
             host: 'Vietnam Logistics Association',
-            link: 'https://vla.com.vn/'
+            link: 'https://vla.com.vn/',
+            realtimeLink: 'https://vla.com.vn/tin-tuc-su-kien.html'
         },
         {
             id: 'evt-3',
@@ -1046,7 +1048,8 @@ document.addEventListener('DOMContentLoaded', () => {
             registered: 250,
             online: 5,
             host: 'B2B Marketing Hub',
-            link: 'https://vinalink.com/'
+            link: 'https://vinalink.com/',
+            realtimeLink: 'https://vinalink.com/dao-tao-marketing'
         },
         {
             id: 'evt-4',
@@ -1059,7 +1062,8 @@ document.addEventListener('DOMContentLoaded', () => {
             registered: 550,
             online: 18,
             host: 'Fintech Vietnam Forum',
-            link: 'https://vietnamfintech.vn/'
+            link: 'https://vietnamfintech.vn/',
+            realtimeLink: 'https://vietnamfintech.vn/category/tin-tuc-su-kien/'
         },
         {
             id: 'evt-5',
@@ -1072,7 +1076,8 @@ document.addEventListener('DOMContentLoaded', () => {
             registered: 720,
             online: 22,
             host: 'VCCI Vietnam',
-            link: 'https://secc.com.vn/'
+            link: 'https://secc.com.vn/',
+            realtimeLink: 'https://secc.com.vn/lich-trien-lam/'
         },
         {
             id: 'evt-6',
@@ -1085,7 +1090,8 @@ document.addEventListener('DOMContentLoaded', () => {
             registered: 150,
             online: 6,
             host: 'Peter Vo & Partners',
-            link: 'https://www.linkedin.com/'
+            link: 'https://www.linkedin.com/',
+            realtimeLink: 'https://www.linkedin.com/search/results/all/?keywords=B2B%20Partnership%20Vietnam'
         }
     ];
 
@@ -1140,13 +1146,18 @@ document.addEventListener('DOMContentLoaded', () => {
                         <span>${evt.host}</span>
                     </div>
                 </div>
-                <div class="event-live-stats">
+                <div class="event-live-stats" style="display: flex; justify-content: space-between; align-items: center; width: 100%; gap: 10px; flex-wrap: wrap;">
                     <div class="attendees-count" id="count-${evt.id}">
                         👥 <strong>${evt.registered}</strong> Đã đăng ký
                     </div>
-                    <a href="${evt.link}" target="_blank" rel="noopener noreferrer" class="event-register-btn">
-                        Đăng Ký &rarr;
-                    </a>
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                        <a href="${evt.realtimeLink}" target="_blank" rel="noopener noreferrer" class="event-realtime-link" style="font-size: 0.85rem; color: #11998e; text-decoration: none; border-bottom: 1px dashed #11998e; transition: all 0.3s; font-weight: 600;">
+                            Chi tiết realtime ↗
+                        </a>
+                        <a href="${evt.link}" target="_blank" rel="noopener noreferrer" class="event-register-btn">
+                            Đăng Ký &rarr;
+                        </a>
+                    </div>
                 </div>
             </div>
         `).join('');
