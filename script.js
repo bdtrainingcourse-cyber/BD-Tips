@@ -1292,7 +1292,11 @@ document.addEventListener('DOMContentLoaded', () => {
                         ${evt.online > 0 ? '<span class="live-dot" style="display:inline-block; width:6px; height:6px; background:#ef4444; border-radius:50%; box-shadow:0 0 6px #ef4444; animation:pulse 1.5s infinite;"></span> ' + evt.online + ' Online' : 'Đăng ký mở'}
                     </span>
                 </div>
-                <h3 class="event-title" style="margin-top: 5px;">${evt.title}</h3>
+                <h3 class="event-title" style="margin-top: 5px;">
+                    <a href="${evt.link}" target="_blank" rel="noopener noreferrer" style="color: inherit; text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='inherit'">
+                        ${evt.title}
+                    </a>
+                </h3>
                 <div class="event-meta">
                     <div class="meta-item">
                         <span>📅</span>
