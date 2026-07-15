@@ -1011,87 +1011,99 @@ document.addEventListener('DOMContentLoaded', () => {
     const b2bEvents = [
         {
             id: 'evt-1',
-            title: 'Vietnam SaaS Summit 2026',
-            sector: 'tech',
-            sectorLabel: 'Công nghệ / SaaS',
-            badgeClass: 'badge-tech',
-            date: '25/08/2026 - 08:30',
-            location: 'GEM Center, Quận 1, TP.HCM',
-            registered: 480,
-            online: 12,
-            host: 'Vietnam SaaS Alliance',
-            link: 'https://ticketbox.vn/',
-            realtimeLink: 'https://ticketbox.vn/search?q=SaaS'
+            title: 'Vietnam International Sourcing 2026',
+            sector: 'logistics',
+            sectorLabel: 'Sourcing / Supply Chain',
+            badgeClass: 'badge-logistics',
+            format: 'offline',
+            formatLabel: 'Offline / Trực tiếp',
+            date: '03/09/2026 - 09:00',
+            location: 'SECC, Quận 7, TP.HCM',
+            registered: 1250,
+            online: 18,
+            host: 'Bộ Công Thương (MoIT)',
+            link: 'https://vietnamsourcingexpo.vn/',
+            realtimeLink: 'https://vietnamsourcingexpo.vn/en/b2b-registration/'
         },
         {
             id: 'evt-2',
-            title: 'B2B Logistics & Supply Chain Forum',
-            sector: 'logistics',
-            sectorLabel: 'Vận tải / Logistics',
-            badgeClass: 'badge-logistics',
-            date: '10/09/2026 - 13:30',
-            location: 'Lotte Hotel, Ba Đình, Hà Nội',
-            registered: 320,
-            online: 8,
-            host: 'Vietnam Logistics Association',
-            link: 'https://vla.com.vn/',
-            realtimeLink: 'https://vla.com.vn/tin-tuc-su-kien.html'
+            title: 'InnoEx 2026 - Business Innovation',
+            sector: 'tech',
+            sectorLabel: 'Công nghệ / Innovation',
+            badgeClass: 'badge-tech',
+            format: 'hybrid',
+            formatLabel: 'Hybrid (Online & Offline)',
+            date: '27/08/2026 - 08:30',
+            location: 'Riverside Palace, Quận 4, TP.HCM',
+            registered: 890,
+            online: 45,
+            host: 'BSSC & YBA HCM',
+            link: 'https://innoex.vn/',
+            realtimeLink: 'https://innoex.vn/en/innoex-ticket/'
         },
         {
             id: 'evt-3',
-            title: 'Digital Marketing B2B Agency Show',
-            sector: 'agency',
-            sectorLabel: 'Agency / Marketing',
-            badgeClass: 'badge-agency',
-            date: '18/09/2026 - 09:00',
-            location: 'Adora Center, Tân Bình, TP.HCM',
-            registered: 250,
-            online: 5,
-            host: 'B2B Marketing Hub',
-            link: 'https://vinalink.com/',
-            realtimeLink: 'https://vinalink.com/dao-tao-marketing'
+            title: 'Vietnam Expo 2026 (Hà Nội)',
+            sector: 'manufacturing',
+            sectorLabel: 'Sản xuất / Multi-sector',
+            badgeClass: 'badge-manufacturing',
+            format: 'offline',
+            formatLabel: 'Offline / Trực tiếp',
+            date: '03/12/2026 - 08:30',
+            location: 'I.C.E. Exhibition Center, Hoàn Kiếm, Hà Nội',
+            registered: 1540,
+            online: 22,
+            host: 'VINEXAD',
+            link: 'https://vietnamexpo.com.vn/',
+            realtimeLink: 'https://vietnamexpo.com.vn/en/tin-tuc-su-kien/'
         },
         {
             id: 'evt-4',
-            title: 'Vietnam FinTech Trade Conference',
-            sector: 'finance',
-            sectorLabel: 'Tài chính / FinTech',
-            badgeClass: 'badge-finance',
-            date: '05/10/2026 - 08:00',
-            location: 'InterContinental, Tây Hồ, Hà Nội',
-            registered: 550,
-            online: 18,
-            host: 'Fintech Vietnam Forum',
-            link: 'https://vietnamfintech.vn/',
-            realtimeLink: 'https://vietnamfintech.vn/category/tin-tuc-su-kien/'
+            title: 'FBC ASEAN 2026 Manufacturing',
+            sector: 'manufacturing',
+            sectorLabel: 'Sản xuất / Chế tạo',
+            badgeClass: 'badge-manufacturing',
+            format: 'offline',
+            formatLabel: 'Offline / Trực tiếp',
+            date: '16/09/2026 - 09:00',
+            location: 'I.C.E. Exhibition Center, Hà Nội',
+            registered: 670,
+            online: 14,
+            host: 'Factory Network Asia',
+            link: 'https://fbcasean.vn/',
+            realtimeLink: 'https://fbcasean.vn/en/contact-us/'
         },
         {
             id: 'evt-5',
-            title: 'Smart Manufacturing & Industrial B2B Expo',
+            title: 'VIFA EXPO 2026 Furniture Fair',
             sector: 'manufacturing',
-            sectorLabel: 'Sản xuất / Công nghiệp',
+            sectorLabel: 'Đồ gỗ / Export',
             badgeClass: 'badge-manufacturing',
-            date: '22/10/2026 - 09:00',
+            format: 'offline',
+            formatLabel: 'Offline / Trực tiếp',
+            date: '08/03/2026 - 08:00',
             location: 'SECC, Quận 7, TP.HCM',
-            registered: 720,
-            online: 22,
-            host: 'VCCI Vietnam',
-            link: 'https://secc.com.vn/',
-            realtimeLink: 'https://secc.com.vn/lich-trien-lam/'
+            registered: 2100,
+            online: 35,
+            host: 'Liên minh Gỗ Việt Nam (HAWA)',
+            link: 'https://www.vifafair.com/',
+            realtimeLink: 'https://www.vifafair.com/home/vifa-expo-visitor-registration/'
         },
         {
             id: 'evt-6',
-            title: 'B2B Partnership & Channel Sales Masterclass',
-            sector: 'tech',
-            sectorLabel: 'Công nghệ / Partnerships',
-            badgeClass: 'badge-tech',
-            date: '12/11/2026 - 14:00',
-            location: 'Khách sạn Caravelle, Quận 1, TP.HCM',
-            registered: 150,
-            online: 6,
-            host: 'Peter Vo & Partners',
-            link: 'https://www.linkedin.com/',
-            realtimeLink: 'https://www.linkedin.com/search/results/all/?keywords=B2B%20Partnership%20Vietnam'
+            title: 'Pharmedi Vietnam 2026 Healthcare',
+            sector: 'finance',
+            sectorLabel: 'Y tế / Healthcare B2B',
+            badgeClass: 'badge-finance',
+            format: 'hybrid',
+            formatLabel: 'Hybrid (Online & Offline)',
+            date: '22/09/2026 - 09:00',
+            location: 'SECC, Quận 7, TP.HCM',
+            registered: 950,
+            online: 26,
+            host: 'ADPEX Joint Stock Company',
+            link: 'https://www.pharmed.vn/',
+            realtimeLink: 'https://www.pharmed.vn/en/page/pre-register'
         }
     ];
 
@@ -1109,7 +1121,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const filtered = b2bEvents.filter(evt => {
             const matchesSearch = evt.title.toLowerCase().includes(searchQuery) ||
                                  evt.location.toLowerCase().includes(searchQuery) ||
-                                 evt.host.toLowerCase().includes(searchQuery);
+                                 evt.host.toLowerCase().includes(searchQuery) ||
+                                 evt.sectorLabel.toLowerCase().includes(searchQuery);
             const matchesFilter = filterQuery === 'all' || evt.sector === filterQuery;
             return matchesSearch && matchesFilter;
         });
@@ -1125,13 +1138,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
         eventsGrid.innerHTML = filtered.map(evt => `
             <div class="event-card glass-effect" id="${evt.id}">
-                <div class="event-header">
-                    <span class="event-badge ${evt.badgeClass}">${evt.sectorLabel}</span>
-                    <span class="event-status ${evt.online > 0 ? 'live' : ''}">
+                <div class="event-header" style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-bottom: 12px; width: 100%;">
+                    <span class="event-badge ${evt.badgeClass}" style="margin: 0;">${evt.sectorLabel}</span>
+                    <span class="format-badge ${evt.format}" style="font-size: 0.7rem; font-weight: 800; padding: 4px 8px; border-radius: 6px; text-transform: uppercase; background: rgba(255,255,255,0.05); border: 1px solid ${evt.format === 'online' ? 'rgba(16,185,129,0.3)' : evt.format === 'hybrid' ? 'rgba(245,158,11,0.3)' : 'rgba(59,130,246,0.3)'}; color: ${evt.format === 'online' ? '#10b981' : evt.format === 'hybrid' ? '#f59e0b' : '#3b82f6'};">
+                        ${evt.formatLabel}
+                    </span>
+                    <span class="event-status ${evt.online > 0 ? 'live' : ''}" style="margin-left: auto;">
                         ${evt.online > 0 ? '<span class="live-dot" style="display:inline-block; width:6px; height:6px; background:#ef4444; border-radius:50%; box-shadow:0 0 6px #ef4444; animation:pulse 1.5s infinite;"></span> ' + evt.online + ' Online' : 'Đăng ký mở'}
                     </span>
                 </div>
-                <h3 class="event-title">${evt.title}</h3>
+                <h3 class="event-title" style="margin-top: 5px;">${evt.title}</h3>
                 <div class="event-meta">
                     <div class="meta-item">
                         <span>📅</span>
