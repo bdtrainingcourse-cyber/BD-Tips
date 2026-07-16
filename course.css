@@ -649,6 +649,66 @@
     display: block;
 }
 
+/* Testimonial Header, Rating and Badges */
+.testimonial-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    border-bottom: 1px dashed rgba(0,0,0,0.05);
+    padding-bottom: 10px;
+}
+
+.testimonial-rating-row {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.testimonial-stars {
+    color: #ffb800;
+    font-size: 0.85rem;
+    letter-spacing: -1px;
+}
+
+.testimonial-rating-val {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--text-main);
+}
+
+.testimonial-date {
+    font-size: 0.75rem;
+    color: var(--text-light);
+}
+
+.linkedin-verified-badge {
+    display: inline-flex;
+    align-items: center;
+    background: rgba(0, 119, 181, 0.06);
+    border-radius: 12px;
+    padding: 3px 8px;
+    border: 1px solid rgba(0, 119, 181, 0.12);
+}
+
+.linkedin-verified-badge svg {
+    margin-right: 4px;
+}
+
+.linkedin-verified-badge .badge-text {
+    font-size: 0.68rem;
+    color: #0077b5;
+    font-weight: 700;
+}
+
+/* Hidden Testimonial Cards & Toggling */
+.testimonial-card.testimonial-hidden {
+    display: none;
+    opacity: 0;
+    transform: translateY(15px);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
 /* Class Photos Gallery Section */
 .gallery-section {
     background: #f1f7f4;
