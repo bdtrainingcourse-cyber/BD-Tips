@@ -22,7 +22,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const outputEmpty = document.getElementById('output-empty');
     const outputLoading = document.getElementById('output-loading');
     const outputResult = document.getElementById('output-result');
-
+    const tableSearch = document.getElementById('table-search');
+    const resultsTbody = document.getElementById('results-tbody');
     const evalResultSection = document.getElementById('eval-result-section');
     const subjectLinesSection = document.getElementById('subject-lines-section');
     const scoreCircle = document.getElementById('score-circle');
@@ -34,6 +35,23 @@ document.addEventListener('DOMContentLoaded', () => {
     const draftTitle = document.getElementById('draft-title');
     const draftContent = document.getElementById('draft-content');
     const copyDraftBtn = document.getElementById('copy-draft-btn');
+
+    // Unlock Modal Elements
+    const unlockModal = document.getElementById('unlock-modal');
+    const unlockModalCloseBtn = document.getElementById('unlock-modal-close-btn');
+    const unlockForm = document.getElementById('unlock-form');
+    const unlockEmailInput = document.getElementById('unlock-email-input');
+    let pendingUnlockAction = null;
+
+    function requireEmailUnlock(callback) {
+        if (localStorage.getItem('user_gated_email')) {
+            if (callback) callback();
+            return true;
+        }
+        pendingUnlockAction = callback;
+        unlockModal.classList.remove('hidden');
+        return false;
+    }
 
     // --- 2. Initialize Settings & Key Warning ---
     let hasSharedKey = false;
@@ -161,25 +179,65 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- 5. Clipboard Copy Utility ---
     function setupCopyListener(button, textGetter) {
         button.addEventListener('click', () => {
-            const text = textGetter();
-            navigator.clipboard.writeText(text).then(() => {
-                const originalText = button.innerHTML;
-                button.textContent = 'Copied!';
-                button.style.background = 'var(--primary)';
-                button.style.borderColor = 'var(--primary)';
-                button.style.color = '#ffffff';
-                setTimeout(() => {
-                    button.innerHTML = originalText;
-                    button.style.background = '';
-                    button.style.borderColor = '';
-                    button.style.color = '';
-                }, 1500);
-            }).catch(err => {
-                console.error('Lỗi khi sao chép:', err);
+            requireEmailUnlock(() => {
+                const text = textGetter();
+                navigator.clipboard.writeText(text).then(() => {
+                    const originalText = button.innerHTML;
+                    button.textContent = 'Copied!';
+                    button.style.background = 'var(--primary)';
+                    button.style.borderColor = 'var(--primary)';
+                    button.style.color = '#ffffff';
+                    setTimeout(() => {
+                        button.innerHTML = originalText;
+                        button.style.background = '';
+                        button.style.borderColor = '';
+                        button.style.color = '';
+                    }, 1500);
+                }).catch(err => {
+                    console.error('Lỗi khi sao chép:', err);
+                });
             });
         });
     }
     setupCopyListener(copyDraftBtn, () => draftContent.textContent);
+
+    // --- Unlock Modal Event Listeners ---
+    unlockModalCloseBtn.addEventListener('click', () => {
+        unlockModal.classList.add('hidden');
+        pendingUnlockAction = null;
+    });
+
+    unlockModal.addEventListener('click', (e) => {
+        if (e.target === unlockModal) {
+            unlockModal.classList.add('hidden');
+            pendingUnlockAction = null;
+        }
+    });
+
+    unlockForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const email = unlockEmailInput.value.trim();
+        if (email && email.includes('@')) {
+            localStorage.setItem('user_gated_email', email);
+            unlockModal.classList.add('hidden');
+            
+            // Log email to backend serverless function
+            try {
+                await fetch('/api/log-email', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email: email, tool: 'Email Assistant' })
+                });
+            } catch (err) {
+                console.error('Failed to log email to backend:', err);
+            }
+
+            if (pendingUnlockAction) {
+                pendingUnlockAction();
+                pendingUnlockAction = null;
+            }
+        }
+    });
 
     // --- 6. Form Handlers ---
     evaluateForm.addEventListener('submit', async (e) => {
