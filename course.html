@@ -87,146 +87,380 @@
     <section class="section" id="agenda-section" style="background: #ffffff; border-bottom: 1px solid rgba(0,0,0,0.05);">
         <div class="container">
             <h2 class="section-title">Nội Dung Khóa Học</h2>
-            <p class="section-subtitle">Chương trình huấn luyện toàn diện 4 phần giúp bạn chuyển hóa từ người bán hàng truyền thống thành chuyên gia phát triển đối tác B2B xuất sắc.</p>
+            <p class="section-subtitle">Chương trình huấn luyện toàn diện 4 ngày thực chiến giúp bạn chuyển hóa từ tư duy bán hàng truyền thống sang chuyên gia phát triển đối tác B2B xuất sắc.</p>
             
             <div class="agenda-tabs">
-                <button class="agenda-tab-btn active" onclick="switchTab(1)">Phần 1: Strong Mindset</button>
-                <button class="agenda-tab-btn" onclick="switchTab(2)">Phần 2: Useful Skillsets</button>
-                <button class="agenda-tab-btn" onclick="switchTab(3)">Phần 3: Tools & AI</button>
-                <button class="agenda-tab-btn" onclick="switchTab(4)">Phần 4: Pitching Test</button>
+                <button class="agenda-tab-btn active" onclick="switchTab(1)">Ngày 1: BD Mindsets</button>
+                <button class="agenda-tab-btn" onclick="switchTab(2)">Ngày 2: BD Skillsets (P1)</button>
+                <button class="agenda-tab-btn" onclick="switchTab(3)">Ngày 3: BD Skillsets (P2)</button>
+                <button class="agenda-tab-btn" onclick="switchTab(4)">Ngày 4: BD Toolsets</button>
             </div>
 
-            <!-- Tab 1 -->
+            <!-- Interactive Readiness Indicator -->
+            <div class="readiness-indicator" style="background: rgba(11, 138, 79, 0.04); border: 1px solid rgba(11, 138, 79, 0.12); padding: 20px; border-radius: 16px; margin: 30px auto; max-width: 800px; text-align: center; box-shadow: var(--shadow-sm);">
+                <div style="font-weight: 700; color: var(--text-main); font-size: 1.1rem; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
+                    <span>⚡ Mức độ sẵn sàng thực chiến B2B của bạn:</span>
+                    <span id="readiness-percentage" style="color: var(--primary); font-size: 1.3rem; font-weight: 800;">0%</span>
+                </div>
+                <div class="readiness-progress-track" style="background: rgba(0,0,0,0.06); height: 12px; border-radius: 10px; overflow: hidden; position: relative;">
+                    <div id="readiness-progress-fill" style="background: linear-gradient(90deg, #10b981 0%, var(--primary) 100%); width: 0%; height: 100%; border-radius: 10px; transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);"></div>
+                </div>
+                <p id="readiness-status" style="margin-top: 10px; font-size: 0.9rem; color: var(--text-light); font-style: italic;">Nhấn chọn các mục kiến thức bạn muốn làm chủ dưới đây và theo dõi cột mốc tăng trưởng thực chiến!</p>
+            </div>
+
+            <!-- Tab 1: Day 1 -->
             <div class="agenda-content-panel active" id="panel-1">
                 <div class="panel-header">
                     <div class="panel-icon">🧠</div>
                     <div>
-                        <span class="panel-subtitle">Part I</span>
-                        <h3 class="panel-title">Build the Strong Mindset</h3>
+                        <span class="panel-subtitle">Day 1</span>
+                        <h3 class="panel-title">BD Mindsets - Tư duy đối tác đột phá</h3>
                     </div>
                 </div>
                 <div class="panel-body">
-                    <div class="syllabus-item">
-                        <div class="syllabus-checkbox">✓</div>
-                        <div class="syllabus-text">
-                            <h4>Resilience & Persistence (Kiên Trì & Bền Bỉ)</h4>
-                            <p>Cách chuyển hóa mọi lời từ chối thành cơ hội tiếp cận và vực dậy bản thân mạnh mẽ sau mỗi thương vụ thất bại.</p>
+                    <div class="syllabus-item-interactive" onclick="toggleSyllabusItem(this)">
+                        <div class="syllabus-checkbox-container" onclick="handleCheckboxClick(event, this)">
+                            <input type="checkbox" class="syllabus-check-input" id="item-1-1" onchange="updateReadinessProgress()">
+                            <label for="item-1-1" class="syllabus-check-label"></label>
+                        </div>
+                        <div class="syllabus-text-container">
+                            <div class="syllabus-title-row">
+                                <h4>1. Bản chất & Nền tảng BD thực chiến (Foundation of BD)</h4>
+                                <span class="expand-icon">+</span>
+                            </div>
+                            <div class="syllabus-details">
+                                <p>Định nghĩa lại BD chuyên nghiệp - không chỉ là bán hàng thông thường, mà là nghệ thuật kiến tạo quan hệ đối tác chiến lược dài hạn và bền vững.</p>
+                                <div class="syllabus-tip">
+                                    <strong>💡 Bí quyết thực chiến:</strong> Muốn tiếp cận doanh nghiệp lớn thành công, hãy tập trung giải quyết bài toán giá trị (Value proposition) chứ đừng chăm chăm giới thiệu tính năng sản phẩm của bạn.
+                                </div>
+                            </div>
                         </div>
                     </div>
-                    <div class="syllabus-item">
-                        <div class="syllabus-checkbox">✓</div>
-                        <div class="syllabus-text">
-                            <h4>Confidence & Conviction (Tự Tin & Kiên Định)</h4>
-                            <p>Xây dựng phong thái chuyên nghiệp, kiên định bảo vệ giải pháp và giá trị cốt lõi của doanh nghiệp trước khách hàng.</p>
+                    <div class="syllabus-item-interactive" onclick="toggleSyllabusItem(this)">
+                        <div class="syllabus-checkbox-container" onclick="handleCheckboxClick(event, this)">
+                            <input type="checkbox" class="syllabus-check-input" id="item-1-2" onchange="updateReadinessProgress()">
+                            <label for="item-1-2" class="syllabus-check-label"></label>
+                        </div>
+                        <div class="syllabus-text-container">
+                            <div class="syllabus-title-row">
+                                <h4>2. Tư duy kiên định của người chiến thắng (Mindsets Keeps you Win)</h4>
+                                <span class="expand-icon">+</span>
+                            </div>
+                            <div class="syllabus-details">
+                                <p>Bí quyết duy trì ngọn lửa nhiệt huyết, bền bỉ trước mọi lời từ chối và nghệ thuật chuyển hóa từ trạng thái "Bị cự tuyệt" sang cơ hội tiếp cận tiếp theo.</p>
+                                <div class="syllabus-tip">
+                                    <strong>💡 Bí quyết thực chiến:</strong> Lời từ chối đầu tiên của khách hàng thường chỉ là rào cản phòng vệ tự nhiên. Người làm BD xuất sắc xem đây là điểm khởi đầu để tìm hiểu sâu hơn nhu cầu thực tế.
+                                </div>
+                            </div>
                         </div>
                     </div>
-                    <div class="syllabus-item">
-                        <div class="syllabus-checkbox">✓</div>
-                        <div class="syllabus-text">
-                            <h4>Proactive Opportunity Spotting (Chủ Động Khai Thác Cơ Hội)</h4>
-                            <p>Rèn luyện nhạy bén kinh doanh để nhìn thấy cơ hội hợp tác và nguồn doanh thu tiềm năng ở những nơi người khác bỏ qua.</p>
+                    <div class="syllabus-item-interactive" onclick="toggleSyllabusItem(this)">
+                        <div class="syllabus-checkbox-container" onclick="handleCheckboxClick(event, this)">
+                            <input type="checkbox" class="syllabus-check-input" id="item-1-3" onchange="updateReadinessProgress()">
+                            <label for="item-1-3" class="syllabus-check-label"></label>
+                        </div>
+                        <div class="syllabus-text-container">
+                            <div class="syllabus-title-row">
+                                <h4>3. Xây dựng thương hiệu cá nhân trên LinkedIn (Build an Effective LinkedIn)</h4>
+                                <span class="expand-icon">+</span>
+                            </div>
+                            <div class="syllabus-details">
+                                <p>Từng bước tối ưu profile cá nhân chuẩn chuyên nghiệp để thu hút nhà tuyển dụng & đối tác. Phương pháp viết bài tạo tương tác lớn và kết nối trực tiếp với PIC (Person In Charge) cấp cao.</p>
+                                <div class="syllabus-tip">
+                                    <strong>💡 Bí quyết thực chiến:</strong> Đừng đăng bài bán hàng trực tiếp trên LinkedIn. Hãy chia sẻ insight ngành, case-study thực tế để định vị bản thân là một chuyên gia đáng tin cậy.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="syllabus-item-interactive" onclick="toggleSyllabusItem(this)">
+                        <div class="syllabus-checkbox-container" onclick="handleCheckboxClick(event, this)">
+                            <input type="checkbox" class="syllabus-check-input" id="item-1-4" onchange="updateReadinessProgress()">
+                            <label for="item-1-4" class="syllabus-check-label"></label>
+                        </div>
+                        <div class="syllabus-text-container">
+                            <div class="syllabus-title-row">
+                                <h4>4. Quy trình phát triển kinh doanh chuẩn mực (Business Development Process)</h4>
+                                <span class="expand-icon">+</span>
+                            </div>
+                            <div class="syllabus-details">
+                                <p>Nắm vững chu trình BD toàn diện từ nghiên cứu thị trường, tiếp cận đối tác tiềm năng, xây dựng đề xuất giá trị đến ký kết hợp đồng dài hạn.</p>
+                                <div class="syllabus-tip">
+                                    <strong>💡 Bí quyết thực chiến:</strong> Hãy xây dựng một phễu BD có tính lặp lại (repeatable) để kiểm soát chất lượng và số lượng cơ hội hợp tác ở từng giai đoạn một cách khoa học.
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Tab 2 -->
+            <!-- Tab 2: Day 2 -->
             <div class="agenda-content-panel" id="panel-2">
                 <div class="panel-header">
-                    <div class="panel-icon">🛠️</div>
+                    <div class="panel-icon">🤝</div>
                     <div>
-                        <span class="panel-subtitle">Part II</span>
-                        <h3 class="panel-title">Master Useful Skillsets</h3>
+                        <span class="panel-subtitle">Day 2</span>
+                        <h3 class="panel-title">BD Skillsets (P1) - Kỹ năng giao tiếp bậc thầy</h3>
                     </div>
                 </div>
                 <div class="panel-body">
-                    <div class="syllabus-item">
-                        <div class="syllabus-checkbox">✓</div>
-                        <div class="syllabus-text">
-                            <h4>Smart Prospecting (Tìm Kiếm Khách Hàng Thông Minh)</h4>
-                            <p>Phương pháp nghiên cứu, phân tích chuỗi giá trị đối tác và kết nối chuẩn xác với những người có quyền quyết định (PIC) hiệu quả nhất.</p>
+                    <div class="syllabus-item-interactive" onclick="toggleSyllabusItem(this)">
+                        <div class="syllabus-checkbox-container" onclick="handleCheckboxClick(event, this)">
+                            <input type="checkbox" class="syllabus-check-input" id="item-2-1" onchange="updateReadinessProgress()">
+                            <label for="item-2-1" class="syllabus-check-label"></label>
+                        </div>
+                        <div class="syllabus-text-container">
+                            <div class="syllabus-title-row">
+                                <h4>1. Nghệ thuật lắng nghe thấu cảm (Become a Effective Listener)</h4>
+                                <span class="expand-icon">+</span>
+                            </div>
+                            <div class="syllabus-details">
+                                <p>Làm chủ kỹ năng lắng nghe chủ động để khai thác sâu những bài toán, trăn trở ngầm hiểu (unspoken pain points) mà đối tác chưa từng chia sẻ thẳng thắn.</p>
+                                <div class="syllabus-tip">
+                                    <strong>💡 Bí quyết thực chiến:</strong> Áp dụng quy tắc lắng nghe 80/20. Hãy để đối tác nói 80% thời gian, bạn đặt các câu hỏi mở chất lượng cao trong 20% thời gian còn lại.
+                                </div>
+                            </div>
                         </div>
                     </div>
-                    <div class="syllabus-item">
-                        <div class="syllabus-checkbox">✓</div>
-                        <div class="syllabus-text">
-                            <h4>Realistic Skillsets (Kỹ Năng Thực Tế)</h4>
-                            <p>Xây dựng lòng tin với đối tác thông qua các cuộc trò chuyện tự nhiên, thấu hiểu bài toán kinh doanh thực tế để đi đến hợp đồng.</p>
+                    <div class="syllabus-item-interactive" onclick="toggleSyllabusItem(this)">
+                        <div class="syllabus-checkbox-container" onclick="handleCheckboxClick(event, this)">
+                            <input type="checkbox" class="syllabus-check-input" id="item-2-2" onchange="updateReadinessProgress()">
+                            <label for="item-2-2" class="syllabus-check-label"></label>
+                        </div>
+                        <div class="syllabus-text-container">
+                            <div class="syllabus-title-row">
+                                <h4>2. Kỹ năng giao tiếp & kết nối đỉnh cao (Become a Great Communicator)</h4>
+                                <span class="expand-icon">+</span>
+                            </div>
+                            <div class="syllabus-details">
+                                <p>Nghệ thuật trò chuyện tự nhiên, phá băng (ice-breaking) hiệu quả và xây dựng mối liên kết tin cậy (rapport) sâu sắc từ những giây đầu tiên gặp gỡ.</p>
+                                <div class="syllabus-tip">
+                                    <strong>💡 Bí quyết thực chiến:</strong> Giao tiếp xuất sắc là đồng điệu nhịp điệu. Hãy quan sát và điều chỉnh tốc độ nói, tông giọng và ngôn ngữ cơ thể sao cho phù hợp với phong cách của đối tác.
+                                </div>
+                            </div>
                         </div>
                     </div>
-                    <div class="syllabus-item">
-                        <div class="syllabus-checkbox">✓</div>
-                        <div class="syllabus-text">
-                            <h4>Handle Objections (Xử Lý Từ Chối)</h4>
-                            <p>Bộ kỹ năng ứng biến linh hoạt, trả lời thuyết phục các câu hỏi hóc búa về giá cả, năng lực và khẳng định vị thế khác biệt của bạn.</p>
+                    <div class="syllabus-item-interactive" onclick="toggleSyllabusItem(this)">
+                        <div class="syllabus-checkbox-container" onclick="handleCheckboxClick(event, this)">
+                            <input type="checkbox" class="syllabus-check-input" id="item-2-3" onchange="updateReadinessProgress()">
+                            <label for="item-2-3" class="syllabus-check-label"></label>
+                        </div>
+                        <div class="syllabus-text-container">
+                            <div class="syllabus-title-row">
+                                <h4>3. Viết Email B2B tỷ lệ phản hồi > 30% (Email writing skills)</h4>
+                                <span class="expand-icon">+</span>
+                            </div>
+                            <div class="syllabus-details">
+                                <p>Luyện viết Cold Email cá nhân hóa chạm đúng nỗi đau khách hàng, tiêu đề thu hút người đọc và CTA (Call to action) ngắn gọn thôi thúc hành động.</p>
+                                <div class="syllabus-tip">
+                                    <strong>💡 Bí quyết thực chiến:</strong> Áp dụng công thức email ngắn gọn dưới 150 từ, tập trung vào 1 câu hỏi/insight giá trị và cung cấp 2 lựa chọn khung giờ hẹn gặp thuận tiện.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="syllabus-item-interactive" onclick="toggleSyllabusItem(this)">
+                        <div class="syllabus-checkbox-container" onclick="handleCheckboxClick(event, this)">
+                            <input type="checkbox" class="syllabus-check-input" id="item-2-4" onchange="updateReadinessProgress()">
+                            <label for="item-2-4" class="syllabus-check-label"></label>
+                        </div>
+                        <div class="syllabus-text-container">
+                            <div class="syllabus-title-row">
+                                <h4>4. Thực hành nhập vai đàm phán trực tiếp (Role Plays)</h4>
+                                <span class="expand-icon">+</span>
+                            </div>
+                            <div class="syllabus-details">
+                                <p>Buổi thực hành đóng vai giả định giải quyết các tình huống giao tiếp khó khăn. Giảng viên sửa trực tiếp lỗi phát âm, cách ngắt nhịp và dẫn dắt câu chuyện thuyết phục.</p>
+                                <div class="syllabus-tip">
+                                    <strong>💡 Bí quyết thực chiến:</strong> Luyện tập phản xạ ghi chép nhanh các ý chính của khách hàng trong khi role-play để đưa ra câu trả lời bám sát trăn trở của họ.
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Tab 3 -->
+            <!-- Tab 3: Day 3 -->
             <div class="agenda-content-panel" id="panel-3">
                 <div class="panel-header">
-                    <div class="panel-icon">🤖</div>
+                    <div class="panel-icon">📞</div>
                     <div>
-                        <span class="panel-subtitle">Part III</span>
-                        <h3 class="panel-title">Utilize Tools & AI</h3>
+                        <span class="panel-subtitle">Day 3</span>
+                        <h3 class="panel-title">BD Skillsets (P2) - Chinh phục khách hàng doanh nghiệp</h3>
                     </div>
                 </div>
                 <div class="panel-body">
-                    <div class="syllabus-item">
-                        <div class="syllabus-checkbox">✓</div>
-                        <div class="syllabus-text">
-                            <h4>AI Insights (Khai Thác Thông Tin Bằng AI)</h4>
-                            <p>Ứng dụng mô hình ngôn ngữ lớn (LLM) để phân tích thị trường, thu thập Insight đối thủ và dự đoán nhu cầu khách hàng tối ưu chi phí.</p>
+                    <div class="syllabus-item-interactive" onclick="toggleSyllabusItem(this)">
+                        <div class="syllabus-checkbox-container" onclick="handleCheckboxClick(event, this)">
+                            <input type="checkbox" class="syllabus-check-input" id="item-3-1" onchange="updateReadinessProgress()">
+                            <label for="item-3-1" class="syllabus-check-label"></label>
+                        </div>
+                        <div class="syllabus-text-container">
+                            <div class="syllabus-title-row">
+                                <h4>1. Kịch bản gọi điện lạnh chinh phục Gatekeeper (Effective Cold Calling)</h4>
+                                <span class="expand-icon">+</span>
+                            </div>
+                            <div class="syllabus-details">
+                                <p>Cách chuẩn bị tâm lý và xây dựng kịch bản Cold Call ngắn gọn dưới 60 giây, tự tin vượt qua bộ phận tiếp tân (Gatekeeper) để kết nối trực tiếp với PIC có quyền quyết định.</p>
+                                <div class="syllabus-tip">
+                                    <strong>💡 Bí quyết thực chiến:</strong> Hãy nói với tông giọng trầm ấm, đĩnh đạc và đưa ra lý do tiếp cận mang tính hợp tác phát triển thay vì bán sản phẩm thương mại thông thường.
+                                </div>
+                            </div>
                         </div>
                     </div>
-                    <div class="syllabus-item">
-                        <div class="syllabus-checkbox">✓</div>
-                        <div class="syllabus-text">
-                            <h4>Smart Automation (Tự Động Hóa Thông Minh)</h4>
-                            <p>Xây dựng quy trình tự động hóa các tác vụ lặp đi lặp lại như soạn thảo email cá nhân hóa, nhắc lịch hẹn để tập trung xây dựng mối quan hệ.</p>
+                    <div class="syllabus-item-interactive" onclick="toggleSyllabusItem(this)">
+                        <div class="syllabus-checkbox-container" onclick="handleCheckboxClick(event, this)">
+                            <input type="checkbox" class="syllabus-check-input" id="item-3-2" onchange="updateReadinessProgress()">
+                            <label for="item-3-2" class="syllabus-check-label"></label>
+                        </div>
+                        <div class="syllabus-text-container">
+                            <div class="syllabus-title-row">
+                                <h4>2. Kỹ năng trình bày đề xuất giải pháp cuốn hút (Presentation Skills)</h4>
+                                <span class="expand-icon">+</span>
+                            </div>
+                            <div class="syllabus-details">
+                                <p>Nghệ thuật thiết kế và thuyết trình Proposal/Pitching deck sắc bén. Tập trung phân tích rủi ro, bài toán tài chính và cam kết kết quả để thuyết phục Hội đồng quản trị.</p>
+                                <div class="syllabus-tip">
+                                    <strong>💡 Bí quyết thực chiến:</strong> Cấu trúc bài thuyết trình theo mô hình STAR (Situation, Task, Action, Result). Hãy trình bày kết quả dự kiến (Result) ngay từ những slide đầu tiên để giữ sự chú ý cao.
+                                </div>
+                            </div>
                         </div>
                     </div>
-                    <div class="syllabus-item">
-                        <div class="syllabus-checkbox">✓</div>
-                        <div class="syllabus-text">
-                            <h4>Digital Communication (Giao Tiếp Kỹ Thuật Số)</h4>
-                            <p>Làm chủ kỹ năng giao tiếp qua email, video call và ứng dụng hiệu quả công cụ quản trị khách hàng CRM để giữ kết nối liền mạch.</p>
+                    <div class="syllabus-item-interactive" onclick="toggleSyllabusItem(this)">
+                        <div class="syllabus-checkbox-container" onclick="handleCheckboxClick(event, this)">
+                            <input type="checkbox" class="syllabus-check-input" id="item-3-3" onchange="updateReadinessProgress()">
+                            <label for="item-3-3" class="syllabus-check-label"></label>
+                        </div>
+                        <div class="syllabus-text-container">
+                            <div class="syllabus-title-row">
+                                <h4>3. Xử lý phản biện và hóa giải từ chối khó nhằn (Handling Customer)</h4>
+                                <span class="expand-icon">+</span>
+                            </div>
+                            <div class="syllabus-details">
+                                <p>Bộ công cụ hóa giải khôn ngoan các phản hồi về giá đắt, năng lực của công ty non trẻ hoặc khi đối tác đang hài lòng với nhà cung cấp hiện tại.</p>
+                                <div class="syllabus-tip">
+                                    <strong>💡 Bí quyết thực chiến:</strong> Thay vì phủ nhận lo lắng của khách hàng, hãy đồng cảm bằng cấu trúc "Feel, Felt, Found" để xoa dịu và chuyển hướng tư duy của họ về mặt lợi ích dài hạn.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="syllabus-item-interactive" onclick="toggleSyllabusItem(this)">
+                        <div class="syllabus-checkbox-container" onclick="handleCheckboxClick(event, this)">
+                            <input type="checkbox" class="syllabus-check-input" id="item-3-4" onchange="updateReadinessProgress()">
+                            <label for="item-3-4" class="syllabus-check-label"></label>
+                        </div>
+                        <div class="syllabus-text-container">
+                            <div class="syllabus-title-row">
+                                <h4>4. Làm chủ chiến lược bám sát khách hàng tinh tế (Mastering Follow-Up Strategies)</h4>
+                                <span class="expand-icon">+</span>
+                            </div>
+                            <div class="syllabus-details">
+                                <p>Quy trình theo sát và hâm nóng deal thông minh mà không gây cảm giác phiền hà. Thiết kế "lý do follow-up" có giá trị để giữ kết nối liên tục.</p>
+                                <div class="syllabus-tip">
+                                    <strong>💡 Bí quyết thực chiến:</strong> Mỗi lần follow-up là một lần tặng giá trị. Hãy gửi cho đối tác một bài báo cáo ngành mới, một tin tức liên quan hoặc một gợi ý nhỏ thay vì hỏi "Anh/Chị đã xem đề xuất của em chưa?".
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="syllabus-item-interactive" onclick="toggleSyllabusItem(this)">
+                        <div class="syllabus-checkbox-container" onclick="handleCheckboxClick(event, this)">
+                            <input type="checkbox" class="syllabus-check-input" id="item-3-5" onchange="updateReadinessProgress()">
+                            <label for="item-3-5" class="syllabus-check-label"></label>
+                        </div>
+                        <div class="syllabus-text-container">
+                            <div class="syllabus-title-row">
+                                <h4>5. Thực hành Pitching giả định 1-1 trước lớp (Role Plays)</h4>
+                                <span class="expand-icon">+</span>
+                            </div>
+                            <div class="syllabus-details">
+                                <p>Role-play buổi bảo vệ Proposal thực tế trước Mentor và các bạn cùng khóa đóng vai Hội đồng duyệt dự án của khách hàng.</p>
+                                <div class="syllabus-tip">
+                                    <strong>💡 Bí quyết thực chiến:</strong> Hãy ghi nhận mọi câu hỏi chất vấn từ "Hội đồng khách hàng" và thực hành kỹ thuật "Delay phản hồi" khéo léo đối với những câu hỏi ngoài tầm kiểm soát ngay lập tức.
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Tab 4 -->
+            <!-- Tab 4: Day 4 -->
             <div class="agenda-content-panel" id="panel-4">
                 <div class="panel-header">
-                    <div class="panel-icon">🎤</div>
+                    <div class="panel-icon">📊</div>
                     <div>
-                        <span class="panel-subtitle">Part IV</span>
-                        <h3 class="panel-title">Pitching Test</h3>
+                        <span class="panel-subtitle">Day 4</span>
+                        <h3 class="panel-title">BD Toolsets - Tối ưu công cụ & Đo lường hiệu suất</h3>
                     </div>
                 </div>
                 <div class="panel-body">
-                    <div class="syllabus-item">
-                        <div class="syllabus-checkbox">✓</div>
-                        <div class="syllabus-text">
-                            <h4>Create Your Pitch (Thiết Kế Bài Pitch)</h4>
-                            <p>Phương pháp xây dựng một bài trình bày dự án (Proposal/Pitch deck) ngắn gọn, thu hút và nhắm trúng nỗi đau (Pain point) của khách hàng.</p>
+                    <div class="syllabus-item-interactive" onclick="toggleSyllabusItem(this)">
+                        <div class="syllabus-checkbox-container" onclick="handleCheckboxClick(event, this)">
+                            <input type="checkbox" class="syllabus-check-input" id="item-4-1" onchange="updateReadinessProgress()">
+                            <label for="item-4-1" class="syllabus-check-label"></label>
+                        </div>
+                        <div class="syllabus-text-container">
+                            <div class="syllabus-title-row">
+                                <h4>1. Quản trị thời gian & Vận hành phễu bán hàng (How to Master Time Management)</h4>
+                                <span class="expand-icon">+</span>
+                            </div>
+                            <div class="syllabus-details">
+                                <p>Phương pháp phân bổ thời gian thông minh dựa trên mức độ tiềm năng của deal. Kỹ thuật dọn dẹp và tối ưu phễu BD hàng tuần để tránh lãng phí nguồn lực.</p>
+                                <div class="syllabus-tip">
+                                    <strong>💡 Bí quyết thực chiến:</strong> Phân nhóm cơ hội hợp tác thành A (tiềm năng cực lớn), B (tiềm năng trung bình) và C (cần nuôi dưỡng). Hãy ưu tiên 80% năng lượng ngày làm việc cho nhóm A.
+                                </div>
+                            </div>
                         </div>
                     </div>
-                    <div class="syllabus-item">
-                        <div class="syllabus-checkbox">✓</div>
-                        <div class="syllabus-text">
-                            <h4>Role-Play Practice (Đóng Vai Thực Chiến)</h4>
-                            <p>Luyện tập trực tiếp 1-1 các tình huống gặp gỡ đối tác đầy thử thách dưới sự đánh giá và sửa bài chi tiết từ giảng viên.</p>
+                    <div class="syllabus-item-interactive" onclick="toggleSyllabusItem(this)">
+                        <div class="syllabus-checkbox-container" onclick="handleCheckboxClick(event, this)">
+                            <input type="checkbox" class="syllabus-check-input" id="item-4-2" onchange="updateReadinessProgress()">
+                            <label for="item-4-2" class="syllabus-check-label"></label>
+                        </div>
+                        <div class="syllabus-text-container">
+                            <div class="syllabus-title-row">
+                                <h4>2. Thiết lập & Đo lường chỉ số hiệu suất KPI (How to Measure & Track your KPIs)</h4>
+                                <span class="expand-icon">+</span>
+                            </div>
+                            <div class="syllabus-details">
+                                <p>Cách tự xây dựng bảng KPI cá nhân khoa học để kiểm soát tiến độ phễu: số lượng tiếp tiếp cận, tỷ lệ chuyển đổi cuộc họp, và giá trị trung bình mỗi deal thành công.</p>
+                                <div class="syllabus-tip">
+                                    <strong>💡 Bí quyết thực chiến:</strong> Đo lường cả hai nhóm chỉ số: Lagging indicators (Doanh số ký kết) và Leading indicators (Số lượng email cá nhân hóa gửi đi, số cuộc hẹn gặp) để chủ động điều chỉnh kế hoạch hành động.
+                                </div>
+                            </div>
                         </div>
                     </div>
-                    <div class="syllabus-item">
-                        <div class="syllabus-checkbox">✓</div>
-                        <div class="syllabus-text">
-                            <h4>Final Simulation (Mô Phỏng Trực Tiếp)</h4>
-                            <p>Trải qua bài kiểm tra cuối khóa đóng vai thuyết trình trực tiếp, xử lý các tình huống phản biện thực tế để tốt nghiệp khóa học.</p>
+                    <div class="syllabus-item-interactive" onclick="toggleSyllabusItem(this)">
+                        <div class="syllabus-checkbox-container" onclick="handleCheckboxClick(event, this)">
+                            <input type="checkbox" class="syllabus-check-input" id="item-4-3" onchange="updateReadinessProgress()">
+                            <label for="item-4-3" class="syllabus-check-label"></label>
+                        </div>
+                        <div class="syllabus-text-container">
+                            <div class="syllabus-title-row">
+                                <h4>3. Ứng dụng AI thông minh gia tốc năng suất BD (Apply useful AI Toolsets)</h4>
+                                <span class="expand-icon">+</span>
+                            </div>
+                            <div class="syllabus-details">
+                                <p>Làm chủ cách ứng dụng ChatGPT, Claude, CRM và các công cụ Automation vào nghiên cứu insight công ty đối tác, lập đề cương proposal và cá nhân hóa hàng loạt email trong 5 phút.</p>
+                                <div class="syllabus-tip">
+                                    <strong>💡 Bí quyết thực chiến:</strong> Sử dụng AI để đóng vai làm khách hàng khó tính chất vấn ngược lại bạn trước khi đi gặp đối tác thật. Điều này giúp bạn có sự chuẩn bị kịch bản hoàn hảo nhất.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="syllabus-item-interactive" onclick="toggleSyllabusItem(this)">
+                        <div class="syllabus-checkbox-container" onclick="handleCheckboxClick(event, this)">
+                            <input type="checkbox" class="syllabus-check-input" id="item-4-4" onchange="updateReadinessProgress()">
+                            <label for="item-4-4" class="syllabus-check-label"></label>
+                        </div>
+                        <div class="syllabus-text-container">
+                            <div class="syllabus-title-row">
+                                <h4>4. Tốt nghiệp & Đánh giá thực chiến cuối khóa (Role Plays)</h4>
+                                <span class="expand-icon">+</span>
+                            </div>
+                            <div class="syllabus-details">
+                                <p>Buổi Role-play tổng hợp kiểm tra phản xạ và tư duy BD. Nhận bảng đánh giá chi tiết điểm mạnh/yếu cá nhân từ Mentor Peter Võ và định hướng kế hoạch coaching phát triển sự nghiệp.</p>
+                                <div class="syllabus-tip">
+                                    <strong>💡 Bí quyết thực chiến:</strong> Hãy tập trung cải thiện 1-2 kỹ năng yếu nhất được Mentor chỉ ra trong bảng đánh giá trong vòng 30 ngày tiếp theo để cảm nhận sự thay đổi rõ rệt.
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -455,6 +689,66 @@
             btns[tabIndex - 1].classList.add('active');
             
             document.getElementById(`panel-${tabIndex}`).classList.add('active');
+        }
+
+        // Accordion functionality for syllabus items
+        function toggleSyllabusItem(element) {
+            const wasExpanded = element.classList.contains('expanded');
+            
+            // Collapse all other items in the same panel for clean accordions
+            const currentPanel = element.closest('.agenda-content-panel');
+            currentPanel.querySelectorAll('.syllabus-item-interactive').forEach(item => {
+                item.classList.remove('expanded');
+            });
+            
+            // Toggle current item
+            if (!wasExpanded) {
+                element.classList.add('expanded');
+            }
+        }
+
+        // Prevent checkbox container click from triggering accordion toggle
+        function handleCheckboxClick(event, container) {
+            event.stopPropagation();
+            // Programmatically check input if label wasn't clicked directly
+            const input = container.querySelector('input');
+            if (event.target !== input) {
+                input.checked = !input.checked;
+                updateReadinessProgress();
+            }
+        }
+
+        // Update progress bar based on checked syllabus items
+        function updateReadinessProgress() {
+            const inputs = document.querySelectorAll('.syllabus-check-input');
+            const total = inputs.length;
+            const checked = Array.from(inputs).filter(i => i.checked).length;
+            const percentage = Math.round((checked / total) * 100);
+            
+            const progressFill = document.getElementById('readiness-progress-fill');
+            const progressPercent = document.getElementById('readiness-percentage');
+            const progressStatus = document.getElementById('readiness-status');
+            
+            progressFill.style.width = `${percentage}%`;
+            progressPercent.textContent = `${percentage}%`;
+            
+            if (percentage === 0) {
+                progressStatus.innerHTML = 'Nhấn chọn các mục kiến thức bạn muốn làm chủ dưới đây và theo dõi cột mốc tăng trưởng thực chiến!';
+                progressStatus.style.color = 'var(--text-light)';
+            } else if (percentage < 30) {
+                progressStatus.innerHTML = '🌱 Bắt đầu hành trình! Bạn đang xây dựng những viên gạch nền móng đầu tiên.';
+                progressStatus.style.color = 'var(--primary)';
+            } else if (percentage < 70) {
+                progressStatus.innerHTML = '⚡ Khá tốt! Bạn đã sẵn sàng áp dụng các kỹ năng đàm phán và xử lý từ chối.';
+                progressStatus.style.color = '#3b82f6';
+            } else if (percentage < 100) {
+                progressStatus.innerHTML = '🔥 Sắp đạt mức tối đa! Bạn đang tiến gần tới việc làm chủ toàn diện quy trình BD và bộ công cụ AI.';
+                progressStatus.style.color = '#f59e0b';
+            } else {
+                progressStatus.innerHTML = '🎉 <strong>Tuyệt vời! Bạn đã sẵn sàng 100% để bứt phá doanh số cùng Mentor Peter Võ!</strong>';
+                progressStatus.style.color = 'var(--primary)';
+                progressStatus.style.fontWeight = '700';
+            }
         }
 
         // Animate the feedback charts when they are visible
