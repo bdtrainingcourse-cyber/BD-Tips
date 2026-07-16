@@ -1257,3 +1257,190 @@ h1, h2, h3, h4 {
     }
 }
 
+
+/* ==========================================================================
+   Global Dark Theme Support & Overrides
+   ========================================================================== */
+
+body.dark-theme {
+    --bg: #090a10;
+    --card-bg: #13141f;
+    --text-main: #f8fafc;
+    --text-light: #94a3b8;
+    --border-color: rgba(255, 255, 255, 0.08);
+    background-color: var(--bg);
+    color: var(--text-main);
+}
+
+body.dark-theme .app-nav {
+    background: rgba(15, 17, 26, 0.8);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+body.dark-theme .nav-logo {
+    color: #f8fafc;
+}
+
+body.dark-theme .nav-links a {
+    color: #94a3b8;
+}
+
+body.dark-theme .nav-links a:hover, 
+body.dark-theme .nav-links a.active {
+    color: #f8fafc;
+}
+
+body.dark-theme .glass-effect {
+    background: rgba(20, 21, 33, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+
+/* Flip Cards Dark Mode */
+body.dark-theme .flip-card-front.bg-danger {
+    background: linear-gradient(135deg, #2a1b1b, #1e1212);
+    border-left: 5px solid #ef4444;
+    color: #fca5a5;
+}
+
+body.dark-theme .flip-card-front.bg-danger h3 {
+    color: #ef4444;
+}
+
+body.dark-theme .flip-card-front.bg-danger .phrase {
+    color: #fca5a5;
+}
+
+body.dark-theme .flip-card-back.bg-success {
+    background: linear-gradient(135deg, #13251b, #0d1a13);
+    border-left: 5px solid #10b981;
+    color: #a7f3d0;
+}
+
+body.dark-theme .flip-card-back.bg-success h3 {
+    color: #10b981;
+}
+
+body.dark-theme .flip-card-back.bg-success .phrase {
+    color: #a7f3d0;
+}
+
+/* Matrix Table Dark Mode */
+body.dark-theme .table-responsive {
+    background: #13141f;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+body.dark-theme .matrix-table {
+    background: #13141f;
+}
+
+body.dark-theme .matrix-table th {
+    background-color: #0d0e16;
+    color: #f8fafc;
+}
+
+body.dark-theme .matrix-table td {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    color: #f8fafc;
+}
+
+body.dark-theme .matrix-table tbody tr:hover td {
+    background-color: #1b1c2b;
+}
+
+/* Minigame Cards Dark Mode */
+body.dark-theme .game-card.glass-panel {
+    background: rgba(20, 21, 33, 0.6) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+}
+
+body.dark-theme .game-card.glass-panel h4 {
+    color: #f8fafc !important;
+}
+
+body.dark-theme .btn-option {
+    background: #13141f;
+    border: 2px solid rgba(255, 255, 255, 0.08);
+    color: #f8fafc;
+}
+
+body.dark-theme .btn-option:hover:not(:disabled) {
+    background: rgba(16, 185, 129, 0.1);
+    border-color: #10b981;
+}
+
+/* Events Dark Mode */
+body.dark-theme .event-title {
+    color: #f8fafc;
+}
+
+body.dark-theme .attendees-count {
+    color: #f8fafc;
+}
+
+body.dark-theme .attendees-count strong {
+    color: #f8fafc;
+}
+
+body.dark-theme .events-control-bar {
+    background: rgba(20, 21, 33, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+body.dark-theme .events-control-bar input,
+body.dark-theme .events-control-bar select {
+    background: #0d0d0d !important;
+    color: #f8fafc !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+}
+
+body.dark-theme .month-tab {
+    background: rgba(255, 255, 255, 0.05) !important;
+    color: #f8fafc !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+}
+
+body.dark-theme .month-tab.active {
+    background: var(--primary) !important;
+    border-color: var(--primary) !important;
+    color: #ffffff !important;
+}
+
+/* Theme Toggle Button Styles */
+.theme-toggle-btn {
+    background: transparent;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    color: var(--text-main);
+    font-size: 1.2rem;
+    padding: 6px 10px;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: 15px;
+    outline: none;
+    line-height: 1;
+}
+
+.theme-toggle-btn:hover {
+    transform: scale(1.1);
+    background: rgba(0, 0, 0, 0.05);
+    border-color: rgba(0, 0, 0, 0.2);
+}
+
+body.dark-theme .theme-toggle-btn {
+    border-color: rgba(255, 255, 255, 0.15);
+    color: #f8fafc;
+}
+
+body.dark-theme .theme-toggle-btn:hover {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.3);
+}
+
+.nav-links {
+    align-items: center;
+}
