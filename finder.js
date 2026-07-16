@@ -41,6 +41,23 @@ document.addEventListener('DOMContentLoaded', () => {
     const modalEnrichNotes = document.getElementById('modal-enrich-notes');
     const btnModalCopyAll = document.getElementById('btn-modal-copy-all');
 
+    // Unlock Modal Elements
+    const unlockModal = document.getElementById('unlock-modal');
+    const unlockModalCloseBtn = document.getElementById('unlock-modal-close-btn');
+    const unlockForm = document.getElementById('unlock-form');
+    const unlockEmailInput = document.getElementById('unlock-email-input');
+    let pendingUnlockAction = null;
+
+    function requireEmailUnlock(callback) {
+        if (localStorage.getItem('user_gated_email')) {
+            if (callback) callback();
+            return true;
+        }
+        pendingUnlockAction = callback;
+        unlockModal.classList.remove('hidden');
+        return false;
+    }
+
     // State
     let manualTags = ['Business Development', 'B2B', 'Sales', 'Partnerships'];
     let generatedTags = [];
@@ -313,10 +330,14 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
+        const emailUnlocked = !!localStorage.getItem('user_gated_email');
+
         contacts.forEach((contact, index) => {
             const tr = document.createElement('tr');
             tr.setAttribute('data-index', index);
             
+            const isGated = index >= 2 && !emailUnlocked;
+
             // Format emails badge
             let emailHtml = '<span class="text-light">Searching...</span>';
             if (contact.enriched) {
@@ -328,9 +349,14 @@ document.addEventListener('DOMContentLoaded', () => {
                     } else if (contact.isGuessed) {
                         badgeClass = 'guessed';
                     }
-                    emailHtml = `<span class="status-badge ${badgeClass}">${primary}</span>`;
-                    if (contact.emails.length > 1) {
-                        emailHtml += ` <span class="confidence-inline">+${contact.emails.length - 1} more</span>`;
+                    
+                    if (isGated) {
+                        emailHtml = `<span class="status-badge ${badgeClass}" style="filter: blur(4px); pointer-events: none; opacity: 0.5; user-select: none;">name@company.com</span>`;
+                    } else {
+                        emailHtml = `<span class="status-badge ${badgeClass}">${primary}</span>`;
+                        if (contact.emails.length > 1) {
+                            emailHtml += ` <span class="confidence-inline">+${contact.emails.length - 1} more</span>`;
+                        }
                     }
                 } else {
                     emailHtml = '<span class="text-muted">Not Found</span>';
@@ -341,7 +367,11 @@ document.addEventListener('DOMContentLoaded', () => {
             let phoneHtml = '<span class="text-light">Searching...</span>';
             if (contact.enriched) {
                 if (contact.phones && contact.phones.length > 0) {
-                    phoneHtml = contact.phones.map(p => `<code>${p}</code>`).join(', ');
+                    if (isGated) {
+                        phoneHtml = `<span style="filter: blur(4px); pointer-events: none; opacity: 0.5; user-select: none;"><code>0901234567</code></span>`;
+                    } else {
+                        phoneHtml = contact.phones.map(p => `<code>${p}</code>`).join(', ');
+                    }
                 } else {
                     phoneHtml = '<span class="text-muted">Not Found</span>';
                 }
@@ -356,10 +386,27 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (contact.verification.status.includes('Blocked') || contact.verification.status.includes('timeout')) vClass = 'scraped';
                     if (contact.verification.status === 'Undeliverable') vClass = 'undeliverable';
                     
-                    verificationHtml = `<span class="status-badge ${vClass}">${contact.verification.status}</span>`;
+                    if (isGated) {
+                        verificationHtml = `<span class="status-badge scraped" style="filter: blur(2px); pointer-events: none; opacity: 0.5; user-select: none;">Scraped</span>`;
+                    } else {
+                        verificationHtml = `<span class="status-badge ${vClass}">${contact.verification.status}</span>`;
+                    }
                 } else {
                     verificationHtml = '<span class="status-badge undeliverable">Not Verified</span>';
                 }
+            }
+
+            let actionBtnHtml = `
+                <button class="btn btn-secondary btn-view-detail" style="margin: 0; padding: 6px 12px; font-size: 0.8rem;" data-index="${index}">
+                    🔍 View
+                </button>
+            `;
+            if (isGated) {
+                actionBtnHtml = `
+                    <button class="btn btn-secondary btn-unlock-contacts" style="margin: 0; padding: 6px 12px; font-size: 0.8rem; background: #0b8a4f; border-color: #0b8a4f; color: white;" data-index="${index}">
+                        🔓 Unlock
+                    </button>
+                `;
             }
 
             tr.innerHTML = `
@@ -373,18 +420,22 @@ document.addEventListener('DOMContentLoaded', () => {
                 <td>${emailHtml}</td>
                 <td>${phoneHtml}</td>
                 <td>${verificationHtml}</td>
-                <td>
-                    <button class="btn btn-secondary btn-view-detail" style="margin: 0; padding: 6px 12px; font-size: 0.8rem;" data-index="${index}">
-                        🔍 View
-                    </button>
-                </td>
+                <td>${actionBtnHtml}</td>
             `;
 
-            // Row click event to show details
-            tr.querySelector('.btn-view-detail').addEventListener('click', (e) => {
-                e.stopPropagation();
-                openDetailsModal(index);
-            });
+            if (isGated) {
+                tr.querySelector('.btn-unlock-contacts').addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    requireEmailUnlock(() => {
+                        openDetailsModal(index);
+                    });
+                });
+            } else {
+                tr.querySelector('.btn-view-detail').addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    openDetailsModal(index);
+                });
+            }
 
             resultsTbody.appendChild(tr);
         });
@@ -667,70 +718,117 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Export Actions ---
     btnCopyEmails.addEventListener('click', () => {
-        const emails = [];
-        searchResults.forEach(c => {
-            if (c.emails && c.emails.length > 0) {
-                emails.push(c.emails[0]);
+        requireEmailUnlock(() => {
+            const emails = [];
+            searchResults.forEach(c => {
+                if (c.emails && c.emails.length > 0) {
+                    emails.push(c.emails[0]);
+                }
+            });
+
+            if (emails.length === 0) {
+                alert('No emails found in this search result to copy.');
+                return;
             }
-        });
 
-        if (emails.length === 0) {
-            alert('No emails found in this search result to copy.');
-            return;
-        }
-
-        const uniqueEmails = [...new Set(emails)].join(', ');
-        navigator.clipboard.writeText(uniqueEmails).then(() => {
-            alert(`Copied ${emails.length} emails to clipboard!`);
+            const uniqueEmails = [...new Set(emails)].join(', ');
+            navigator.clipboard.writeText(uniqueEmails).then(() => {
+                alert(`Copied ${emails.length} emails to clipboard!`);
+            });
         });
     });
 
     btnExportCsv.addEventListener('click', () => {
         if (searchResults.length === 0) return;
 
-        let csvContent = "data:text/csv;charset=utf-8,";
-        // Header
-        csvContent += "Name,Job Title,Company,LinkedIn URL,Primary Email,All Emails,Phone Numbers,Verification Status,Verification Details\n";
+        requireEmailUnlock(() => {
+            let csvContent = "data:text/csv;charset=utf-8,";
+            // Header
+            csvContent += "Name,Job Title,Company,LinkedIn URL,Primary Email,All Emails,Phone Numbers,Verification Status,Verification Details\n";
 
-        searchResults.forEach(c => {
-            const name = `"${c.name.replace(/"/g, '""')}"`;
-            const title = `"${c.title.replace(/"/g, '""')}"`;
-            const company = `"${c.company.replace(/"/g, '""')}"`;
-            const linkedin = `"${c.linkedin}"`;
-            const primaryEmail = c.emails && c.emails.length > 0 ? `"${c.emails[0]}"` : '""';
-            const allEmails = c.emails && c.emails.length > 0 ? `"${c.emails.join('; ')}"` : '""';
-            const phones = c.phones && c.phones.length > 0 ? `"${c.phones.join('; ')}"` : '""';
-            const status = c.verification ? `"${c.verification.status}"` : '"Pending"';
-            const reason = c.verification ? `"${c.verification.reason.replace(/"/g, '""')}"` : '""';
+            searchResults.forEach(c => {
+                const name = `"${c.name.replace(/"/g, '""')}"`;
+                const title = `"${c.title.replace(/"/g, '""')}"`;
+                const company = `"${c.company.replace(/"/g, '""')}"`;
+                const linkedin = `"${c.linkedin}"`;
+                const primaryEmail = c.emails && c.emails.length > 0 ? `"${c.emails[0]}"` : '""';
+                const allEmails = c.emails && c.emails.length > 0 ? `"${c.emails.join('; ')}"` : '""';
+                const phones = c.phones && c.phones.length > 0 ? `"${c.phones.join('; ')}"` : '""';
+                const status = c.verification ? `"${c.verification.status}"` : '"Pending"';
+                const reason = c.verification ? `"${c.verification.reason.replace(/"/g, '""')}"` : '""';
 
-            csvContent += `${name},${title},${company},${linkedin},${primaryEmail},${allEmails},${phones},${status},${reason}\n`;
+                csvContent += `${name},${title},${company},${linkedin},${primaryEmail},${allEmails},${phones},${status},${reason}\n`;
+            });
+
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            
+            const filename = `b2b_leads_${searchResults[0].company.toLowerCase().replace(/[^a-z0-9]/g, '_')}.csv`;
+            link.setAttribute("download", filename);
+            document.body.appendChild(link);
+            
+            link.click();
+            document.body.removeChild(link);
         });
-
-        const encodedUri = encodeURI(csvContent);
-        const link = document.createElement("a");
-        link.setAttribute("href", encodedUri);
-        
-        const filename = `b2b_leads_${searchResults[0].company.toLowerCase().replace(/[^a-z0-9]/g, '_')}.csv`;
-        link.setAttribute("download", filename);
-        document.body.appendChild(link);
-        
-        link.click();
-        document.body.removeChild(link);
     });
 
     btnExportJson.addEventListener('click', () => {
         if (searchResults.length === 0) return;
 
-        const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(searchResults, null, 2));
-        const link = document.createElement("a");
-        link.setAttribute("href", dataStr);
-        
-        const filename = `b2b_leads_${searchResults[0].company.toLowerCase().replace(/[^a-z0-9]/g, '_')}.json`;
-        link.setAttribute("download", filename);
-        document.body.appendChild(link);
-        
-        link.click();
-        document.body.removeChild(link);
+        requireEmailUnlock(() => {
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(searchResults, null, 2));
+            const link = document.createElement("a");
+            link.setAttribute("href", dataStr);
+            
+            const filename = `b2b_leads_${searchResults[0].company.toLowerCase().replace(/[^a-z0-9]/g, '_')}.json`;
+            link.setAttribute("download", filename);
+            document.body.appendChild(link);
+            
+            link.click();
+            document.body.removeChild(link);
+        });
+    });
+
+    // --- Unlock Modal Event Listeners ---
+    unlockModalCloseBtn.addEventListener('click', () => {
+        unlockModal.classList.add('hidden');
+        pendingUnlockAction = null;
+    });
+
+    unlockModal.addEventListener('click', (e) => {
+        if (e.target === unlockModal) {
+            unlockModal.classList.add('hidden');
+            pendingUnlockAction = null;
+        }
+    });
+
+    unlockForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const email = unlockEmailInput.value.trim();
+        if (email && email.includes('@')) {
+            localStorage.setItem('user_gated_email', email);
+            unlockModal.classList.add('hidden');
+            
+            // Log email to backend serverless function
+            try {
+                await fetch('/api/log-email', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email: email, tool: 'PIC Finder' })
+                });
+            } catch (err) {
+                console.error('Failed to log email to backend:', err);
+            }
+
+            // Re-render table to reveal the information
+            renderResultsTable(searchResults);
+
+            if (pendingUnlockAction) {
+                pendingUnlockAction();
+                pendingUnlockAction = null;
+            }
+        }
     });
 
     // Expose for testing
