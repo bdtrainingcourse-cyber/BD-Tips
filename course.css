@@ -365,51 +365,138 @@
 }
 
 /* Benefits Section */
+.benefits-section {
+    background-color: #fbfcfd;
+}
+
 .benefits-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-    gap: 25px;
+    gap: 30px;
     max-width: 1200px;
     margin: 0 auto;
-    padding: 0 20px;
+    padding: 20px 20px;
 }
 
+/* Card Styling */
 .benefit-card {
     background: #ffffff;
-    border-radius: 20px;
-    padding: 30px;
-    box-shadow: var(--shadow);
-    border: 1px solid rgba(0,0,0,0.03);
-    transition: var(--transition);
+    border-radius: 16px;
+    padding: 40px 30px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.03);
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s ease-in-out;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
 }
 
-.benefit-card:hover {
-    transform: translateY(-5px);
-    border-color: var(--primary);
-    box-shadow: 0 15px 35px rgba(11, 138, 79, 0.08);
+/* Icon Container with Badge style */
+.card-icon-wrapper {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background-color: rgba(11, 138, 79, 0.08); /* 8% opacity primary green */
+    color: var(--primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    margin-bottom: 25px;
+    transition: all 0.3s ease;
 }
 
+.card-icon-wrapper svg {
+    width: 26px;
+    height: 26px;
+    transition: transform 0.3s ease;
+}
+
+/* Float Number on top right of the Icon circle */
 .benefit-num {
-    font-family: 'Outfit', sans-serif;
-    font-size: 2.5rem;
-    font-weight: 900;
-    color: rgba(11, 138, 79, 0.15);
-    line-height: 1;
-    margin-bottom: 15px;
+    position: absolute;
+    top: -5px;
+    right: -10px;
+    background: var(--primary);
+    color: #ffffff;
+    font-size: 0.75rem;
+    font-weight: 700;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid #ffffff;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    transition: background 0.3s ease;
 }
 
+/* Typography elements */
 .benefit-card h3 {
-    font-size: 1.25rem;
-    font-weight: 800;
-    margin: 0 0 10px 0;
+    font-size: 1.3rem;
+    font-weight: 700;
+    margin: 0 0 15px;
     color: var(--text-main);
+    line-height: 1.4;
+    transition: color 0.3s ease;
 }
 
 .benefit-card p {
     font-size: 0.95rem;
     color: var(--text-light);
-    margin: 0;
-    line-height: 1.6;
+    margin: 0 0 25px;
+    line-height: 1.7;
+    flex-grow: 1;
+}
+
+/* CTA Arrow Link */
+.benefit-cta {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--primary);
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    transition: color 0.3s ease;
+    margin-top: auto;
+}
+
+.benefit-cta .arrow {
+    transition: transform 0.3s ease;
+}
+
+/* --- Multi-layered Hover states --- */
+.benefit-card:hover {
+    transform: translateY(-8px);
+    border-color: rgba(11, 138, 79, 0.2);
+    box-shadow: 0 20px 40px rgba(11, 138, 79, 0.08);
+}
+
+.benefit-card:hover h3 {
+    color: var(--primary);
+}
+
+/* Icon & container animations on hover */
+.benefit-card:hover .card-icon-wrapper {
+    background-color: var(--primary);
+    color: #ffffff;
+}
+
+.benefit-card:hover .card-icon-wrapper svg {
+    transform: scale(1.1);
+}
+
+.benefit-card:hover .benefit-num {
+    background: var(--text-main);
+}
+
+/* Arrow sliding effect */
+.benefit-card:hover .benefit-cta .arrow {
+    transform: translateX(6px);
 }
 
 /* Feedback Section */
