@@ -371,18 +371,18 @@
 
 .benefits-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-    gap: 30px;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 16px;
     max-width: 1200px;
     margin: 0 auto;
-    padding: 20px 20px;
+    padding: 20px;
 }
 
 /* Card Styling */
 .benefit-card {
     background: #ffffff;
     border-radius: 16px;
-    padding: 40px 30px;
+    padding: 24px 18px;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.03);
     border: 1px solid rgba(0, 0, 0, 0.05);
     position: relative;
@@ -395,8 +395,8 @@
 
 /* Icon Container with Badge style */
 .card-icon-wrapper {
-    width: 60px;
-    height: 60px;
+    width: 50px;
+    height: 50px;
     border-radius: 50%;
     background-color: rgba(11, 138, 79, 0.08); /* 8% opacity primary green */
     color: var(--primary);
@@ -404,27 +404,27 @@
     align-items: center;
     justify-content: center;
     position: relative;
-    margin-bottom: 25px;
+    margin-bottom: 20px;
     transition: all 0.3s ease;
 }
 
 .card-icon-wrapper svg {
-    width: 26px;
-    height: 26px;
+    width: 22px;
+    height: 22px;
     transition: transform 0.3s ease;
 }
 
 /* Float Number on top right of the Icon circle */
 .benefit-num {
     position: absolute;
-    top: -5px;
-    right: -10px;
+    top: -4px;
+    right: -8px;
     background: var(--primary);
     color: #ffffff;
-    font-size: 0.75rem;
+    font-size: 0.7rem;
     font-weight: 700;
-    width: 22px;
-    height: 22px;
+    width: 20px;
+    height: 20px;
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -436,37 +436,20 @@
 
 /* Typography elements */
 .benefit-card h3 {
-    font-size: 1.3rem;
+    font-size: 1.1rem;
     font-weight: 700;
-    margin: 0 0 15px;
+    margin: 0 0 10px;
     color: var(--text-main);
-    line-height: 1.4;
+    line-height: 1.35;
     transition: color 0.3s ease;
 }
 
 .benefit-card p {
-    font-size: 0.95rem;
+    font-size: 0.88rem;
     color: var(--text-light);
-    margin: 0 0 25px;
-    line-height: 1.7;
+    margin: 0;
+    line-height: 1.5;
     flex-grow: 1;
-}
-
-/* CTA Arrow Link */
-.benefit-cta {
-    font-size: 0.9rem;
-    font-weight: 600;
-    color: var(--primary);
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    cursor: pointer;
-    transition: color 0.3s ease;
-    margin-top: auto;
-}
-
-.benefit-cta .arrow {
-    transition: transform 0.3s ease;
 }
 
 /* --- Multi-layered Hover states --- */
@@ -494,9 +477,38 @@
     background: var(--text-main);
 }
 
-/* Arrow sliding effect */
-.benefit-card:hover .benefit-cta .arrow {
-    transform: translateX(6px);
+/* Responsive adjustments */
+@media (max-width: 1023px) {
+    .benefits-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px;
+    }
+    .benefit-card {
+        padding: 30px 22px;
+    }
+    .card-icon-wrapper {
+        width: 56px;
+        height: 56px;
+    }
+    .card-icon-wrapper svg {
+        width: 24px;
+        height: 24px;
+    }
+    .benefit-num {
+        width: 22px;
+        height: 22px;
+        font-size: 0.75rem;
+    }
+    .benefit-card h3 {
+        font-size: 1.2rem;
+    }
+}
+
+@media (max-width: 767px) {
+    .benefits-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
 }
 
 /* Feedback Section */
