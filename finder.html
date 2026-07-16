@@ -334,6 +334,22 @@
         </div>
     </div>
 
+    <!-- Unlock Email Modal -->
+    <div class="modal-backdrop hidden" id="unlock-modal">
+        <div class="modal-card glass-panel" style="max-width: 450px; text-align: center; padding: 40px 30px;">
+            <button class="modal-close" id="unlock-modal-close-btn">&times;</button>
+            <div style="font-size: 3rem; margin-bottom: 20px;">🔓</div>
+            <h3 style="font-family: 'Outfit', sans-serif; font-size: 1.5rem; font-weight: 800; color: #ffffff; margin-bottom: 12px;">Mở Khóa Thông Tin Liên Hệ</h3>
+            <p style="color: #94a3b8; font-size: 0.95rem; line-height: 1.6; margin-bottom: 25px;">Nhập email của bạn để hiển thị đầy đủ Email và SĐT của tất cả các PIC tìm được.</p>
+            
+            <form id="unlock-form" style="display: flex; flex-direction: column; gap: 15px;">
+                <input type="email" id="unlock-email-input" placeholder="Nhập email của bạn (ví dụ: name@company.com)" required 
+                       style="padding: 12px 16px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.15); background: rgba(0,0,0,0.2); color: #ffffff; font-size: 0.95rem; outline: none; width: 100%;">
+                <button type="submit" class="btn btn-primary" style="padding: 12px; font-weight: 700; width: 100%;">Mở Khóa Ngay</button>
+            </form>
+        </div>
+    </div>
+
     <!-- Footer -->
     <footer class="footer">
         <div class="container text-center">
