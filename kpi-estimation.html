@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ước Tính KPI - B2B Business Development Portal</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Outfit:wght@600;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="kpi-estimation.css">
+    
+    <script src="theme-toggle.js"></script>
+</head>
+<body class="course-page">
+
+    <!-- Navigation Bar -->
+    <header class="app-nav">
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo">
+                <span class="logo-accent">B2B</span> BD Portal
+            </a>
+            <nav class="nav-links">
+                <a href="index.html">Ngôn Từ B2B</a>
+                <a href="index.html#minigame-section">B2B Challenge</a>
+                <a href="finder.html">PIC Finder</a>
+                <a href="library.html">Thư Viện B2B</a>
+                <a href="labor-law.html">Luật Lao Động</a>
+                <a href="salary.html">Tính Lương</a>
+                <a href="email-assistant.html">Email Assistant</a>
+                <a href="kpi-estimation.html" class="active">Ước Tính KPI</a>
+                <a href="community.html">Cộng Đồng</a>
+                <a href="course.html">Khóa Học BD</a>
+                <button id="theme-toggle" class="theme-toggle-btn" aria-label="Toggle theme">🌓</button>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container kpi-main">
+        <div class="kpi-hero">
+            <h1>📊 BỘ CÔNG CỤ ƯỚC TÍNH KPI BD</h1>
+            <p style="color: var(--text-light); font-size: 1.1rem; margin-top: 10px;">
+                Nhập mục tiêu doanh thu, hợp đồng trung bình để tự động tính toán ngược phễu hoạt động và số lượng Lead cần thiết.
+            </p>
+        </div>
+
+        <!-- Funnel Selector Tabs -->
+        <div class="funnel-tabs">
+            <button id="tab-outbound" class="funnel-tab-btn active">Outbound Funnel (BD Team)</button>
+            <button id="tab-inbound" class="funnel-tab-btn">Inbound Funnel (Marketing & BD)</button>
+        </div>
+
+        <div class="kpi-grid">
+            <!-- Left Panel: Controls and Parameters -->
+            <div class="kpi-card">
+                <h3 style="font-size: 1.3rem; font-weight: 800; margin-bottom: 20px; color: var(--text-main); border-bottom: 2px solid var(--primary); padding-bottom: 8px;">
+                    🎯 THIẾT LẬP MỤC TIÊU & TỶ LỆ CHUYỂN ĐỔI (CR)
+                </h3>
+
+                <!-- Core Financial Inputs -->
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="kpi-revenue">Doanh Thu Mục Tiêu ($)</label>
+                        <input type="number" id="kpi-revenue" value="1000000" min="0" step="5000">
+                    </div>
+                    <div class="form-group">
+                        <label for="kpi-average">Giá Trị Hợp Đồng TB ($)</label>
+                        <input type="number" id="kpi-average" value="20000" min="1" step="500">
+                    </div>
+                </div>
+
+                <div style="background: rgba(162, 10, 10, 0.05); padding: 15px; border-radius: 8px; border: 1px solid rgba(162, 10, 10, 0.15); margin-bottom: 30px; display: flex; justify-content: space-between; align-items: center;">
+                    <span style="font-weight: 600; color: var(--text-main);">Số lượng Hợp đồng cần chốt (Close Win):</span>
+                    <span id="calc-order-count" style="font-size: 1.3rem; font-weight: 900; color: var(--primary);">50</span>
+                </div>
+
+                <!-- Sliders dynamically shown depending on Active Funnel -->
+                <!-- Outbound Funnel Sliders -->
+                <div id="outbound-controls">
+                    <h4 style="font-weight: 700; font-size: 1rem; margin-bottom: 15px; color: var(--text-main);">Tỷ lệ chuyển đổi chặng Outbound:</h4>
+                    
+                    <div class="slider-group">
+                        <div class="slider-header">
+                            <span class="slider-label">Lead &rarr; Approaching (Tiếp cận)</span>
+                            <span class="slider-value" id="sl-lead-approaching-val">70%</span>
+                        </div>
+                        <input type="range" id="sl-lead-approaching" class="slider-input" min="10" max="100" value="70">
+                    </div>
+
+                    <div class="slider-group">
+                        <div class="slider-header">
+                            <span class="slider-label">Approaching &rarr; Qualified (Quan tâm)</span>
+                            <span class="slider-value" id="sl-approaching-qualified-val">30%</span>
+                        </div>
+                        <input type="range" id="sl-approaching-qualified" class="slider-input" min="10" max="100" value="30">
+                    </div>
+
+                    <div class="slider-group">
+                        <div class="slider-header">
+                            <span class="slider-label">Qualified &rarr; Proposal (Báo giá)</span>
+                            <span class="slider-value" id="sl-qualified-proposal-val">40%</span>
+                        </div>
+                        <input type="range" id="sl-qualified-proposal" class="slider-input" min="10" max="100" value="40">
+                    </div>
+
+                    <div class="slider-group">
+                        <div class="slider-header">
+                            <span class="slider-label">Proposal &rarr; Convert (Đàm phán)</span>
+                            <span class="slider-value" id="sl-proposal-convert-val">30%</span>
+                        </div>
+                        <input type="range" id="sl-proposal-convert" class="slider-input" min="10" max="100" value="30">
+                    </div>
+
+                    <div class="slider-group">
+                        <div class="slider-header">
+                            <span class="slider-label">Convert &rarr; Close Win (Hợp đồng)</span>
+                            <span class="slider-value" id="sl-convert-close-val">80%</span>
+                        </div>
+                        <input type="range" id="sl-convert-close" class="slider-input" min="10" max="100" value="80">
+                    </div>
+                </div>
+
+                <!-- Inbound Funnel Sliders -->
+                <div id="inbound-controls" class="hidden">
+                    <h4 style="font-weight: 700; font-size: 1rem; margin-bottom: 15px; color: var(--text-main);">Tỷ lệ chuyển đổi chặng Inbound:</h4>
+
+                    <div class="slider-group">
+                        <div class="slider-header">
+                            <span class="slider-label">MQL &rarr; SAL (Sales Accepted)</span>
+                            <span class="slider-value" id="sl-mql-sal-val">15%</span>
+                        </div>
+                        <input type="range" id="sl-mql-sal" class="slider-input" min="5" max="100" value="15">
+                    </div>
+
+                    <div class="slider-group">
+                        <div class="slider-header">
+                            <span class="slider-label">SAL &rarr; SQL (Sales Qualified)</span>
+                            <span class="slider-value" id="sl-sal-sql-val">40%</span>
+                        </div>
+                        <input type="range" id="sl-sal-sql" class="slider-input" min="10" max="100" value="40">
+                    </div>
+
+                    <div class="slider-group">
+                        <div class="slider-header">
+                            <span class="slider-label">SQL &rarr; Close Win (Hợp đồng)</span>
+                            <span class="slider-value" id="sl-sql-close-val">25%</span>
+                        </div>
+                        <input type="range" id="sl-sql-close" class="slider-input" min="10" max="100" value="25">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Panel: Visual Funnel Chart -->
+            <div class="kpi-card" style="display: flex; flex-direction: column; justify-content: space-between;">
+                <h3 style="font-size: 1.3rem; font-weight: 800; margin-bottom: 20px; color: var(--text-main); border-bottom: 2px solid var(--primary); padding-bottom: 8px; text-align: center;">
+                    📐 PHỄU HOẠT ĐỘNG BD LŨY TIẾN NGƯỢC
+                </h3>
+
+                <div class="funnel-viz-container">
+                    <div class="funnel-track" id="funnel-track">
+                        <!-- Dynamic render via JS -->
+                    </div>
+                </div>
+
+                <div style="text-center; margin-top: 30px;">
+                    <button id="download-template-btn" class="btn btn-primary" style="width: 100%; padding: 14px; font-weight: bold; font-size: 1rem; border-radius: 8px; border: none; display: flex; align-items: center; justify-content: center; gap: 10px;">
+                        📥 Tải Full KPI Tracking & Plan Template (XLSX)
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="app-footer">
+        <div class="container text-center">
+            <p style="margin-bottom: 10px;">&copy; 2026 B2B BD Portal. Đào tạo Business Development thực chiến hàng đầu.</p>
+            <p style="font-size: 0.8rem; color: var(--text-light);">Developed by Peter Vo & Team</p>
+        </div>
+    </footer>
+
+    <!-- Email Capture Modal -->
+    <div class="modal-overlay" id="download-modal">
+        <div class="modal-box">
+            <div style="font-size: 3rem; margin-bottom: 15px;">📥</div>
+            <h3 style="font-size: 1.4rem; font-weight: 800; margin-bottom: 10px; color: var(--text-main);">Tải File Kế Hoạch & KPI Tracking</h3>
+            <p style="color: var(--text-light); font-size: 0.95rem; margin-bottom: 25px;">
+                Nhập email của bạn để nhận trực tiếp liên kết tải xuống file Excel KPI & Lộ trình tự động tính toán.
+            </p>
+            
+            <form id="downloadEmailForm">
+                <div class="form-group" style="text-align: left; margin-bottom: 20px;">
+                    <label for="kpiEmail">Email B2B của bạn *</label>
+                    <input type="email" id="kpiEmail" required placeholder="name@company.com" style="width: 100%;">
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%; padding: 12px; border: none; font-weight: bold;">Nhận Template Ngay &rarr;</button>
+            </form>
+            <button onclick="closeModal()" class="btn btn-secondary" style="width: 100%; margin-top: 10px; padding: 10px; font-size: 0.9rem;">Hủy</button>
+        </div>
+    </div>
+
+    <!-- Success Modal -->
+    <div class="modal-overlay" id="kpiSuccessModal">
+        <div class="modal-box">
+            <div style="font-size: 3rem; margin-bottom: 15px;">🎉</div>
+            <h3 style="font-size: 1.4rem; font-weight: 800; margin-bottom: 10px; color: var(--text-main);">Đăng Ký Thành Công!</h3>
+            <p style="color: var(--text-light); font-size: 0.95rem; margin-bottom: 25px;">
+                Template KPI Tracking B2B đã được lập lịch gửi tới hòm thư của bạn. Bấm nút dưới để tải trực tiếp file mẫu.
+            </p>
+            <button onclick="startDownload()" class="btn btn-primary" style="width: 100%; padding: 12px; border: none; font-weight: bold;">Tải File Ngay</button>
+        </div>
+    </div>
+
+    <script src="kpi-estimation.js"></script>
+</body>
+</html>
