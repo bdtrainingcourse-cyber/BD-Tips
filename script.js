@@ -1534,4 +1534,32 @@ document.addEventListener('DOMContentLoaded', () => {
             liveUpdateTimer.textContent = `Tự động cập nhật: ${timerCountdown}s`;
         }, 1000);
     }
+
+    // --- Ecosystem Category Filtering ---
+    const ecoTabs = document.querySelectorAll('.eco-tab-btn');
+    const ecoCards = document.querySelectorAll('.features-grid .feature-card');
+    
+    if (ecoTabs.length > 0 && ecoCards.length > 0) {
+        ecoTabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                ecoTabs.forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                
+                const cat = tab.getAttribute('data-category');
+                ecoCards.forEach(card => {
+                    if (cat === 'all' || card.getAttribute('data-category') === cat) {
+                        card.style.display = 'flex';
+                        setTimeout(() => {
+                            card.style.opacity = '1';
+                            card.style.transform = 'scale(1)';
+                        }, 50);
+                    } else {
+                        card.style.opacity = '0';
+                        card.style.transform = 'scale(0.95)';
+                        card.style.display = 'none';
+                    }
+                });
+            });
+        });
+    }
 });
