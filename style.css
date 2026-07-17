@@ -1444,3 +1444,126 @@ body.dark-theme .theme-toggle-btn:hover {
 .nav-links {
     align-items: center;
 }
+
+/* B2B Challenge Layout & Leaderboard Styles */
+.challenge-layout {
+    display: grid;
+    grid-template-columns: 1.3fr 1fr;
+    gap: 30px;
+    margin-top: 30px;
+}
+
+@media (max-width: 991px) {
+    .challenge-layout {
+        grid-template-columns: 1fr;
+    }
+}
+
+.leaderboard-item {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 12px 18px;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.45);
+    border: 1px solid var(--border-color);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.02);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+}
+
+.leaderboard-item:hover {
+    transform: translateX(5px) scale(1.02);
+    box-shadow: 0 8px 20px rgba(162, 10, 10, 0.08);
+    border-color: rgba(162, 10, 10, 0.3);
+}
+
+body.dark-theme .leaderboard-item {
+    background: rgba(255, 255, 255, 0.03);
+}
+
+.rank-badge {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 0.95rem;
+    flex-shrink: 0;
+}
+
+.rank-badge.gold {
+    background: linear-gradient(135deg, #ffe066 0%, #f59e0b 100%);
+    color: #7c2d12;
+    box-shadow: 0 4px 10px rgba(245, 158, 11, 0.3);
+}
+
+.rank-badge.silver {
+    background: linear-gradient(135deg, #e2e8f0 0%, #94a3b8 100%);
+    color: #1e293b;
+    box-shadow: 0 4px 10px rgba(148, 163, 184, 0.3);
+}
+
+.rank-badge.bronze {
+    background: linear-gradient(135deg, #fed7aa 0%, #ea580c 100%);
+    color: #431407;
+    box-shadow: 0 4px 10px rgba(234, 88, 12, 0.3);
+}
+
+.rank-badge.other {
+    background: rgba(0, 0, 0, 0.05);
+    color: var(--text-main);
+    border: 1px solid var(--border-color);
+}
+
+body.dark-theme .rank-badge.other {
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.user-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    min-width: 0;
+}
+
+.user-name {
+    font-weight: 700;
+    color: var(--text-main);
+    font-size: 0.95rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.user-title {
+    font-size: 0.8rem;
+    color: var(--text-light);
+    font-style: italic;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.score-badge {
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-weight: 800;
+    font-size: 0.85rem;
+    background: rgba(162, 10, 10, 0.06);
+    color: var(--primary);
+    border: 1px solid rgba(162, 10, 10, 0.12);
+    flex-shrink: 0;
+    box-shadow: 0 2px 6px rgba(162, 10, 10, 0.05);
+}
+
+body.dark-theme .score-badge {
+    background: rgba(162, 10, 10, 0.15);
+    border-color: rgba(162, 10, 10, 0.3);
+}
