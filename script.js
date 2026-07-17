@@ -1005,7 +1005,125 @@ document.addEventListener('DOMContentLoaded', () => {
         resultTitle.textContent = result.title;
         resultTitle.style.color = result.color;
         resultText.textContent = result.text;
+
+        // Leaderboard Submission Logic
+        const assignedNick = funnyNicknames[Math.floor(Math.random() * funnyNicknames.length)] + " " + Math.floor(Math.random() * 90 + 10);
+        const assignedNickEl = document.getElementById('assigned-nickname');
+        const submitBox = document.getElementById('leaderboard-submit-box');
+        
+        if (assignedNickEl && submitBox) {
+            assignedNickEl.textContent = assignedNick;
+            submitBox.innerHTML = `
+                <h4 style="font-weight: bold; margin-bottom: 5px; color: var(--text-main); font-size: 1rem;">🏆 ĐĂNG BẢNG VÀNG CHIẾN THẦN B2B</h4>
+                <p style="font-size: 0.85rem; color: var(--text-light); margin-bottom: 15px;">
+                    Tên đề xuất cho bạn: <strong id="assigned-nickname" style="color: var(--primary);">${assignedNick}</strong>. Bạn có muốn đổi tên khác hoặc lưu lại email để khóa danh hiệu không?
+                </p>
+                <div style="display: flex; flex-direction: column; gap: 10px;">
+                    <input type="text" id="leaderboard-name" placeholder="Biệt danh tự chọn (mặc định sẽ lấy tên đề xuất trên)" style="padding: 8px 12px; border-radius: 6px; border: 1px solid var(--border-color); background: var(--bg); color: var(--text-main); font-family: inherit; font-size: 0.9rem;">
+                    <input type="email" id="leaderboard-email" placeholder="Email của bạn (để khóa danh hiệu & nhận template kế hoạch)" style="padding: 8px 12px; border-radius: 6px; border: 1px solid var(--border-color); background: var(--bg); color: var(--text-main); font-family: inherit; font-size: 0.9rem;">
+                    <button id="btn-submit-leaderboard" class="btn btn-primary" style="padding: 10px; width: 100%; border: none; font-weight: bold;">Xác Nhận Đăng Bảng Vàng</button>
+                </div>
+            `;
+            submitBox.style.display = 'block';
+            
+            const nameInput = document.getElementById('leaderboard-name');
+            const emailInput = document.getElementById('leaderboard-email');
+            const submitBtn = document.getElementById('btn-submit-leaderboard');
+
+            submitBtn.addEventListener('click', () => {
+                const finalName = nameInput.value.trim() || assignedNick;
+                const email = emailInput.value.trim();
+                
+                // Get title based on score
+                let title = "Tân Binh BD";
+                if (score === 5) title = "Chuyên Gia Chốt Deal";
+                else if (score === 4) title = "Chiến Binh Pipeline";
+                else if (score === 3) title = "Thực Tập Sinh Cold Call";
+
+                const newEntry = {
+                    name: finalName,
+                    email: email,
+                    title: title,
+                    score: score
+                };
+
+                const board = getLeaderboard();
+                board.push(newEntry);
+                
+                // Sort by score desc
+                board.sort((a, b) => b.score - a.score);
+                
+                // Cap at 10 items
+                const capped = board.slice(0, 10);
+                localStorage.setItem('bd_leaderboard', JSON.stringify(capped));
+                
+                // Log email if provided
+                if (email) {
+                    fetch('/api/log-email', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ email: email, source: 'leaderboard-submit' })
+                    }).catch(console.error);
+                }
+
+                renderLeaderboard();
+                
+                // Hide submit box and show thank you
+                submitBox.innerHTML = `<div style="text-align: center; font-weight: bold; color: var(--primary); padding: 10px;">🎉 Đăng Bảng Vàng thành công! Chúc mừng Chiến thần B2B!</div>`;
+                setTimeout(() => {
+                    submitBox.style.display = 'none';
+                }, 3000);
+            });
+        }
     }
+
+    // --- Hall of Fame (Leaderboard) Logic ---
+    const funnyNicknames = [
+        "Chúa Tể Chốt Deal", "Kẻ Hủy Diệt Từ Chối", "Sát Thủ Cold Email", "BD Chạy Bằng Cơm",
+        "Chiến Thần CRM", "Giáo Chủ Doanh Số", "Đại Hiệp Pipeline", "Thần Thoại Roleplay",
+        "Anh Hùng Đàm Phán", "Vua Khảo Sát", "Bậc Thầy Gatekeeper", "Khắc Tinh Churn Rate"
+    ];
+
+    const defaultLeaderboard = [
+        { name: "Chúa Tể Chốt Deal", title: "Chuyên Gia Chốt Deal", score: 5 },
+        { name: "Kẻ Hủy Diệt Từ Chối", title: "Chuyên Gia Chốt Deal", score: 5 },
+        { name: "Sát Thủ Cold Email", title: "Chiến Binh Pipeline", score: 4 },
+        { name: "BD Chạy Bằng Cơm", title: "Chiến Binh Pipeline", score: 4 },
+        { name: "Chiến Thần CRM", title: "Thực Tập Sinh Cold Call", score: 3 }
+    ];
+
+    function getLeaderboard() {
+        const board = localStorage.getItem('bd_leaderboard');
+        if (!board) {
+            localStorage.setItem('bd_leaderboard', JSON.stringify(defaultLeaderboard));
+            return defaultLeaderboard;
+        }
+        return JSON.parse(board);
+    }
+
+    function renderLeaderboard() {
+        const board = getLeaderboard();
+        const tbody = document.getElementById('leaderboard-body');
+        if (!tbody) return;
+        tbody.innerHTML = '';
+
+        board.forEach((entry, index) => {
+            const row = document.createElement('tr');
+            let funnyTitle = entry.title || "Tân Binh BD";
+
+            row.innerHTML = `
+                <td style="text-align: center; font-weight: 800; color: var(--primary);">${index + 1}</td>
+                <td><strong>${entry.name}</strong> ${entry.email ? '<span class="verified-badge" style="font-size: 0.65rem; padding: 1px 4px;">✔ Verified</span>' : ''}</td>
+                <td style="color: var(--text-light); font-style: italic;">${funnyTitle}</td>
+                <td style="text-align: center; font-weight: 800; color: var(--primary);">${entry.score}/5</td>
+            `;
+            tbody.appendChild(row);
+        });
+    }
+
+    // Call on load
+    renderLeaderboard();
+
 
     // --- B2B Events Data Model ---
     // --- B2B Events Data Model ---
