@@ -1,13 +1,13 @@
 /* B2B Salary Calculator Custom Styles (Premium Dark Glass Theme) */
 
 body.dark-theme {
-    --bg-dark: #000000;
-    --panel-bg: rgba(18, 18, 24, 0.85);
+    --bg-dark: #0c0707;
+    --panel-bg: rgba(22, 14, 14, 0.85);
     --border-color: rgba(255, 255, 255, 0.08);
     --text-primary: #f8fafc;
     --text-muted: #94a3b8;
-    --primary-glow: #10b981;
-    --accent-glow: #6366f1;
+    --primary-glow: #a20a0a;
+    --accent-glow: #f3a83b;
     --danger-glow: #ef4444;
     
     background-color: var(--bg-dark);
@@ -249,7 +249,7 @@ input[type="text"]:focus, select:focus {
 }
 
 .net-segment {
-    stroke: #10b981;
+    stroke: #a20a0a;
 }
 
 .ins-segment {
@@ -319,7 +319,7 @@ input[type="text"]:focus, select:focus {
     color: var(--text-primary);
 }
 
-.color-net { background-color: #10b981; }
+.color-net { background-color: #a20a0a; }
 .color-ins { background-color: #6366f1; }
 .color-tax { background-color: #ef4444; }
 
@@ -494,8 +494,8 @@ input[type="text"]:focus, select:focus {
 }
 
 .text-danger { color: #ef4444 !important; }
-.text-success { color: #10b981 !important; }
-.text-primary { color: #10b981 !important; }
+.text-success { color: #f3a83b !important; }
+.text-primary { color: #a20a0a !important; }
 .font-semibold { font-weight: 600; }
 .font-bold { font-weight: 800; }
 
