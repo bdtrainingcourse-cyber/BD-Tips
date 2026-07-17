@@ -1285,7 +1285,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         <span style="font-size: 0.8rem; font-weight: 800; color: var(--primary-light);">T.${evt.monthNum}/${evt.day}</span>
                     </div>
                     <span class="event-badge ${evt.badgeClass}" style="margin: 0;">${evt.sectorLabel}</span>
-                    <span class="format-badge ${evt.format}" style="font-size: 0.7rem; font-weight: 800; padding: 4px 8px; border-radius: 6px; text-transform: uppercase; background: rgba(255,255,255,0.05); border: 1px solid ${evt.format === 'online' ? 'rgba(16,185,129,0.3)' : evt.format === 'hybrid' ? 'rgba(245,158,11,0.3)' : 'rgba(59,130,246,0.3)'}; color: ${evt.format === 'online' ? '#10b981' : evt.format === 'hybrid' ? '#f59e0b' : '#3b82f6'};">
+                    <span class="format-badge ${evt.format}" style="font-size: 0.7rem; font-weight: 800; padding: 4px 8px; border-radius: 6px; text-transform: uppercase; background: rgba(255,255,255,0.05); border: 1px solid ${evt.format === 'online' ? 'rgba(162,10,10,0.3)' : evt.format === 'hybrid' ? 'rgba(245,158,11,0.3)' : 'rgba(59,130,246,0.3)'}; color: ${evt.format === 'online' ? '#a20a0a' : evt.format === 'hybrid' ? '#f59e0b' : '#3b82f6'};">
                         ${evt.formatLabel}
                     </span>
                     <span class="event-status ${evt.online > 0 ? 'live' : ''}" style="margin-left: auto;">
