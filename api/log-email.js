@@ -1,4 +1,5 @@
 // Serverless function to save user lead email to Google Sheets webhook
+// Force rebuild to load new Vercel env vars
 module.exports = async (req, res) => {
   // Set CORS headers
   res.setHeader('Access-Control-Allow-Origin', '*');
