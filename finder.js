@@ -403,7 +403,7 @@ document.addEventListener('DOMContentLoaded', () => {
             `;
             if (isGated) {
                 actionBtnHtml = `
-                    <button class="btn btn-secondary btn-unlock-contacts" style="margin: 0; padding: 6px 12px; font-size: 0.8rem; background: #0b8a4f; border-color: #0b8a4f; color: white;" data-index="${index}">
+                    <button class="btn btn-secondary btn-unlock-contacts" style="margin: 0; padding: 6px 12px; font-size: 0.8rem; background: #a20a0a; border-color: #a20a0a; color: white;" data-index="${index}">
                         🔓 Unlock
                     </button>
                 `;
