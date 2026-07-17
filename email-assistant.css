@@ -1,16 +1,16 @@
 /* B2B Email Assistant custom stylesheet */
 
 :root {
-    --bg-dark: #090a0f;
-    --panel-bg: rgba(17, 19, 31, 0.75);
+    --bg-dark: #0c0707;
+    --panel-bg: rgba(22, 14, 14, 0.75);
     --border-color: rgba(255, 255, 255, 0.08);
     --text-main: #f8fafc;
     --text-light: #94a3b8;
-    --primary: #10b981;
-    --primary-glow: rgba(16, 185, 129, 0.25);
+    --primary: #a20a0a;
+    --primary-glow: rgba(162, 10, 10, 0.25);
     --danger: #ef4444;
     --warning: #f59e0b;
-    --card-hover-border: rgba(16, 185, 129, 0.3);
+    --card-hover-border: rgba(162, 10, 10, 0.3);
 }
 
 .assistant-container {
@@ -30,7 +30,7 @@
     font-weight: 800;
     margin: 0;
     font-family: 'Outfit', sans-serif;
-    background: linear-gradient(135deg, #ffffff 30%, #10b981 100%);
+    background: linear-gradient(135deg, #ffffff 30%, #a20a0a 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
 }
