@@ -1004,6 +1004,19 @@
             registrations.push(registration);
             localStorage.setItem('bd_registrations', JSON.stringify(registrations));
 
+            // Send payload to backend log API to sync with Google Sheets
+            fetch('/api/log-email', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    email: email,
+                    tool: 'course-registration',
+                    name: name,
+                    phone: phone,
+                    company: company
+                })
+            }).catch(err => console.error('Failed to sync registration to Google Sheets:', err));
+
             // Show success modal
             document.getElementById('successModal').classList.add('active');
 
