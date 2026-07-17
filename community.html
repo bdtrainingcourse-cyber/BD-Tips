@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cộng Đồng BD - B2B Business Development Portal</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Outfit:wght@600;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="community.css">
+    
+    <script src="theme-toggle.js"></script>
+</head>
+<body class="course-page">
+
+    <!-- Navigation Bar -->
+    <header class="app-nav">
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo">
+                <span class="logo-accent">B2B</span> BD Portal
+            </a>
+            <nav class="nav-links">
+                <a href="index.html">Ngôn Từ B2B</a>
+                <a href="index.html#minigame-section">B2B Challenge</a>
+                <a href="finder.html">PIC Finder</a>
+                <a href="library.html">Thư Viện B2B</a>
+                <a href="labor-law.html">Luật Lao Động</a>
+                <a href="salary.html">Tính Lương</a>
+                <a href="email-assistant.html">Email Assistant</a>
+                <a href="kpi-estimation.html">Ước Tính KPI</a>
+                <a href="community.html" class="active">Cộng Đồng</a>
+                <a href="course.html">Khóa Học BD</a>
+                <button id="theme-toggle" class="theme-toggle-btn" aria-label="Toggle theme">🌓</button>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container community-main">
+        <div class="community-header">
+            <h1>🤝 CỘNG ĐỒNG B2B BD VIỆT NAM</h1>
+            <p style="color: var(--text-light); font-size: 1.1rem; margin-top: 10px;">
+                Nơi đặt câu hỏi, chia sẻ câu chuyện thực chiến, và hỗ trợ kết nối sếp mua hàng (PIC).
+            </p>
+        </div>
+
+        <div class="community-layout">
+            <!-- Sidebar Categories -->
+            <aside class="community-sidebar">
+                <button class="category-tab active" data-category="all">📂 Tất cả thảo luận</button>
+                <button class="category-tab" data-category="qna">🧠 Hỏi đáp nghiệp vụ</button>
+                <button class="category-tab" data-category="pic">🔍 Yêu cầu kết nối PIC</button>
+                <button class="category-tab" data-category="story">🧗 Câu chuyện BD</button>
+            </aside>
+
+            <!-- Main Content Area -->
+            <section class="posts-area">
+                <!-- Posts List Container -->
+                <div id="posts-list-container">
+                    <div class="search-bar-row">
+                        <input type="text" id="community-search" class="search-input" placeholder="🔍 Tìm kiếm chủ đề, câu hỏi, tên công ty...">
+                        <button id="btn-create-post" class="btn btn-primary" style="padding: 12px 24px; font-weight: bold; border-radius: 8px; border: none; white-space: nowrap;">
+                            ✏️ Đặt Câu Hỏi / Chia Sẻ
+                        </button>
+                    </div>
+
+                    <div id="posts-container" style="display: flex; flex-direction: column; gap: 20px; margin-top: 20px;">
+                        <!-- Render posts dynamically via JS -->
+                    </div>
+                </div>
+
+                <!-- Detailed Post Container (hidden by default) -->
+                <div id="post-detail-container" class="hidden">
+                    <button id="btn-back-to-list" class="btn btn-secondary" style="padding: 8px 16px; font-size: 0.85rem; margin-bottom: 20px; width: fit-content;">
+                        &larr; Quay lại danh sách thảo luận
+                    </button>
+                    <div id="post-detail-content">
+                        <!-- Injected details via JS -->
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="app-footer">
+        <div class="container text-center">
+            <p style="margin-bottom: 10px;">&copy; 2026 B2B BD Portal. Đào tạo Business Development thực chiến hàng đầu.</p>
+            <p style="font-size: 0.8rem; color: var(--text-light);">Developed by Peter Vo & Team</p>
+        </div>
+    </footer>
+
+    <!-- Create Post Modal Dialog -->
+    <div class="modal-overlay" id="create-post-modal">
+        <div class="modal-box" style="max-width: 550px; text-align: left;">
+            <h3 style="font-size: 1.5rem; font-weight: 800; margin-bottom: 15px; color: var(--text-main); text-align: center; border-bottom: 2px solid var(--primary); padding-bottom: 10px;">
+                ✏️ TẠO THẢO LUẬN MỚI
+            </h3>
+            
+            <form id="createPostForm">
+                <div class="form-group">
+                    <label for="postCat">Chuyên mục *</label>
+                    <select id="postCat" required>
+                        <option value="qna">Hỏi đáp nghiệp vụ</option>
+                        <option value="pic">Yêu cầu kết nối PIC công ty</option>
+                        <option value="story">Câu chuyện BD thực chiến</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="postTitle">Tiêu đề thảo luận *</label>
+                    <input type="text" id="postTitle" placeholder="Tóm tắt ngắn gọn câu hỏi hoặc yêu cầu (ví dụ: Xin contact PIC bên Techcombank)" required style="padding: 12px; border-radius: 8px; border: 1px solid var(--border-color); background: var(--bg); color: var(--text-main); font-family: inherit;">
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 10px;">
+                    <div class="form-group">
+                        <label for="postAuthor">Biệt danh / Họ tên *</label>
+                        <input type="text" id="postAuthor" placeholder="BD_SaaS, Peter..." required style="padding: 12px; border-radius: 8px; border: 1px solid var(--border-color); background: var(--bg); color: var(--text-main); font-family: inherit;">
+                    </div>
+                    <div class="form-group">
+                        <label for="postEmail">Email B2B (để nhận Verified Badge)</label>
+                        <input type="email" id="postEmail" placeholder="name@company.com" style="padding: 12px; border-radius: 8px; border: 1px solid var(--border-color); background: var(--bg); color: var(--text-main); font-family: inherit;">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="postContent">Nội dung chi tiết *</label>
+                    <textarea id="postContent" rows="6" placeholder="Mô tả chi tiết câu hỏi, bối cảnh, hoặc câu chuyện thực chiến của bạn..." required></textarea>
+                </div>
+
+                <div style="display: flex; gap: 15px; justify-content: flex-end; margin-top: 25px;">
+                    <button type="button" onclick="closeModal()" class="btn btn-secondary" style="margin: 0; padding: 12px 24px;">Hủy bỏ</button>
+                    <button type="submit" class="btn btn-primary" style="padding: 12px 30px; border: none; font-weight: bold;">Đăng Thảo Luận</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="community.js"></script>
+</body>
+</html>
