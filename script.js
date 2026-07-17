@@ -1103,21 +1103,34 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function renderLeaderboard() {
         const board = getLeaderboard();
-        const tbody = document.getElementById('leaderboard-body');
-        if (!tbody) return;
-        tbody.innerHTML = '';
+        const listContainer = document.getElementById('leaderboard-list');
+        if (!listContainer) return;
+        listContainer.innerHTML = '';
 
         board.forEach((entry, index) => {
-            const row = document.createElement('tr');
-            let funnyTitle = entry.title || "Tân Binh BD";
+            const item = document.createElement('div');
+            item.className = 'leaderboard-item';
+            
+            let rankClass = 'other';
+            if (index === 0) rankClass = 'gold';
+            else if (index === 1) rankClass = 'silver';
+            else if (index === 2) rankClass = 'bronze';
 
-            row.innerHTML = `
-                <td style="text-align: center; font-weight: 800; color: var(--primary);">${index + 1}</td>
-                <td><strong>${entry.name}</strong> ${entry.email ? '<span class="verified-badge" style="font-size: 0.65rem; padding: 1px 4px;">✔ Verified</span>' : ''}</td>
-                <td style="color: var(--text-light); font-style: italic;">${funnyTitle}</td>
-                <td style="text-align: center; font-weight: 800; color: var(--primary);">${entry.score}/5</td>
+            let funnyTitle = entry.title || "Tân Binh BD";
+            const verifiedBadgeHtml = entry.email ? `<span class="verified-badge" style="font-size: 0.65rem; padding: 1px 4px; background: rgba(243, 168, 59, 0.15); color: #e59a18; border-radius: 12px; font-weight: bold; margin-left: 5px;">✔ Verified</span>` : '';
+
+            item.innerHTML = `
+                <div class="rank-badge ${rankClass}">${index + 1}</div>
+                <div class="user-info">
+                    <div class="user-name">
+                        <span>${entry.name}</span>
+                        ${verifiedBadgeHtml}
+                    </div>
+                    <div class="user-title">${funnyTitle}</div>
+                </div>
+                <div class="score-badge">${entry.score}/5</div>
             `;
-            tbody.appendChild(row);
+            listContainer.appendChild(item);
         });
     }
 
