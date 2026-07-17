@@ -1,14 +1,14 @@
 /* Floating AI Chat Widget Styles */
 
 :root {
-    --chat-primary: #10b981;
-    --chat-bg: rgba(18, 18, 24, 0.95);
+    --chat-primary: #a20a0a;
+    --chat-bg: rgba(22, 14, 14, 0.95);
     --chat-border: rgba(255, 255, 255, 0.08);
     --chat-text: #f8fafc;
     --chat-text-muted: #94a3b8;
     --chat-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
     --chat-user-bubble: #1e293b;
-    --chat-bot-bubble: rgba(16, 185, 129, 0.1);
+    --chat-bot-bubble: rgba(162, 10, 10, 0.1);
 }
 
 /* Launcher Button */
@@ -20,7 +20,7 @@
     height: 60px;
     border-radius: 50%;
     background: var(--chat-primary);
-    box-shadow: 0 8px 24px rgba(16, 185, 129, 0.4);
+    box-shadow: 0 8px 24px rgba(162, 10, 10, 0.4);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -32,7 +32,7 @@
 
 .ai-chat-launcher:hover {
     transform: scale(1.1);
-    box-shadow: 0 10px 28px rgba(16, 185, 129, 0.6);
+    box-shadow: 0 10px 28px rgba(162, 10, 10, 0.6);
 }
 
 .ai-chat-launcher svg {
@@ -189,9 +189,9 @@
     width: 12px;
     height: 12px;
     border-radius: 50%;
-    background-color: #10b981;
+    background-color: #a20a0a;
     border: 2px solid #0f172a;
-    box-shadow: 0 0 8px #10b981;
+    box-shadow: 0 0 8px #a20a0a;
 }
 
 .chat-bubble {
@@ -249,7 +249,7 @@
 
 .chat-router-btn:hover {
     background: #0d9668;
-    box-shadow: 0 6px 15px rgba(16, 185, 129, 0.4);
+    box-shadow: 0 6px 15px rgba(162, 10, 10, 0.4);
     transform: translateY(-1px);
 }
 
@@ -392,7 +392,7 @@
 
 /* Inline Links inside AI Chat Bubble */
 .chat-inline-link {
-    color: #10b981 !important;
+    color: #a20a0a !important;
     text-decoration: underline;
     font-weight: 600;
     transition: color 0.2s;
