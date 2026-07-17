@@ -1,13 +1,13 @@
 /* B2B Library Styles (Premium Dark Glass Theme) */
 
 body.dark-theme {
-    --bg-dark: #000000;
-    --panel-bg: rgba(18, 18, 24, 0.85);
+    --bg-dark: #0c0707;
+    --panel-bg: rgba(22, 14, 14, 0.85);
     --border-color: rgba(255, 255, 255, 0.08);
     --text-primary: #f8fafc;
     --text-muted: #94a3b8;
-    --primary-glow: #10b981;
-    --accent-glow: #6366f1;
+    --primary-glow: #a20a0a;
+    --accent-glow: #f3a83b;
     
     background-color: var(--bg-dark);
     background-image: none;
