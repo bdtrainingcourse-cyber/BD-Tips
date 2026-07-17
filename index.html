@@ -230,142 +230,133 @@
     <!-- Mini Game Section -->
     <section class="minigame container" id="minigame-section">
         <h2 class="section-title">B2B CHALLENGE</h2>
-        <div class="game-container glass-effect">
-            <!-- Selector Panel -->
-            <div id="game-selector" class="game-selector">
-                <p style="font-size: 1.1rem; margin-bottom: 25px; text-align: center; color: var(--text-light);">Chọn thử thách bạn muốn tham gia để đánh giá năng lực B2B Sales / Business Development:</p>
-                <div class="selector-grid">
-                    <div class="game-card glass-panel" style="padding: 20px; display: flex; flex-direction: column; gap: 10px; cursor: pointer; border: 1px solid var(--border-color); border-radius: 12px; background: rgba(255, 255, 255, 0.6);" data-game-index="0">
-                        <div style="font-size: 1.8rem; margin-bottom: 5px;">🧠</div>
-                        <h4 style="font-size: 1.1rem; font-weight: 700; margin: 0; color: var(--text-main);">Bạn là Tân Binh hay Chuyên Gia?</h4>
-                        <p style="font-size: 0.85rem; color: var(--text-light); flex: 1; margin: 5px 0 0 0;">Đánh giá khả năng phản xạ và xử lý tình huống thực tế của BD khi đàm phán thương lượng với đối tác.</p>
-                        <button class="btn btn-primary" style="padding: 8px 12px; font-size: 0.85rem; margin-top: 15px; width: 100%;">Chơi Ngay</button>
+        <div class="challenge-layout">
+            <!-- Left Column: The Game Engine -->
+            <div class="game-container glass-effect" style="margin: 0;">
+                <!-- Selector Panel -->
+                <div id="game-selector" class="game-selector">
+                    <p style="font-size: 1.1rem; margin-bottom: 25px; text-align: center; color: var(--text-light);">Chọn thử thách bạn muốn tham gia để đánh giá năng lực B2B Sales / Business Development:</p>
+                    <div class="selector-grid">
+                        <div class="game-card glass-panel" style="padding: 20px; display: flex; flex-direction: column; gap: 10px; cursor: pointer; border: 1px solid var(--border-color); border-radius: 12px; background: rgba(255, 255, 255, 0.6);" data-game-index="0">
+                            <div style="font-size: 1.8rem; margin-bottom: 5px;">🧠</div>
+                            <h4 style="font-size: 1.1rem; font-weight: 700; margin: 0; color: var(--text-main);">Bạn là Tân Binh hay Chuyên Gia?</h4>
+                            <p style="font-size: 0.85rem; color: var(--text-light); flex: 1; margin: 5px 0 0 0;">Đánh giá khả năng phản xạ và xử lý tình huống thực tế của BD khi đàm phán thương lượng với đối tác.</p>
+                            <button class="btn btn-primary" style="padding: 8px 12px; font-size: 0.85rem; margin-top: 15px; width: 100%;">Chơi Ngay</button>
+                        </div>
+                        <div class="game-card glass-panel" style="padding: 20px; display: flex; flex-direction: column; gap: 10px; cursor: pointer; border: 1px solid var(--border-color); border-radius: 12px; background: rgba(255, 255, 255, 0.6);" data-game-index="1">
+                            <div style="font-size: 1.8rem; margin-bottom: 5px;">⚙️</div>
+                            <h4 style="font-size: 1.1rem; font-weight: 700; margin: 0; color: var(--text-main);">BD 'Thủ Công' hay 'Hệ Thống'?</h4>
+                            <p style="font-size: 0.85rem; color: var(--text-light); flex: 1; margin: 5px 0 0 0;">Đo lường phương pháp làm việc của bạn đang ở mức nỗ lực cơ bắp thủ công hay quy trình hệ thống hóa.</p>
+                            <button class="btn btn-primary" style="padding: 8px 12px; font-size: 0.85rem; margin-top: 15px; width: 100%;">Chơi Ngay</button>
+                        </div>
+                        <div class="game-card glass-panel" style="padding: 20px; display: flex; flex-direction: column; gap: 10px; cursor: pointer; border: 1px solid var(--border-color); border-radius: 12px; background: rgba(255, 255, 255, 0.6);" data-game-index="2">
+                            <div style="font-size: 1.8rem; margin-bottom: 5px;">🧗</div>
+                            <h4 style="font-size: 1.1rem; font-weight: 700; margin: 0; color: var(--text-main);">Nhảy qua làm BD có dễ ko ta?</h4>
+                            <p style="font-size: 0.85rem; color: var(--text-light); flex: 1; margin: 5px 0 0 0;">Đánh giá mức độ phù hợp về tố chất bản thân (chịu áp lực, khả năng research, chủ động) với nghề BD.</p>
+                            <button class="btn btn-primary" style="padding: 8px 12px; font-size: 0.85rem; margin-top: 15px; width: 100%;">Chơi Ngay</button>
+                        </div>
+                        <div class="game-card glass-panel" style="padding: 20px; display: flex; flex-direction: column; gap: 10px; cursor: pointer; border: 1px solid var(--border-color); border-radius: 12px; background: rgba(255, 255, 255, 0.6);" data-game-index="3">
+                            <div style="font-size: 1.8rem; margin-bottom: 5px;">🛡️</div>
+                            <h4 style="font-size: 1.1rem; font-weight: 700; margin: 0; color: var(--text-main);">Xử Lý Từ Chối Kinh Điển</h4>
+                            <p style="font-size: 0.85rem; color: var(--text-light); flex: 1; margin: 5px 0 0 0;">Học cách bẻ lái các câu từ chối phổ biến nhất của khách hàng B2B sang cơ hội trình bày.</p>
+                            <button class="btn btn-primary" style="padding: 8px 12px; font-size: 0.85rem; margin-top: 15px; width: 100%;">Chơi Ngay</button>
+                        </div>
+                        <div class="game-card glass-panel" style="padding: 20px; display: flex; flex-direction: column; gap: 10px; cursor: pointer; border: 1px solid var(--border-color); border-radius: 12px; background: rgba(255, 255, 255, 0.6);" data-game-index="4">
+                            <div style="font-size: 1.8rem; margin-bottom: 5px;">✉️</div>
+                            <h4 style="font-size: 1.1rem; font-weight: 700; margin: 0; color: var(--text-main);">Nghệ Thuật Viết Cold Email</h4>
+                            <p style="font-size: 0.85rem; color: var(--text-light); flex: 1; margin: 5px 0 0 0;">Tối ưu tỷ lệ mở và phản hồi email tiếp cận đối tác với các cấu trúc chuẩn chuyên gia.</p>
+                            <button class="btn btn-primary" style="padding: 8px 12px; font-size: 0.85rem; margin-top: 15px; width: 100%;">Chơi Ngay</button>
+                        </div>
+                        <div class="game-card glass-panel" style="padding: 20px; display: flex; flex-direction: column; gap: 10px; cursor: pointer; border: 1px solid var(--border-color); border-radius: 12px; background: rgba(255, 255, 255, 0.6);" data-game-index="5">
+                            <div style="font-size: 1.8rem; margin-bottom: 5px;">🚪</div>
+                            <h4 style="font-size: 1.1rem; font-weight: 700; margin: 0; color: var(--text-main);">Vượt Ải Gatekeeper</h4>
+                            <p style="font-size: 0.85rem; color: var(--text-light); flex: 1; margin: 5px 0 0 0;">Kỹ thuật giao tiếp khôn khéo để vượt qua bộ lọc lễ tân/thư ký và kết nối sếp lớn.</p>
+                            <button class="btn btn-primary" style="padding: 8px 12px; font-size: 0.85rem; margin-top: 15px; width: 100%;">Chơi Ngay</button>
+                        </div>
+                        <div class="game-card glass-panel" style="padding: 20px; display: flex; flex-direction: column; gap: 10px; cursor: pointer; border: 1px solid var(--border-color); border-radius: 12px; background: rgba(255, 255, 255, 0.6);" data-game-index="6">
+                            <div style="font-size: 1.8rem; margin-bottom: 5px;">🤝</div>
+                            <h4 style="font-size: 1.1rem; font-weight: 700; margin: 0; color: var(--text-main);">Đàm Phán Hợp Đồng B2B</h4>
+                            <p style="font-size: 0.85rem; color: var(--text-light); flex: 1; margin: 5px 0 0 0;">Thương lượng điều khoản hợp đồng hiệu quả để đạt thỏa thuận win-win tối ưu rủi ro.</p>
+                            <button class="btn btn-primary" style="padding: 8px 12px; font-size: 0.85rem; margin-top: 15px; width: 100%;">Chơi Ngay</button>
+                        </div>
+                        <div class="game-card glass-panel" style="padding: 20px; display: flex; flex-direction: column; gap: 10px; cursor: pointer; border: 1px solid var(--border-color); border-radius: 12px; background: rgba(255, 255, 255, 0.6);" data-game-index="7">
+                            <div style="font-size: 1.8rem; margin-bottom: 5px;">📊</div>
+                            <h4 style="font-size: 1.1rem; font-weight: 700; margin: 0; color: var(--text-main);">Pitching & Slide Thuyết Phục</h4>
+                            <p style="font-size: 0.85rem; color: var(--text-light); flex: 1; margin: 5px 0 0 0;">Lập luận sắc bén thuyết phục Ban giám đốc/C-level gật đầu đồng ý thử nghiệm.</p>
+                            <button class="btn btn-primary" style="padding: 8px 12px; font-size: 0.85rem; margin-top: 15px; width: 100%;">Chơi Ngay</button>
+                        </div>
+                        <div class="game-card glass-panel" style="padding: 20px; display: flex; flex-direction: column; gap: 10px; cursor: pointer; border: 1px solid var(--border-color); border-radius: 12px; background: rgba(255, 255, 255, 0.6);" data-game-index="8">
+                            <div style="font-size: 1.8rem; margin-bottom: 5px;">❤️</div>
+                            <h4 style="font-size: 1.1rem; font-weight: 700; margin: 0; color: var(--text-main);">EQ trong B2B Sales</h4>
+                            <p style="font-size: 0.85rem; color: var(--text-light); flex: 1; margin: 5px 0 0 0;">Khảo sát chỉ số EQ - khả năng chịu áp lực, thấu cảm và kiên trì của chiến binh BD.</p>
+                            <button class="btn btn-primary" style="padding: 8px 12px; font-size: 0.85rem; margin-top: 15px; width: 100%;">Chơi Ngay</button>
+                        </div>
+                        <div class="game-card glass-panel" style="padding: 20px; display: flex; flex-direction: column; gap: 10px; cursor: pointer; border: 1px solid var(--border-color); border-radius: 12px; background: rgba(255, 255, 255, 0.6);" data-game-index="9">
+                            <div style="font-size: 1.8rem; margin-bottom: 5px;">📈</div>
+                            <h4 style="font-size: 1.1rem; font-weight: 700; margin: 0; color: var(--text-main);">Upsell & Giữ Chân Khách</h4>
+                            <p style="font-size: 0.85rem; color: var(--text-light); flex: 1; margin: 5px 0 0 0;">Chăm sóc khách hàng cũ hiệu quả để tối ưu hóa giá trị trọn đời (LTV) và tái ký.</p>
+                            <button class="btn btn-primary" style="padding: 8px 12px; font-size: 0.85rem; margin-top: 15px; width: 100%;">Chơi Ngay</button>
+                        </div>
                     </div>
-                    <div class="game-card glass-panel" style="padding: 20px; display: flex; flex-direction: column; gap: 10px; cursor: pointer; border: 1px solid var(--border-color); border-radius: 12px; background: rgba(255, 255, 255, 0.6);" data-game-index="1">
-                        <div style="font-size: 1.8rem; margin-bottom: 5px;">⚙️</div>
-                        <h4 style="font-size: 1.1rem; font-weight: 700; margin: 0; color: var(--text-main);">BD 'Thủ Công' hay 'Hệ Thống'?</h4>
-                        <p style="font-size: 0.85rem; color: var(--text-light); flex: 1; margin: 5px 0 0 0;">Đo lường phương pháp làm việc của bạn đang ở mức nỗ lực cơ bắp thủ công hay quy trình hệ thống hóa.</p>
-                        <button class="btn btn-primary" style="padding: 8px 12px; font-size: 0.85rem; margin-top: 15px; width: 100%;">Chơi Ngay</button>
+                </div>
+
+                <!-- Intro Panel -->
+                <div id="game-intro" class="hidden">
+                    <button id="back-to-selector" class="btn btn-secondary" style="padding: 6px 16px; font-size: 0.85rem; margin: 0 auto 20px auto; display: block; width: fit-content;">&larr; Quay lại chọn game khác</button>
+                    <h3 id="intro-game-title" style="font-size: 1.6rem; font-weight: 800; margin-bottom: 12px; color: var(--text-main);"></h3>
+                    <p id="intro-game-desc" style="font-size: 1.1rem; margin-bottom: 25px; color: var(--text-light); max-width: 600px; margin-left: auto; margin-right: auto;"></p>
+                    <button id="start-btn" class="btn btn-primary" style="padding: 12px 40px; font-size: 1.1rem;">Bắt Đầu Chơi</button>
+                </div>
+
+                <!-- Play Panel -->
+                <div id="game-play" class="hidden">
+                    <div class="progress-bar">
+                        <div id="progress" class="progress"></div>
                     </div>
-                    <div class="game-card glass-panel" style="padding: 20px; display: flex; flex-direction: column; gap: 10px; cursor: pointer; border: 1px solid var(--border-color); border-radius: 12px; background: rgba(255, 255, 255, 0.6);" data-game-index="2">
-                        <div style="font-size: 1.8rem; margin-bottom: 5px;">🧗</div>
-                        <h4 style="font-size: 1.1rem; font-weight: 700; margin: 0; color: var(--text-main);">Nhảy qua làm BD có dễ ko ta?</h4>
-                        <p style="font-size: 0.85rem; color: var(--text-light); flex: 1; margin: 5px 0 0 0;">Đánh giá mức độ phù hợp về tố chất bản thân (chịu áp lực, khả năng research, chủ động) với nghề BD.</p>
-                        <button class="btn btn-primary" style="padding: 8px 12px; font-size: 0.85rem; margin-top: 15px; width: 100%;">Chơi Ngay</button>
+                    <div id="timer-display" class="timer-display">15s</div>
+                    <p id="question-text" class="question-text"></p>
+                    <div class="options-container" id="options-container">
+                        <!-- Options injected via JS -->
                     </div>
-                    <div class="game-card glass-panel" style="padding: 20px; display: flex; flex-direction: column; gap: 10px; cursor: pointer; border: 1px solid var(--border-color); border-radius: 12px; background: rgba(255, 255, 255, 0.6);" data-game-index="3">
-                        <div style="font-size: 1.8rem; margin-bottom: 5px;">🛡️</div>
-                        <h4 style="font-size: 1.1rem; font-weight: 700; margin: 0; color: var(--text-main);">Xử Lý Từ Chối Kinh Điển</h4>
-                        <p style="font-size: 0.85rem; color: var(--text-light); flex: 1; margin: 5px 0 0 0;">Học cách bẻ lái các câu từ chối phổ biến nhất của khách hàng B2B sang cơ hội trình bày.</p>
-                        <button class="btn btn-primary" style="padding: 8px 12px; font-size: 0.85rem; margin-top: 15px; width: 100%;">Chơi Ngay</button>
+                    <div id="feedback-msg" class="feedback-msg hidden"></div>
+                    <button id="next-btn" class="btn btn-secondary hidden" style="margin-top: 20px;">Câu tiếp theo &rarr;</button>
+                </div>
+
+                <!-- Result Panel -->
+                <div id="game-result" class="hidden">
+                    <h3 id="result-title" style="font-size: 2.2rem; font-weight: 800; margin-bottom: 15px;"></h3>
+                    <p id="result-text" style="font-size: 1.15rem; color: var(--text-main); max-width: 600px; margin: 0 auto 10px auto; line-height: 1.6;"></p>
+                    
+                    <!-- Hall of Fame Submit Form -->
+                    <div id="leaderboard-submit-box" style="background: rgba(162, 10, 10, 0.03); border: 1px solid rgba(162, 10, 10, 0.12); border-radius: 12px; padding: 20px; max-width: 500px; margin: 20px auto; text-align: left;">
+                        <h4 style="font-weight: bold; margin-bottom: 5px; color: var(--text-main); font-size: 1rem;">🏆 ĐĂNG BẢNG VÀNG CHIẾN THẦN B2B</h4>
+                        <p style="font-size: 0.85rem; color: var(--text-light); margin-bottom: 15px;">
+                            Tên đề xuất cho bạn: <strong id="assigned-nickname" style="color: var(--primary);"></strong>. Bạn có muốn đổi tên khác hoặc lưu lại email để khóa danh hiệu không?
+                        </p>
+                        <div style="display: flex; flex-direction: column; gap: 10px;">
+                            <input type="text" id="leaderboard-name" placeholder="Biệt danh tự chọn (mặc định sẽ lấy tên đề xuất trên)" style="padding: 8px 12px; border-radius: 6px; border: 1px solid var(--border-color); background: var(--bg); color: var(--text-main); font-family: inherit; font-size: 0.9rem;">
+                            <input type="email" id="leaderboard-email" placeholder="Email của bạn (để khóa danh hiệu & nhận template kế hoạch)" style="padding: 8px 12px; border-radius: 6px; border: 1px solid var(--border-color); background: var(--bg); color: var(--text-main); font-family: inherit; font-size: 0.9rem;">
+                            <button id="btn-submit-leaderboard" class="btn btn-primary" style="padding: 10px; width: 100%; border: none; font-weight: bold;">Xác Nhận Đăng Bảng Vàng</button>
+                        </div>
                     </div>
-                    <div class="game-card glass-panel" style="padding: 20px; display: flex; flex-direction: column; gap: 10px; cursor: pointer; border: 1px solid var(--border-color); border-radius: 12px; background: rgba(255, 255, 255, 0.6);" data-game-index="4">
-                        <div style="font-size: 1.8rem; margin-bottom: 5px;">✉️</div>
-                        <h4 style="font-size: 1.1rem; font-weight: 700; margin: 0; color: var(--text-main);">Nghệ Thuật Viết Cold Email</h4>
-                        <p style="font-size: 0.85rem; color: var(--text-light); flex: 1; margin: 5px 0 0 0;">Tối ưu tỷ lệ mở và phản hồi email tiếp cận đối tác với các cấu trúc chuẩn chuyên gia.</p>
-                        <button class="btn btn-primary" style="padding: 8px 12px; font-size: 0.85rem; margin-top: 15px; width: 100%;">Chơi Ngay</button>
-                    </div>
-                    <div class="game-card glass-panel" style="padding: 20px; display: flex; flex-direction: column; gap: 10px; cursor: pointer; border: 1px solid var(--border-color); border-radius: 12px; background: rgba(255, 255, 255, 0.6);" data-game-index="5">
-                        <div style="font-size: 1.8rem; margin-bottom: 5px;">🚪</div>
-                        <h4 style="font-size: 1.1rem; font-weight: 700; margin: 0; color: var(--text-main);">Vượt Ải Gatekeeper</h4>
-                        <p style="font-size: 0.85rem; color: var(--text-light); flex: 1; margin: 5px 0 0 0;">Kỹ thuật giao tiếp khôn khéo để vượt qua bộ lọc lễ tân/thư ký và kết nối sếp lớn.</p>
-                        <button class="btn btn-primary" style="padding: 8px 12px; font-size: 0.85rem; margin-top: 15px; width: 100%;">Chơi Ngay</button>
-                    </div>
-                    <div class="game-card glass-panel" style="padding: 20px; display: flex; flex-direction: column; gap: 10px; cursor: pointer; border: 1px solid var(--border-color); border-radius: 12px; background: rgba(255, 255, 255, 0.6);" data-game-index="6">
-                        <div style="font-size: 1.8rem; margin-bottom: 5px;">🤝</div>
-                        <h4 style="font-size: 1.1rem; font-weight: 700; margin: 0; color: var(--text-main);">Đàm Phán Hợp Đồng B2B</h4>
-                        <p style="font-size: 0.85rem; color: var(--text-light); flex: 1; margin: 5px 0 0 0;">Thương lượng điều khoản hợp đồng hiệu quả để đạt thỏa thuận win-win tối ưu rủi ro.</p>
-                        <button class="btn btn-primary" style="padding: 8px 12px; font-size: 0.85rem; margin-top: 15px; width: 100%;">Chơi Ngay</button>
-                    </div>
-                    <div class="game-card glass-panel" style="padding: 20px; display: flex; flex-direction: column; gap: 10px; cursor: pointer; border: 1px solid var(--border-color); border-radius: 12px; background: rgba(255, 255, 255, 0.6);" data-game-index="7">
-                        <div style="font-size: 1.8rem; margin-bottom: 5px;">📊</div>
-                        <h4 style="font-size: 1.1rem; font-weight: 700; margin: 0; color: var(--text-main);">Pitching & Slide Thuyết Phục</h4>
-                        <p style="font-size: 0.85rem; color: var(--text-light); flex: 1; margin: 5px 0 0 0;">Lập luận sắc bén thuyết phục Ban giám đốc/C-level gật đầu đồng ý thử nghiệm.</p>
-                        <button class="btn btn-primary" style="padding: 8px 12px; font-size: 0.85rem; margin-top: 15px; width: 100%;">Chơi Ngay</button>
-                    </div>
-                    <div class="game-card glass-panel" style="padding: 20px; display: flex; flex-direction: column; gap: 10px; cursor: pointer; border: 1px solid var(--border-color); border-radius: 12px; background: rgba(255, 255, 255, 0.6);" data-game-index="8">
-                        <div style="font-size: 1.8rem; margin-bottom: 5px;">❤️</div>
-                        <h4 style="font-size: 1.1rem; font-weight: 700; margin: 0; color: var(--text-main);">EQ trong B2B Sales</h4>
-                        <p style="font-size: 0.85rem; color: var(--text-light); flex: 1; margin: 5px 0 0 0;">Khảo sát chỉ số EQ - khả năng chịu áp lực, thấu cảm và kiên trì của chiến binh BD.</p>
-                        <button class="btn btn-primary" style="padding: 8px 12px; font-size: 0.85rem; margin-top: 15px; width: 100%;">Chơi Ngay</button>
-                    </div>
-                    <div class="game-card glass-panel" style="padding: 20px; display: flex; flex-direction: column; gap: 10px; cursor: pointer; border: 1px solid var(--border-color); border-radius: 12px; background: rgba(255, 255, 255, 0.6);" data-game-index="9">
-                        <div style="font-size: 1.8rem; margin-bottom: 5px;">📈</div>
-                        <h4 style="font-size: 1.1rem; font-weight: 700; margin: 0; color: var(--text-main);">Upsell & Giữ Chân Khách</h4>
-                        <p style="font-size: 0.85rem; color: var(--text-light); flex: 1; margin: 5px 0 0 0;">Chăm sóc khách hàng cũ hiệu quả để tối ưu hóa giá trị trọn đời (LTV) và tái ký.</p>
-                        <button class="btn btn-primary" style="padding: 8px 12px; font-size: 0.85rem; margin-top: 15px; width: 100%;">Chơi Ngay</button>
+
+                    <div style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap; margin-top: 20px;">
+                        <button id="restart-btn" class="btn btn-primary" style="padding: 10px 30px; font-size: 1rem;">Chơi Lại</button>
+                        <button id="selector-btn" class="btn btn-secondary" style="padding: 10px 30px; font-size: 1rem; margin: 0;">Đổi Game Khác</button>
                     </div>
                 </div>
             </div>
 
-            <!-- Intro Panel -->
-            <div id="game-intro" class="hidden">
-                <button id="back-to-selector" class="btn btn-secondary" style="padding: 6px 16px; font-size: 0.85rem; margin: 0 auto 20px auto; display: block; width: fit-content;">&larr; Quay lại chọn game khác</button>
-                <h3 id="intro-game-title" style="font-size: 1.6rem; font-weight: 800; margin-bottom: 12px; color: var(--text-main);"></h3>
-                <p id="intro-game-desc" style="font-size: 1.1rem; margin-bottom: 25px; color: var(--text-light); max-width: 600px; margin-left: auto; margin-right: auto;"></p>
-                <button id="start-btn" class="btn btn-primary" style="padding: 12px 40px; font-size: 1.1rem;">Bắt Đầu Chơi</button>
-            </div>
-
-            <!-- Play Panel -->
-            <div id="game-play" class="hidden">
-                <div class="progress-bar">
-                    <div id="progress" class="progress"></div>
-                </div>
-                <div id="timer-display" class="timer-display">15s</div>
-                <p id="question-text" class="question-text"></p>
-                <div class="options-container" id="options-container">
-                    <!-- Options injected via JS -->
-                </div>
-                <div id="feedback-msg" class="feedback-msg hidden"></div>
-                <button id="next-btn" class="btn btn-secondary hidden" style="margin-top: 20px;">Câu tiếp theo &rarr;</button>
-            </div>
-
-            <!-- Result Panel -->
-            <div id="game-result" class="hidden">
-                <h3 id="result-title" style="font-size: 2.2rem; font-weight: 800; margin-bottom: 15px;"></h3>
-                <p id="result-text" style="font-size: 1.15rem; color: var(--text-main); max-width: 600px; margin: 0 auto 10px auto; line-height: 1.6;"></p>
-                
-                <!-- Hall of Fame Submit Form -->
-                <div id="leaderboard-submit-box" style="background: rgba(162, 10, 10, 0.03); border: 1px solid rgba(162, 10, 10, 0.12); border-radius: 12px; padding: 20px; max-width: 500px; margin: 20px auto; text-align: left;">
-                    <h4 style="font-weight: bold; margin-bottom: 5px; color: var(--text-main); font-size: 1rem;">🏆 ĐĂNG BẢNG VÀNG CHIẾN THẦN B2B</h4>
-                    <p style="font-size: 0.85rem; color: var(--text-light); margin-bottom: 15px;">
-                        Tên đề xuất cho bạn: <strong id="assigned-nickname" style="color: var(--primary);"></strong>. Bạn có muốn đổi tên khác hoặc lưu lại email để khóa danh hiệu không?
-                    </p>
-                    <div style="display: flex; flex-direction: column; gap: 10px;">
-                        <input type="text" id="leaderboard-name" placeholder="Biệt danh tự chọn (mặc định sẽ lấy tên đề xuất trên)" style="padding: 8px 12px; border-radius: 6px; border: 1px solid var(--border-color); background: var(--bg); color: var(--text-main); font-family: inherit; font-size: 0.9rem;">
-                        <input type="email" id="leaderboard-email" placeholder="Email của bạn (để khóa danh hiệu & nhận template kế hoạch)" style="padding: 8px 12px; border-radius: 6px; border: 1px solid var(--border-color); background: var(--bg); color: var(--text-main); font-family: inherit; font-size: 0.9rem;">
-                        <button id="btn-submit-leaderboard" class="btn btn-primary" style="padding: 10px; width: 100%; border: none; font-weight: bold;">Xác Nhận Đăng Bảng Vàng</button>
-                    </div>
-                </div>
-
-                <div style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap; margin-top: 20px;">
-                    <button id="restart-btn" class="btn btn-primary" style="padding: 10px 30px; font-size: 1rem;">Chơi Lại</button>
-                    <button id="selector-btn" class="btn btn-secondary" style="padding: 10px 30px; font-size: 1rem; margin: 0;">Đổi Game Khác</button>
-                </div>
-            </div>
-
-            <!-- Hall of Fame (Bảng Xếp Hạng) -->
-            <div class="hall-of-fame-container" style="margin-top: 40px; border-top: 1px solid var(--border-color); padding-top: 30px;">
-                <h3 style="font-size: 1.4rem; font-weight: 800; text-align: center; margin-bottom: 20px; color: var(--text-main); display: flex; align-items: center; justify-content: center; gap: 8px;">
-                    🏆 BẢNG VÀNG CHIẾN THẦN B2B (HALL OF FAME)
+            <!-- Right Column: Sexy Hall of Fame -->
+            <div class="leaderboard-card glass-effect" style="margin: 0; padding: 25px;">
+                <h3 style="font-size: 1.35rem; font-weight: 800; text-align: center; margin-bottom: 12px; color: var(--text-main); display: flex; align-items: center; justify-content: center; gap: 8px;">
+                    🏆 BẢNG VÀNG CHIẾN THẦN B2B
                 </h3>
-                <p style="font-size: 0.9rem; text-align: center; color: var(--text-light); margin-bottom: 20px; max-width: 600px; margin-left: auto; margin-right: auto;">
-                    Bảng xếp hạng cập nhật điểm số từ lượt chơi trắc nghiệm xử lý tình huống thực tế hàng ngày.
+                <p style="font-size: 0.8rem; text-align: center; color: var(--text-light); margin-bottom: 20px; line-height: 1.4; max-width: 280px; margin-left: auto; margin-right: auto;">
+                    Vinh danh Top 10 chuyên viên BD xuất sắc nhất hoàn thành thử thách tình huống thực tế.
                 </p>
-                <div class="table-responsive">
-                    <table class="matrix-table" id="leaderboard-table" style="max-width: 600px; margin: 0 auto;">
-                        <thead>
-                            <tr>
-                                <th style="width: 80px; text-align: center;">Hạng</th>
-                                <th>BD Warrior</th>
-                                <th>Danh Hiệu Hài Hước</th>
-                                <th style="width: 100px; text-align: center;">Điểm Số</th>
-                            </tr>
-                        </thead>
-                        <tbody id="leaderboard-body">
-                            <!-- Injected dynamically via JS -->
-                        </tbody>
-                    </table>
+                <div class="leaderboard-list" id="leaderboard-list" style="display: flex; flex-direction: column; gap: 12px;">
+                    <!-- Rendered dynamically as sexy cards! -->
                 </div>
             </div>
         </div>
