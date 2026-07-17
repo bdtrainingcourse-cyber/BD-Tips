@@ -1,13 +1,13 @@
 /* B2B PIC Finder Custom Styles (Premium Dark Glass Theme) */
 
 body.dark-theme {
-    --bg-dark: #000000;
-    --panel-bg: rgba(18, 18, 24, 0.85);
+    --bg-dark: #0c0707;
+    --panel-bg: rgba(22, 14, 14, 0.85);
     --border-color: rgba(255, 255, 255, 0.08);
     --text-primary: #f8fafc;
     --text-muted: #94a3b8;
-    --primary-glow: #10b981;
-    --accent-glow: #6366f1;
+    --primary-glow: #a20a0a;
+    --accent-glow: #f3a83b;
     --danger-glow: #ef4444;
     
     background-color: var(--bg-dark);
@@ -45,7 +45,7 @@ body.dark-theme {
 }
 
 .logo-accent {
-    color: #10b981;
+    color: #f3a83b;
 }
 
 .nav-links {
@@ -66,7 +66,7 @@ body.dark-theme {
 }
 
 .nav-links a.active {
-    border-bottom: 2px solid #10b981;
+    border-bottom: 2px solid #a20a0a;
     padding-bottom: 4px;
 }
 
@@ -367,7 +367,7 @@ details[open] .summary-arrow {
 .log-line.system { color: #818cf8; }
 .log-line.search { color: #3b82f6; }
 .log-line.enrich { color: #f59e0b; }
-.log-line.success { color: #10b981; }
+.log-line.success { color: #f3a83b; }
 .log-line.error { color: #ef4444; }
 
 /* Progress Bar */
@@ -397,7 +397,7 @@ details[open] .summary-arrow {
 
 .progress-fill {
     height: 100%;
-    background: linear-gradient(90deg, #6366f1, #10b981);
+    background: linear-gradient(90deg, #a20a0a, #f3a83b);
     transition: width 0.3s ease;
 }
 
