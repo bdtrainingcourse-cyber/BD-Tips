@@ -17,15 +17,17 @@
             <a href="index.html" class="nav-logo">
                 <span class="logo-accent">B2B</span> BD Portal
             </a>
-            <nav class="nav-links">
+                        <nav class="nav-links">
                 <a href="index.html" class="active">Ngôn Từ B2B</a>
                 <a href="index.html#minigame-section">B2B Challenge</a>
-                <a href="finder.html">PIC Finder</a>
-                <a href="library.html">Thư Viện B2B</a>
-                <a href="labor-law.html">Luật Lao Động</a>
-                <a href="salary.html">Tính Lương</a>
-                <a href="email-assistant.html">Email Assistant</a>
-                <a href="course.html">Khóa Học BD</a>
+                <a href="finder.html" class="">PIC Finder</a>
+                <a href="library.html" class="">Thư Viện B2B</a>
+                <a href="labor-law.html" class="">Luật Lao Động</a>
+                <a href="salary.html" class="">Tính Lương</a>
+                <a href="email-assistant.html" class="">Email Assistant</a>
+                <a href="kpi-estimation.html" class="">Ước Tính KPI</a>
+                <a href="community.html" class="">Cộng Đồng</a>
+                <a href="course.html" class="">Khóa Học BD</a>
                 <button id="theme-toggle" class="theme-toggle-btn" aria-label="Toggle theme">🌓</button>
             </nav>
         </div>
@@ -321,10 +323,49 @@
             <!-- Result Panel -->
             <div id="game-result" class="hidden">
                 <h3 id="result-title" style="font-size: 2.2rem; font-weight: 800; margin-bottom: 15px;"></h3>
-                <p id="result-text" style="font-size: 1.15rem; color: var(--text-main); max-width: 600px; margin: 0 auto 30px auto; line-height: 1.6;"></p>
-                <div style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap;">
+                <p id="result-text" style="font-size: 1.15rem; color: var(--text-main); max-width: 600px; margin: 0 auto 10px auto; line-height: 1.6;"></p>
+                
+                <!-- Hall of Fame Submit Form -->
+                <div id="leaderboard-submit-box" style="background: rgba(162, 10, 10, 0.03); border: 1px solid rgba(162, 10, 10, 0.12); border-radius: 12px; padding: 20px; max-width: 500px; margin: 20px auto; text-align: left;">
+                    <h4 style="font-weight: bold; margin-bottom: 5px; color: var(--text-main); font-size: 1rem;">🏆 ĐĂNG BẢNG VÀNG CHIẾN THẦN B2B</h4>
+                    <p style="font-size: 0.85rem; color: var(--text-light); margin-bottom: 15px;">
+                        Tên đề xuất cho bạn: <strong id="assigned-nickname" style="color: var(--primary);"></strong>. Bạn có muốn đổi tên khác hoặc lưu lại email để khóa danh hiệu không?
+                    </p>
+                    <div style="display: flex; flex-direction: column; gap: 10px;">
+                        <input type="text" id="leaderboard-name" placeholder="Biệt danh tự chọn (mặc định sẽ lấy tên đề xuất trên)" style="padding: 8px 12px; border-radius: 6px; border: 1px solid var(--border-color); background: var(--bg); color: var(--text-main); font-family: inherit; font-size: 0.9rem;">
+                        <input type="email" id="leaderboard-email" placeholder="Email của bạn (để khóa danh hiệu & nhận template kế hoạch)" style="padding: 8px 12px; border-radius: 6px; border: 1px solid var(--border-color); background: var(--bg); color: var(--text-main); font-family: inherit; font-size: 0.9rem;">
+                        <button id="btn-submit-leaderboard" class="btn btn-primary" style="padding: 10px; width: 100%; border: none; font-weight: bold;">Xác Nhận Đăng Bảng Vàng</button>
+                    </div>
+                </div>
+
+                <div style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap; margin-top: 20px;">
                     <button id="restart-btn" class="btn btn-primary" style="padding: 10px 30px; font-size: 1rem;">Chơi Lại</button>
                     <button id="selector-btn" class="btn btn-secondary" style="padding: 10px 30px; font-size: 1rem; margin: 0;">Đổi Game Khác</button>
+                </div>
+            </div>
+
+            <!-- Hall of Fame (Bảng Xếp Hạng) -->
+            <div class="hall-of-fame-container" style="margin-top: 40px; border-top: 1px solid var(--border-color); padding-top: 30px;">
+                <h3 style="font-size: 1.4rem; font-weight: 800; text-align: center; margin-bottom: 20px; color: var(--text-main); display: flex; align-items: center; justify-content: center; gap: 8px;">
+                    🏆 BẢNG VÀNG CHIẾN THẦN B2B (HALL OF FAME)
+                </h3>
+                <p style="font-size: 0.9rem; text-align: center; color: var(--text-light); margin-bottom: 20px; max-width: 600px; margin-left: auto; margin-right: auto;">
+                    Bảng xếp hạng cập nhật điểm số từ lượt chơi trắc nghiệm xử lý tình huống thực tế hàng ngày.
+                </p>
+                <div class="table-responsive">
+                    <table class="matrix-table" id="leaderboard-table" style="max-width: 600px; margin: 0 auto;">
+                        <thead>
+                            <tr>
+                                <th style="width: 80px; text-align: center;">Hạng</th>
+                                <th>BD Warrior</th>
+                                <th>Danh Hiệu Hài Hước</th>
+                                <th style="width: 100px; text-align: center;">Điểm Số</th>
+                            </tr>
+                        </thead>
+                        <tbody id="leaderboard-body">
+                            <!-- Injected dynamically via JS -->
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
