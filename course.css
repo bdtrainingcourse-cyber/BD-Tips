@@ -590,10 +590,28 @@
     width: 0; /* Animated via JS or scroll */
 }
 
-/* Testimonial grid */
-.testimonial-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+/* Testimonial slider */
+.testimonial-slider-wrapper {
+    position: relative;
+    padding: 0 40px;
+    margin: 0 auto;
+    max-width: 1200px;
+}
+
+.testimonial-slider-container {
+    overflow: hidden;
+    width: 100%;
+    cursor: grab;
+    padding: 10px 0;
+}
+
+.testimonial-slider-container:active {
+    cursor: grabbing;
+}
+
+.testimonial-slider-track {
+    display: flex;
+    transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
     gap: 25px;
 }
 
@@ -606,6 +624,27 @@
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+    flex-shrink: 0;
+    width: calc(33.333% - 17px);
+    box-sizing: border-box;
+}
+
+@media (max-width: 991px) {
+    .testimonial-card {
+        width: calc(50% - 13px);
+    }
+    .testimonial-slider-wrapper {
+        padding: 0 20px;
+    }
+}
+
+@media (max-width: 767px) {
+    .testimonial-card {
+        width: 100%;
+    }
+    .testimonial-slider-wrapper {
+        padding: 0 10px;
+    }
 }
 
 .testimonial-content {
@@ -701,12 +740,69 @@
     font-weight: 700;
 }
 
-/* Hidden Testimonial Cards & Toggling */
-.testimonial-card.testimonial-hidden {
-    display: none;
-    opacity: 0;
-    transform: translateY(15px);
-    transition: opacity 0.3s ease, transform 0.3s ease;
+/* Slider Navigation Buttons */
+.slider-nav-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: #ffffff;
+    border: 1px solid rgba(0,0,0,0.06);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-main);
+    cursor: pointer;
+    z-index: 10;
+    transition: all 0.3s ease;
+}
+
+.slider-nav-btn:hover {
+    background: var(--primary);
+    color: #ffffff;
+    border-color: var(--primary);
+    transform: translateY(-50%) scale(1.1);
+}
+
+.slider-nav-btn.prev-btn {
+    left: -10px;
+}
+
+.slider-nav-btn.next-btn {
+    right: -10px;
+}
+
+@media (max-width: 767px) {
+    .slider-nav-btn {
+        display: none;
+    }
+}
+
+/* Slider Dots */
+.slider-dots {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    margin-top: 30px;
+}
+
+.slider-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: rgba(11, 138, 79, 0.2);
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.slider-dot.active {
+    width: 24px;
+    border-radius: 4px;
+    background: var(--primary);
 }
 
 /* Class Photos Gallery Section */
