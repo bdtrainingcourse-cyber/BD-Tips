@@ -1,13 +1,13 @@
 :root {
-    --primary: #0b8a4f;
-    --primary-dark: #07653a;
+    --primary: #a20a0a;
+    --primary-dark: #7c0808;
     --danger: #d9534f;
     --danger-dark: #c9302c;
-    --bg: #f9fbfd;
+    --bg: #f7f4ee;
     --card-bg: #ffffff;
     --text-main: #2b2d42;
     --text-light: #6c757d;
-    --accent: #ff6b6b;
+    --accent: #f3a83b;
     --shadow: 0 10px 30px rgba(0,0,0,0.08);
     --transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
@@ -101,7 +101,7 @@ h1, h2, h3, h4 {
 /* Hero Section */
 .hero {
     padding: 100px 0 60px;
-    background: radial-gradient(circle at top right, rgba(11, 138, 79, 0.05), transparent),
+    background: radial-gradient(circle at top right, rgba(162, 10, 10, 0.05), transparent),
                 radial-gradient(circle at bottom left, rgba(217, 83, 79, 0.05), transparent);
     animation: fadeInDown 1s ease-out;
 }
@@ -455,7 +455,7 @@ h1, h2, h3, h4 {
 .btn-primary {
     background-color: var(--primary);
     color: white;
-    box-shadow: 0 4px 15px rgba(11, 138, 79, 0.3);
+    box-shadow: 0 4px 15px rgba(162, 10, 10, 0.3);
 }
 .btn-primary:hover {
     background-color: var(--primary-dark);
@@ -486,7 +486,7 @@ h1, h2, h3, h4 {
 }
 .btn-option:hover:not(:disabled) {
     border-color: var(--primary);
-    background-color: rgba(11, 138, 79, 0.05);
+    background-color: rgba(162, 10, 10, 0.05);
 }
 .btn-option.correct {
     background-color: #dcfce7;
@@ -581,7 +581,7 @@ h1, h2, h3, h4 {
 .game-card:hover {
     transform: translateY(-5px);
     border-color: var(--primary) !important;
-    box-shadow: 0 10px 25px rgba(11, 138, 79, 0.15);
+    box-shadow: 0 10px 25px rgba(162, 10, 10, 0.15);
 }
 
 /* ==========================================================================
@@ -619,8 +619,8 @@ h1, h2, h3, h4 {
 
 .feature-card:hover {
     transform: translateY(-8px) scale(1.02);
-    box-shadow: 0 20px 40px rgba(11, 138, 79, 0.15);
-    border-color: rgba(11, 138, 79, 0.4);
+    box-shadow: 0 20px 40px rgba(162, 10, 10, 0.15);
+    border-color: rgba(162, 10, 10, 0.4);
     background: rgba(255, 255, 255, 0.7);
 }
 
@@ -1146,9 +1146,9 @@ h1, h2, h3, h4 {
 }
 
 .badge-finance {
-    background: rgba(16, 185, 129, 0.1);
-    color: #10b981;
-    border: 1px solid rgba(16, 185, 129, 0.2);
+    background: rgba(243, 168, 59, 0.1);
+    color: #f3a83b;
+    border: 1px solid rgba(243, 168, 59, 0.2);
 }
 
 .badge-manufacturing {
@@ -1263,8 +1263,8 @@ h1, h2, h3, h4 {
    ========================================================================== */
 
 body.dark-theme {
-    --bg: #090a10;
-    --card-bg: #13141f;
+    --bg: #0c0707;
+    --card-bg: #180f0f;
     --text-main: #f8fafc;
     --text-light: #94a3b8;
     --border-color: rgba(255, 255, 255, 0.08);
@@ -1312,17 +1312,17 @@ body.dark-theme .flip-card-front.bg-danger .phrase {
 }
 
 body.dark-theme .flip-card-back.bg-success {
-    background: linear-gradient(135deg, #13251b, #0d1a13);
-    border-left: 5px solid #10b981;
-    color: #a7f3d0;
+    background: linear-gradient(135deg, #352513, #1f160b);
+    border-left: 5px solid #f3a83b;
+    color: #fde8c5;
 }
 
 body.dark-theme .flip-card-back.bg-success h3 {
-    color: #10b981;
+    color: #f3a83b;
 }
 
 body.dark-theme .flip-card-back.bg-success .phrase {
-    color: #a7f3d0;
+    color: #fde8c5;
 }
 
 /* Matrix Table Dark Mode */
@@ -1366,8 +1366,8 @@ body.dark-theme .btn-option {
 }
 
 body.dark-theme .btn-option:hover:not(:disabled) {
-    background: rgba(16, 185, 129, 0.1);
-    border-color: #10b981;
+    background: rgba(243, 168, 59, 0.1);
+    border-color: #f3a83b;
 }
 
 /* Events Dark Mode */
