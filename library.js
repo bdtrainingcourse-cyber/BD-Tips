@@ -71,15 +71,18 @@ document.addEventListener('DOMContentLoaded', () => {
         const storageKey = `b2b_ebook_cnt_${ebook.id}`;
         const saved = localStorage.getItem(storageKey);
         if (saved) {
-            return parseInt(saved, 10);
+            const parsed = parseInt(saved, 10);
+            if (parsed <= 250) {
+                return parsed;
+            }
         }
-        return ebook.downloads || 1200;
+        return ebook.downloads || 180;
     }
 
     function incrementEbookDownloadCount(ebookId) {
         const storageKey = `b2b_ebook_cnt_${ebookId}`;
         const ebookObj = ebooks.find(e => e.id === ebookId);
-        const current = ebookObj ? getEbookDownloadCount(ebookObj) : 1200;
+        const current = ebookObj ? getEbookDownloadCount(ebookObj) : 180;
         const updated = current + 1;
         localStorage.setItem(storageKey, updated.toString());
         
@@ -216,12 +219,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 card.style.flexDirection = 'column';
                 card.style.justifyContent = 'space-between';
                 card.style.transition = 'all 0.3s ease';
-                
                 const liveCount = getEbookDownloadCount(ebook);
+                const isHot = ebook.badge === 'Hot Best-seller';
+                const badgeStyle = isHot 
+                    ? 'background: linear-gradient(135deg, #a20a0a 0%, #f3a83b 100%); color: #ffffff; font-weight: 800; border: 1px solid #f3a83b; box-shadow: 0 4px 12px rgba(243, 168, 59, 0.4);' 
+                    : '';
+
                 const coverHtml = ebook.coverImage ? `
                     <div class="ebook-cover-frame">
-                        <img src="${ebook.coverImage}" alt="${ebook.title}" class="ebook-cover-img" loading="lazy">
-                        <span class="ebook-cover-badge-overlay">${ebook.badge || 'PDF Ebook'}</span>
+                        <img src="${ebook.coverImage}" data-src="${ebook.coverImage}" alt="${ebook.title}" class="ebook-cover-img" loading="lazy" onerror="this.onerror=null; this.src='https://raw.githubusercontent.com/bdtrainingcourse-cyber/BD-Tips/main/' + this.getAttribute('data-src');">
+                        <span class="ebook-cover-badge-overlay" style="${badgeStyle}">${isHot ? '🔥 ' : ''}${ebook.badge || 'PDF Ebook'}</span>
                     </div>
                 ` : `<div style="font-size: 2.2rem; margin-bottom: 10px;">${ebook.icon || '📚'}</div>`;
 
