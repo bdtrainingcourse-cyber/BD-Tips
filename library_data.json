@@ -1,54 +1,84 @@
 {
   "articles": [
     {
-      "id": "linkedin-newsletter-main",
-      "title": "Bản Tin BD B2B - Bình Dân Học Vụ trên LinkedIn",
-      "description": "Đăng ký theo dõi bản tin tuần của Peter Vo trên LinkedIn để cập nhật kiến thức, tình huống đàm phán thực tế và xu hướng Business Development B2B mới nhất.",
+      "id": "10th-bd-tips",
+      "title": "10th BD Tips: \"Gửi anh bảng giá tham khảo được không?\" – Cạm bẫy ngọt ngào nhất của BD B2B",
+      "description": "Tại sao gửi bảng giá quá sớm lại dập tắt cơ hội chốt deal? 3 bước điều hướng từ 'giá cả' sang 'bài toán tài chính và giá trị'.",
       "category": "BD Article",
       "date": "2026-07-15",
-      "author": "Peter Vo",
-      "linkedinUrl": "https://www.linkedin.com/newsletters/bd-b2b-b%C3%ACnh-d%C3%A2n-h%E1%BB%8Dc-v%E1%BB%A5-7254739965526360064/",
-      "content": "### Bản Tin BD B2B - Bình Dân Học Vụ\n\nĐây là chuỗi bản tin bài viết chuyên sâu độc quyền được chia sẻ định kỳ trên **LinkedIn Newsletter** bởi **Peter Vo**.\n\nNhấp vào nút bên dưới để đọc bài viết gốc và đăng ký theo dõi trực tiếp trên LinkedIn!"
+      "author": "Peter Vo (Tân Võ Phước)",
+      "linkedinUrl": "https://vn.linkedin.com/pulse/10th-bd-tips-g%E1%BB%ADi-anh-b%E1%BA%A3ng-gi%C3%A1-tham-kh%E1%BA%A3o-%C4%91%C6%B0%E1%BB%A3c-kh%C3%B4ng-c%E1%BA%A1m-t%C3%A2n-v%C3%B5-ph%C6%B0%E1%BB%9Bc-jwrxc",
+      "content": "### 10th BD Tips: \"Gửi anh bảng giá tham khảo được không?\" – Cạm bẫy ngọt ngào nhất của BD B2B\n\nTrong bán hàng B2B, câu hỏi **'Gửi cho anh/chị bảng giá tham khảo trước nhé'** là bẫy phổ biến nhất.\n\nTham khảo bài viết phân tích chiều sâu trực tiếp trên LinkedIn Newsletter!"
     },
     {
-      "id": "negotiation-b2b",
-      "title": "Nghệ thuật đàm phán hợp đồng thương mại B2B",
-      "description": "Làm thế nào để thương lượng giá trị hợp đồng B2B mà không rơi vào bẫy phá giá? 3 chiến lược định vị vị thế chuyên gia.",
+      "id": "9th-bd-tips",
+      "title": "9th BD Tips: \"Giỏi giao tiếp\" chưa chắc \"giỏi chốt deal\" – Bẫy tâm lý khiến BD hoang tưởng về năng lực",
+      "description": "Phân biệt giữa giao tiếp xã giao và kỹ năng dẫn dắt đàm phán thương mại B2B chuyên nghiệp.",
       "category": "BD Article",
-      "date": "2026-06-20",
-      "author": "Peter Vo",
-      "linkedinUrl": "https://www.linkedin.com/newsletters/bd-b2b-b%C3%ACnh-d%C3%A2n-h%E1%BB%8Dc-v%E1%BB%A5-7254739965526360064/",
-      "content": "### Nghệ thuật đàm phán hợp đồng thương mại B2B\n\nTrong đàm phán B2B, sai lầm lớn nhất của các Business Development (BD) non trẻ là **phá giá ngay khi khách hàng chê đắt**.\n\nTham khảo bài viết phân tích chiều sâu trên LinkedIn Newsletter!"
+      "date": "2026-07-08",
+      "author": "Peter Vo (Tân Võ Phước)",
+      "linkedinUrl": "https://vn.linkedin.com/pulse/9th-bd-tips-gi%E1%BB%8Fi-giao-ti%E1%BA%BFp-ch%C6%B0a-ch%E1%BA%AFc-ch%E1%BB%91t-deal-b%E1%BA%ABy-t%C3%A2m-t%C3%A2n-v%C3%B5-ph%C6%B0%E1%BB%9Bc-m66re",
+      "content": "### 9th BD Tips: \"Giỏi giao tiếp\" chưa chắc \"giỏi chốt deal\"\n\nPhân tích chiều sâu tâm lý khách hàng doanh nghiệp và năng lực định vị vị thế chuyên gia."
     },
     {
-      "id": "find-pic-linkedin",
-      "title": "Cách định vị đúng Person-in-Charge (PIC) trên LinkedIn",
-      "description": "Hướng dẫn chi tiết cách tìm kiếm người ra quyết định (C-Level, Director, Manager) của doanh nghiệp mục tiêu bằng các bộ lọc nâng cao.",
+      "id": "8th-bd-tips",
+      "title": "8th BD Tips: Khi nào một BD chuyên nghiệp cần dũng cảm nói \"KHÔNG\"?",
+      "description": "Nghệ thuật loại bỏ những thương vụ độc hại, không đúng định vị target customer để bảo vệ nguồn lực công ty.",
       "category": "BD Article",
-      "date": "2026-06-18",
-      "author": "Peter Vo",
-      "linkedinUrl": "https://www.linkedin.com/newsletters/bd-b2b-b%C3%ACnh-d%C3%A2n-h%E1%BB%8Dc-v%E1%BB%A5-7254739965526360064/",
-      "content": "### Cách định vị đúng Person-in-Charge (PIC) trên LinkedIn\n\nTìm sai người tiếp cận là nguyên nhân khiến 90% chiến dịch outreach thất bại. Trong B2B, bạn cần tiếp cận đúng **Người chịu trách nhiệm chính (PIC)**."
+      "date": "2026-07-01",
+      "author": "Peter Vo (Tân Võ Phước)",
+      "linkedinUrl": "https://vn.linkedin.com/pulse/8th-bd-tips-khi-n%C3%A0o-m%E1%BB%99t-chuy%C3%AAn-nghi%E1%BB%87p-c%E1%BA%A7n-d%C5%A9ng-c%E1%BA%A3m-n%C3%B3i-t%C3%A2n-v%C3%B5-ph%C6%B0%E1%BB%9Bc-deryc",
+      "content": "### 8th BD Tips: Khi nào một BD chuyên nghiệp cần dũng cảm nói \"KHÔNG\"?\n\nKỹ năng từ chối đối tác không phù hợp và tập trung vào 20% deal mang lại 80% giá trị."
     },
     {
-      "id": "avoid-sales-phrases",
-      "title": "5 cụm từ bán hàng B2B cần loại bỏ ngay lập tức",
-      "description": "Những từ ngữ tưởng chừng lịch sự nhưng lại dập tắt cơ hội chốt deal của bạn. Hãy nâng cấp lên ngôn từ thế chuyên gia.",
+      "id": "7th-bd-tips",
+      "title": "7th BD Tips: Làm sao để “RÃ ĐÔNG” mối quan hệ bị GHOSTING trong B2B?",
+      "description": "Chiến lược rã đông mối quan hệ với khách hàng bỗng dưng 'mất tích' sau khi nhận Proposal mà không gây phản cảm.",
       "category": "BD Article",
-      "date": "2026-06-15",
-      "author": "Peter Vo",
-      "linkedinUrl": "https://www.linkedin.com/newsletters/bd-b2b-b%C3%ACnh-d%C3%A2n-h%E1%BB%8Dc-v%E1%BB%A5-7254739965526360064/",
-      "content": "### 5 cụm từ bán hàng B2B cần loại bỏ ngay lập tức\n\nTrong giao tiếp B2B, ngôn từ bạn chọn sẽ quyết định bạn là một người bán hàng đang nài nỉ xin deal, hay một chuyên gia đang giúp khách hàng gỡ rối."
+      "date": "2026-06-24",
+      "author": "Peter Vo (Tân Võ Phước)",
+      "linkedinUrl": "https://vn.linkedin.com/pulse/7th-bd-tips-l%C3%A0m-sao-%C4%91%E1%BB%83-r%C3%A3-%C4%91%C3%B4ng-m%E1%BB%91i-quan-h%E1%BB%87-b%E1%BB%8B-trong-b2b-t%C3%A2n-v%C3%B5-ph%C6%B0%E1%BB%9Bc-okhic",
+      "content": "### 7th BD Tips: Làm sao để “RÃ ĐÔNG” mối quan hệ bị GHOSTING trong B2B?\n\nPhương pháp tiếp cận lại PIC bằng góc nhìn giải quyết vấn đề mới."
     },
     {
-      "id": "personal-branding-linkedin",
-      "title": "Xây dựng thương hiệu cá nhân trên LinkedIn cho BD",
-      "description": "Tại sao Social Selling là vũ khí tối thượng của B2B BD hiện đại? Công thức 3C giúp thu hút inbox từ các đối tác lớn.",
+      "id": "6th-bd-tips",
+      "title": "6th BD Tips: Tinh hoa \"vẩy tin\" B2B: Khi nào dùng LinkedIn, khi nào dùng Zalo hay Email?",
+      "description": "Ma trận lựa chọn kênh giao tiếp B2B theo từng giai đoạn nuôi dưỡng quan hệ khách hàng.",
       "category": "BD Article",
-      "date": "2026-06-12",
-      "author": "Peter Vo",
-      "linkedinUrl": "https://www.linkedin.com/newsletters/bd-b2b-b%C3%ACnh-d%C3%A2n-h%E1%BB%8Dc-v%E1%BB%A5-7254739965526360064/",
-      "content": "### Xây dựng thương hiệu cá nhân trên LinkedIn cho BD\n\nBD truyền thống dựa vào cold call và cold email đang ngày càng kém hiệu quả. BD hiện đại áp dụng **Social Selling**."
+      "date": "2026-06-17",
+      "author": "Peter Vo (Tân Võ Phước)",
+      "linkedinUrl": "https://vn.linkedin.com/pulse/6th-bd-tips-tinh-hoa-v%E1%BA%A9y-tin-b2b-khi-n%C3%A0o-d%C3%B9ng-zalo-%C4%91%E1%BB%83-t%C3%A2n-v%C3%B5-ph%C6%B0%E1%BB%9Bc-cbj7c",
+      "content": "### 6th BD Tips: Tinh hoa \"vẩy tin\" B2B\n\nNên dùng LinkedIn, Zalo hay Email trong từng bối cảnh tiếp cận đối tác lớn."
+    },
+    {
+      "id": "5th-bd-tips",
+      "title": "5th BD Tip: Đừng để khách hàng biết bạn là \"TÂN BINH\": 3 CHIÊU \"HÓA THÂN\" thành chuyên gia trong 5 PHÚT 🎩",
+      "description": "Công thức 3 chiêu hóa thân giúp nhân sự BD mới làm chủ cuộc họp đàm phán đầu tiên.",
+      "category": "BD Article",
+      "date": "2026-06-10",
+      "author": "Peter Vo (Tân Võ Phước)",
+      "linkedinUrl": "https://vn.linkedin.com/pulse/5th-bd-tip-%C4%91%E1%BB%ABng-%C4%91%E1%BB%83-kh%C3%A1ch-h%C3%A0ng-bi%E1%BA%BFt-b%E1%BA%A1n-l%C3%A0-t%C3%A2n-binh-3-chi%C3%AAu-v%C3%B5-ph%C6%B0%E1%BB%9Bc-q9rzc",
+      "content": "### 5th BD Tip: Đừng để khách hàng biết bạn là \"TÂN BINH\"\n\n3 chiêu thuật xây dựng thần thái chuyên gia sắc bén ngay trong 5 phút đầu tiên."
+    },
+    {
+      "id": "4th-bd-tips",
+      "title": "4th BD tips: 3 Dấu \"Tick xanh\" quyết định vận mệnh của một bản Proposal B2B. ✅",
+      "description": "Checklist 3 tiêu chuẩn vàng biến bản đề xuất dịch vụ (Proposal) thành hợp đồng thương mại được phê duyệt.",
+      "category": "BD Article",
+      "date": "2026-06-03",
+      "author": "Peter Vo (Tân Võ Phước)",
+      "linkedinUrl": "https://vn.linkedin.com/pulse/4th-bd-tips-3-d%E1%BA%A5u-tick-xanh-quy%E1%BA%BFt-%C4%91%E1%BB%8Bnh-v%E1%BA%ADn-m%E1%BB%87nh-c%E1%BB%A7a-m%E1%BB%99t-t%C3%A2n-v%C3%B5-ph%C6%B0%E1%BB%9Bc-oecqc",
+      "content": "### 4th BD tips: 3 Dấu \"Tick xanh\" quyết định vận mệnh của một bản Proposal B2B\n\nCách cấu trúc Proposal thuyết phục cả C-Level lẫn phòng Kế toán."
+    },
+    {
+      "id": "3rd-bd-tips",
+      "title": "3rd BD Tips: Tại sao có những BD CÀNG LÀM CÀNG NHÀN, còn bạn CÀNG LÀM CÀNG ĐUỐI?",
+      "description": "Xây dựng hệ thống tự động hóa và quản trị thời gian tối ưu cho nhân sự Business Development.",
+      "category": "BD Article",
+      "date": "2026-05-27",
+      "author": "Peter Vo (Tân Võ Phước)",
+      "linkedinUrl": "https://vn.linkedin.com/pulse/3rd-bd-tips-t%E1%BA%A1i-sao-c%C3%B3-nh%E1%BB%AFng-c%C3%A0ng-l%C3%A0m-nh%C3%A0n-c%C3%B2n-b%E1%BA%A1n-%C4%91u%E1%BB%91i-t%C3%A2n-v%C3%B5-ph%C6%B0%E1%BB%9Bc-vb5kc",
+      "content": "### 3rd BD Tips: Tại sao có những BD CÀNG LÀM CÀNG NHÀN?\n\nPhương pháp chuẩn hóa quy trình và ma trận đòn bẩy hiệu suất BD."
     }
   ],
   "ebooks": [
@@ -62,7 +92,8 @@
       "coverImage": "ebook-covers/cover-9-principles.png",
       "fileSize": "19.9 MB",
       "badge": "Hot Best-seller",
-      "icon": "📙"
+      "icon": "📙",
+      "downloads": 1452
     },
     {
       "id": "ebook-b2b-language",
@@ -74,7 +105,21 @@
       "coverImage": "ebook-covers/cover-b2b-language.png",
       "fileSize": "7.1 MB",
       "badge": "Language Guide",
-      "icon": "🗣️"
+      "icon": "🗣️",
+      "downloads": 1180
+    },
+    {
+      "id": "ebook-hubspot-guideline",
+      "title": "Cẩm Nang Thực Chiến HubSpot CRM Cho B2B BD",
+      "description": "Hướng dẫn làm chủ công cụ HubSpot CRM, quản lý quy trình deal, thiết lập pipeline và tự động hóa chăm sóc khách hàng doanh nghiệp.",
+      "author": "Peter Vo",
+      "date": "2026-07-16",
+      "fileUrl": "ebooks/Hubspot Basic Guideline.pdf",
+      "coverImage": "ebook-covers/cover-hubspot-guideline.png",
+      "fileSize": "7.2 MB",
+      "badge": "HubSpot Guide",
+      "icon": "📙",
+      "downloads": 1290
     },
     {
       "id": "ebook-kpi-funnel",
@@ -84,9 +129,10 @@
       "date": "2026-07-05",
       "fileUrl": "ebooks/KPI Inbound - Outbound funnel.pdf",
       "coverImage": "ebook-covers/cover-kpi-funnel.png",
-      "fileSize": "0.3 MB",
+      "fileSize": "2.7 MB",
       "badge": "Funnel Matrix",
-      "icon": "📊"
+      "icon": "📊",
+      "downloads": 1385
     },
     {
       "id": "ebook-linkedin-2026",
@@ -98,7 +144,8 @@
       "coverImage": "ebook-covers/cover-linkedin-2026.png",
       "fileSize": "11.1 MB",
       "badge": "LinkedIn 2026",
-      "icon": "💼"
+      "icon": "💼",
+      "downloads": 1680
     },
     {
       "id": "ebook-mindset-bd",
@@ -110,7 +157,8 @@
       "coverImage": "ebook-covers/cover-mindset-bd.png",
       "fileSize": "8.8 MB",
       "badge": "Mindset & Sales",
-      "icon": "🧠"
+      "icon": "🧠",
+      "downloads": 1210
     },
     {
       "id": "ebook-fake-lead",
@@ -122,7 +170,8 @@
       "coverImage": "ebook-covers/cover-fake-lead.png",
       "fileSize": "39.2 MB",
       "badge": "Lead Verification",
-      "icon": "🔍"
+      "icon": "🔍",
+      "downloads": 1540
     }
   ]
 }
