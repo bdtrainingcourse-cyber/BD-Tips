@@ -474,9 +474,11 @@ document.addEventListener('DOMContentLoaded', () => {
         
         const firstName = regFirstName.value.trim();
         const email = regEmail.value.trim();
-        const experience = regExperience.value.trim();
+        const rawExp = regExperience.value ? regExperience.value.trim() : '';
+        const parsedExp = parseInt(rawExp, 10);
+        const experience = !isNaN(parsedExp) ? parsedExp : (rawExp || 'Không chia sẻ');
         
-        if (!firstName || !email || !experience) {
+        if (!firstName || !email) {
             return;
         }
 
@@ -486,21 +488,18 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        const expNum = parseInt(experience, 10);
-        if (isNaN(expNum) || expNum < 0) {
-            alert('Số năm kinh nghiệm không hợp lệ.');
-            return;
-        }
-
         // Save profile locally
         const registrationData = {
             firstName,
             email,
-            experience: expNum,
+            experience: experience,
             registeredAt: new Date().toISOString()
         };
         
         localStorage.setItem('b2b_user_registration', JSON.stringify(registrationData));
+
+        const ebookTitle = currentSelectedEbook ? currentSelectedEbook.title : 'Cẩm nang B2B BD';
+        const downloadLink = currentSelectedEbook ? (window.location.origin + '/' + encodeURIComponent(currentSelectedEbook.fileUrl)) : window.location.href;
 
         // Sync lead name, email & metadata to Google Sheets backend endpoint
         fetch('/api/log-email', {
@@ -510,7 +509,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 name: firstName,
                 email: email,
                 tool: 'ebook-download',
-                experience: expNum
+                experience: experience,
+                ebookTitle: ebookTitle,
+                downloadLink: downloadLink
             })
         }).catch(console.error);
         
