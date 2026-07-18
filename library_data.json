@@ -173,5 +173,167 @@
       "icon": "🔍",
       "downloads": 146
     }
+  ],
+  "glossary": [
+    {
+      "id": "term-sql",
+      "term": "SQL (Sales Qualified Lead)",
+      "vietnamese": "Nguồn Khách Hàng Tiềm Năng Đạt Chuẩn Bán Hàng",
+      "category": "Internal",
+      "categoryLabel": "🏢 Nội Bộ & Pipeline",
+      "definition": "Lead đã qua khâu thẩm định kỹ lưỡng của BD/SDR, xác nhận có nhu cầu thực tế, có ngân sách và khớp chân dung khách hàng (ICP), sẵn sàng bước vào giai đoạn demo/đàm phán.",
+      "context": "Dùng khi họp Pipeline tuần với Trưởng phòng hoặc bàn giao cơ hội bán hàng: 'Hôm nay team vừa qualify thêm 3 SQL từ chiến dịch Outbound LinkedIn, sẵn sàng đặt lịch Discovery Call.'",
+      "tag": "Pipeline"
+    },
+    {
+      "id": "term-mql",
+      "term": "MQL (Marketing Qualified Lead)",
+      "vietnamese": "Lead Đạt Chuẩn Marketing",
+      "category": "Internal",
+      "categoryLabel": "🏢 Nội Bộ & Pipeline",
+      "definition": "Khách hàng tiềm năng đã tương tác với các chiến dịch Marketing (tải Ebook, dự Webinar, điền form) nhưng chưa qua xác thực nhu cầu thực tế và tài chính từ BD.",
+      "context": "Dùng trong trao đổi với phòng Marketing: 'Marketing vừa đổ về 50 MQL tuần này, BD sẽ gọi điện thẩm định nhu cầu để lọc ra các deal SQL.'",
+      "tag": "Marketing"
+    },
+    {
+      "id": "term-sdr",
+      "term": "SDR / BDR (Sales/Business Dev Rep)",
+      "vietnamese": "Nhân Nhân Viên Phát Triển Kinh Doanh Đầu Phễu",
+      "category": "Internal",
+      "categoryLabel": "🏢 Nội Bộ & Pipeline",
+      "definition": "Nhân sự BD chuyên trách khâu săn tìm dữ liệu (prospecting), tiếp cận lạnh (cold outreach) và thẩm định ban đầu để đặt lịch hẹn họp cho Account Executive (AE).",
+      "context": "Dùng khi phân chia vai trò nội bộ: 'Mỗi SDR chịu trách nhiệm tiếp cận 40 PIC mới mỗi ngày qua Email & LinkedIn để tạo 5 cuộc họp chất lượng/tuần.'",
+      "tag": "Roles"
+    },
+    {
+      "id": "term-ae",
+      "term": "AE (Account Executive)",
+      "vietnamese": "Chuyên Viên Quản Lý & Chốt Deal B2B",
+      "category": "Internal",
+      "categoryLabel": "🏢 Nội Bộ & Pipeline",
+      "definition": "Nhân sự BD chịu trách nhiệm làm việc trực tiếp từ bước demo tư vấn giải pháp, gửi Proposal, đàm phán hợp đồng thương mại đến khi chốt hợp đồng thành công.",
+      "context": "Dùng trong quy trình bán hàng: 'Sau khi SDR qualify khách hàng thành công, cuộc họp sẽ được chuyển giao trực tiếp cho AE để dẫn dắt đàm phán.'",
+      "tag": "Roles"
+    },
+    {
+      "id": "term-pipeline-coverage",
+      "term": "Pipeline Coverage",
+      "vietnamese": "Tỷ Lệ Bao Phủ Phễu Bán Hàng",
+      "category": "Metrics",
+      "categoryLabel": "📊 Chỉ Số & Tài Chính",
+      "definition": "Tỷ lệ giữa tổng giá trị các deal trong phễu so với chỉ tiêu doanh số (Quota). Chuẩn an toàn cho doanh nghiệp B2B thường là 3x - 4x.",
+      "context": "Dùng khi quản trị doanh số quý: 'Chỉ tiêu quý này là 1 tỷ, với Pipeline Coverage 4x thì phễu BD cần duy trì tối thiểu 4 tỷ giá trị các cơ hội đang đàm phán.'",
+      "tag": "Sales Management"
+    },
+    {
+      "id": "term-arr-mrr",
+      "term": "ARR / MRR (Annual / Monthly Recurring Revenue)",
+      "vietnamese": "Doanh Thu Đăng Ký Định Kỳ Hàng Năm / Hàng Tháng",
+      "category": "Metrics",
+      "categoryLabel": "📊 Chỉ Số & Tài Chính",
+      "definition": "Chỉ số doanh thu định kỳ có tính lặp lại hàng năm hoặc hàng tháng đến từ các hợp đồng thuê bao (Subscription/SaaS) hoặc hợp đồng gia hạn dịch vụ dài hạn.",
+      "context": "Dùng khi báo cáo doanh thu với Board of Directors: 'Thương vụ B2B này mang lại $60,000 ARR ổn định cho công ty trong 3 năm tới.'",
+      "tag": "Revenue"
+    },
+    {
+      "id": "term-ltv-cac",
+      "term": "LTV (Lifetime Value) & CAC (Customer Acquisition Cost)",
+      "vietnamese": "Giá Trị Vòng Đời Khách Hàng & Chi Phí Chiêu Mộ Khách Hàng",
+      "category": "Metrics",
+      "categoryLabel": "📊 Chỉ Số & Tài Chính",
+      "definition": "LTV là tổng doanh thu 1 khách hàng mang lại trong suốt thời gian đồng hành; CAC là chi phí BD + Marketing bỏ ra để chốt 1 khách mới. Tỷ lệ chuẩn B2B khỏe mạnh là LTV/CAC ≥ 3.",
+      "context": "Dùng khi phân tích hiệu quả tài chính: 'LTV của khách hàng Enterprise đạt 300 triệu trong khi CAC chỉ mất 40 triệu, tỷ lệ LTV/CAC > 7.5x rất tối ưu.'",
+      "tag": "Finance"
+    },
+    {
+      "id": "term-pic",
+      "term": "PIC (Person in Charge)",
+      "vietnamese": "Người Chịu Trách Nhiệm Trực Tiếp / Đầu Mối Dự Án",
+      "category": "Client",
+      "categoryLabel": "🤝 Làm Việc Với Khách Hàng",
+      "definition": "Cá nhân đứng ra làm việc chính đại diện cho phía khách hàng hoặc đối tác, có vai trò đánh giá và kết nối BD với ban giám đốc (Decision Makers).",
+      "context": "Dùng khi trao đổi về đầu mối liên hệ: 'Cần kết nối đúng PIC phòng Procurement để xin hồ sơ tiêu chuẩn kỹ thuật RFP.'",
+      "tag": "Client Facing"
+    },
+    {
+      "id": "term-sla",
+      "term": "SLA (Service Level Agreement)",
+      "vietnamese": "Cam Kết Chất Lượng Dịch Vụ",
+      "category": "Client",
+      "categoryLabel": "🤝 Làm Việc Với Khách Hàng",
+      "definition": "Văn bản quy định rõ các chỉ số cam kết hiệu năng (Response Time, Uptime, KPI giao hàng) mà bên cung cấp giải pháp B2B phải tuân thủ nghiêm ngặt.",
+      "context": "Dùng trong đàm phán hợp đồng với đối tác lớn: 'Trong hợp đồng này, bên em cam kết SLA phản hồi và xử lý sự cố kỹ thuật trong vòng 2 giờ.'",
+      "tag": "Contract"
+    },
+    {
+      "id": "term-nda",
+      "term": "NDA (Non-Disclosure Agreement)",
+      "vietnamese": "Thỏa Thuận Bảo Mật Thông Tin Song Phương",
+      "category": "Client",
+      "categoryLabel": "🤝 Làm Việc Với Khách Hàng",
+      "definition": "Hợp đồng pháp lý cam kết giữ bí mật dữ liệu kinh doanh, công nghệ hoặc thông tin tài chính trước khi hai bên đi sâu vào chi tiết dự án.",
+      "context": "Dùng trước khi trao đổi tài liệu nhạy cảm: 'Trước khi gửi hồ sơ giải pháp và dữ liệu mô phỏng, hai bên sẽ ký kết bản NDA song phương.'",
+      "tag": "Legal"
+    },
+    {
+      "id": "term-mou",
+      "term": "MOU (Memorandum of Understanding)",
+      "vietnamese": "Biên Bản Ghi Nhớ Hợp Tác Chiến Lược",
+      "category": "Client",
+      "categoryLabel": "🤝 Làm Việc Với Khách Hàng",
+      "definition": "Văn bản thể hiện sự thống nhất về nguyên tắc hợp tác ban đầu giữa hai doanh nghiệp trước khi đi đến hợp đồng thương mại chính thức.",
+      "context": "Dùng sau buổi gặp mặt C-Level: 'Sau buổi làm việc với Ban Giám Đốc đối tác, hai bên đã tiến hành ký kết MOU hợp tác chiến lược giai đoạn 1.'",
+      "tag": "Legal"
+    },
+    {
+      "id": "term-poc",
+      "term": "POC (Proof of Concept / Pilot)",
+      "vietnamese": "Thử Nghiệm Thử Nghiệm Mô Hình / Chạy Thử Dịch Vụ",
+      "category": "Client",
+      "categoryLabel": "🤝 Làm Việc Với Khách Hàng",
+      "definition": "Giai đoạn triển khai quy mô nhỏ (Pilot) nhằm chứng minh hiệu quả thực tế của sản phẩm/dịch vụ trước khi khách hàng duyệt ngân sách hợp đồng lớn.",
+      "context": "Dùng để phá vỡ sự do dự của khách hàng: 'Khách hàng đồng ý tiến hành POC trong 2 tuần cho 30 nhân sự trước khi triển khai toàn tập đoàn.'",
+      "tag": "Deal Closing"
+    },
+    {
+      "id": "term-sow",
+      "term": "SOW (Statement of Work)",
+      "vietnamese": "Bản Mô Tả Phạm Vi Công Việc & Bàn Giao",
+      "category": "Client",
+      "categoryLabel": "🤝 Làm Việc Với Khách Hàng",
+      "definition": "Tài liệu chi tiết quy định rõ danh mục hạng mục bàn giao (Deliverables), mốc thời gian (Milestones) và trách nhiệm pháp lý của từng bên.",
+      "context": "Dùng để tránh phát sinh mâu thuẫn công việc: 'Mọi yêu cầu phát sinh ngoài phạm vi SOW sẽ được thỏa thuận tính phí dịch vụ bổ sung.'",
+      "tag": "Project Management"
+    },
+    {
+      "id": "term-rfp",
+      "term": "RFP / RFQ / RFI",
+      "vietnamese": "Yêu Cầu Đề Xuất (Proposal) / Báo Giá / Hồ Sơ Thông Tin Thầu",
+      "category": "Client",
+      "categoryLabel": "🤝 Làm Việc Với Khách Hàng",
+      "definition": "Bộ tài liệu chính thức do khách hàng doanh nghiệp phát hành để mời các nhà cung cấp nộp hồ sơ năng lực, đề xuất giải pháp kỹ thuật và báo giá thương mại.",
+      "context": "Dùng trong đấu thầu B2B: 'Hôm nay BD vừa nhận được hồ sơ RFP từ đại diện đối tác cho dự án tư vấn quy trình năm 2026.'",
+      "tag": "Bidding"
+    },
+    {
+      "id": "term-economic-buyer",
+      "term": "Economic Buyer (EB)",
+      "vietnamese": "Người Quyết Định Ngân Sách Thương Vụ",
+      "category": "Client",
+      "categoryLabel": "🤝 Làm Việc Với Khách Hàng",
+      "definition": "Nhân sự cấp cao (CFO, CEO, Tổng Giám Đốc) có quyền hạn pháp lý và ngân sách duyệt chi tiền cuối cùng cho hợp đồng B2B.",
+      "context": "Dùng trong chiến lược chốt deal: 'Mặc dù Trưởng phòng kỹ thuật rất ủng hộ nhưng chúng ta vẫn cần buổi làm việc với Economic Buyer (CFO) để chứng minh bài toán ROI.'",
+      "tag": "Decision Maker"
+    },
+    {
+      "id": "term-champion",
+      "term": "Champion / Internal Advocate",
+      "vietnamese": "Người Đại Diện Ủng Hộ Bạn Trong Nội Bộ Khách Hàng",
+      "category": "Client",
+      "categoryLabel": "🤝 Làm Việc Với Khách Hàng",
+      "definition": "Nội bộ nhân sự phía khách hàng có tầm ảnh hưởng, cực kỳ thích giải pháp của bạn và sẵn sàng đứng ra thuyết phục sếp duyệt ngân sách cho bạn.",
+      "context": "Dùng trong chiến lược nuôi dưỡng nhân tố trong: 'Trưởng phòng Marketing chính là Champion của chúng ta, người sẽ đứng ra thuyết phục CEO trong cuộc họp thông qua ngân sách.'",
+      "tag": "Stakeholder"
+    }
   ]
 }
