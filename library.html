@@ -161,6 +161,28 @@
         </div>
     </div>
 
+    <!-- Retention & Daily Limit Exceeded Modal -->
+    <div class="modal-backdrop hidden" id="limit-modal">
+        <div class="modal-card glass-panel" style="max-width: 520px; text-align: center; padding: 35px 30px;">
+            <button class="modal-close" id="limit-close-btn">&times;</button>
+            <div style="font-size: 3.5rem; margin-bottom: 10px;">🔒</div>
+            <h2 class="modal-title" style="font-size: 1.4rem; color: var(--primary); margin-bottom: 8px;">Đã Đạt Giới Hạn Tải Hôm Nay (1/1 Cuốn)</h2>
+            <p style="color: var(--text-muted); font-size: 0.95rem; line-height: 1.6; margin-bottom: 25px;">
+                Mỗi học viên được tải miễn phí <strong>1 cuốn Ebook/ngày</strong>. Để mở khóa tải thêm các cuốn Ebook tiếp theo hôm nay, hãy mở rộng trải nghiệm hệ sinh thái B2B BD:
+            </p>
+            
+            <div style="display: flex; flex-direction: column; gap: 15px;">
+                <a href="index.html#minigame-section" id="btn-unlock-game" class="btn" style="background: linear-gradient(135deg, #a20a0a 0%, #750707 100%); color: #fff; padding: 14px 20px; font-weight: 700; border-radius: 12px; text-decoration: none; display: flex; align-items: center; justify-content: center; gap: 10px; box-shadow: 0 8px 20px rgba(162, 10, 10, 0.3);">
+                    <span>🎮</span> Thử Thách B2B Challenge (+1 Lượt Tải)
+                </a>
+                <a href="community.html" id="btn-unlock-community" class="btn" style="background: rgba(255,255,255,0.08); border: 1px solid var(--border-color); color: var(--text-primary); padding: 14px 20px; font-weight: 700; border-radius: 12px; text-decoration: none; display: flex; align-items: center; justify-content: center; gap: 10px;">
+                    <span>💬</span> Tham Gia Cộng Đồng BD (+1 Lượt Tải)
+                </a>
+            </div>
+            <button class="btn btn-secondary" id="btn-limit-close" style="margin-top: 20px; width: 100%;">Đóng Lại</button>
+        </div>
+    </div>
+
     <!-- Footer -->
     <footer class="footer">
         <div class="container text-center">
