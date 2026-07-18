@@ -171,13 +171,20 @@ document.addEventListener('DOMContentLoaded', () => {
                 card.style.justifySpaceBetween = 'space-between';
                 card.style.transition = 'all 0.3s ease';
                 
+                const coverHtml = ebook.coverImage ? `
+                    <div class="ebook-cover-frame">
+                        <img src="${ebook.coverImage}" alt="${ebook.title}" class="ebook-cover-img" loading="lazy">
+                        <span class="ebook-cover-badge-overlay">${ebook.badge || 'PDF Ebook'}</span>
+                    </div>
+                ` : `<div style="font-size: 2.2rem; margin-bottom: 10px;">${ebook.icon || '📚'}</div>`;
+
                 card.innerHTML = `
                     <div>
-                        <div class="card-meta" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-                            <span class="category-badge" style="background: rgba(162, 10, 10, 0.15); border: 1px solid var(--primary); color: var(--primary); padding: 4px 10px; border-radius: 6px; font-size: 0.75rem; font-weight: 700;">${ebook.badge || 'PDF Ebook'}</span>
-                            <span class="article-date-text" style="font-size: 0.8rem; opacity: 0.8;">${ebook.fileSize} • PDF</span>
+                        ${coverHtml}
+                        <div class="card-meta" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                            <span class="category-badge" style="background: rgba(162, 10, 10, 0.15); border: 1px solid var(--primary); color: var(--primary); padding: 3px 8px; border-radius: 6px; font-size: 0.75rem; font-weight: 700;">PDF Ebook</span>
+                            <span class="article-date-text" style="font-size: 0.8rem; opacity: 0.8;">${ebook.fileSize}</span>
                         </div>
-                        <div style="font-size: 2.2rem; margin-bottom: 10px;">${ebook.icon || '📚'}</div>
                         <h3 class="card-title" style="font-size: 1.15rem; margin-bottom: 8px; color: var(--text-main); font-weight: 700;">${ebook.title}</h3>
                         <p class="card-desc" style="font-size: 0.9rem; color: var(--text-light); line-height: 1.5; margin-bottom: 15px;">${ebook.description}</p>
                     </div>
