@@ -4,7 +4,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const searchInput = document.getElementById('library-search');
     const categoryTabsContainer = document.getElementById('category-tabs');
     
-    // Modal Elements
+    // Reader Modal Elements
     const readerModal = document.getElementById('reader-modal');
     const modalCloseBtn = document.getElementById('reader-close-btn');
     const btnReaderClose = document.getElementById('btn-reader-close');
@@ -24,6 +24,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const regEmail = document.getElementById('reg-email');
     const regExperience = document.getElementById('reg-experience');
 
+    // Limit / Retention Modal Elements
+    const limitModal = document.getElementById('limit-modal');
+    const limitCloseBtn = document.getElementById('limit-close-btn');
+    const btnLimitClose = document.getElementById('btn-limit-close');
+    const btnUnlockGame = document.getElementById('btn-unlock-game');
+    const btnUnlockCommunity = document.getElementById('btn-unlock-community');
+
     // State
     let articles = [];
     let ebooks = [];
@@ -31,7 +38,65 @@ document.addEventListener('DOMContentLoaded', () => {
     let activeCategory = 'Ebooks';
     let searchQuery = '';
 
-    // Fetch articles from library_data.json
+    // --- Daily Download Limit & Retention Helpers ---
+    function getTodayKey() {
+        const today = new Date();
+        return `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+    }
+
+    function getTodayDownloads() {
+        const key = `b2b_dl_count_${getTodayKey()}`;
+        return parseInt(localStorage.getItem(key) || '0', 10);
+    }
+
+    function incrementTodayDownloads() {
+        const key = `b2b_dl_count_${getTodayKey()}`;
+        const current = getTodayDownloads();
+        localStorage.setItem(key, (current + 1).toString());
+    }
+
+    function getTodayBonusCredits() {
+        const key = `b2b_bonus_credits_${getTodayKey()}`;
+        return parseInt(localStorage.getItem(key) || '0', 10);
+    }
+
+    function addBonusCredit() {
+        const key = `b2b_bonus_credits_${getTodayKey()}`;
+        const current = getTodayBonusCredits();
+        localStorage.setItem(key, (current + 1).toString());
+    }
+
+    // --- Live Ebook Download Counter Helpers ---
+    function getEbookDownloadCount(ebook) {
+        const storageKey = `b2b_ebook_cnt_${ebook.id}`;
+        const saved = localStorage.getItem(storageKey);
+        if (saved) {
+            return parseInt(saved, 10);
+        }
+        return ebook.downloads || 1200;
+    }
+
+    function incrementEbookDownloadCount(ebookId) {
+        const storageKey = `b2b_ebook_cnt_${ebookId}`;
+        const ebookObj = ebooks.find(e => e.id === ebookId);
+        const current = ebookObj ? getEbookDownloadCount(ebookObj) : 1200;
+        const updated = current + 1;
+        localStorage.setItem(storageKey, updated.toString());
+        
+        // Update UI element real-time if visible
+        const counterEl = document.getElementById(`dl-counter-${ebookId}`);
+        if (counterEl) {
+            counterEl.textContent = `🔥 ${updated.toLocaleString('vi-VN')} Lượt Tải`;
+            counterEl.style.transform = 'scale(1.2)';
+            counterEl.style.color = '#f3a83b';
+            setTimeout(() => {
+                counterEl.style.transform = 'scale(1)';
+                counterEl.style.color = 'var(--text-muted)';
+            }, 600);
+        }
+    }
+
+    // Fetch articles and ebooks from library_data.json
     async function loadArticles() {
         try {
             const response = await fetch('/library_data.json');
@@ -69,54 +134,11 @@ document.addEventListener('DOMContentLoaded', () => {
         // Italic
         html = html.replace(/\*(.*?)\*/g, '<em>$1</em>');
         
-        // Tables
-        const lines = html.split('\n');
-        let inTable = false;
-        let tableRows = [];
-        let headerParsed = false;
-        
-        for (let i = 0; i < lines.length; i++) {
-            let line = lines[i].trim();
-            if (line.startsWith('|') && line.endsWith('|')) {
-                if (!inTable) {
-                    inTable = true;
-                    tableRows = [];
-                    headerParsed = false;
-                }
-                
-                // Skip separator lines e.g. |---|---|
-                if (line.match(/^\|[\s:-|]+$/)) {
-                    continue;
-                }
-                
-                const cells = line.split('|').slice(1, -1).map(c => c.trim());
-                if (!headerParsed) {
-                    const ths = cells.map(c => `<th>${c}</th>`).join('');
-                    tableRows.push(`<tr>${ths}</tr>`);
-                    headerParsed = true;
-                } else {
-                    const tds = cells.map(c => `<td>${c}</td>`).join('');
-                    tableRows.push(`<tr>${tds}</tr>`);
-                }
-                lines[i] = ''; // clear line
-            } else {
-                if (inTable) {
-                    inTable = false;
-                    const tableHtml = `<table>${tableRows.join('')}</table>`;
-                    // Replace the previous line position with the table
-                    lines[i - 1] = tableHtml;
-                }
-            }
-        }
-        
-        html = lines.filter(l => l !== '').join('\n');
-
         // Lists
         html = html.replace(/^\s*-\s+(.*$)/gim, '<li>$1</li>');
-        // Wrap <li> elements in <ul>
         html = html.replace(/(<li>.*?<\/li>)+/gs, (match) => `<ul>${match}</ul>`);
 
-        // Paragraphs (split by double newlines)
+        // Paragraphs
         html = html.split(/\n\n+/).map(p => {
             if (p.trim().startsWith('<h') || p.trim().startsWith('<ul') || p.trim().startsWith('<table') || p.trim().startsWith('<ul>')) {
                 return p;
@@ -146,6 +168,30 @@ document.addEventListener('DOMContentLoaded', () => {
         readerModal.classList.add('hidden');
     }
 
+    // Social Share Handler
+    function shareEbook(platform, ebook) {
+        const shareUrl = window.location.href;
+        const title = ebook.title;
+        const text = `Tôi vừa đọc cuốn cẩm nang "${title}" của Peter Vo trên B2B BD Tips Portal! Kiến thức Business Development thực chiến rất sắc bén.`;
+
+        if (platform === 'linkedin') {
+            const url = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}`;
+            window.open(url, '_blank', 'width=600,height=600');
+        } else if (platform === 'facebook') {
+            const url = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}&quote=${encodeURIComponent(text)}`;
+            window.open(url, '_blank', 'width=600,height=600');
+        } else if (platform === 'tiktok') {
+            navigator.clipboard.writeText(`${text}\n🔗 Link: ${shareUrl}`);
+            showToast('🎵 Đã sao chép nội dung chia sẻ TikTok vào Clipboard! Hãy dán vào bài đăng TikTok của bạn.');
+            setTimeout(() => {
+                window.open('https://www.tiktok.com', '_blank');
+            }, 1200);
+        } else if (platform === 'copy') {
+            navigator.clipboard.writeText(`${title} - ${shareUrl}`);
+            showToast('🔗 Đã sao chép liên kết chia sẻ!');
+        }
+    }
+
     // Render cards to container
     function renderArticles() {
         articlesContainer.innerHTML = '';
@@ -168,9 +214,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 card.style.cursor = 'pointer';
                 card.style.display = 'flex';
                 card.style.flexDirection = 'column';
-                card.style.justifySpaceBetween = 'space-between';
+                card.style.justifyContent = 'space-between';
                 card.style.transition = 'all 0.3s ease';
                 
+                const liveCount = getEbookDownloadCount(ebook);
                 const coverHtml = ebook.coverImage ? `
                     <div class="ebook-cover-frame">
                         <img src="${ebook.coverImage}" alt="${ebook.title}" class="ebook-cover-img" loading="lazy">
@@ -183,17 +230,37 @@ document.addEventListener('DOMContentLoaded', () => {
                         ${coverHtml}
                         <div class="card-meta" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
                             <span class="category-badge" style="background: rgba(162, 10, 10, 0.15); border: 1px solid var(--primary); color: var(--primary); padding: 3px 8px; border-radius: 6px; font-size: 0.75rem; font-weight: 700;">PDF Ebook</span>
-                            <span class="article-date-text" style="font-size: 0.8rem; opacity: 0.8;">${ebook.fileSize}</span>
+                            <span id="dl-counter-${ebook.id}" class="article-date-text" style="font-size: 0.82rem; font-weight: 700; color: var(--text-muted); transition: all 0.3s ease;">🔥 ${liveCount.toLocaleString('vi-VN')} Lượt Tải</span>
                         </div>
                         <h3 class="card-title" style="font-size: 1.15rem; margin-bottom: 8px; color: var(--text-main); font-weight: 700;">${ebook.title}</h3>
                         <p class="card-desc" style="font-size: 0.9rem; color: var(--text-light); line-height: 1.5; margin-bottom: 15px;">${ebook.description}</p>
                     </div>
-                    <div class="card-footer" style="display: flex; justify-content: space-between; align-items: center; width: 100%; margin-top: 15px; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 12px;">
-                        <span class="author-name-text" style="font-size: 0.85rem; color: var(--text-light);">Tác giả: <strong style="color: var(--primary);">${ebook.author}</strong></span>
-                        <button class="btn btn-primary download-trigger-btn" style="padding: 8px 18px; font-size: 0.85rem; font-weight:700; border-radius: 20px;">Tải Ebook PDF &darr;</button>
+                    
+                    <div>
+                        <!-- Social Share Bar -->
+                        <div style="display: flex; align-items: center; justify-content: space-between; background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.05); border-radius: 8px; padding: 6px 12px; margin-bottom: 12px;">
+                            <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: 600;">Chia sẻ:</span>
+                            <div style="display: flex; gap: 8px;">
+                                <button class="share-btn share-linkedin" title="Chia sẻ qua LinkedIn" style="background: transparent; border: none; cursor: pointer; font-size: 1rem;">💼</button>
+                                <button class="share-btn share-facebook" title="Chia sẻ qua Facebook" style="background: transparent; border: none; cursor: pointer; font-size: 1rem;">📘</button>
+                                <button class="share-btn share-tiktok" title="Chia sẻ qua TikTok" style="background: transparent; border: none; cursor: pointer; font-size: 1rem;">🎵</button>
+                                <button class="share-btn share-copy" title="Sao chép link" style="background: transparent; border: none; cursor: pointer; font-size: 1rem;">🔗</button>
+                            </div>
+                        </div>
+
+                        <div class="card-footer" style="display: flex; justify-content: space-between; align-items: center; width: 100%; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 12px;">
+                            <span class="author-name-text" style="font-size: 0.85rem; color: var(--text-light);">Tác giả: <strong style="color: var(--primary);">${ebook.author}</strong></span>
+                            <button class="btn btn-primary download-trigger-btn" style="padding: 8px 18px; font-size: 0.85rem; font-weight:700; border-radius: 20px;">Tải Ebook PDF &darr;</button>
+                        </div>
                     </div>
                 `;
                 
+                // Attach Social Share Event Listeners
+                card.querySelector('.share-linkedin').addEventListener('click', (e) => { e.stopPropagation(); shareEbook('linkedin', ebook); });
+                card.querySelector('.share-facebook').addEventListener('click', (e) => { e.stopPropagation(); shareEbook('facebook', ebook); });
+                card.querySelector('.share-tiktok').addEventListener('click', (e) => { e.stopPropagation(); shareEbook('tiktok', ebook); });
+                card.querySelector('.share-copy').addEventListener('click', (e) => { e.stopPropagation(); shareEbook('copy', ebook); });
+
                 const downloadBtn = card.querySelector('.download-trigger-btn');
                 downloadBtn.addEventListener('click', (e) => {
                     e.stopPropagation();
@@ -219,7 +286,7 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        // Add prominent LinkedIn Newsletter Banner Header card
+        // Prominent LinkedIn Newsletter Banner Card
         const bannerCard = document.createElement('div');
         bannerCard.className = 'glass-panel article-card';
         bannerCard.style.gridColumn = '1 / -1';
@@ -293,10 +360,21 @@ document.addEventListener('DOMContentLoaded', () => {
         if (e.target === readerModal) closeReader();
     });
 
-    // --- Ebook Download Flow & Registration ---
+    // --- Ebook Download Flow & Daily Limit ---
     
     function handleEbookDownload(ebook) {
         currentSelectedEbook = ebook;
+        
+        // Check Daily Download Limit (1 per day default + bonus credits)
+        const todayDl = getTodayDownloads();
+        const allowedDl = 1 + getTodayBonusCredits();
+
+        if (todayDl >= allowedDl) {
+            // Daily limit reached -> Open retention modal to invite playing mini game or community!
+            limitModal.classList.remove('hidden');
+            return;
+        }
+
         const registered = localStorage.getItem('b2b_user_registration');
         if (registered) {
             triggerDownload(ebook);
@@ -307,6 +385,10 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function triggerDownload(ebook) {
+        // Record download count
+        incrementTodayDownloads();
+        incrementEbookDownloadCount(ebook.id);
+
         const link = document.createElement('a');
         link.href = ebook.fileUrl;
         link.download = ebook.fileUrl.split('/').pop();
@@ -356,6 +438,29 @@ document.addEventListener('DOMContentLoaded', () => {
         downloadForm.reset();
     }
 
+    function closeLimitModal() {
+        limitModal.classList.add('hidden');
+    }
+
+    // Retention unlock button listeners
+    btnUnlockGame.addEventListener('click', () => {
+        addBonusCredit();
+        showToast('🎮 Đã thưởng +1 lượt tải Ebook nhờ thử sức Mini Game!');
+        closeLimitModal();
+    });
+
+    btnUnlockCommunity.addEventListener('click', () => {
+        addBonusCredit();
+        showToast('💬 Đã thưởng +1 lượt tải Ebook khi tham gia Cộng Đồng!');
+        closeLimitModal();
+    });
+
+    limitCloseBtn.addEventListener('click', closeLimitModal);
+    btnLimitClose.addEventListener('click', closeLimitModal);
+    limitModal.addEventListener('click', (e) => {
+        if (e.target === limitModal) closeLimitModal();
+    });
+
     // Download registration form submission
     downloadForm.addEventListener('submit', (e) => {
         e.preventDefault();
@@ -390,14 +495,14 @@ document.addEventListener('DOMContentLoaded', () => {
         
         localStorage.setItem('b2b_user_registration', JSON.stringify(registrationData));
 
-        // Sync lead email to Google Sheets backend endpoint
+        // Sync lead name, email & metadata to Google Sheets backend endpoint
         fetch('/api/log-email', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
+                name: firstName,
                 email: email,
                 tool: 'ebook-download',
-                name: firstName,
                 experience: expNum
             })
         }).catch(console.error);
@@ -417,12 +522,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     document.addEventListener('keydown', (e) => {
         if (e.key === 'Escape') {
-            if (!readerModal.classList.contains('hidden')) {
-                closeReader();
-            }
-            if (!downloadModal.classList.contains('hidden')) {
-                closeDownloadModal();
-            }
+            if (!readerModal.classList.contains('hidden')) closeReader();
+            if (!downloadModal.classList.contains('hidden')) closeDownloadModal();
+            if (!limitModal.classList.contains('hidden')) closeLimitModal();
         }
     });
 
