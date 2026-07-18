@@ -104,11 +104,19 @@ document.addEventListener('DOMContentLoaded', () => {
     // Fetch articles and ebooks from library_data.json
     async function loadArticles() {
         try {
-            const response = await fetch('/library_data.json');
+            let response = await fetch('/library_data.json');
             if (!response.ok) {
                 throw new Error('Failed to fetch library data');
             }
-            const data = await response.json();
+            let data = await response.json();
+            if (!data.glossary || data.glossary.length === 0) {
+                try {
+                    const fallbackRes = await fetch('https://raw.githubusercontent.com/bdtrainingcourse-cyber/BD-Tips/main/library_data.json');
+                    if (fallbackRes.ok) {
+                        data = await fallbackRes.json();
+                    }
+                } catch(e) { console.error('Fallback fetch error:', e); }
+            }
             articles = data.articles || [];
             ebooks = data.ebooks || [];
             glossary = data.glossary || [];
