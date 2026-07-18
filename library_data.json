@@ -83,56 +83,17 @@
   ],
   "ebooks": [
     {
-      "id": "ebook-9-principles",
-      "title": "9 Nguyên Tắc Thực Chiến B2B BD",
-      "description": "Cẩm nang 9 nguyên tắc cốt lõi giúp Business Developer xây dựng uy thế, định vị bản thân và chốt các hợp đồng doanh nghiệp giá trị cao.",
+      "id": "ebook-mindset-bd",
+      "title": "Tư Duy BD \"Thép\" & Tâm Lý Học B2B Mindset",
+      "description": "Giải mã tâm lý khách hàng B2B, vượt qua rào cản từ chối giá và xây dựng tư duy chốt deal bền vững cho nhân sự BD.",
       "author": "Peter Vo",
-      "date": "2026-07-10",
-      "fileUrl": "ebooks/9 Nguyên Tắc  BD.pdf",
-      "coverImage": "ebook-covers/cover-9-principles.png",
-      "fileSize": "19.9 MB",
+      "date": "2026-06-28",
+      "fileUrl": "ebooks/Mindset BD Ebook.pdf",
+      "coverImage": "ebook-covers/cover-mindset-bd.png",
+      "fileSize": "8.8 MB",
       "badge": "Hot Best-seller",
-      "icon": "📙",
-      "downloads": 1452
-    },
-    {
-      "id": "ebook-b2b-language",
-      "title": "Bộ Cẩm Nang Ngôn Từ B2B BD (5 Pha Chuyển Mình)",
-      "description": "Phương pháp loại bỏ 5 cụm từ 'cấm kỵ' trong bán hàng B2B, nâng cấp ngôn từ thể hiện uy thế và năng lực giải quyết vấn đề.",
-      "author": "Peter Vo",
-      "date": "2026-07-08",
-      "fileUrl": "ebooks/BD B2B Language.pdf",
-      "coverImage": "ebook-covers/cover-b2b-language.png",
-      "fileSize": "7.1 MB",
-      "badge": "Language Guide",
-      "icon": "🗣️",
-      "downloads": 1180
-    },
-    {
-      "id": "ebook-hubspot-guideline",
-      "title": "Cẩm Nang Thực Chiến HubSpot CRM Cho B2B BD",
-      "description": "Hướng dẫn làm chủ công cụ HubSpot CRM, quản lý quy trình deal, thiết lập pipeline và tự động hóa chăm sóc khách hàng doanh nghiệp.",
-      "author": "Peter Vo",
-      "date": "2026-07-16",
-      "fileUrl": "ebooks/Hubspot Basic Guideline.pdf",
-      "coverImage": "ebook-covers/cover-hubspot-guideline.png",
-      "fileSize": "7.2 MB",
-      "badge": "HubSpot Guide",
-      "icon": "📙",
-      "downloads": 1290
-    },
-    {
-      "id": "ebook-kpi-funnel",
-      "title": "Ma Trận Phễu KPI & Quy Đổi Doanh Thu B2B",
-      "description": "Bảng tính & cẩm nang thiết lập phễu ngược Inbound & Outbound, quy đổi chính xác tỷ lệ CR và khối lượng công việc cần thiết cho BD.",
-      "author": "Peter Vo",
-      "date": "2026-07-05",
-      "fileUrl": "ebooks/KPI Inbound - Outbound funnel.pdf",
-      "coverImage": "ebook-covers/cover-kpi-funnel.png",
-      "fileSize": "2.7 MB",
-      "badge": "Funnel Matrix",
-      "icon": "📊",
-      "downloads": 1385
+      "icon": "🧠",
+      "downloads": 198
     },
     {
       "id": "ebook-linkedin-2026",
@@ -145,20 +106,59 @@
       "fileSize": "11.1 MB",
       "badge": "LinkedIn 2026",
       "icon": "💼",
-      "downloads": 1680
+      "downloads": 189
     },
     {
-      "id": "ebook-mindset-bd",
-      "title": "Tư Duy & Tâm Lý Học B2B BD Mindset",
-      "description": "Giải mã tâm lý khách hàng B2B, vượt qua rào cản từ chối giá và xây dựng tư duy chốt deal bền vững cho nhân sự BD.",
+      "id": "ebook-9-principles",
+      "title": "9 Nguyên Tắc Thực Chiến B2B BD",
+      "description": "Cẩm nang 9 nguyên tắc cốt lõi giúp Business Developer xây dựng uy thế, định vị bản thân và chốt các hợp đồng doanh nghiệp giá trị cao.",
       "author": "Peter Vo",
-      "date": "2026-06-28",
-      "fileUrl": "ebooks/Mindset BD Ebook.pdf",
-      "coverImage": "ebook-covers/cover-mindset-bd.png",
-      "fileSize": "8.8 MB",
-      "badge": "Mindset & Sales",
-      "icon": "🧠",
-      "downloads": 1210
+      "date": "2026-07-10",
+      "fileUrl": "ebooks/9 Nguyên Tắc  BD.pdf",
+      "coverImage": "ebook-covers/cover-9-principles.png",
+      "fileSize": "19.9 MB",
+      "badge": "Chuyên Gia B2B",
+      "icon": "📙",
+      "downloads": 185
+    },
+    {
+      "id": "ebook-b2b-language",
+      "title": "Bộ Cẩm Nang Ngôn Từ B2B BD (5 Pha Chuyển Mình)",
+      "description": "Phương pháp loại bỏ 5 cụm từ 'cấm kỵ' trong bán hàng B2B, nâng cấp ngôn từ thể hiện uy thế và năng lực giải quyết vấn đề.",
+      "author": "Peter Vo",
+      "date": "2026-07-08",
+      "fileUrl": "ebooks/BD B2B Language.pdf",
+      "coverImage": "ebook-covers/cover-b2b-language.png",
+      "fileSize": "7.1 MB",
+      "badge": "Language Guide",
+      "icon": "🗣️",
+      "downloads": 172
+    },
+    {
+      "id": "ebook-hubspot-guideline",
+      "title": "Cẩm Nang Thực Chiến HubSpot CRM Cho B2B BD",
+      "description": "Hướng dẫn làm chủ công cụ HubSpot CRM, quản lý quy trình deal, thiết lập pipeline và tự động hóa chăm sóc khách hàng doanh nghiệp.",
+      "author": "Peter Vo",
+      "date": "2026-07-16",
+      "fileUrl": "ebooks/Hubspot Basic Guideline.pdf",
+      "coverImage": "ebook-covers/cover-hubspot-guideline.png",
+      "fileSize": "7.2 MB",
+      "badge": "HubSpot Guide",
+      "icon": "📙",
+      "downloads": 164
+    },
+    {
+      "id": "ebook-kpi-funnel",
+      "title": "Ma Trận Phễu KPI & Quy Đổi Doanh Thu B2B",
+      "description": "Bảng tính & cẩm nang thiết lập phễu ngược Inbound & Outbound, quy đổi chính xác tỷ lệ CR và khối lượng công việc cần thiết cho BD.",
+      "author": "Peter Vo",
+      "date": "2026-07-05",
+      "fileUrl": "ebooks/KPI Inbound - Outbound funnel.pdf",
+      "coverImage": "ebook-covers/cover-kpi-funnel.png",
+      "fileSize": "2.7 MB",
+      "badge": "Funnel Matrix",
+      "icon": "📊",
+      "downloads": 158
     },
     {
       "id": "ebook-fake-lead",
@@ -171,7 +171,7 @@
       "fileSize": "39.2 MB",
       "badge": "Lead Verification",
       "icon": "🔍",
-      "downloads": 1540
+      "downloads": 146
     }
   ]
 }
