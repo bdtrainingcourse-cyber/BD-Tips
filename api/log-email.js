@@ -13,7 +13,7 @@ module.exports = async (req, res) => {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  const { email, tool, name, phone, company, experience } = req.body;
+  const { email, tool, name, phone, company, experience, ebookTitle, downloadLink } = req.body;
   if (!email || !email.includes('@')) {
     return res.status(400).json({ error: 'Invalid email address' });
   }
@@ -30,10 +30,18 @@ module.exports = async (req, res) => {
 
   if (webhookUrl) {
     try {
-      // Forward full lead metadata including name to Google Apps Script Webhook
+      // Forward full lead metadata including name, experience, and download link to Google Apps Script Webhook
       const payload = isCourseReg
         ? { name, email, phone, company, date: timestamp, tool }
-        : { name: name || 'Học viên', email, tool, experience: experience || '', date: timestamp };
+        : { 
+            name: name || 'Học viên', 
+            email, 
+            tool, 
+            experience: experience || '', 
+            ebookTitle: ebookTitle || '', 
+            downloadLink: downloadLink || '', 
+            date: timestamp 
+          };
 
       const response = await fetch(webhookUrl, {
         method: 'POST',
