@@ -34,8 +34,10 @@ document.addEventListener('DOMContentLoaded', () => {
     // State
     let articles = [];
     let ebooks = [];
+    let glossary = [];
     let currentSelectedEbook = null;
     let activeCategory = 'Ebooks';
+    let activeGlossaryFilter = 'All';
     let searchQuery = '';
 
     // --- Daily Download Limit & Retention Helpers ---
@@ -50,19 +52,19 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function incrementTodayDownloads() {
-        const key = `b2b_dl_count_${getTodayKey()}`;
         const current = getTodayDownloads();
+        const key = `b2b_dl_count_${getTodayKey()}`;
         localStorage.setItem(key, (current + 1).toString());
     }
 
     function getTodayBonusCredits() {
-        const key = `b2b_bonus_credits_${getTodayKey()}`;
+        const key = `b2b_bonus_dl_${getTodayKey()}`;
         return parseInt(localStorage.getItem(key) || '0', 10);
     }
 
     function addBonusCredit() {
-        const key = `b2b_bonus_credits_${getTodayKey()}`;
         const current = getTodayBonusCredits();
+        const key = `b2b_bonus_dl_${getTodayKey()}`;
         localStorage.setItem(key, (current + 1).toString());
     }
 
@@ -109,6 +111,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const data = await response.json();
             articles = data.articles || [];
             ebooks = data.ebooks || [];
+            glossary = data.glossary || [];
             renderArticles();
         } catch (error) {
             console.error('Error loading library:', error);
@@ -198,6 +201,107 @@ document.addEventListener('DOMContentLoaded', () => {
     // Render cards to container
     function renderArticles() {
         articlesContainer.innerHTML = '';
+        
+        if (activeCategory === 'Glossary') {
+            const filteredGlossary = glossary.filter(g => {
+                const query = searchQuery.toLowerCase();
+                const matchesSearch = !query || 
+                                      g.term.toLowerCase().includes(query) || 
+                                      g.vietnamese.toLowerCase().includes(query) || 
+                                      g.definition.toLowerCase().includes(query) ||
+                                      g.context.toLowerCase().includes(query);
+                const matchesSubCat = activeGlossaryFilter === 'All' || g.category === activeGlossaryFilter;
+                return matchesSearch && matchesSubCat;
+            });
+
+            // Top Sub-filter Bar for Glossary
+            const filterBar = document.createElement('div');
+            filterBar.style.gridColumn = '1 / -1';
+            filterBar.style.display = 'flex';
+            filterBar.style.gap = '10px';
+            filterBar.style.flexWrap = 'wrap';
+            filterBar.style.marginBottom = '20px';
+            filterBar.style.justifyContent = 'center';
+
+            const filters = [
+                { id: 'All', label: 'Tất cả thuật ngữ' },
+                { id: 'Internal', label: '🏢 Nội Bộ & Pipeline' },
+                { id: 'Client', label: '🤝 Làm Việc Với Khách Hàng' },
+                { id: 'Metrics', label: '📊 Chỉ Số & Tài Chính' }
+            ];
+
+            filters.forEach(f => {
+                const fBtn = document.createElement('button');
+                fBtn.className = `btn ${activeGlossaryFilter === f.id ? 'btn-primary' : 'btn-secondary'}`;
+                fBtn.style.padding = '8px 18px';
+                fBtn.style.borderRadius = '20px';
+                fBtn.style.fontSize = '0.88rem';
+                fBtn.textContent = f.label;
+                fBtn.addEventListener('click', () => {
+                    activeGlossaryFilter = f.id;
+                    renderArticles();
+                });
+                filterBar.appendChild(fBtn);
+            });
+            articlesContainer.appendChild(filterBar);
+
+            if (filteredGlossary.length === 0) {
+                const emptyMsg = document.createElement('div');
+                emptyMsg.className = 'glass-panel';
+                emptyMsg.style.gridColumn = '1 / -1';
+                emptyMsg.style.textAlign = 'center';
+                emptyMsg.style.color = 'var(--text-muted)';
+                emptyMsg.style.padding = '30px';
+                emptyMsg.textContent = 'Không tìm thấy thuật ngữ phù hợp với từ khóa tìm kiếm.';
+                articlesContainer.appendChild(emptyMsg);
+                return;
+            }
+
+            filteredGlossary.forEach(item => {
+                const card = document.createElement('div');
+                card.className = 'glass-panel article-card';
+                card.style.display = 'flex';
+                card.style.flexDirection = 'column';
+                card.style.justifyContent = 'space-between';
+                card.style.borderLeft = '4px solid var(--primary)';
+                card.style.transition = 'all 0.3s ease';
+
+                card.innerHTML = `
+                    <div>
+                        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; gap: 10px;">
+                            <span class="category-badge" style="background: rgba(162, 10, 10, 0.15); border: 1px solid var(--primary); color: var(--primary); padding: 4px 10px; border-radius: 6px; font-size: 0.75rem; font-weight: 700;">${item.categoryLabel}</span>
+                            <span style="font-size: 0.75rem; color: var(--accent-glow); background: rgba(243, 168, 59, 0.1); border: 1px solid rgba(243, 168, 59, 0.3); padding: 2px 8px; border-radius: 12px;">#${item.tag}</span>
+                        </div>
+                        <h3 style="font-size: 1.15rem; font-weight: 800; color: var(--text-main); margin-bottom: 4px;">${item.term}</h3>
+                        <div style="font-size: 0.92rem; font-weight: 700; color: #f3a83b; margin-bottom: 12px;">${item.vietnamese}</div>
+                        
+                        <div style="background: rgba(0,0,0,0.25); border: 1px solid rgba(255,255,255,0.06); border-radius: 8px; padding: 12px; margin-bottom: 12px;">
+                            <div style="font-size: 0.78rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 4px;">📌 Định nghĩa thực chiến:</div>
+                            <div style="font-size: 0.88rem; color: var(--text-light); line-height: 1.5;">${item.definition}</div>
+                        </div>
+
+                        <div style="background: rgba(99, 102, 241, 0.08); border: 1px solid rgba(99, 102, 241, 0.2); border-radius: 8px; padding: 12px; margin-bottom: 15px;">
+                            <div style="font-size: 0.78rem; font-weight: 700; color: #a5b4fc; text-transform: uppercase; margin-bottom: 4px;">💡 Bối cảnh ứng dụng thực tế:</div>
+                            <div style="font-size: 0.86rem; color: #e0e7ff; line-height: 1.5; font-style: italic;">"${item.context}"</div>
+                        </div>
+                    </div>
+
+                    <button class="btn btn-secondary btn-copy-term" style="width: 100%; font-size: 0.85rem; padding: 8px; border-radius: 8px; display: flex; align-items: center; justify-content: center; gap: 6px;">
+                        <span>📋</span> Sao Chép Định Nghĩa & Trích Dẫn
+                    </button>
+                `;
+
+                const copyBtn = card.querySelector('.btn-copy-term');
+                copyBtn.addEventListener('click', () => {
+                    const copyText = `📘 Thuật ngữ B2B BD: ${item.term} (${item.vietnamese})\n📌 Định nghĩa: ${item.definition}\n💡 Bối cảnh sử dụng: ${item.context}\n(Nguồn: B2B BD Tips Portal - Peter Vo)`;
+                    navigator.clipboard.writeText(copyText);
+                    showToast(`📋 Đã sao chép thuật ngữ "${item.term}" vào Clipboard!`);
+                });
+
+                articlesContainer.appendChild(card);
+            });
+            return;
+        }
         
         if (activeCategory === 'Ebooks' || activeCategory === 'All') {
             const filteredEbooks = ebooks.filter(e => {
