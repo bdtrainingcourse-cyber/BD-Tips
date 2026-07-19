@@ -232,10 +232,11 @@ document.addEventListener('DOMContentLoaded', () => {
             filterBar.style.justifyContent = 'center';
 
             const filters = [
-                { id: 'All', label: 'Tất cả thuật ngữ' },
-                { id: 'Internal', label: '🏢 Nội Bộ & Pipeline' },
+                { id: 'All', label: 'Tất cả thuật ngữ (100+)' },
+                { id: 'Internal', label: '🏢 Nội Bộ Team BD' },
                 { id: 'Client', label: '🤝 Làm Việc Với Khách Hàng' },
-                { id: 'Metrics', label: '📊 Chỉ Số & Tài Chính' }
+                { id: 'Metrics', label: '📊 Chỉ Số Tài Chính & KPI' },
+                { id: 'Slang', label: '🔥 Tiếng Lóng BD/Sales' }
             ];
 
             filters.forEach(f => {
