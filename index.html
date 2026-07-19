@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>5 Pha Chuyển Mình Về Ngôn Từ B2B</title>
+    <title>5 Pha Chuyển Mình Về Ngôn Từ B2B | BD Bình Dân Học Vụ</title>
     <meta name="description" content="Đừng để 'Cái miệng hại cái deal' - 5 pha chuyển mình về ngôn từ dành cho B2B Business Development">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css?v=1.3.8">
@@ -14,22 +14,34 @@
     <!-- Navbar -->
     <header class="app-nav">
         <div class="nav-container">
-            <a href="index.html" class="nav-logo">
-                <span class="logo-accent">B2B</span> BD Portal
+            <a href="index.html" class="nav-logo" title="BD Bình Dân Học Vụ - Nơi Học Hỏi & Kết Nối của BD">
+                <span class="logo-main"><span class="logo-accent">BD</span> Bình Dân Học Vụ</span>
+                <span class="logo-sub">Nơi Học Hỏi & Kết Nối của BD</span>
             </a>
-                                                <nav class="nav-links">
-                <a href="index.html" class="active">Ngôn Từ B2B</a>
-                <a href="index.html#minigame-section">B2B Challenge</a>
-                <a href="finder.html" class="">PIC Finder</a>
-                <a href="library.html" class="">Thư Viện B2B</a>
-                <a href="labor-law.html" class="">Luật Lao Động</a>
-                <a href="salary.html" class="">Tính Lương</a>
-                <a href="email-assistant.html" class="">Email Assistant</a>
-                <a href="kpi-estimation.html" class="">Ước Tính KPI</a>
-                <a href="community.html" class="">Cộng Đồng</a>
-                <a href="course.html" class="">Khóa Học BD</a>
+            <nav class="nav-links" id="nav-menu">
+                <a href="index.html" class="active">🏠 Homepage</a>
+                <a href="library.html" class="">📚 Thư Viện <span class="nav-badge hot">HOT</span></a>
+                <div class="nav-dropdown ">
+                    <button class="nav-dropdown-toggle">🛠️ Bộ Công Cụ BD <span class="dropdown-arrow">▾</span></button>
+                    <div class="nav-dropdown-menu">
+                        <a href="finder.html" class="">🔍 B2B PIC Finder <span class="nav-badge pro">Pro</span></a>
+                        <a href="email-assistant.html" class="">✉️ AI Email Assistant <span class="nav-badge ai">AI</span></a>
+                        <a href="kpi-estimation.html" class="">📊 Ma Trận KPI BD</a>
+                        <a href="salary.html" class="">🧮 Tính Lương Gross - Net</a>
+                        <a href="labor-law.html" class="">⚖️ Tra Cứu Luật Lao Động</a>
+                    </div>
+                </div>
+                <a href="index.html#minigame-section">🎮 B2B Challenge <span class="nav-badge new">New</span></a>
+                <a href="community.html" class="">🌐 Cộng Đồng</a>
+                <a href="https://www.linkedin.com/in/vp-tan/" target="_blank" class="nav-contact-author" title="Kết nối Zalo/SĐT: 0931100569">
+                    <img src="peter_1.jpg" alt="Peter Vo" class="nav-avatar">
+                    <span>Peter Vo</span>
+                </a>
                 <button id="theme-toggle" class="theme-toggle-btn" aria-label="Toggle theme">🌓</button>
             </nav>
+            <button class="mobile-menu-toggle" id="mobile-menu-toggle" aria-label="Open Mobile Menu">
+                <span class="hamburger-icon">☰</span>
+            </button>
         </div>
     </header>
 
@@ -68,232 +80,131 @@
     </section>
 
     <!-- Features Showcase Section -->
-    <section class="features-showcase container">
-        <h2 class="section-title">Hệ Sinh Thái B2B BD Portal</h2>
+        <!-- Features Showcase Section (Hệ Sinh Thái BD Bình Dân Học Vụ) -->
+    <section class="features-showcase container" id="ecosystem-section">
+        <div class="ecosystem-header-box">
+            <h2 class="section-title">Hệ Sinh Thái <span class="highlight">BD Bình Dân Học Vụ</span></h2>
+            <p style="font-size: 1.05rem; color: var(--text-light); margin-top: 10px;">
+                Bộ 8 Công cụ AI, Tra cứu Pháp lý, Thư viện Tri thức & Cộng đồng Thực chiến dành riêng cho B2B Business Development.
+            </p>
+        </div>
         
         <!-- Category Filter Tabs -->
-        <div class="ecosystem-tabs" style="display: flex; justify-content: center; gap: 15px; margin: 30px auto; flex-wrap: wrap; max-width: 800px;">
-            <button class="eco-tab-btn active" data-category="all">🌟 Tất Cả</button>
-            <button class="eco-tab-btn" data-category="tools">🛠️ Công Cụ AI & Tính Toán</button>
-            <button class="eco-tab-btn" data-category="legal">📚 Tài Liệu & Pháp Lý</button>
-            <button class="eco-tab-btn" data-category="community">🎓 Học Tập & Cộng Đồng</button>
+        <div class="ecosystem-tabs">
+            <button class="eco-tab-btn active" data-category="all">🌟 Tất Cả (8)</button>
+            <button class="eco-tab-btn" data-category="tools">🛠️ Công Cụ AI & Data</button>
+            <button class="eco-tab-btn" data-category="finance">📊 Tài Chính & Pháp Lý</button>
+            <button class="eco-tab-btn" data-category="community">🌐 Thư Viện & Cộng Đồng</button>
         </div>
 
-        <div class="features-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 25px; margin-top: 30px;">
+        <div class="features-grid">
             <!-- Card 1: PIC Finder -->
-            <div class="feature-card glass-effect" data-category="tools" style="display: flex; flex-direction: column; justify-content: space-between; height: 100%; transition: all 0.3s ease;">
+            <div class="feature-card" data-category="tools">
                 <div>
-                    <div class="feature-badge badge-hot">AI Connected</div>
-                    <div class="feature-icon">🔍</div>
+                    <div class="feature-header-meta">
+                        <div class="feature-icon-wrapper">🔍</div>
+                        <span class="feature-badge-pill" style="background: rgba(239, 68, 68, 0.15); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.3);">PRO TOOL</span>
+                    </div>
                     <h3>B2B LinkedIn PIC Finder</h3>
-                    <p>Tìm kiếm & định vị Person-in-Charge tại các doanh nghiệp mục tiêu. Xác thực Email & SĐT bằng kiểm tra SMTP/DNS.</p>
+                    <p>Tìm kiếm & định vị Person-in-Charge tại doanh nghiệp mục tiêu. Xác thực Email & SĐT bằng kiểm tra SMTP/DNS.</p>
                 </div>
-                <a href="finder.html" class="feature-link" style="margin-top: 15px;">Truy cập công cụ &rarr;</a>
+                <a href="finder.html" class="feature-cta-btn">Truy cập công cụ &rarr;</a>
             </div>
 
             <!-- Card 2: Email Assistant -->
-            <div class="feature-card glass-effect" data-category="tools" style="display: flex; flex-direction: column; justify-content: space-between; height: 100%; transition: all 0.3s ease;">
+            <div class="feature-card" data-category="tools">
                 <div>
-                    <div class="feature-badge badge-new">AI Writer</div>
-                    <div class="feature-icon">✉️</div>
+                    <div class="feature-header-meta">
+                        <div class="feature-icon-wrapper">✉️</div>
+                        <span class="feature-badge-pill" style="background: rgba(99, 102, 241, 0.15); color: #818cf8; border: 1px solid rgba(99, 102, 241, 0.3);">AI WRITER</span>
+                    </div>
                     <h3>AI Email Assistant</h3>
-                    <p>Tự động hóa soạn thảo email đàm phán, cold email tiếp cận khách hàng doanh nghiệp dựa trên vị thế và mục tiêu.</p>
+                    <p>Tự động hóa soạn thảo cold email tiếp cận khách hàng & email đàm phán chốt deal dựa trên vị thế thế mạnh.</p>
                 </div>
-                <a href="email-assistant.html" class="feature-link" style="margin-top: 15px;">Truy cập trợ lý &rarr;</a>
+                <a href="email-assistant.html" class="feature-cta-btn">Truy cập trợ lý &rarr;</a>
             </div>
 
-            <!-- Card 3: B2B Challenge -->
-            <div class="feature-card glass-effect" data-category="community" style="display: flex; flex-direction: column; justify-content: space-between; height: 100%; transition: all 0.3s ease;">
+            <!-- Card 3: B2B Challenge Minigame -->
+            <div class="feature-card" data-category="community">
                 <div>
-                    <div class="feature-badge badge-interactive">Interactive</div>
-                    <div class="feature-icon">🎮</div>
+                    <div class="feature-header-meta">
+                        <div class="feature-icon-wrapper">🎮</div>
+                        <span class="feature-badge-pill" style="background: rgba(16, 185, 129, 0.15); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.3);">INTERACTIVE</span>
+                    </div>
                     <h3>B2B Challenge Minigame</h3>
-                    <p>Tham gia Minigame thử thách giải quyết tình huống đàm phán, xử lý từ chối và chốt deal thực chiến cùng khách hàng.</p>
+                    <p>Tham gia Minigame thử thách giải quyết tình huống đàm phán, xử lý từ chối & đăng danh Bảng Vàng BD.</p>
                 </div>
-                <a href="#minigame-section" class="feature-link" style="margin-top: 15px;">Chơi ngay &rarr;</a>
+                <a href="#minigame-section" class="feature-cta-btn">Chơi ngay &rarr;</a>
             </div>
 
-            <!-- Card 4: Luật Lao Động -->
-            <div class="feature-card glass-effect" data-category="legal" style="display: flex; flex-direction: column; justify-content: space-between; height: 100%; transition: all 0.3s ease;">
+            <!-- Card 4: Tra Cứu Luật Lao Động -->
+            <div class="feature-card" data-category="finance">
                 <div>
-                    <div class="feature-badge badge-info">Legal</div>
-                    <div class="feature-icon">⚖️</div>
+                    <div class="feature-header-meta">
+                        <div class="feature-icon-wrapper">⚖️</div>
+                        <span class="feature-badge-pill" style="background: rgba(14, 165, 233, 0.15); color: #0ea5e9; border: 1px solid rgba(14, 165, 233, 0.3);">LEGAL HUB</span>
+                    </div>
                     <h3>Cổng Tra Cứu Luật Lao Động</h3>
-                    <p>Tra cứu nhanh các quy định pháp lý, chế độ bảo hiểm xã hội, thai sản, thôi việc và phân tích tình huống tranh chấp.</p>
+                    <p>Tra cứu nhanh các quy định pháp lý, chế độ BHXH, thai sản, thôi việc và phân tích tình huống lao động 2026.</p>
                 </div>
-                <a href="labor-law.html" class="feature-link" style="margin-top: 15px;">Tra cứu ngay &rarr;</a>
+                <a href="labor-law.html" class="feature-cta-btn">Tra cứu ngay &rarr;</a>
             </div>
 
-            <!-- Card 5: Tính Lương -->
-            <div class="feature-card glass-effect" data-category="tools" style="display: flex; flex-direction: column; justify-content: space-between; height: 100%; transition: all 0.3s ease;">
+            <!-- Card 5: Tính Lương Gross Net -->
+            <div class="feature-card" data-category="finance">
                 <div>
-                    <div class="feature-badge badge-success">Finance</div>
-                    <div class="feature-icon">🧮</div>
-                    <h3>Tính Lương Gross &harr; Net</h3>
-                    <p>Quy đổi lương Gross/Net chính xác theo luật thuế TNCN mới năm 2026, tích hợp bảng tra cứu thù lao ngành B2B.</p>
+                    <div class="feature-header-meta">
+                        <div class="feature-icon-wrapper">🧮</div>
+                        <span class="feature-badge-pill" style="background: rgba(245, 158, 11, 0.15); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.3);">FINANCE TOOL</span>
+                    </div>
+                    <h3>Tính Lương Gross ↔ Net</h3>
+                    <p>Quy đổi lương Gross/Net chính xác theo biểu thuế mới năm 2026, tích hợp bảng tra cứu thù lao ngành B2B.</p>
                 </div>
-                <a href="salary.html" class="feature-link" style="margin-top: 15px;">Tính lương ngay &rarr;</a>
+                <a href="salary.html" class="feature-cta-btn">Tính lương ngay &rarr;</a>
             </div>
 
-            <!-- Card 6: Thư Viện B2B -->
-            <div class="feature-card glass-effect" data-category="legal" style="display: flex; flex-direction: column; justify-content: space-between; height: 100%; transition: all 0.3s ease;">
+            <!-- Card 6: Thư Viện Ebook & Thuật Ngữ BD -->
+            <div class="feature-card" data-category="community">
                 <div>
-                    <div class="feature-badge badge-info">Library</div>
-                    <div class="feature-icon">📚</div>
-                    <h3>Thư Viện B2B BD</h3>
-                    <p>Tổng hợp bài viết chuyên môn, newsletter và cẩm nang thực chiến chốt deal doanh nghiệp được viết bởi Peter Vo.</p>
+                    <div class="feature-header-meta">
+                        <div class="feature-icon-wrapper">📚</div>
+                        <span class="feature-badge-pill" style="background: rgba(236, 72, 153, 0.15); color: #ec4899; border: 1px solid rgba(236, 72, 153, 0.3);">100+ TERMS & EBOOKS</span>
+                    </div>
+                    <h3>Thư Viện Ebook & Thuật Ngữ BD</h3>
+                    <p>Tổng hợp 100+ thuật ngữ BD/Sales có công thức tính, Ebook độc quyền & bài viết chuyên môn từ Peter Vo.</p>
                 </div>
-                <a href="library.html" class="feature-link" style="margin-top: 15px;">Truy cập thư viện &rarr;</a>
+                <a href="library.html" class="feature-cta-btn">Truy cập thư viện &rarr;</a>
             </div>
 
-            <!-- Card 7: Khóa Học B2B BD Thực Chiến -->
-            <div class="feature-card glass-effect" data-category="community" style="display: flex; flex-direction: column; justify-content: space-between; height: 100%; transition: all 0.3s ease;">
+            <!-- Card 7: Ước Tính KPI & Phễu Ngược -->
+            <div class="feature-card" data-category="tools">
                 <div>
-                    <div class="feature-badge badge-hot" style="background: var(--primary); color: #fff;">Cohort Program</div>
-                    <div class="feature-icon">🎓</div>
-                    <h3>Khóa Học B2B BD Thực Chiến</h3>
-                    <p>Đào tạo Business Development bài bản từ mindset, công cụ hệ thống đến kỹ năng chốt deal lớn thực chiến.</p>
-                </div>
-                <a href="course.html" class="feature-link" style="margin-top: 15px;">Xem khóa học &rarr;</a>
-            </div>
-
-            <!-- Card 8: Ước Tính KPI & Phễu Ngược -->
-            <div class="feature-card glass-effect" data-category="tools" style="display: flex; flex-direction: column; justify-content: space-between; height: 100%; transition: all 0.3s ease;">
-                <div>
-                    <div class="feature-badge badge-interactive" style="background: var(--accent); color: #000;">Analysis Tool</div>
-                    <div class="feature-icon">📊</div>
+                    <div class="feature-header-meta">
+                        <div class="feature-icon-wrapper">📊</div>
+                        <span class="feature-badge-pill" style="background: rgba(168, 85, 247, 0.15); color: #a855f7; border: 1px solid rgba(168, 85, 247, 0.3);">ANALYTICS</span>
+                    </div>
                     <h3>Ước Tính KPI & Phễu Ngược</h3>
                     <p>Ước tính nhanh chỉ số phễu hoạt động ngược từ mục tiêu doanh thu, hỗ trợ cả luồng Outbound & Inbound.</p>
                 </div>
-                <a href="kpi-estimation.html" class="feature-link" style="margin-top: 15px;">Ước tính ngay &rarr;</a>
+                <a href="kpi-estimation.html" class="feature-cta-btn">Ước tính ngay &rarr;</a>
             </div>
 
-            <!-- Card 9: Cộng Đồng BD Việt Nam -->
-            <div class="feature-card glass-effect" data-category="community" style="display: flex; flex-direction: column; justify-content: space-between; height: 100%; transition: all 0.3s ease;">
+            <!-- Card 8: Cộng Đồng BD Việt Nam -->
+            <div class="feature-card" data-category="community">
                 <div>
-                    <div class="feature-badge badge-new" style="background: #3b82f6; color: #fff;">Community Forum</div>
-                    <div class="feature-icon">🤝</div>
+                    <div class="feature-header-meta">
+                        <div class="feature-icon-wrapper">🌐</div>
+                        <span class="feature-badge-pill" style="background: rgba(59, 130, 246, 0.15); color: #3b82f6; border: 1px solid rgba(59, 130, 246, 0.3);">NETWORKING</span>
+                    </div>
                     <h3>Cộng Đồng BD Việt Nam</h3>
-                    <p>Diễn đàn thảo luận nghiệp vụ, kết nối sếp mua hàng (PIC) và chia sẻ những câu chuyện bán hàng thực chiến.</p>
+                    <p>Diễn đàn thảo luận nghiệp vụ, kết nối sếp mua hàng (PIC) & chia sẻ những câu chuyện bán hàng thực chiến.</p>
                 </div>
-                <a href="community.html" class="feature-link" style="margin-top: 15px;">Gia nhập cộng đồng &rarr;</a>
-            </div>
-
-            <!-- Card 10: 5 Pha Chuyển Mình Ngôn Từ -->
-            <div class="feature-card glass-effect" data-category="legal" style="display: flex; flex-direction: column; justify-content: space-between; height: 100%; transition: all 0.3s ease;">
-                <div>
-                    <div class="feature-badge badge-info" style="background: #10b981; color: #fff;">Mindset Path</div>
-                    <div class="feature-icon">🧗</div>
-                    <h3>5 Pha Chuyển Mình Ngôn Từ</h3>
-                    <p>Thay đổi cụm từ "cấm kỵ" khi giao tiếp với đối tác doanh nghiệp để gia tăng uy thế vị thế đàm phán.</p>
-                </div>
-                <a href="#shifts-section" class="feature-link" style="margin-top: 15px;">Xem lộ trình &rarr;</a>
+                <a href="community.html" class="feature-cta-btn">Gia nhập cộng đồng &rarr;</a>
             </div>
         </div>
     </section>
 
-    <section class="shifts container">
-        <h2 class="section-title">5 Cụm Từ Cần "Gạch Bỏ" Ngay</h2>
-        <div class="card-grid">
-            <!-- Card 1 -->
-            <div class="flip-card" tabindex="0">
-                <div class="flip-card-inner">
-                    <div class="flip-card-front bg-danger">
-                        <span class="card-number">01</span>
-                        <h3>Tư duy nghiệp dư</h3>
-                        <p class="phrase">"Bên em giá rẻ nhất thị trường."</p>
-                        <p class="impact">Rẻ nhất = Kích hoạt sự nghi ngờ (Chi phí ẩn? Hậu mãi kém?)</p>
-                        <span class="hint">Chạm để lật &rarr;</span>
-                    </div>
-                    <div class="flip-card-back bg-success">
-                        <span class="card-number">01</span>
-                        <h3>Vị thế chuyên gia</h3>
-                        <p class="phrase">"Bên em có mức giá tối ưu / phù hợp nhất."</p>
-                        <p class="impact">Khẳng định bạn đã nghiên cứu bài toán tài chính của khách hàng, không chỉ đơn thuần là phá giá.</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Card 2 -->
-            <div class="flip-card" tabindex="0">
-                <div class="flip-card-inner">
-                    <div class="flip-card-front bg-danger">
-                        <span class="card-number">02</span>
-                        <h3>Phép thử mạo hiểm</h3>
-                        <p class="phrase">"Để em về thử cách này xem sao."</p>
-                        <p class="impact">Góc nhìn khách: "Tôi là chuột bạch sao?" &rarr; Thiếu chắc chắn.</p>
-                        <span class="hint">Chạm để lật &rarr;</span>
-                    </div>
-                    <div class="flip-card-back bg-success">
-                        <span class="card-number">02</span>
-                        <h3>Làm chủ cuộc chơi</h3>
-                        <p class="phrase">"Em sẽ tìm kiếm phương án tốt nhất cho anh/chị."</p>
-                        <p class="impact">Khách hàng cần chuyên gia, không cần người đi thử nghiệm. Khẳng định trách nhiệm tuyệt đối.</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Card 3 -->
-            <div class="flip-card" tabindex="0">
-                <div class="flip-card-inner">
-                    <div class="flip-card-front bg-danger">
-                        <span class="card-number">03</span>
-                        <h3>Cảm tính</h3>
-                        <p class="phrase">"Em nghĩ là..."</p>
-                        <p class="impact">Lỗ hổng: Quá cá nhân, thiếu sức nặng.</p>
-                        <span class="hint">Chạm để lật &rarr;</span>
-                    </div>
-                    <div class="flip-card-back bg-success">
-                        <span class="card-number">03</span>
-                        <h3>Thực tế</h3>
-                        <p class="phrase">"Dựa trên dữ liệu... / Theo kinh nghiệm triển khai..."</p>
-                        <p class="impact">Sức mạnh: Con số và thực tế là "vua". Khách hàng chỉ an tâm khi biết giải pháp từng thành công.</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Card 4 -->
-            <div class="flip-card" tabindex="0">
-                <div class="flip-card-inner">
-                    <div class="flip-card-front bg-danger">
-                        <span class="card-number">04</span>
-                        <h3>Điểm mù</h3>
-                        <p class="phrase">"Thực ra thì bên em không có..."</p>
-                        <p class="impact">Dập tắt sự hào hứng ngay lập tức bằng việc nhấn mạnh vào sự thiếu hụt.</p>
-                        <span class="hint">Chạm để lật &rarr;</span>
-                    </div>
-                    <div class="flip-card-back bg-success">
-                        <span class="card-number">04</span>
-                        <h3>Điểm sáng</h3>
-                        <p class="phrase">"Hiện tại bên em đang tập trung mạnh vào..."</p>
-                        <p class="impact">Điều hướng sự chú ý vào Thế Mạnh Lõi. Biến điểm thiếu hụt thành giải pháp đáng giá hơn.</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Card 5 -->
-            <div class="flip-card" tabindex="0">
-                <div class="flip-card-inner">
-                    <div class="flip-card-front bg-danger">
-                        <span class="card-number">05</span>
-                        <h3>Khoảng không vô định</h3>
-                        <p class="phrase">"Anh/chị cứ cân nhắc đi ạ."</p>
-                        <p class="impact">Kẻ sát nhân của mọi deal: Tạo khoảng trống, làm nguội lạnh mối quan hệ.</p>
-                        <span class="hint">Chạm để lật &rarr;</span>
-                    </div>
-                    <div class="flip-card-back bg-success">
-                        <span class="card-number">05</span>
-                        <h3>Dẫn dắt cuộc chơi</h3>
-                        <p class="phrase">"Bước tiếp theo chúng ta sẽ..."</p>
-                        <p class="impact">Đừng để khách tự hỏi. Hãy chủ động cầm nhịp và luôn kết thúc bằng một lộ trình rõ ràng!</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Mini Game Section -->
-    <section class="minigame container" id="minigame-section">
+<section class="minigame container" id="minigame-section">
         <h2 class="section-title">B2B CHALLENGE</h2>
         <div class="challenge-layout">
             <!-- Left Column: The Game Engine -->
@@ -540,7 +451,7 @@
         <div class="course-bottom-content">
             <h3 class="course-bottom-title">Khóa Học B2B Business Development Thực Chiến</h3>
             <p class="course-bottom-desc">Làm chủ kỹ năng Sales B2B, đàm phán chốt deal, viết cold email chuyên nghiệp và định vị bản thân sắc bén cùng chuyên gia Peter Vo.</p>
-            <a href="course.html" class="course-bottom-cta">Tìm Hiểu Khóa Học Ngay &rarr;</a>
+            <a href="library.html" class="btn btn-primary" style="font-size: 1.1rem; padding: 14px 28px; border-radius: 30px;">📚 Trải Nghiệm Thư Viện Ebook & Thuật Ngữ BD &rarr;</a>
         </div>
     </div>
 
@@ -553,7 +464,28 @@
                 <p class="author-name">BD khó có Peter lo</p>
             </div>
         </div>
-    </footer>
+    
+    <!-- Founder & Author Contact Card -->
+    <section class="peter-author-footer-card glass-panel" style="margin: 50px auto 30px; max-width: 1150px; padding: 24px 30px; border-left: 5px solid var(--accent); display: flex; align-items: center; justify-content: space-between; gap: 20px; flex-wrap: wrap;">
+        <div style="display: flex; align-items: center; gap: 16px;">
+            <img src="peter_1.jpg" alt="Peter Vo (Tân Võ Phước)" style="width: 65px; height: 65px; border-radius: 50%; object-fit: cover; border: 2px solid var(--accent); box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
+            <div>
+                <div style="font-size: 0.78rem; font-weight: 700; color: var(--accent); text-transform: uppercase; letter-spacing: 0.5px;">Tư Vấn & Kết Nối Trực Tiếp Cùng Founder</div>
+                <h4 style="font-size: 1.15rem; font-weight: 800; color: var(--text-main); margin: 2px 0;">Peter Vo (Tân Võ Phước) – BD Bình Dân Học Vụ</h4>
+                <p style="font-size: 0.85rem; color: var(--text-light); margin: 0;">SĐT / Zalo: <strong style="color: var(--text-main);">0931.100.569</strong> | Chuyên gia Tư vấn B2B BD & Partnership Strategy</p>
+            </div>
+        </div>
+        <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+            <a href="https://www.linkedin.com/in/vp-tan/" target="_blank" class="btn btn-secondary" style="font-size: 0.85rem; padding: 8px 18px; border-radius: 20px; display: inline-flex; align-items: center; gap: 6px; text-decoration: none; border-color: #0a66c2; color: #0a66c2;">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.75M6.88 8.56a1.68 1.68 0 0 0 1.68-1.68c0-.93-.75-1.69-1.68-1.69a1.69 1.69 0 0 0-1.69 1.69c0 .93.76 1.68 1.69 1.68m1.39 9.94v-8.37H5.5v8.37h2.77z"/></svg> Kết Nối LinkedIn
+            </a>
+            <a href="https://zalo.me/0931100569" target="_blank" class="btn btn-primary" style="font-size: 0.85rem; padding: 8px 18px; border-radius: 20px; display: inline-flex; align-items: center; gap: 6px; text-decoration: none;">
+                💬 Liên Hệ Zalo (0931100569)
+            </a>
+        </div>
+    </section>
+
+</footer>
 
     <script src="script.js?v=1.3.8"></script>
     <script src="ai-chat.js?v=1.3.7"></script>
