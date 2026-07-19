@@ -63,6 +63,41 @@ body.dark-theme .app-nav {
     color: var(--primary);
 }
 
+/* Floating Back to Top Button */
+.back-to-top-btn {
+    position: fixed;
+    bottom: 95px;
+    right: 25px;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: var(--primary);
+    color: #ffffff;
+    border: none;
+    font-size: 1.2rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 15px rgba(162, 10, 10, 0.4);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(10px);
+    transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    z-index: 9990;
+}
+
+.back-to-top-btn.visible {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.back-to-top-btn:hover {
+    background: var(--primary-dark);
+    transform: translateY(-4px) scale(1.08);
+}
+
 .nav-links {
     display: flex;
     gap: 16px;
