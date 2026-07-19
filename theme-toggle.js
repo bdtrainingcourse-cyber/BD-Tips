@@ -33,7 +33,67 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             updateToggleButton(themeToggleBtn);
         });
+    // Mobile Hamburger Menu Toggle
+    const mobileMenuToggleBtn = document.getElementById('mobile-menu-toggle');
+    const navMenu = document.getElementById('nav-menu');
+    if (mobileMenuToggleBtn && navMenu) {
+        mobileMenuToggleBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const isOpen = navMenu.classList.toggle('mobile-open');
+            mobileMenuToggleBtn.innerHTML = isOpen ? '✕' : '☰';
+        });
+
+        // Close mobile drawer when clicking outside
+        document.addEventListener('click', (e) => {
+            if (navMenu.classList.contains('mobile-open') && !navMenu.contains(e.target) && !mobileMenuToggleBtn.contains(e.target)) {
+                navMenu.classList.remove('mobile-open');
+                mobileMenuToggleBtn.innerHTML = '☰';
+            }
+        });
     }
+
+    // Dropdown Toggles for Mobile & Desktop Click
+    const dropdownToggles = document.querySelectorAll('.nav-dropdown-toggle');
+    dropdownToggles.forEach(toggle => {
+        toggle.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            const parentDropdown = toggle.closest('.nav-dropdown');
+            if (parentDropdown) {
+                document.querySelectorAll('.nav-dropdown').forEach(d => {
+                    if (d !== parentDropdown) d.classList.remove('open');
+                });
+                parentDropdown.classList.toggle('open');
+            }
+        });
+    });
+
+    document.addEventListener('click', () => {
+        document.querySelectorAll('.nav-dropdown').forEach(d => d.classList.remove('open'));
+    });
+
+    // Floating Back to Top Button Handler
+    let backToTopBtn = document.getElementById('back-to-top');
+    if (!backToTopBtn) {
+        backToTopBtn = document.createElement('button');
+        backToTopBtn.id = 'back-to-top';
+        backToTopBtn.className = 'back-to-top-btn';
+        backToTopBtn.title = 'Về đầu trang';
+        backToTopBtn.innerHTML = '⬆️';
+        document.body.appendChild(backToTopBtn);
+    }
+
+    window.addEventListener('scroll', () => {
+        if (window.scrollY > 300) {
+            backToTopBtn.classList.add('visible');
+        } else {
+            backToTopBtn.classList.remove('visible');
+        }
+    });
+
+    backToTopBtn.addEventListener('click', () => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
 });
 
 function updateToggleButton(btn) {
