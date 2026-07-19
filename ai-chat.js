@@ -40,10 +40,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 <!-- Quick Suggestion Chips -->
                 <div class="chat-suggestions" id="chat-suggestions">
                     <div class="suggestion-chip" data-question="Cách tính lương Net từ Gross?">Cách tính lương Net từ Gross?</div>
+                    <div class="suggestion-chip" data-question="Tra cứu Công thức ARR, MRR, CAC, LTV?">Công thức ARR, MRR, CAC, LTV?</div>
                     <div class="suggestion-chip" data-question="Hết thử việc công ty im lặng thì sao?">Hết thử việc im lặng?</div>
-                    <div class="suggestion-chip" data-question="Thời hạn báo trước khi thôi việc?">Thời hạn báo trước thôi việc?</div>
                     <div class="suggestion-chip" data-question="Làm sao tìm email PIC doanh nghiệp?">Tìm email PIC như thế nào?</div>
-                    <div class="suggestion-chip" data-question="Tìm hiểu Khóa Học BD B2B Thực Chiến?">Khóa Học BD Thực Chiến?</div>
+                    <div class="suggestion-chip" data-question="Liên hệ trực tiếp Founder Peter Vo?">Liên hệ Founder Peter Vo?</div>
                 </div>
             </div>
 
@@ -78,6 +78,12 @@ document.addEventListener('DOMContentLoaded', () => {
             navLabel: "⚡ Quy Đổi Lương Ngay"
         },
         {
+            keywords: [/thuật ngữ/, /glossary/, /arr/, /mrr/, /cac/, /ltv/, /formula/, /công thức/, /kpi/i],
+            reply: "Thư viện BD cung cấp hơn **142+ Thuật ngữ B2B BD** được phân loại bài bản (Nội bộ Team BD, Làm việc với Khách hàng, Tiếng lóng BD & Chỉ số Tài chính), đi kèm **Công thức tính (Formula)** và **Ví dụ tính toán số liệu cụ thể** thực tế.\n\n*Ví dụ:* ARR = MRR × 12 | LTV/CAC Ratio = LTV / CAC.",
+            navTarget: "library",
+            navLabel: "📖 Tra Cứu Từ Điển Thuật Ngữ BD"
+        },
+        {
             keywords: [/thử việc/i],
             reply: "Theo Điều 25 & 26 Bộ luật Lao động 2019, thời gian thử việc tối đa là **60 ngày** đối với vị trí chuyên môn (như BD/Sales) và mức lương thử việc phải đạt **ít nhất 85%** mức lương chính thức. Nếu công ty im lặng sau thử việc, bạn mặc nhiên trở thành nhân sự chính thức.\n\n*Gợi ý thêm:* Hãy tra cứu Tình huống 1 và Tình huống 9 trong Cổng Luật Lao Động để biết thêm quyền lợi thử việc nhé!",
             navTarget: "labor-law",
@@ -108,20 +114,20 @@ document.addEventListener('DOMContentLoaded', () => {
             navLabel: "📰 Đọc Bài Viết BD"
         },
         {
+            keywords: [/peter vo/, /tân võ phước/, /liên hệ/, /zalo/, /sđt/, /tư vấn/, /founder/i],
+            reply: "Bạn muốn kết nối & tư vấn trực tiếp cùng **Founder Peter Vo (Tân Võ Phước)** – Chuyên gia BD B2B & Partnership Strategy?\n\n- 📞 SĐT / Zalo: **0931.100.569**\n- ✉️ Email: **vp.tan92@gmail.com**\n- 💼 LinkedIn: [LinkedIn Peter Vo](https://www.linkedin.com/in/vp-tan/)",
+            navTarget: null,
+            navLabel: "💬 Chat Zalo Trực Tiếp (0931100569)"
+        },
+        {
             keywords: [/chào/, /hello/, /hi/, /xin chào/i],
-            reply: "Xin chào! Rất vui được hỗ trợ bạn. Tôi có thể giúp bạn tìm hiểu về các tính năng tính lương, tra cứu luật lao động, tìm kiếm email PIC, hay chia sẻ kinh nghiệm BD B2B. Bạn đang quan tâm đến tính năng nào của hệ thống?",
+            reply: "Xin chào! Rất vui được hỗ trợ bạn. Tôi là BeeDee, trợ lý ảo của BD Bình Dân Học Vụ. Bạn đang quan tâm đến tính năng hay câu hỏi nào về B2B BD?",
             navTarget: null,
             navLabel: null
         },
         {
             keywords: [/cảm ơn/, /tạm biệt/, /thanks/, /bye/i],
-            reply: "Dạ không có gì ạ! Rất vui được đồng hành cùng bạn. Hy vọng những thông tin của BeeDee hữu ích cho công việc của bạn. Chúc bạn một ngày làm việc tràn đầy năng lượng và chốt được nhiều deal lớn! Tạm biệt và hãy hỏi tôi bất kỳ khi nào bạn cần nhé!",
-            navTarget: null,
-            navLabel: null
-        },
-        {
-            keywords: [/khóa học/, /học bd/, /peter vo/, /canva/, /cẩm nang đàm phán/, /cẩm nang/i],
-            reply: "Để đồng hành và trang bị đầy đủ bộ kỹ năng từ nghiên cứu thị trường, tiếp cận PIC doanh nghiệp, soạn thảo cold email tỷ lệ mở cao đến thương thuyết ký kết hợp đồng, bạn hãy đăng ký ngay [Khóa Học BD B2B Thực Chiến của Peter Vo](https://canva.link/plgyedwezllyrjr). Đây là khóa học thực tế giúp bạn nâng tầm tư duy (Mindset), bộ kỹ năng (Skillset) và công cụ/AI (Toolset) với sự hỗ trợ đồng hành trọn đời.",
+            reply: "Dạ không có gì ạ! Rất vui được đồng hành cùng bạn. Hy vọng những thông tin của BeeDee hữu ích cho công việc của bạn. Chúc bạn chốt được nhiều deal lớn!",
             navTarget: null,
             navLabel: null
         }
