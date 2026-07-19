@@ -1079,7 +1079,9 @@
       "categoryLabel": "📊 Chỉ Số & KPI",
       "tag": "Revenue",
       "definition": "Tổng giá trị các hợp đồng đã ký kết chính thức trong kỳ.",
-      "context": "'Tổng Booking quý này đạt 2 tỷ đồng.'"
+      "context": "'Tổng Booking quý này đạt 2 tỷ đồng.'",
+      "formula": "Booking = Tổng giá trị tất cả hợp đồng đã ký kết chính thức trong kỳ",
+      "formulaExample": "Ký 3 hợp đồng trị giá 500M, 300M và 200M ➔ Total Booking = 1 tỷ đồng."
     },
     {
       "id": "g-billings",
@@ -1089,7 +1091,9 @@
       "categoryLabel": "📊 Chỉ Số & KPI",
       "tag": "Revenue",
       "definition": "Số tiền đã chính thức xuất hóa đơn tài chính yêu cầu khách thanh toán.",
-      "context": "'Theo dõi chỉ số Billings để đôn đốc công nợ.'"
+      "context": "'Theo dõi chỉ số Billings để đôn đốc công nợ.'",
+      "formula": "Billings = Giá trị hóa đơn tài chính chính thức phát hành yêu cầu khách thanh toán",
+      "formulaExample": "Xuất hóa đơn đợt 1 cho 2 hợp đồng ➔ Billings = 400 triệu đồng."
     },
     {
       "id": "g-collection",
@@ -1099,7 +1103,9 @@
       "categoryLabel": "📊 Chỉ Số & KPI",
       "tag": "Revenue",
       "definition": "Số tiền thực tế đã tinh ting vào tài khoản ngân hàng của doanh nghiệp.",
-      "context": "'Đẩy mạnh khâu Collection để đảm bảo dòng tiền.'"
+      "context": "'Đẩy mạnh khâu Collection để đảm bảo dòng tiền.'",
+      "formula": "Collection = Số tiền thực tế tiền về tài khoản ngân hàng sau khi trừ nợ tồn",
+      "formulaExample": "Khách hàng chuyển khoản đợt 1 ➔ Collection = 400 triệu đồng."
     },
     {
       "id": "g-cash-flow",
@@ -1119,7 +1125,9 @@
       "categoryLabel": "📊 Chỉ Số & KPI",
       "tag": "Revenue",
       "definition": "Doanh thu định kỳ lặp lại mỗi năm từ hợp đồng thuê bao/SaaS.",
-      "context": "'Đạt chỉ số $100,000 ARR cho mảng SaaS.'"
+      "context": "'Đạt chỉ số $100,000 ARR cho mảng SaaS.'",
+      "formula": "ARR = MRR × 12  hoặc  ARR = Tổng giá trị hợp đồng thuê bao định kỳ 1 năm",
+      "formulaExample": "Doanh nghiệp SaaS có 10 khách hàng B2B trả $1,000/tháng (MRR = $10,000) ➔ ARR = $10,000 × 12 = $120,000/năm."
     },
     {
       "id": "g-mrr",
@@ -1245,7 +1253,9 @@
       "categoryLabel": "📊 Chỉ Số & KPI",
       "tag": "Sales Metrics",
       "definition": "Độ lệch giữa con số dự báo doanh số và doanh thu thực tế chốt được.",
-      "context": "'Nâng cao Forecast Accuracy để ban giám đốc chủ động ngân sách.'"
+      "context": "'Nâng cao Forecast Accuracy để ban giám đốc chủ động ngân sách.'",
+      "formula": "Forecast Revenue = ∑ (Giá trị từng Deal × Tỷ lệ xác suất chốt ở Stage đó)",
+      "formulaExample": "Deal A 1 tỷ (xác suất 80% = 800M) + Deal B 500M (xác suất 40% = 200M) ➔ Forecast Revenue = 1 tỷ."
     },
     {
       "id": "g-loss-rate",
