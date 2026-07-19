@@ -275,6 +275,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 card.style.borderLeft = '4px solid var(--primary)';
                 card.style.transition = 'all 0.3s ease';
 
+                const formulaHtml = item.formula ? `
+                    <div style="background: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 0.25); border-radius: 8px; padding: 12px; margin-bottom: 12px;">
+                        <div style="font-size: 0.78rem; font-weight: 700; color: #34d399; text-transform: uppercase; margin-bottom: 4px; display: flex; align-items: center; gap: 6px;">
+                            <span>📐</span> Công thức tính (Formula):
+                        </div>
+                        <div style="font-family: monospace; font-size: 0.92rem; color: #6ee7b7; font-weight: 700; margin-bottom: 6px; word-break: break-word; background: rgba(0,0,0,0.3); padding: 6px 10px; border-radius: 6px;">${item.formula}</div>
+                        ${item.formulaExample ? `<div style="font-size: 0.84rem; color: #d1fae5; line-height: 1.4; font-style: italic;">🧮 <strong>Ví dụ tính toán:</strong> ${item.formulaExample}</div>` : ''}
+                    </div>
+                ` : '';
+
                 card.innerHTML = `
                     <div>
                         <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; gap: 10px;">
@@ -289,6 +299,8 @@ document.addEventListener('DOMContentLoaded', () => {
                             <div style="font-size: 0.88rem; color: var(--text-light); line-height: 1.5;">${item.definition}</div>
                         </div>
 
+                        ${formulaHtml}
+
                         <div style="background: rgba(99, 102, 241, 0.08); border: 1px solid rgba(99, 102, 241, 0.2); border-radius: 8px; padding: 12px; margin-bottom: 15px;">
                             <div style="font-size: 0.78rem; font-weight: 700; color: #a5b4fc; text-transform: uppercase; margin-bottom: 4px;">💡 Bối cảnh ứng dụng thực tế:</div>
                             <div style="font-size: 0.86rem; color: #e0e7ff; line-height: 1.5; font-style: italic;">"${item.context}"</div>
@@ -302,7 +314,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 const copyBtn = card.querySelector('.btn-copy-term');
                 copyBtn.addEventListener('click', () => {
-                    const copyText = `📘 Thuật ngữ B2B BD: ${item.term} (${item.vietnamese})\n📌 Định nghĩa: ${item.definition}\n💡 Bối cảnh sử dụng: ${item.context}\n(Nguồn: B2B BD Tips Portal - Peter Vo)`;
+                    let copyText = `📘 Thuật ngữ B2B BD: ${item.term} (${item.vietnamese})\n📌 Định nghĩa: ${item.definition}`;
+                    if (item.formula) {
+                        copyText += `\n📐 Công thức: ${item.formula}`;
+                    }
+                    if (item.formulaExample) {
+                        copyText += `\n🧮 Ví dụ tính toán: ${item.formulaExample}`;
+                    }
+                    copyText += `\n💡 Bối cảnh sử dụng: ${item.context}\n(Nguồn: B2B BD Tips Portal - Peter Vo)`;
                     navigator.clipboard.writeText(copyText);
                     showToast(`📋 Đã sao chép thuật ngữ "${item.term}" vào Clipboard!`);
                 });
