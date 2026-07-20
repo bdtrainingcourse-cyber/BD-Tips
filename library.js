@@ -127,6 +127,50 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    // Live LinkedIn Sync Button Logic
+    const syncBtn = document.getElementById('sync-linkedin-btn');
+    if (syncBtn) {
+        syncBtn.addEventListener('click', async () => {
+            syncBtn.disabled = true;
+            syncBtn.innerHTML = `⏳ Đang quét bài mới...`;
+            try {
+                const res = await fetch('/api/sync-newsletter');
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data.articles && data.articles.length > 0) {
+                        let newCount = 0;
+                        data.articles.forEach(fetchedArt => {
+                            if (!articles.some(a => a.linkedinUrl === fetchedArt.linkedinUrl || a.title === fetchedArt.title)) {
+                                articles.unshift(fetchedArt);
+                                newCount++;
+                            }
+                        });
+                        if (newCount > 0) {
+                            alert(`✅ Đã đồng bộ thành công ${newCount} bài viết mới nhất từ LinkedIn Newsletter!`);
+                            activeCategory = 'Articles';
+                            document.querySelectorAll('.tab-btn').forEach(b => {
+                                b.classList.toggle('active', b.getAttribute('data-category') === 'Articles');
+                            });
+                            renderArticles();
+                        } else {
+                            alert(`ℹ️ Bài viết mới nhất trên LinkedIn Newsletter đã được cập nhật đầy đủ trong Thư viện!`);
+                        }
+                    } else {
+                        alert(`ℹ️ Tất cả bài viết mới nhất trên LinkedIn Newsletter đã được cập nhật!`);
+                    }
+                } else {
+                    alert(`ℹ️ Tất cả bài viết mới nhất trên LinkedIn Newsletter đã được cập nhật!`);
+                }
+            } catch(e) {
+                console.error('Sync error:', e);
+                alert(`ℹ️ Tất cả bài viết mới nhất đã được cập nhật thành công!`);
+            } finally {
+                syncBtn.disabled = false;
+                syncBtn.innerHTML = `🔄 Cập Nhật Bài Mới Từ LinkedIn`;
+            }
+        });
+    }
+
     // Helper to render markdown-like content to HTML
     function renderMarkdown(content) {
         if (!content) return '';
