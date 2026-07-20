@@ -1,6 +1,16 @@
 {
   "articles": [
     {
+      "id": "bd-fullstack-article",
+      "title": "Chân dung BD 'Fullstack': Từ Tư Duy Đến Thực Chiến !",
+      "description": "Phân tích lộ trình chuyển mình của một BD hiện đại - Không chỉ dừng lại ở bán hàng truyền thống mà làm chủ cả Mindsets, Skillsets và AI Toolsets trong môi trường B2B doanh nghiệp.",
+      "category": "BD Article",
+      "date": "2026-07-20",
+      "author": "Peter Vo (Tân Võ Phước)",
+      "linkedinUrl": "https://vn.linkedin.com/pulse/ch%C3%A2n-dung-bd-fullstack-t%E1%BB%AB-t%C6%B0-duy-%C4%91%E1%BA%BFn-th%E1%BB%B1c-chi%E1%BA%BFn-t%C3%A2n-v%C3%B5-ph%C6%B0%E1%BB%9Bc-ptunc",
+      "content": "### Chân dung BD 'Fullstack': Từ Tư Duy Đến Thực Chiến !\n\nBài viết mới nhất trên Newsletter BD B2B Bình Dân Học Vụ xuất bản ngày 20/07/2026.\n\nPhân tích 3 trụ cột năng lực giúp nhân sự BD bứt phá trong kỷ nguyên AI: Mindset sắc bén, Skillset đàm phán cấp cao và Toolset tự động hóa tiếp cận PIC doanh nghiệp."
+    },
+    {
       "id": "10th-bd-tips",
       "title": "10th BD Tips: \"Gửi anh bảng giá tham khảo được không?\" – Cạm bẫy ngọt ngào nhất của BD B2B",
       "description": "Tại sao gửi bảng giá quá sớm lại dập tắt cơ hội chốt deal? 3 bước điều hướng từ 'giá cả' sang 'bài toán tài chính và giá trị'.",
