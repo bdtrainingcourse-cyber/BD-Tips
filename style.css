@@ -1177,36 +1177,21 @@ body.dark-theme .feature-card {
 }
 
 /* Responsive Navigation for style.css */
-@media (max-width: 1024px) {
+/* Clean Mobile Header Fix */
+@media (max-width: 992px) {
     .nav-container {
-        flex-direction: column;
-        gap: 15px;
-        align-items: center;
-        position: relative;
+        display: flex !important;
+        flex-direction: row !important;
+        justify-content: space-between !important;
+        align-items: center !important;
+        padding: 10px 16px !important;
+        margin: 0 auto !important;
+        width: 100% !important;
+        box-sizing: border-box !important;
     }
     .nav-logo {
-        text-align: center;
-        margin-bottom: 5px;
-    }
-    .nav-links {
-        width: 100%;
-        display: flex;
-        flex-wrap: nowrap;
-        overflow-x: auto;
-        -webkit-overflow-scrolling: touch;
-        scrollbar-width: none; /* Firefox */
-        padding-bottom: 8px;
-        gap: 18px;
-        justify-content: flex-start;
-    }
-    .nav-links::-webkit-scrollbar {
-        display: none; /* Safari/Chrome */
-    }
-    .theme-toggle-btn {
-        position: absolute;
-        top: 15px;
-        right: 15px;
-        margin: 0;
+        text-align: left !important;
+        margin: 0 !important;
     }
 }
 
