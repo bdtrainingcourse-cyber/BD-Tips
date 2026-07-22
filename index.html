@@ -98,116 +98,75 @@
         
         <!-- Category Filter Tabs -->
         <div class="ecosystem-tabs">
-            <button class="eco-tab-btn active" data-category="all">🌟 Tất Cả (8)</button>
+            <button class="eco-tab-btn active" data-category="all">🌟 Tất Cả (9)</button>
             <button class="eco-tab-btn" data-category="tools">🛠️ Công Cụ AI & Data</button>
             <button class="eco-tab-btn" data-category="finance">📊 Tài Chính & Pháp Lý</button>
             <button class="eco-tab-btn" data-category="community">🌐 Thư Viện & Cộng Đồng</button>
         </div>
 
-        <div class="features-grid">
-            <!-- Card 1: PIC Finder -->
-            <div class="feature-card" data-category="tools" style="--planet-color: #ef4444; --planet-rgb: 239, 68, 68;">
-                <div>
-                    <div class="feature-header-meta">
-                        <div class="feature-icon-wrapper">🔍</div>
-                        <span class="feature-badge-pill">PRO TOOL</span>
-                    </div>
-                    <h3>B2B LinkedIn PIC Finder</h3>
-                    <p>Tìm kiếm & định vị Person-in-Charge tại doanh nghiệp mục tiêu. Xác thực Email & SĐT bằng kiểm tra SMTP/DNS.</p>
+        <!-- Cosmic Galaxy Ecosystem Visualizer -->
+        <div class="cosmic-galaxy-container">
+            <!-- Central Star Node (Logo Core) -->
+            <div class="galaxy-core-wrapper">
+                <div class="galaxy-core">
+                    <img src="peter_slogan.png" alt="Peter Vo Core" class="core-avatar">
+                    <span class="core-label">BD Bình Dân Học Vụ</span>
                 </div>
-                <a href="finder.html" class="feature-cta-btn">Truy cập công cụ &rarr;</a>
             </div>
 
-            <!-- Card 2: Email Assistant -->
-            <div class="feature-card" data-category="tools" style="--planet-color: #6366f1; --planet-rgb: 99, 102, 241;">
-                <div>
-                    <div class="feature-header-meta">
-                        <div class="feature-icon-wrapper">✉️</div>
-                        <span class="feature-badge-pill">AI WRITER</span>
-                    </div>
-                    <h3>AI Email Assistant</h3>
-                    <p>Tự động hóa soạn thảo cold email tiếp cận khách hàng & email đàm phán chốt deal dựa trên vị thế thế mạnh.</p>
+            <!-- Orbit Rings & Planets -->
+            <div class="galaxy-orbit-system">
+                <!-- concentric dashed orbits -->
+                <div class="galaxy-orbit orbit-inner"></div>
+                <div class="galaxy-orbit orbit-middle"></div>
+                <div class="galaxy-orbit orbit-outer"></div>
+
+                <!-- 9 Planet Nodes representing the 9 tools -->
+                <div class="planet-node" data-id="1" data-category="tools" style="--planet-color: #ef4444; --planet-rgb: 239, 68, 68; --orbit-angle: 0deg; --orbit-radius: 130px;" data-title="B2B LinkedIn PIC Finder" data-desc="Tìm kiếm & định vị Person-in-Charge tại doanh nghiệp mục tiêu. Xác thực Email & SĐT bằng kiểm tra SMTP/DNS." data-badge="PRO TOOL" data-link="finder.html" data-icon="🔍">
+                    <div class="planet-sphere">🔍</div>
                 </div>
-                <a href="email-assistant.html" class="feature-cta-btn">Truy cập trợ lý &rarr;</a>
+                <div class="planet-node" data-id="2" data-category="tools" style="--planet-color: #6366f1; --planet-rgb: 99, 102, 241; --orbit-angle: 40deg; --orbit-radius: 130px;" data-title="AI Email Assistant" data-desc="Tự động hóa soạn thảo cold email tiếp cận khách hàng & email đàm phán chốt deal dựa trên vị thế thế mạnh." data-badge="AI WRITER" data-link="email-assistant.html" data-icon="✉️">
+                    <div class="planet-sphere">✉️</div>
+                </div>
+                <div class="planet-node" data-id="3" data-category="community" style="--planet-color: #10b981; --planet-rgb: 16, 185, 129; --orbit-angle: 80deg; --orbit-radius: 130px;" data-title="B2B Challenge Minigame" data-desc="Tham gia Minigame thử thách giải quyết tình huống đàm phán, xử lý từ chối & đăng danh Bảng Vàng BD." data-badge="INTERACTIVE" data-link="#minigame-section" data-icon="🎮">
+                    <div class="planet-sphere">🎮</div>
+                </div>
+                <div class="planet-node" data-id="4" data-category="finance" style="--planet-color: #0ea5e9; --planet-rgb: 14, 165, 233; --orbit-angle: 120deg; --orbit-radius: 210px;" data-title="Cổng Tra Cứu Luật Lao Động" data-desc="Tra cứu nhanh các quy định pháp lý, chế độ BHXH, thai sản, thôi việc và phân tích tình huống lao động 2026." data-badge="LEGAL HUB" data-link="labor-law.html" data-icon="⚖️">
+                    <div class="planet-sphere">⚖️</div>
+                </div>
+                <div class="planet-node" data-id="5" data-category="finance" style="--planet-color: #f59e0b; --planet-rgb: 245, 158, 11; --orbit-angle: 160deg; --orbit-radius: 210px;" data-title="Tính Lương Gross ↔ Net" data-desc="Quy đổi lương Gross/Net chính xác theo biểu thuế mới năm 2026, tích hợp bảng tra cứu thù lao ngành B2B." data-badge="FINANCE TOOL" data-link="salary.html" data-icon="🧮">
+                    <div class="planet-sphere">🧮</div>
+                </div>
+                <div class="planet-node" data-id="6" data-category="community" style="--planet-color: #ec4899; --planet-rgb: 236, 72, 153; --orbit-angle: 200deg; --orbit-radius: 210px;" data-title="Thư Viện Ebook & Thuật Ngữ BD" data-desc="Tổng hợp 100+ thuật ngữ BD/Sales có công thức tính, Ebook độc quyền & bài viết chuyên môn từ Peter Vo." data-badge="100+ TERMS & EBOOKS" data-link="library.html" data-icon="📚">
+                    <div class="planet-sphere">📚</div>
+                </div>
+                <div class="planet-node" data-id="7" data-category="tools" style="--planet-color: #a855f7; --planet-rgb: 168, 85, 247; --orbit-angle: 240deg; --orbit-radius: 290px;" data-title="Ước Tính KPI & Phễu Ngược" data-desc="Ước tính nhanh chỉ số phễu hoạt động ngược từ mục tiêu doanh thu, hỗ trợ cả luồng Outbound & Inbound." data-badge="ANALYTICS" data-link="kpi-estimation.html" data-icon="📊">
+                    <div class="planet-sphere">📊</div>
+                </div>
+                <div class="planet-node" data-id="8" data-category="community" style="--planet-color: #3b82f6; --planet-rgb: 59, 130, 246; --orbit-angle: 280deg; --orbit-radius: 290px;" data-title="Cộng Đồng BD Việt Nam" data-desc="Diễn đàn thảo luận nghiệp vụ, kết nối sếp mua hàng (PIC) & chia sẻ những câu chuyện bán hàng thực chiến." data-badge="NETWORKING" data-link="community.html" data-icon="🌐">
+                    <div class="planet-sphere">🌐</div>
+                </div>
+                <div class="planet-node" data-id="9" data-category="finance" style="--planet-color: #14b8a6; --planet-rgb: 20, 184, 166; --orbit-angle: 320deg; --orbit-radius: 290px;" data-title="Sự Kiện B2B Các Ngành" data-desc="Cập nhật lịch trình hội thảo B2B, triển lãm giao thương quốc tế và sự kiện networking kết nối doanh nghiệp mới nhất 2026." data-badge="CALENDAR" data-link="#events-section" data-icon="📅">
+                    <div class="planet-sphere">📅</div>
+                </div>
             </div>
 
-            <!-- Card 3: B2B Challenge Minigame -->
-            <div class="feature-card" data-category="community" style="--planet-color: #10b981; --planet-rgb: 16, 185, 129;">
-                <div>
-                    <div class="feature-header-meta">
-                        <div class="feature-icon-wrapper">🎮</div>
-                        <span class="feature-badge-pill">INTERACTIVE</span>
-                    </div>
-                    <h3>B2B Challenge Minigame</h3>
-                    <p>Tham gia Minigame thử thách giải quyết tình huống đàm phán, xử lý từ chối & đăng danh Bảng Vàng BD.</p>
+            <!-- Dynamic Planet Details Tooltip Card -->
+            <div class="planet-tooltip-card glass-panel" id="planet-tooltip">
+                <div class="feature-header-meta">
+                    <div class="planet-tooltip-icon" id="tooltip-icon" style="width: 48px; height: 48px; border-radius: 12px; background: rgba(239, 68, 68, 0.1); display: flex; align-items: center; justify-content: center; font-size: 1.4rem;">🔍</div>
+                    <span class="feature-badge-pill" id="tooltip-badge" style="background: rgba(239, 68, 68, 0.12); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.25);">PRO TOOL</span>
                 </div>
-                <a href="#minigame-section" class="feature-cta-btn">Chơi ngay &rarr;</a>
+                <h3 id="tooltip-title">B2B LinkedIn PIC Finder</h3>
+                <p id="tooltip-desc">Tìm kiếm & định vị Person-in-Charge tại doanh nghiệp mục tiêu. Xác thực Email & SĐT bằng kiểm tra SMTP/DNS.</p>
+                <a href="finder.html" class="btn btn-primary" id="tooltip-link" style="width: 100%; text-align: center; justify-content: center; text-decoration: none; padding: 12px; font-weight: 700; border-radius: 12px;">Truy cập ngay &rarr;</a>
             </div>
+        </div>
 
-            <!-- Card 4: Tra Cứu Luật Lao Động -->
-            <div class="feature-card" data-category="finance" style="--planet-color: #0ea5e9; --planet-rgb: 14, 165, 233;">
-                <div>
-                    <div class="feature-header-meta">
-                        <div class="feature-icon-wrapper">⚖️</div>
-                        <span class="feature-badge-pill">LEGAL HUB</span>
-                    </div>
-                    <h3>Cổng Tra Cứu Luật Lao Động</h3>
-                    <p>Tra cứu nhanh các quy định pháp lý, chế độ BHXH, thai sản, thôi việc và phân tích tình huống lao động 2026.</p>
-                </div>
-                <a href="labor-law.html" class="feature-cta-btn">Tra cứu ngay &rarr;</a>
-            </div>
-
-            <!-- Card 5: Tính Lương Gross Net -->
-            <div class="feature-card" data-category="finance" style="--planet-color: #f59e0b; --planet-rgb: 245, 158, 11;">
-                <div>
-                    <div class="feature-header-meta">
-                        <div class="feature-icon-wrapper">🧮</div>
-                        <span class="feature-badge-pill">FINANCE TOOL</span>
-                    </div>
-                    <h3>Tính Lương Gross ↔ Net</h3>
-                    <p>Quy đổi lương Gross/Net chính xác theo biểu thuế mới năm 2026, tích hợp bảng tra cứu thù lao ngành B2B.</p>
-                </div>
-                <a href="salary.html" class="feature-cta-btn">Tính lương ngay &rarr;</a>
-            </div>
-
-            <!-- Card 6: Thư Viện Ebook & Thuật Ngữ BD -->
-            <div class="feature-card" data-category="community" style="--planet-color: #ec4899; --planet-rgb: 236, 72, 153;">
-                <div>
-                    <div class="feature-header-meta">
-                        <div class="feature-icon-wrapper">📚</div>
-                        <span class="feature-badge-pill">100+ TERMS & EBOOKS</span>
-                    </div>
-                    <h3>Thư Viện Ebook & Thuật Ngữ BD</h3>
-                    <p>Tổng hợp 100+ thuật ngữ BD/Sales có công thức tính, Ebook độc quyền & bài viết chuyên môn từ Peter Vo.</p>
-                </div>
-                <a href="library.html" class="feature-cta-btn">Truy cập thư viện &rarr;</a>
-            </div>
-
-            <!-- Card 7: Ước Tính KPI & Phễu Ngược -->
-            <div class="feature-card" data-category="tools" style="--planet-color: #a855f7; --planet-rgb: 168, 85, 247;">
-                <div>
-                    <div class="feature-header-meta">
-                        <div class="feature-icon-wrapper">📊</div>
-                        <span class="feature-badge-pill">ANALYTICS</span>
-                    </div>
-                    <h3>Ước Tính KPI & Phễu Ngược</h3>
-                    <p>Ước tính nhanh chỉ số phễu hoạt động ngược từ mục tiêu doanh thu, hỗ trợ cả luồng Outbound & Inbound.</p>
-                </div>
-                <a href="kpi-estimation.html" class="feature-cta-btn">Ước tính ngay &rarr;</a>
-            </div>
-
-            <!-- Card 8: Cộng Đồng BD Việt Nam -->
-            <div class="feature-card" data-category="community" style="--planet-color: #3b82f6; --planet-rgb: 59, 130, 246;">
-                <div>
-                    <div class="feature-header-meta">
-                        <div class="feature-icon-wrapper">🌐</div>
-                        <span class="feature-badge-pill">NETWORKING</span>
-                    </div>
-                    <h3>Cộng Đồng BD Việt Nam</h3>
-                    <p>Diễn đàn thảo luận nghiệp vụ, kết nối sếp mua hàng (PIC) & chia sẻ những câu chuyện bán hàng thực chiến.</p>
-                </div>
-                <a href="community.html" class="feature-cta-btn">Gia nhập cộng đồng &rarr;</a>
-            </div>
+        <!-- Carousel Navigation for Mobile Swipe -->
+        <div class="cosmic-carousel-nav" id="cosmic-carousel-nav" style="display: none; justify-content: center; gap: 15px; margin-top: 25px;">
+            <button class="btn btn-secondary" id="planet-prev-btn" style="border-radius: 50%; width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 1.1rem; cursor: pointer; border: 1px solid var(--border-color); background: var(--card-bg); color: var(--text-main);">◀</button>
+            <button class="btn btn-secondary" id="planet-next-btn" style="border-radius: 50%; width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 1.1rem; cursor: pointer; border: 1px solid var(--border-color); background: var(--card-bg); color: var(--text-main);">▶</button>
         </div>
     </section>
 
