@@ -548,9 +548,9 @@ document.addEventListener('DOMContentLoaded', () => {
     function handleEbookDownload(ebook) {
         currentSelectedEbook = ebook;
         
-        // Check Daily Download Limit (10 per day default + bonus credits)
+        // Check Daily Download Limit (1 per day default + bonus credits)
         const todayDl = getTodayDownloads();
-        const allowedDl = 10 + getTodayBonusCredits();
+        const allowedDl = 1 + getTodayBonusCredits();
 
         if (todayDl >= allowedDl) {
             // Daily limit reached -> Open retention modal to invite playing mini game or community!
