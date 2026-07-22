@@ -33,6 +33,8 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             updateToggleButton(themeToggleBtn);
         });
+    }
+
     // Mobile Hamburger Menu Toggle
     const mobileMenuToggleBtn = document.getElementById('mobile-menu-toggle');
     const navMenu = document.getElementById('nav-menu');
