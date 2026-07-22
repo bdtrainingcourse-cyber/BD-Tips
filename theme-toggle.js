@@ -8,7 +8,7 @@
     }
 })();
 
-document.addEventListener('DOMContentLoaded', () => {
+const initThemeToggle = () => {
     const savedTheme = localStorage.getItem('theme');
     
     if (savedTheme === 'dark') {
@@ -96,7 +96,13 @@ document.addEventListener('DOMContentLoaded', () => {
     backToTopBtn.addEventListener('click', () => {
         window.scrollTo({ top: 0, behavior: 'smooth' });
     });
-});
+};
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initThemeToggle);
+} else {
+    initThemeToggle();
+}
 
 function updateToggleButton(btn) {
     const isDark = document.body.classList.contains('dark-theme');
