@@ -2345,6 +2345,8 @@ body.dark-theme .galaxy-orbit {
     cursor: pointer;
     transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
     transform: translate(-50%, -50%);
+    left: calc(50% + var(--x));
+    top: calc(50% + var(--y));
 }
 
 .planet-sphere {
@@ -2484,6 +2486,8 @@ body.dark-theme .planet-tooltip-card {
 
     .planet-node {
         position: absolute !important;
+        left: calc(50% + var(--mx)) !important;
+        top: calc(50% + var(--my)) !important;
     }
 
     .planet-sphere {
