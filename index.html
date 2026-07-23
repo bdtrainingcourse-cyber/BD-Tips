@@ -176,7 +176,22 @@
 
     <section class="minigame container" id="minigame-section">
         <h2 class="section-title">B2B CHALLENGE</h2>
-        <div class="challenge-layout">
+        
+            <!-- Personalized Welcome Banner for Registered Users -->
+            <div id="personalized-welcome-banner" class="hidden glass-panel" style="padding: 15px 20px; border-radius: 12px; border: 1px solid var(--primary); background: rgba(239, 68, 68, 0.03); display: flex; align-items: center; justify-content: space-between; gap: 15px; margin-bottom: 25px; flex-wrap: wrap; box-sizing: border-box;">
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <span style="font-size: 1.8rem; line-height: 1;">🦉</span>
+                    <div>
+                        <h4 style="margin: 0; font-size: 0.95rem; font-weight: 800; color: var(--text-main);" id="welcome-banner-title">Chào mừng trở lại, Chiến thần!</h4>
+                        <p style="margin: 3px 0 0 0; font-size: 0.8rem; color: var(--text-light);" id="welcome-banner-desc">Hôm nay bạn đã hoàn thành thử thách chưa? Cú Peter đang ngóng trông bạn.</p>
+                    </div>
+                </div>
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <span style="font-size: 0.85rem; font-weight: bold; color: var(--primary); background: rgba(239, 68, 68, 0.1); padding: 4px 10px; border-radius: 20px;" id="welcome-banner-streak">Streak: 1 ngày 🔥</span>
+                </div>
+            </div>
+
+            <div class="challenge-layout">
             <!-- Left Column: The Game Engine -->
             <div class="game-container glass-effect" style="margin: 0;">
                 <!-- Selector Panel -->
@@ -209,19 +224,62 @@
                     <!-- Slide Progress Indicator -->
                     <div id="slider-indicator" style="text-align: center; margin-top: 15px; font-weight: 700; color: var(--text-light); font-size: 0.85rem;">Thử thách 1 / 7</div>
 
-                    <!-- Duolingo Streak Activation Card -->
-                    <div class="duolingo-activation-card glass-panel" style="padding: 20px; border-radius: 12px; margin-top: 25px; border: 1px solid var(--primary); background: rgba(239, 68, 68, 0.02); display: flex; align-items: center; gap: 15px; flex-wrap: wrap;">
-                        <div style="font-size: 2.2rem; line-height: 1;">🦉</div>
-                        <div style="flex: 1; min-width: 240px;">
-                            <h4 style="margin: 0; font-size: 0.95rem; font-weight: 800; color: var(--text-main);">Kích hoạt Chuỗi Ngày (Daily Streak)</h4>
-                            <p style="margin: 5px 0 0 0; font-size: 0.8rem; color: var(--text-light); line-height: 1.4;">Nhận email "nhắc nhở thân thiện" (và cà khịa vui vẻ) mỗi ngày từ Cú Peter để không bỏ lỡ kiến thức BD B2B thực chiến.</p>
+                    <!-- Tabbed Streak & Reward Panel -->
+                    <div class="streak-reward-card glass-panel" style="padding: 20px; border-radius: 12px; margin-top: 25px; border: 1px solid var(--primary); background: rgba(239, 68, 68, 0.01);">
+                        <div class="streak-tabs-header">
+                            <button class="streak-tab-link active" id="tab-streak-btn">🦉 BẬT NHẮC NHỞ STREAK</button>
+                            <button class="streak-tab-link" id="tab-rewards-btn">🎁 CỬA HÀNG ĐỔI QUÀ</button>
                         </div>
-                        <div style="display: flex; gap: 10px; width: 100%; margin-top: 5px; flex-wrap: wrap;" id="streak-form">
-                            <input type="text" id="streak-name" placeholder="Tên của bạn" style="flex: 1; min-width: 120px; padding: 8px 12px; border-radius: 6px; border: 1px solid var(--border-color); background: rgba(255,255,255,0.02); color: var(--text-main); font-family: inherit; font-size: 0.85rem;" required>
-                            <input type="email" id="streak-email" placeholder="Email của bạn" style="flex: 1; min-width: 150px; padding: 8px 12px; border-radius: 6px; border: 1px solid var(--border-color); background: rgba(255,255,255,0.02); color: var(--text-main); font-family: inherit; font-size: 0.85rem;" required>
-                            <button id="btn-activate-streak" class="btn btn-primary" style="padding: 8px 16px; font-size: 0.85rem; font-weight: bold; white-space: nowrap;">Bật Nhắc Nhở</button>
+
+                        <!-- Tab Content: Streak form -->
+                        <div id="tab-content-streak">
+                            <div style="display: flex; align-items: center; gap: 15px; flex-wrap: wrap; margin-bottom: 15px;">
+                                <div style="font-size: 2.2rem; line-height: 1;">🦉</div>
+                                <div style="flex: 1; min-width: 240px;">
+                                    <h4 style="margin: 0; font-size: 0.95rem; font-weight: 800; color: var(--text-main);">Kích hoạt Chuỗi Ngày (Daily Streak)</h4>
+                                    <p style="margin: 5px 0 0 0; font-size: 0.8rem; color: var(--text-light); line-height: 1.4;">Cú Peter sẽ gửi email nhắc nhở vui vẻ mỗi ngày để bạn giữ vững streak và nâng cấp tư duy BD B2B.</p>
+                                </div>
+                            </div>
+                            <div style="display: flex; gap: 10px; width: 100%; flex-wrap: wrap;" id="streak-form">
+                                <input type="text" id="streak-name" placeholder="Tên của bạn" style="flex: 1; min-width: 120px; padding: 8px 12px; border-radius: 6px; border: 1px solid var(--border-color); background: rgba(255,255,255,0.02); color: var(--text-main); font-family: inherit; font-size: 0.85rem;" required>
+                                <input type="email" id="streak-email" placeholder="Email của bạn" style="flex: 1; min-width: 150px; padding: 8px 12px; border-radius: 6px; border: 1px solid var(--border-color); background: rgba(255,255,255,0.02); color: var(--text-main); font-family: inherit; font-size: 0.85rem;" required>
+                                <button id="btn-activate-streak" class="btn btn-primary" style="padding: 8px 16px; font-size: 0.85rem; font-weight: bold; white-space: nowrap;">Bật Nhắc Nhở</button>
+                            </div>
                         </div>
-                    </div></div>
+
+                        <!-- Tab Content: Reward list -->
+                        <div id="tab-content-rewards" class="hidden">
+                            <p style="font-size: 0.8rem; color: var(--text-light); margin: 0 0 10px 0; line-height: 1.4;">
+                                Luyện tập <strong>đều đặn ít nhất 7 ngày</strong> để mở khóa các phần quà thú vị (Ngân sách dưới 50k đồng hành cùng BD thủ công):
+                            </p>
+                            <div class="reward-grid">
+                                <div class="reward-card">
+                                    <span style="font-size: 1.5rem;">☕</span>
+                                    <span style="font-size: 0.75rem; font-weight: bold; color: var(--text-main);">Coffee 1-on-1 Peter</span>
+                                    <span style="font-size: 0.7rem; color: var(--text-light);">Free (30p Zoom)</span>
+                                    <button class="btn btn-secondary btn-claim" data-reward="Coffee 1on1 với Peter" style="padding: 3px 8px; font-size: 0.65rem; margin-top: 5px; width: 100%;">Đổi Quà</button>
+                                </div>
+                                <div class="reward-card">
+                                    <span style="font-size: 1.5rem;">🥤</span>
+                                    <span style="font-size: 0.75rem; font-weight: bold; color: var(--text-main);">Ly Trà Sữa</span>
+                                    <span style="font-size: 0.7rem; color: var(--text-light);">Trị giá 45,000đ</span>
+                                    <button class="btn btn-secondary btn-claim" data-reward="Ly trà sữa Phúc Long/GongCha" style="padding: 3px 8px; font-size: 0.65rem; margin-top: 5px; width: 100%;">Đổi Quà</button>
+                                </div>
+                                <div class="reward-card">
+                                    <span style="font-size: 1.5rem;">📱</span>
+                                    <span style="font-size: 0.75rem; font-weight: bold; color: var(--text-main);">Thẻ Cào 50k</span>
+                                    <span style="font-size: 0.7rem; color: var(--text-light);">50,000đ Phone Card</span>
+                                    <button class="btn btn-secondary btn-claim" data-reward="Thẻ cào điện thoại 50k" style="padding: 3px 8px; font-size: 0.65rem; margin-top: 5px; width: 100%;">Đổi Quà</button>
+                                </div>
+                                <div class="reward-card">
+                                    <span style="font-size: 1.5rem;">🥗</span>
+                                    <span style="font-size: 0.75rem; font-weight: bold; color: var(--text-main);">Cơm Trưa Cùng Sếp</span>
+                                    <span style="font-size: 0.7rem; color: var(--text-light);">Peter mời cơm trưa</span>
+                                    <button class="btn btn-secondary btn-claim" data-reward="Suất ăn trưa giao lưu cùng Peter" style="padding: 3px 8px; font-size: 0.65rem; margin-top: 5px; width: 100%;">Đổi Quà</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div></div></div>
                 </div>
 
                 <!-- Intro Panel -->
@@ -268,7 +326,22 @@
                         <button id="restart-btn" class="btn btn-primary" style="padding: 10px 30px; font-size: 1rem;">Chơi Lại</button>
                         <button id="selector-btn" class="btn btn-secondary" style="padding: 10px 30px; font-size: 1rem; margin: 0;">Đổi Game Khác</button>
                     </div>
-                </div>
+                <!-- Social Share Buttons -->
+                    <div style="margin-top: 25px; border-top: 1px solid var(--border-color); padding-top: 15px; text-align: center;" id="social-share-box">
+                        <p style="font-size: 0.8rem; color: var(--text-light); margin-bottom: 10px; font-weight: 700; letter-spacing: 0.5px;">📢 KHOE THÀNH TÍCH VỚI ĐỒNG NGHIỆP</p>
+                        <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
+                            <button id="share-linkedin-btn" class="btn btn-secondary" style="padding: 6px 14px; font-size: 0.8rem; display: flex; align-items: center; gap: 5px; background: rgba(0, 119, 181, 0.1); border: 1px solid rgba(0, 119, 181, 0.25); color: #0077b5;">
+                                💼 LinkedIn
+                            </button>
+                            <button id="share-facebook-btn" class="btn btn-secondary" style="padding: 6px 14px; font-size: 0.8rem; display: flex; align-items: center; gap: 5px; background: rgba(24, 119, 242, 0.1); border: 1px solid rgba(24, 119, 242, 0.25); color: #1877f2;">
+                                👥 Facebook
+                            </button>
+                            <button id="share-copy-btn" class="btn btn-secondary" style="padding: 6px 14px; font-size: 0.8rem; display: flex; align-items: center; gap: 5px; background: rgba(255,255,255,0.05); color: var(--text-main);">
+                                🔗 Sao chép link
+                            </button>
+                        </div>
+                    </div>
+                    </div>
             </div>
 
             <!-- Right Column: Sexy Hall of Fame -->
@@ -451,5 +524,29 @@
     <script src="script.js?v=2.0.0"></script>
     <script src="ai-chat.js?v=2.0.0"></script>
     <script defer src="/_vercel/insights/script.js"></script>
+
+    <!-- Exit Intent Popup Modal -->
+    <div id="exit-intent-modal" class="modal-overlay hidden" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.65); z-index: 10000; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(5px);">
+        <div class="modal-content glass-panel" style="max-width: 440px; width: 90%; padding: 30px; border-radius: 16px; border: 1px solid var(--primary); background: var(--bg); color: var(--text-main); position: relative; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.5); box-sizing: border-box;">
+            <button id="btn-close-exit-modal" style="position: absolute; top: 15px; right: 15px; background: none; border: none; color: var(--text-light); font-size: 1.5rem; cursor: pointer; line-height: 1;">&times;</button>
+            <div style="font-size: 3.5rem; margin-bottom: 12px; line-height: 1;">🦉</div>
+            <h3 style="font-size: 1.35rem; font-weight: 800; color: var(--text-main); margin-bottom: 10px; margin-top: 0;">Chạy đi đâu thế hả?</h3>
+            <p style="font-size: 0.85rem; color: var(--text-light); line-height: 1.5; margin-bottom: 20px; margin-top: 0;">
+                Bạn định rời đi mà không mang theo bộ bí kíp B2B sao? Để lại Tên & Email để Cú Peter gửi ngay <strong>Ebook "9 Nguyên Tắc Bán Hàng B2B" bởi Peter Võ</strong> và nhắc nhở học tập vui vẻ mỗi ngày. Hứa không spam!
+            </p>
+            <form id="exit-intent-form" style="display: flex; flex-direction: column; gap: 12px; text-align: left;">
+                <div>
+                    <label style="font-size: 0.75rem; color: var(--text-light); font-weight: bold; display: block; margin-bottom: 5px;">Họ và Tên</label>
+                    <input type="text" id="exit-name" placeholder="Ví dụ: Anh Nguyễn" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border-color); background: rgba(255,255,255,0.02); color: var(--text-main); font-family: inherit; font-size: 0.85rem; box-sizing: border-box;" required>
+                </div>
+                <div>
+                    <label style="font-size: 0.75rem; color: var(--text-light); font-weight: bold; display: block; margin-bottom: 5px;">Địa chỉ Email</label>
+                    <input type="email" id="exit-email" placeholder="Ví dụ: anh.nguyen@company.com" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border-color); background: rgba(255,255,255,0.02); color: var(--text-main); font-family: inherit; font-size: 0.85rem; box-sizing: border-box;" required>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%; padding: 12px; font-weight: bold; margin-top: 10px; border: none; cursor: pointer; border-radius: 8px;">Nhận Ebook & Bật Nhắc Nhở 🚀</button>
+                <button type="button" id="btn-decline-exit" style="background: none; border: none; color: var(--text-light); font-size: 0.75rem; cursor: pointer; text-decoration: underline; margin-top: 5px; text-align: center; width: 100%;">Không, tôi muốn làm BD chạy bằng cơm</button>
+            </form>
+        </div>
+    </div>
 </body>
 </html>
