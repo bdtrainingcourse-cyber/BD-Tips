@@ -1141,6 +1141,43 @@ body.dark-theme .feature-card {
     box-shadow: 0 10px 25px rgba(162, 10, 10, 0.15);
 }
 
+.game-slider-container {
+    overflow-x: auto;
+    scroll-behavior: smooth;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+.game-slider-container::-webkit-scrollbar {
+    display: none;
+}
+.game-slider-track .game-card {
+    flex: 0 0 320px;
+    width: 320px;
+}
+.level-tab-btn {
+    border: 1px solid var(--border-color);
+    background: rgba(255,255,255,0.05);
+    color: var(--text-main);
+}
+.level-tab-btn:hover {
+    border-color: var(--primary) !important;
+    color: var(--primary) !important;
+    background: rgba(239, 68, 68, 0.08) !important;
+}
+.level-tab-btn.active {
+    border-color: var(--primary) !important;
+    background: var(--primary) !important;
+    color: #fff !important;
+    box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3);
+}
+@media (max-width: 992px) {
+    .game-slider-track .game-card {
+        flex: 0 0 82vw !important;
+        width: 82vw !important;
+    }
+}
+
+
 /* ==========================================================================
    Features Showcase & Navigation Styles
    ========================================================================== */
