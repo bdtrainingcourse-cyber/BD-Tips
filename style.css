@@ -2533,6 +2533,24 @@ body.dark-theme .planet-tooltip-card {
         position: absolute !important;
     }
 
+    .planet-label {
+        display: none !important;
+    }
+
+    .planet-node.active .planet-label {
+        display: block !important;
+        position: absolute;
+        top: 48px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 15;
+        font-size: 0.68rem;
+        padding: 2px 6px;
+        background: var(--card-bg);
+        border: 1px solid var(--planet-color);
+        box-shadow: 0 3px 8px rgba(var(--planet-rgb), 0.25);
+    }
+
     .planet-sphere {
         width: 40px;
         height: 40px;
@@ -2540,15 +2558,16 @@ body.dark-theme .planet-tooltip-card {
     }
 
     .galaxy-core {
-        width: 90px;
-        height: 90px;
+        width: 80px;
+        height: 80px;
     }
     .core-avatar {
-        width: 44px;
-        height: 44px;
+        width: 40px;
+        height: 40px;
     }
     .core-label {
-        font-size: 0.65rem;
+        font-size: 0.6rem;
+        margin-top: 3px;
     }
 
     .planet-tooltip-card {
