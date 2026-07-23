@@ -1,22 +1,23 @@
 // Global Theme Toggle Handler to prevent flashing on load
 (function() {
     const savedTheme = localStorage.getItem('theme');
-    if (savedTheme === 'dark') {
-        document.documentElement.classList.add('dark-theme');
-    } else if (savedTheme === 'light') {
+    if (savedTheme === 'light') {
         document.documentElement.classList.remove('dark-theme');
+    } else {
+        // Default is dark theme
+        document.documentElement.classList.add('dark-theme');
     }
 })();
 
 const initThemeToggle = () => {
     const savedTheme = localStorage.getItem('theme');
     
-    if (savedTheme === 'dark') {
-        document.body.classList.add('dark-theme');
-    } else if (savedTheme === 'light') {
+    if (savedTheme === 'light') {
         document.body.classList.remove('dark-theme');
+    } else {
+        // Default is dark theme
+        document.body.classList.add('dark-theme');
     }
-    // If savedTheme is null, we do not modify body classes and let the HTML defaults stand.
 
     const themeToggleBtn = document.getElementById('theme-toggle');
     if (themeToggleBtn) {
