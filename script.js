@@ -1617,23 +1617,29 @@ const initB2BApp = () => {
             });
 
             node.addEventListener('click', (e) => {
-                if (activePlanetIndex === index) {
-                    const link = node.getAttribute('data-link');
-                    if (link) {
+                e.preventDefault();
+                
+                // Clear any pending redirect
+                if (window.planetRedirectTimeout) {
+                    clearTimeout(window.planetRedirectTimeout);
+                }
+                
+                // Show the introduction immediately
+                selectPlanet(index);
+                
+                const link = node.getAttribute('data-link');
+                if (link) {
+                    window.planetRedirectTimeout = setTimeout(() => {
                         if (link.startsWith('#')) {
                             const target = document.getElementById(link.substring(1));
                             if (target) {
-                                e.preventDefault();
                                 target.scrollIntoView({ behavior: 'smooth' });
                                 history.pushState(null, null, link);
                             }
                         } else {
                             window.location.href = link;
                         }
-                    }
-                } else {
-                    e.preventDefault();
-                    selectPlanet(index);
+                    }, 1000); // 1.0s delay so they see the introduction card pop up first
                 }
             });
         });
@@ -1662,7 +1668,24 @@ const initB2BApp = () => {
 
         function arrangeActivePlanets() {
             const isMobile = window.innerWidth <= 992;
-            const radius = isMobile ? 105 : 200;
+            
+            if (isMobile) {
+                // Clear inline style positions on mobile to let CSS Grid layout take over
+                planetNodes.forEach(node => {
+                    node.style.left = '';
+                    node.style.top = '';
+                    node.style.opacity = '';
+                    node.style.pointerEvents = '';
+                    node.style.transform = '';
+                    const sphere = node.querySelector('.planet-sphere');
+                    if (sphere) {
+                        sphere.style.transform = '';
+                    }
+                });
+                return;
+            }
+            
+            const radius = 200;
             
             // Filter matching planet nodes
             const matchedNodes = [];
