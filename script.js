@@ -1,4 +1,4 @@
-document.addEventListener('DOMContentLoaded', () => {
+const initB2BApp = () => {
     // Smooth scroll for nav link anchor on the same page
     const b2bChallengeLink = document.querySelector('nav.nav-links a[href*="#minigame-section"]');
     if (b2bChallengeLink) {
@@ -1535,31 +1535,210 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 1000);
     }
 
-    // --- Ecosystem Category Filtering ---
+    // --- Cosmic Galaxy Ecosystem Visualizer Logic ---
+    const planetNodes = document.querySelectorAll('.planet-node');
+    const planetTooltip = document.getElementById('planet-tooltip');
+    const tooltipIcon = document.getElementById('tooltip-icon');
+    const tooltipBadge = document.getElementById('tooltip-badge');
+    const tooltipTitle = document.getElementById('tooltip-title');
+    const tooltipDesc = document.getElementById('tooltip-desc');
+    const tooltipLink = document.getElementById('tooltip-link');
     const ecoTabs = document.querySelectorAll('.eco-tab-btn');
-    const ecoCards = document.querySelectorAll('.features-grid .feature-card');
-    
-    if (ecoTabs.length > 0 && ecoCards.length > 0) {
-        ecoTabs.forEach(tab => {
-            tab.addEventListener('click', () => {
-                ecoTabs.forEach(t => t.classList.remove('active'));
-                tab.classList.add('active');
+
+    let activePlanetIndex = 0;
+    let autoRotationInterval = null;
+
+    if (planetNodes.length > 0) {
+        // Update details card dynamically
+        function selectPlanet(index) {
+            if (index < 0 || index >= planetNodes.length) return;
+            activePlanetIndex = index;
+
+            planetNodes.forEach((node, i) => {
+                if (i === index) {
+                    node.classList.add('active');
+                } else {
+                    node.classList.remove('active');
+                }
+            });
+
+            const activeNode = planetNodes[index];
+            const title = activeNode.getAttribute('data-title');
+            const desc = activeNode.getAttribute('data-desc');
+            const badge = activeNode.getAttribute('data-badge');
+            const link = activeNode.getAttribute('data-link');
+            const icon = activeNode.getAttribute('data-icon');
+            const color = activeNode.style.getPropertyValue('--planet-color');
+            const rgb = activeNode.style.getPropertyValue('--planet-rgb');
+
+            // Apply values to tooltip
+            tooltipTitle.textContent = title;
+            tooltipDesc.textContent = desc;
+            tooltipBadge.textContent = badge;
+            tooltipIcon.textContent = icon;
+            tooltipLink.setAttribute('href', link);
+
+            // Dynamically customize tooltip styling with active planet color
+            tooltipBadge.style.color = color;
+            tooltipBadge.style.borderColor = `rgba(${rgb}, 0.25)`;
+            tooltipBadge.style.backgroundColor = `rgba(${rgb}, 0.12)`;
+            tooltipIcon.style.color = color;
+            tooltipIcon.style.backgroundColor = `rgba(${rgb}, 0.1)`;
+            
+            if (tooltipLink) {
+                tooltipLink.style.backgroundColor = color;
+                tooltipLink.style.borderColor = color;
+                tooltipLink.style.boxShadow = `0 4px 14px rgba(${rgb}, 0.3)`;
+            }
+
+            // Animate card entrance
+            planetTooltip.style.opacity = '0';
+            planetTooltip.style.transform = 'translateY(10px)';
+            setTimeout(() => {
+                planetTooltip.style.transition = 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)';
+                planetTooltip.style.opacity = '1';
+                planetTooltip.style.transform = 'translateY(0)';
                 
-                const cat = tab.getAttribute('data-category');
-                ecoCards.forEach(card => {
-                    if (cat === 'all' || card.getAttribute('data-category') === cat) {
-                        card.style.display = 'flex';
+                // On mobile, scroll to the tooltip card so it is immediately visible
+                if (window.innerWidth <= 992) {
+                    planetTooltip.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                }
+            }, 50);
+        }
+
+        // Initialize with first planet details
+        selectPlanet(0);
+
+        // Add event listeners to planets
+        planetNodes.forEach((node, index) => {
+            node.addEventListener('mouseenter', () => {
+                clearInterval(autoRotationInterval);
+                selectPlanet(index);
+            });
+
+            node.addEventListener('click', (e) => {
+                e.preventDefault();
+                selectPlanet(index);
+            });
+        });
+
+        // Mobile Carousel Controls
+        const planetPrevBtn = document.getElementById('planet-prev-btn');
+        const planetNextBtn = document.getElementById('planet-next-btn');
+
+        if (planetPrevBtn && planetNextBtn) {
+            planetPrevBtn.addEventListener('click', () => {
+                let nextIdx = activePlanetIndex - 1;
+                if (nextIdx < 0) nextIdx = planetNodes.length - 1;
+                selectPlanet(nextIdx);
+            });
+
+            planetNextBtn.addEventListener('click', () => {
+                let nextIdx = activePlanetIndex + 1;
+                if (nextIdx >= planetNodes.length) nextIdx = 0;
+                selectPlanet(nextIdx);
+            });
+        }
+
+        let currentCategory = 'all';
+        let orbitAngleOffset = 0;
+        let isHovered = false;
+
+        function arrangeActivePlanets() {
+            const isMobile = window.innerWidth <= 992;
+            const radius = isMobile ? 105 : 200;
+            
+            // Filter matching planet nodes
+            const matchedNodes = [];
+            planetNodes.forEach(node => {
+                const nodeCat = node.getAttribute('data-category');
+                if (currentCategory === 'all' || nodeCat === currentCategory) {
+                    matchedNodes.push(node);
+                    node.style.opacity = '1';
+                    node.style.pointerEvents = 'auto';
+                    node.style.transform = 'translate(-50%, -50%) scale(1)';
+                } else {
+                    node.style.opacity = '0';
+                    node.style.pointerEvents = 'none';
+                    node.style.transform = 'translate(-50%, -50%) scale(0)';
+                }
+            });
+
+            // Distribute matched nodes evenly in a circle orbit
+            const count = matchedNodes.length;
+            matchedNodes.forEach((node, index) => {
+                const baseAngle = (index * 360 / count);
+                const currentAngle = (baseAngle + orbitAngleOffset) % 360;
+                const angleRad = currentAngle * Math.PI / 180;
+                const x = radius * Math.cos(angleRad);
+                const y = radius * Math.sin(angleRad);
+                node.style.left = `calc(50% + ${x}px)`;
+                node.style.top = `calc(50% + ${y}px)`;
+
+                // Counter-rotate the sphere icon to keep it upright
+                const sphere = node.querySelector('.planet-sphere');
+                if (sphere) {
+                    sphere.style.transform = `rotate(${-currentAngle}deg)`;
+                }
+            });
+        }
+
+        // Initialize positions
+        arrangeActivePlanets();
+
+
+
+        window.addEventListener('resize', () => {
+            arrangeActivePlanets();
+        });
+
+        // Category Tab Filter Sync
+        if (ecoTabs.length > 0) {
+            ecoTabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    ecoTabs.forEach(t => t.classList.remove('active'));
+                    tab.classList.add('active');
+
+                    currentCategory = tab.getAttribute('data-category');
+                    arrangeActivePlanets(currentCategory);
+
+                    // Fade-update the category description paragraph
+                    const catIntroEl = document.getElementById('ecosystem-cat-intro');
+                    if (catIntroEl) {
+                        const intros = {
+                            all: "Bộ 9 Công cụ AI, Tra cứu Pháp lý, Thư viện Tri thức & Cộng đồng Thực chiến dành riêng cho B2B Business Development.",
+                            tools: "Hệ thống giải pháp thông minh giúp tìm kiếm, xác thực thông tin Person-in-Charge (PIC) và tự động hóa soạn thảo email tiếp cận khách hàng chất lượng cao.",
+                            finance: "Bộ công cụ quy đổi lương Gross/Net chính xác, cổng tra cứu nhanh luật lao động 2026 và lịch trình sự kiện giao thương B2B mới nhất.",
+                            community: "Không gian tri thức thực chiến gồm Minigame xử lý đàm phán, 100+ thuật ngữ BD chuyên sâu, Ebook độc quyền và diễn đàn kết nối nghiệp vụ."
+                        };
+                        catIntroEl.style.opacity = '0';
                         setTimeout(() => {
-                            card.style.opacity = '1';
-                            card.style.transform = 'scale(1)';
-                        }, 50);
-                    } else {
-                        card.style.opacity = '0';
-                        card.style.transform = 'scale(0.95)';
-                        card.style.display = 'none';
+                            catIntroEl.textContent = intros[currentCategory] || intros.all;
+                            catIntroEl.style.opacity = '1';
+                        }, 200);
+                    }
+
+                    // Select the first matching planet in the filtered list
+                    let firstMatchedIndex = -1;
+                    planetNodes.forEach((node, index) => {
+                        const nodeCat = node.getAttribute('data-category');
+                        if ((currentCategory === 'all' || nodeCat === currentCategory) && firstMatchedIndex === -1) {
+                            firstMatchedIndex = index;
+                        }
+                    });
+
+                    if (firstMatchedIndex !== -1) {
+                        selectPlanet(firstMatchedIndex);
                     }
                 });
             });
-        });
+        }
     }
-});
+};
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initB2BApp);
+} else {
+    initB2BApp();
+}
+ 
