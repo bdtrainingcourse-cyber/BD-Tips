@@ -115,11 +115,247 @@ const initB2BApp = () => {
     };
 
     const games = [
+        // LEVEL 1: Dưới 1 Năm (Tân Binh)
+        {
+            id: "game-suitability",
+            title: "Thử Thách 1.1: Nhảy qua làm BD có dễ ko ta?",
+            description: "Đánh giá mức độ phù hợp về tố chất bản thân (chịu áp lực, khả năng research, chủ động) với nghề BD.",
+            type: "suitability_scoring",
+            icon: "🧗",
+            level: 1,
+            questions: [
+                {
+                    context: "Khi gặp một dự án B2B hoàn toàn mới mà bạn chưa từng nghe tên ngành đó bao giờ, phản xạ đầu tiên của bạn là gì?",
+                    options: [
+                        { text: "Chờ người hướng dẫn hoặc sếp giao tài liệu nghiên cứu sẵn.", points: 0, feedback: "Thiếu tính chủ động! BD cần tự lực tìm kiếm thông tin ban đầu." },
+                        { text: "Lên Google, đọc nhanh 3-5 bài viết tổng quan về chuỗi giá trị và thuật ngữ cốt lõi của ngành đó.", points: 2, feedback: "Chính xác! Kỹ năng research độc lập là vũ khí hàng đầu của BD." },
+                        { text: "Báo cáo sếp là ngành này quá lạ, không làm được.", points: 0, feedback: "Chưa thử sức đã bỏ cuộc sẽ giới hạn cơ hội phát triển." }
+                    ]
+                },
+                {
+                    context: "Khách hàng từ chối cuộc hẹn và nói thẳng: 'Không có nhu cầu'. Cảm xúc của bạn lúc này thế nào?",
+                    options: [
+                        { text: "Cảm thấy nản lòng, nghi ngờ bản thân và không muốn gọi lead tiếp theo.", points: 0, feedback: "Nghề BD đối diện với hàng chục lời từ chối mỗi ngày, cần rèn luyện tâm lý thép." },
+                        { text: "Bình thản đón nhận. Ghi chú lại lý do từ chối và tiếp tục gọi lead kế tiếp.", points: 2, feedback: "Chuyên nghiệp! Cần coi từ chối là xác suất bình thường của phễu bán hàng." },
+                        { text: "Tức giận tranh cãi lý lẽ với khách hàng.", points: 0, feedback: "Hành động phi chuyên nghiệp, hủy hoại uy tín cá nhân và công ty." }
+                    ]
+                },
+                {
+                    context: "Bạn chuẩn bị tiếp cận một sếp lớn (C-level). Bạn dành bao nhiêu thời gian để tìm hiểu về họ?",
+                    options: [
+                        { text: "Không cần, cứ gọi đại rồi tùy cơ ứng biến.", points: 0, feedback: "Chuẩn bị sơ sài là chuẩn bị cho sự thất bại khi tiếp cận C-level." },
+                        { text: "Dành 10-15 phút đọc LinkedIn, website doanh nghiệp để cá nhân hóa lý do kết nối.", points: 2, feedback: "Rất tốt! Cá nhân hóa sâu giúp tăng tỷ lệ phản hồi lên gấp 3 lần." },
+                        { text: "Dành cả ngày trời nghiên cứu chi tiết lịch sử từ nhỏ của họ.", points: 1, feedback: "Quá mức cần thiết, gây lãng phí thời gian vận hành phễu." }
+                    ]
+                },
+                {
+                    context: "Trong một buổi họp pitching, vai trò chủ yếu của bạn là gì?",
+                    options: [
+                        { text: "Nói liên tục để giới thiệu sản phẩm không ngừng nghỉ.", points: 0, feedback: "Bán hàng B2B không phải là độc thoại. Bạn đang đẩy khách hàng ra xa." },
+                        { text: "Lắng nghe 70%, hỏi câu hỏi định hướng 20%, giới thiệu giải pháp 10%.", points: 2, feedback: "Chính xác! BD xuất sắc là người lắng nghe giỏi nhất." },
+                        { text: "Ngồi im lặng hoàn toàn để kỹ thuật nói.", points: 0, feedback: "Bạn cần đóng vai trò điều phối và chốt lộ trình cuộc họp." }
+                    ]
+                },
+                {
+                    context: "Nếu deal bị đóng băng 2 tháng không phản hồi, bạn sẽ làm gì?",
+                    options: [
+                        { text: "Hàng ngày nhắn tin hỏi họ đã quyết định chưa.", points: 0, feedback: "Spam liên tục gây phản cảm và hạ thấp giá trị giải pháp." },
+                        { text: "Cung cấp thêm tài liệu giá trị hữu ích liên quan đến khó khăn của họ để giữ ấm liên hệ.", points: 2, feedback: "Đỉnh cao follow-up! Luôn trao giá trị thay vì đòi hỏi kết quả." },
+                        { text: "Bỏ cuộc và xóa luôn thông tin lead đó.", points: 0, feedback: "Có những deal B2B mất 6-12 tháng nuôi dưỡng mới chốt được." }
+                    ]
+                }
+            ],
+            getResult: (points) => {
+                if (points >= 8) {
+                    return { sfx: 'win', title: "Nên theo BD (Tố chất cao) 🔥", color: "var(--primary)", text: `Bạn đạt ${points}/10 điểm. Bạn có đầy đủ tố chất cần thiết để thành công trong nghề BD: chịu được áp lực, chủ động, kiên trì và ham học hỏi. Hãy bắt đầu chiến đấu ngay thôi!` };
+                } else if (points >= 5) {
+                    return { sfx: 'correct', title: "Cần Trau Dồi Thêm (Tiềm năng) 📊", color: "var(--text-main)", text: `Bạn đạt ${points}/10 điểm. Bạn có tiềm năng nhưng cần rèn luyện thêm tính chủ động và khả năng chịu áp lực từ chối. Hãy thử tập research và gửi đề xuất hàng tuần nhé.` };
+                } else {
+                    return { sfx: 'lose', title: "Hợp Sales Hoặc Account Hơn 😅", color: "var(--danger)", text: `Bạn đạt ${points}/10 điểm. Nghề BD đòi hỏi tinh thần tự trị, tự tìm cơ hội và khả năng kiên trì trước hàng trăm lời từ chối. Bạn có thể sẽ tỏa sáng hơn ở các vai trò chăm sóc khách hàng (Account) hoặc Sales vận hành.` };
+                }
+            }
+        },
+        {
+            id: "game-gatekeeper",
+            title: "Thử Thách 1.2: Vượt Ải Gatekeeper",
+            description: "Kỹ thuật giao tiếp khôn khéo để vượt qua bộ lọc lễ tân/thư ký và kết nối sếp lớn.",
+            type: "scenario_challenge",
+            icon: "🚪",
+            level: 1,
+            questions: [
+                {
+                    context: "Lễ tân nói: 'Anh/chị gửi thông tin qua email chung nhé'. Bạn phản xạ thế nào?",
+                    options: [
+                        { text: "Dạ vâng ạ, email là gì để em gửi.", isCorrect: false, feedback: "Thất bại! Gửi mail chung 99% sẽ rơi vào hòm thư rác hoặc bị phớt lờ." },
+                        { text: "Em cần gặp sếp trực tiếp, email không giải quyết được.", isCorrect: false, feedback: "Thái độ trịch thượng sẽ khiến lễ tân cúp máy ngay lập tức." },
+                        { text: "Dạ em có tài liệu mật thiết thiết kế riêng cho dự án X của sếp. Nhờ chị báo giúp có bên Y gửi...", isCorrect: true, feedback: "Chuyên nghiệp! Đưa ra lý do nghiệp vụ đặc thù để tạo tính khẩn cấp và giá trị." }
+                    ]
+                },
+                {
+                    context: "Lễ tân hỏi: 'Bên mình gọi có việc gì thế?' Bạn trả lời ra sao?",
+                    options: [
+                        { text: "Em muốn chào bán dịch vụ quảng cáo giá rẻ.", isCorrect: false, feedback: "Thất bại ngay lập tức! Bạn vừa tự gắn nhãn 'Spammer/Telesale'." },
+                        { text: "Dạ em liên hệ từ công ty X liên quan đến việc tối ưu vận hành khâu Y mà sếp đang chỉ đạo...", isCorrect: true, feedback: "Tuyệt vời! Cách nói này cho thấy cuộc gọi mang tính nghiệp vụ quan trọng chứ không phải chào hàng." },
+                        { text: "Hỏi để làm gì thế em?", isCorrect: false, feedback: "Cách nói thô lỗ sẽ khiến bạn bị đưa vào danh sách chặn số vĩnh viễn." }
+                    ]
+                },
+                {
+                    context: "Để lễ tân cảm thấy bạn là người quen cũ của sếp, kỹ thuật xưng hô nào tốt nhất?",
+                    options: [
+                        { text: "Dạ anh cho em gặp anh [Tên Sếp] nhé, em [Tên Bạn] gọi lại theo lịch hẹn.", isCorrect: true, feedback: "Chính xác! Giọng điệu tự tin, xưng hô tên riêng tạo cảm giác thân thuộc như đối tác hiện hữu." },
+                        { text: "Dạ cho em hỏi có phải đây là số của công ty mình không ạ?", isCorrect: false, feedback: "Tự lộ diện là telesale lạ gọi dò thông tin." },
+                        { text: "Chào em, sếp em có nhà không?", isCorrect: false, feedback: "Cách hỏi thiếu tôn trọng và thiếu tính chuyên nghiệp." }
+                    ]
+                }
+            ],
+            getResult: (score) => {
+                if (score === 3) {
+                    return { sfx: 'win', title: "Bất Bại Vượt Ải Lễ Tân! 🚪", color: "var(--primary)", text: "Kỹ năng giao tiếp và lách rào cản của bạn quá xuất sắc! Bạn biến Gatekeeper thành đồng minh một cách tự nhiên." };
+                } else if (score >= 2) {
+                    return { sfx: 'correct', title: "Vượt Ải Thành Công! 🗝️", color: "var(--text-main)", text: `Bạn đúng ${score}/3 câu. Cần tự tin và lịch sự hơn nữa để tạo lòng tin nhanh chóng.` };
+                } else {
+                    return { sfx: 'lose', title: "Bị Chặn Rất Tiếc! 😅", color: "var(--danger)", text: `Bạn đúng ${score}/3 câu. Đừng chào hàng trực tiếp với lễ tân, hãy nói về lý do nghiệp vụ hợp lệ.` };
+                }
+            }
+        },
+        {
+            id: "game-email",
+            title: "Thử Thách 1.3: Nghệ Thuật Viết Cold Email",
+            description: "Tối ưu tỷ lệ mở và phản hồi email tiếp cận đối tác với các cấu trúc chuẩn chuyên gia.",
+            type: "scenario_challenge",
+            icon: "✉️",
+            level: 1,
+            questions: [
+                {
+                    context: "Tiêu đề (Subject Line) nào dưới đây sẽ đạt tỷ lệ mở (Open Rate) cao nhất?",
+                    options: [
+                        { text: "THƯ CHÀO HÀNG DỊCH VỤ MARKETING B2B CỦA CÔNG TY X", isCorrect: false, feedback: "Quá giống thư rác! Tiêu đề viết hoa toàn bộ và chứa chữ 'Chào hàng' sẽ bị bỏ qua." },
+                        { text: "Hợp tác tối ưu chi phí logistics khâu vận chuyển - [Tên Công Ty Đối Tác]", isCorrect: true, feedback: "Rất tốt! Rõ ràng, cá nhân hóa và tập trung trực tiếp vào giá trị/pain point của họ." },
+                        { text: "Xin chào anh, có cơ hội hợp tác làm ăn này rất hay", isCorrect: false, feedback: "Mơ hồ, thiếu chuyên nghiệp và không tạo được sự tin cậy ban đầu." }
+                    ]
+                },
+                {
+                    context: "Phần mở bài (Opening line) của Cold Email nên viết như thế nào?",
+                    options: [
+                        { text: "Em xin giới thiệu công ty em thành lập 10 năm, có 200 nhân sự...", isCorrect: false, feedback: "Sai lầm! Khách hàng không quan tâm bạn là ai, họ chỉ quan tâm bạn giúp gì được cho họ." },
+                        { text: "Em theo dõi thấy dự án X của anh chị vừa ra mắt và nhận thấy cơ hội tối ưu khâu Y...", isCorrect: true, feedback: "Chính xác! Cho thấy bạn đã nghiên cứu kỹ về họ, tạo thiện cảm cá nhân hóa sâu sắc." },
+                        { text: "Lời đầu tiên cho em xin chúc anh chị vạn sự như ý...", isCorrect: false, feedback: "Quá rườm rà xã giao, lãng phí 3 giây vàng ngọc đầu tiên của email B2B." }
+                    ]
+                },
+                {
+                    context: "Lời kêu gọi hành động (Call to Action - CTA) nào ở cuối email là thông minh nhất?",
+                    options: [
+                        { text: "Anh chị mua sản phẩm thì chuyển khoản cho em nhé.", isCorrect: false, feedback: "Quá vội vàng! Không ai mua hàng B2B ngay từ email đầu tiên." },
+                        { text: "Em xin phép gửi anh đề xuất sơ bộ dài 50 trang để anh đọc trước.", isCorrect: false, feedback: "Quá nặng nề! Khách hàng bận rộn sẽ từ chối đọc tài liệu quá dài." },
+                        { text: "Em có thể xin anh 10 phút thảo luận nhanh qua phone vào 9h sáng thứ Năm này không?", isCorrect: true, feedback: "Tuyệt vời! CTA có rào cản thấp (chỉ 10 phút) và thời gian cụ thể dễ phản hồi." }
+                    ]
+                }
+            ],
+            getResult: (score) => {
+                if (score === 3) {
+                    return { sfx: 'win', title: "Master Cold Email! ✉️", color: "var(--primary)", text: "Email của bạn viết cực kỳ cuốn hút, cá nhân hóa tốt và tập trung vào giá trị thực tế. Tỷ lệ mở và phản hồi chắc chắn sẽ rất cao!" };
+                } else if (score >= 2) {
+                    return { sfx: 'correct', title: "Email Khá Ổn! 📝", color: "var(--text-main)", text: `Bạn đúng ${score}/3 câu. Hãy chú ý tối ưu hóa tiêu đề ngắn gọn và CTA cụ thể hơn.` };
+                } else {
+                    return { sfx: 'lose', title: "Cần Viết Lại! 😅", color: "var(--danger)", text: `Bạn đúng ${score}/3 câu. Tránh viết email dài dòng chào bán dịch vụ ngay lập tức. Hãy tập trung vào nỗi đau của họ.` };
+                }
+            }
+        },
+        {
+            id: "game-prospecting",
+            title: "Thử Thách 1.4: Tìm Kiếm & Lọc Lead B2B",
+            description: "Thực hành phương pháp định vị và phân loại khách hàng mục tiêu để tối ưu phễu.",
+            type: "scenario_challenge",
+            icon: "🔍",
+            level: 1,
+            questions: [
+                {
+                    context: "Bạn cần tiếp cận đại diện phòng mua hàng tại một tập đoàn bán lẻ. Kênh nào là nơi định vị PIC chuẩn xác nhất?",
+                    options: [
+                        { text: "Tìm kiếm từ khóa 'Trưởng phòng mua hàng [Tên Tập Đoàn]' trên LinkedIn.", isCorrect: true, feedback: "Chính xác! LinkedIn là công cụ tìm kiếm nhân sự B2B chuyên nghiệp nhất hiện nay." },
+                        { text: "Lên Group Facebook hỏi xin thông tin lung tung.", isCorrect: false, feedback: "Dễ nhận được thông tin cũ, thiếu chính xác và kém bảo mật." },
+                        { text: "Đứng canh trước cổng công ty chờ sếp đi ra.", isCorrect: false, feedback: "Quá mất thời gian và thiếu tính chuyên nghiệp." }
+                    ]
+                },
+                {
+                    context: "Lead B2B được phân loại là MQL (Marketing Qualified Lead) chất lượng cao nhất khi nào?",
+                    options: [
+                        { text: "Chỉ cần để lại email và số điện thoại trên form đăng ký.", isCorrect: false, feedback: "Chưa đủ! Đó mới chỉ là thông tin thô (Raw Lead)." },
+                        { text: "Họ khớp chính xác với chân dung khách hàng lý tưởng (ICP) và đã mở email/xem đề xuất nhiều lần...", isCorrect: true, feedback: "Chính xác! Cho thấy cả độ phù hợp cao lẫn hành vi quan tâm tích cực." },
+                        { text: "Họ là doanh nghiệp lớn có doanh thu nghìn tỷ nhưng chưa biết bạn là ai.", isCorrect: false, feedback: "Họ mới chỉ là đối tượng mục tiêu trong danh sách mơ ước (Target List), chưa tương tác." }
+                    ]
+                },
+                {
+                    context: "Bạn thu thập được 100 Lead tiềm năng. Bạn nên xử lý như thế nào trước khi chạy chiến dịch outreach?",
+                    options: [
+                        { text: "Cắm đầu gửi mail hàng loạt bằng tính năng gửi chung CC.", isCorrect: false, feedback: "Hủy deal hàng loạt! CC lộ thông tin đối tác, email dễ rơi vào mục spam." },
+                        { text: "Phân nhóm theo ngành hàng/quy mô để tùy biến thông điệp chào giải pháp phù hợp...", isCorrect: true, feedback: "Chính xác! Phân nhóm giúp nâng cao chất lượng cá nhân hóa nội dung." },
+                        { text: "Nhờ bộ phận Telesale gọi điện chào giá ngay lập tức.", isCorrect: false, feedback: "Gây phiền nhiễu cho khách hàng khi chưa thẩm định kỹ nhu cầu của họ." }
+                    ]
+                }
+            ],
+            getResult: (score) => {
+                if (score === 3) {
+                    return { sfx: 'win', title: "Chuyên Gia Định Vị Lead! 🎯", color: "var(--primary)", text: "Bạn nắm rất rõ cách định vị đúng người đưa ra quyết định tại doanh nghiệp mục tiêu!" };
+                } else if (score >= 2) {
+                    return { sfx: 'correct', title: "Kỹ Năng Khá! 📊", color: "var(--text-main)", text: `Bạn đúng ${score}/3 câu. Hãy sử dụng thêm các công cụ định vị PIC tự động như B2B PIC Finder.` };
+                } else {
+                    return { sfx: 'lose', title: "Cần Trau Dồi Thêm! 😅", color: "var(--danger)", text: `Bạn đúng ${score}/3 câu. Hãy tìm đọc kỹ sách về ICP (Ideal Customer Profile) và phễu B2B.` };
+                }
+            }
+        },
+        {
+            id: "game-outreach",
+            title: "Thử Thách 1.5: Phone & Zalo Outreach",
+            description: "Thực hành bẻ lái phản xạ giao tiếp ban đầu qua điện thoại và nhắn tin tiếp cận đối tác.",
+            type: "scenario_challenge",
+            icon: "📞",
+            level: 1,
+            questions: [
+                {
+                    context: "Khi khách hàng nghe máy cuộc gọi lạnh và nói: 'Bên anh không có nhu cầu nhé em'. Bạn ứng phó thế nào?",
+                    options: [
+                        { text: "Dạ em cảm ơn anh rồi tắt máy.", isCorrect: false, feedback: "Bỏ cuộc quá dễ dàng khi chưa bóc tách lý do từ chối." },
+                        { text: "Dạ em hiểu. Thực ra em gọi không phải để bán hàng ngay, mà muốn chia sẻ cách bên X tối ưu 15% khâu Y. Em nhắn Zalo thông tin ngắn gọn nhé?", isCorrect: true, feedback: "Chính xác! Giảm áp lực mua bán, chuyển hướng sang chia sẻ giá trị và xin kênh kết nối Zalo." },
+                        { text: "Sao anh chưa biết sản phẩm thế nào mà đã kêu không có nhu cầu ạ?", isCorrect: false, feedback: "Hỏi chất vấn đối đầu sẽ khiến khách hàng cúp máy ngay lập tức." }
+                    ]
+                },
+                {
+                    context: "Nhắn tin tiếp cận đối tác qua Zalo, cấu trúc tin nhắn nào tăng tỷ lệ đồng ý kết bạn nhất?",
+                    options: [
+                        { text: "Gửi ảnh bảng báo giá sản phẩm ngay kèm lời nhắn: 'Kết bạn với em nhé'.", isCorrect: false, feedback: "Quá thực dụng! Khách hàng sẽ chặn hoặc từ chối kết bạn ngay vì sợ bị spam bán hàng." },
+                        { text: "Chào anh [Tên], em là [Tên Bạn] từ [Công Ty]. Em có theo dõi bài chia sẻ của anh về khâu X và muốn kết nối trao đổi thêm...", isCorrect: true, feedback: "Rất tốt! Lý do kết nối rõ ràng, tôn trọng chuyên môn của họ và tạo thiện cảm cá nhân hóa." },
+                        { text: "Anh kết bạn zalo với em nhé, em có việc cần bàn.", isCorrect: false, feedback: "Mơ hồ, thiếu lịch sự tạo cảm giác nghi ngờ cho người nhận." }
+                    ]
+                },
+                {
+                    context: "Khách hàng nói: 'Anh đang bận họp'. Bạn phản xạ nhanh ra sao?",
+                    options: [
+                        { text: "Anh họp xong lúc mấy giờ để em gọi lại ạ?", isCorrect: false, feedback: "Hỏi dồn dập tạo cảm giác bị làm phiền và ép buộc thời gian." },
+                        { text: "Dạ em hiểu. Em xin phép kết nối Zalo nhắn nhanh thông tin chính, hoặc em gọi lại anh vào 2h chiều nay nhé?", isCorrect: true, feedback: "Chuyên gia! Lịch sự đồng cảm, đồng thời đưa ra 2 lựa chọn thông minh để chốt lịch hẹn." },
+                        { text: "Dạ em xin lỗi ạ rồi cúp máy luôn không hẹn lại.", isCorrect: false, feedback: "Bỏ lỡ cơ hội thiết lập cuộc gọi tiếp theo." }
+                    ]
+                }
+            ],
+            getResult: (score) => {
+                if (score === 3) {
+                    return { sfx: 'win', title: "Chiến Thần Cold-Call! 📞", color: "var(--primary)", text: "Phản xạ giao tiếp tiếp cận của bạn rất khéo léo, tự tin và hướng đến giá trị!" };
+                } else if (score >= 2) {
+                    return { sfx: 'correct', title: "Giao Tiếp Khá Tốt! 🗣️", color: "var(--text-main)", text: `Bạn đúng ${score}/3 câu. Hãy chú ý giữ tông giọng trầm ấm và nhịp điệu vừa phải khi gọi điện.` };
+                } else {
+                    return { sfx: 'lose', title: "Cần Thực Hành Thêm! 😅", color: "var(--danger)", text: `Bạn đúng ${score}/3 câu. Hãy ghi hình thử các kịch bản gọi điện để tự điều chỉnh giọng nói và phản xạ.` };
+                }
+            }
+        },
+
+        // LEVEL 2: Từ 1 - 3 Năm (Chiến Binh)
         {
             id: "game-expert",
-            title: "Thử Thách B2B: Bạn là Tân Binh hay Chuyên Gia?",
-            description: "Cùng đánh giá năng lực qua 5 tình huống thực tế nhé!",
+            title: "Thử Thách 2.1: Bạn là Tân Binh hay Chuyên Gia?",
+            description: "Cùng đánh giá phản xạ giao tiếp và xử lý tình huống thực tế của BD khi đàm phán thương lượng.",
             type: "scenario_challenge",
+            icon: "🧠",
+            level: 2,
             questions: [
                 {
                     context: "Khách hàng so sánh giá của bạn với đối thủ rẻ hơn. Bạn sẽ chọn nói gì?",
@@ -178,10 +414,186 @@ const initB2BApp = () => {
             }
         },
         {
+            id: "game-objection",
+            title: "Thử Thách 2.2: Xử Lý Từ Chối Kinh Điển",
+            description: "Học cách bẻ lái các câu từ chối phổ biến nhất của khách hàng B2B sang cơ hội trình bày.",
+            type: "scenario_challenge",
+            icon: "🛡️",
+            level: 2,
+            questions: [
+                {
+                    context: "Khách hàng nói: 'Giá bên em cao quá so với đối thủ'. Bạn xử lý thế nào đầu tiên?",
+                    options: [
+                        { text: "Giảm giá ngay 10% để giữ chân khách hàng.", isCorrect: false, feedback: "Sai lầm! Giảm giá vội vã phá hỏng giá trị giải pháp và làm giảm biên lợi nhuận." },
+                        { text: "Đồng cảm, sau đó đặt câu hỏi làm rõ đối thủ đang báo giá bao gồm những hạng mục cụ thể nào...", isCorrect: true, feedback: "Tuyệt vời! Cần so sánh 'táo với táo' thay vì so sánh chung chung dẫn đến bị ép giá." },
+                        { text: "Khẳng định đối thủ phá giá và chất lượng kém.", isCorrect: false, feedback: "Nói xấu đối thủ trực diện tạo hình ảnh thiếu chuyên nghiệp." }
+                    ]
+                },
+                {
+                    context: "Khách hàng nói: 'Anh cần hỏi ý kiến ban giám đốc'. Bạn phản ứng ra sao?",
+                    options: [
+                        { text: "Dạ vâng, khi nào anh hỏi xong báo em nhé.", isCorrect: false, feedback: "Bị động! Deal dễ bị chìm và trôi đi mất." },
+                        { text: "Để hỗ trợ anh báo cáo tốt nhất, em xin phép gửi bản tóm tắt giá trị dự án ngắn gọn cho sếp, hoặc cùng anh tham gia buổi họp nhé?", isCorrect: true, feedback: "Chuyên gia! Hỗ trợ họ làm báo cáo nội bộ và tìm cơ hội tiếp cận người có quyền quyết định thực sự." },
+                        { text: "Anh là trưởng phòng mà không quyết được à?", isCorrect: false, feedback: "Cách nói khiêu khích xúc phạm nghiêm trọng lòng tự trọng của đối tác." }
+                    ]
+                },
+                {
+                    context: "Khách hàng nói: 'Hiện tại bên anh đã có đối tác cung ứng khâu này ổn rồi'. Bạn mở rào cản thế nào?",
+                    options: [
+                        { text: "Dạ thế em xin lỗi đã làm phiền anh.", isCorrect: false, feedback: "Bỏ cuộc quá nhanh! Bạn chưa khai thác được cơ hội dự phòng." },
+                        { text: "Đồng ý rằng đối tác cũ rất tốt. Xin phép gửi họ một đề xuất làm phương án dự phòng (Back-up) hoặc thử nghiệm quy mô nhỏ để đối chiếu...", isCorrect: true, feedback: "Chính xác! Khách hàng B2B luôn muốn có phương án dự phòng rủi ro chuỗi cung ứng." },
+                        { text: "Bên em tốt hơn đối tác cũ nhiều, anh nên đổi đi.", isCorrect: false, feedback: "Khẳng định vô căn cứ khi chưa chứng minh được năng lực." }
+                    ]
+                }
+            ],
+            getResult: (score) => {
+                if (score === 3) {
+                    return { sfx: 'win', title: "Vua Xử Lý Từ Chối! 🛡️", color: "var(--primary)", text: "Tuyệt vời! Bạn có khả năng bẻ lái tình huống và thuyết phục khách hàng vô cùng sắc bén." };
+                } else if (score >= 2) {
+                    return { sfx: 'correct', title: "Kỹ Năng Khá! 🤔", color: "var(--text-main)", text: `Bạn đúng ${score}/3 câu. Cần hiểu rõ hơn về các kỹ thuật cô lập và làm rõ nỗi đau khách hàng.` };
+                } else {
+                    return { sfx: 'lose', title: "Cần Rèn Luyện Thêm! 😅", color: "var(--danger)", text: `Bạn đúng ${score}/3 câu. Hãy ghi nhớ: đừng vội giảm giá hay đối đầu, hãy đồng cảm và làm rõ lý do từ chối.` };
+                }
+            }
+        },
+        {
+            id: "game-negotiation",
+            title: "Thử Thách 2.3: Đàm Phán Hợp Đồng B2B",
+            description: "Thương lượng điều khoản hợp đồng hiệu quả để đạt thỏa thuận win-win tối ưu rủi ro.",
+            type: "scenario_challenge",
+            icon: "🤝",
+            level: 2,
+            questions: [
+                {
+                    context: "Khách hàng muốn tăng thời hạn bảo hành từ 1 năm lên 2 năm nhưng giữ nguyên giá trị hợp đồng. Bạn xử lý thế nào?",
+                    options: [
+                        { text: "Đồng ý luôn để giữ mối quan hệ.", isCorrect: false, feedback: "Nhượng bộ vô điều kiện sẽ tạo tiền lệ xấu khiến khách tiếp tục ép các điều khoản khác." },
+                        { text: "Dạ em hỗ trợ tăng lên 2 năm, đổi lại anh ký cam kết mua thêm gói hỗ trợ Y hoặc gia hạn dịch vụ...", isCorrect: true, feedback: "Chính xác! Nguyên tắc vàng đàm phán: Luôn trao đổi có điều kiện (Give and Take)." },
+                        { text: "Không được đâu anh, quy định công ty em chỉ có 1 năm thôi.", isCorrect: false, feedback: "Cứng nhắc từ chối làm bế tắc cuộc thương lượng." }
+                    ]
+                },
+                {
+                    context: "Khách hàng yêu cầu điều khoản thanh toán trả sau 100% trong vòng 60 ngày sau nghiệm thu. Bạn ứng biến ra sao?",
+                    options: [
+                        { text: "Đồng ý ngay để nhanh chóng ký được hợp đồng.", isCorrect: false, feedback: "Rủi ro dòng tiền và nợ xấu cực kỳ lớn cho công ty của bạn." },
+                        { text: "Đề xuất chia làm 3 đợt thanh toán (Tạm ứng - Nghiệm thu từng phần - Tất toán sau nghiệm thu) để san sẻ rủi ro tài chính...", isCorrect: true, feedback: "Thiết kế lộ trình thanh toán linh hoạt giúp bảo vệ dòng tiền mà vẫn khả thi cho đối tác." },
+                        { text: "Bên em bắt buộc phải tạm ứng 50%, không bàn cãi gì nữa.", isCorrect: false, feedback: "Cách nói thiếu thiện chí hợp tác đàm phán." }
+                    ]
+                },
+                {
+                    context: "Đâu là thời điểm phù hợp nhất để đưa ra báo giá hoặc khung chi phí chính thức?",
+                    options: [
+                        { text: "Ngay trong email đầu tiên tiếp cận khách hàng.", isCorrect: false, feedback: "Quá sớm! Bạn chưa hiểu nhu cầu của họ, báo giá sớm dễ bị loại vì đắt hoặc rẻ quá." },
+                        { text: "Sau khi đã thực hiện Discovery Call làm rõ nhu cầu và thống nhất được giải pháp kỹ thuật phù hợp...", isCorrect: true, feedback: "Chính xác! Chỉ báo giá khi khách hàng đã hiểu rõ giá trị giải pháp mang lại cho doanh nghiệp họ." },
+                        { text: "Đợi khách hàng chủ động hỏi giá mới báo.", isCorrect: false, feedback: "BD cần chủ động dẫn dắt tiến trình thương vụ." }
+                    ]
+                }
+            ],
+            getResult: (score) => {
+                if (score === 3) {
+                    return { sfx: 'win', title: "Chuyên Gia Đàm Phán Win-Win! 🤝", color: "var(--primary)", text: "Bạn bảo vệ giá trị hợp đồng rất tốt bằng nguyên tắc trao đổi có điều kiện. Thỏa thuận của bạn luôn bền vững." };
+                } else if (score >= 2) {
+                    return { sfx: 'correct', title: "Thỏa Thuận Tốt! 📊", color: "var(--text-main)", text: `Bạn đúng ${score}/3 câu. Cần tránh nhượng bộ quá nhanh mà không đòi hỏi lại quyền lợi tương xứng.` };
+                } else {
+                    return { sfx: 'lose', title: "Chịu Nhiều Thiệt Thòi! 😅", color: "var(--danger)", text: `Bạn đúng ${score}/3 câu. Hãy nhớ: luôn đàm phán có điều kiện (Give and Take) để tránh bị ép giá.` };
+                }
+            }
+        },
+        {
+            id: "game-eq",
+            title: "Thử Thách 2.4: EQ trong B2B Sales",
+            description: "Khảo sát chỉ số EQ - khả năng chịu áp lực, thấu cảm và kiên trì của chiến binh BD.",
+            type: "suitability_scoring",
+            icon: "❤️",
+            level: 2,
+            questions: [
+                {
+                    context: "Bạn đang gọi điện thoại cho một đối tác hiện hữu và họ đang rất giận dữ phàn nàn về lỗi kỹ thuật sản phẩm làm ảnh hưởng kinh doanh của họ. Bạn làm gì đầu tiên?",
+                    options: [
+                        { text: "Ngắt lời họ giải thích rằng lỗi này thuộc về phòng kỹ thuật chứ không phải của bạn.", points: 0, feedback: "Đổ lỗi nội bộ làm giảm uy tín công ty và khiến khách giận dữ hơn." },
+                        { text: "Lắng nghe đồng cảm hết cơn giận, xin lỗi vì sự gián đoạn và lập tức kết nối đội hỗ trợ xử lý khẩn cấp...", points: 2, feedback: "Chính xác! Hãy xoa dịu cảm xúc của họ trước khi đi vào giải quyết vấn đề kỹ thuật." },
+                        { text: "Im lặng hoàn toàn không trả lời gì.", points: 0, feedback: "Thái độ trốn tránh trách nhiệm hủy hoại mối quan hệ hợp tác." }
+                    ]
+                },
+                {
+                    context: "Đồng nghiệp giành mất một Lead lớn mà bạn đã cất công chăm sóc suốt 1 tháng qua. Bạn ứng xử thế nào?",
+                    options: [
+                        { text: "Lên gặp sếp làm ầm ĩ yêu cầu phân xử công bằng.", points: 1, feedback: "Cách giải quyết xung đột có phần cảm tính và tạo căng thẳng." },
+                        { text: "Hẹn đồng nghiệp nói chuyện thẳng thắn, đưa ra bằng chứng lịch sử tương tác trên CRM và thống nhất cách chia sẻ lợi ích...", points: 2, feedback: "Rất tốt! Quản trị xung đột nội bộ một cách chuyên nghiệp, văn minh dựa trên dữ liệu." },
+                        { text: "Im lặng chịu đựng nhưng nói xấu họ sau lưng.", points: 0, feedback: "Hành động tiêu cực phá hỏng văn hóa đội ngũ." }
+                    ]
+                },
+                {
+                    context: "Deal lớn sắp ký bị hủy phút chót vì đối tác thay đổi nhân sự C-level. Bạn đối diện ra sao?",
+                    options: [
+                        { text: "Buồn bã, mất động lực làm việc trong suốt cả tuần tiếp theo.", points: 0, feedback: "BD cần có khả năng phục hồi tinh thần nhanh chóng (Resilience)." },
+                        { text: "Bình tĩnh tìm hiểu thông tin sếp mới, lên kế hoạch tiếp cận giới thiệu lại giải pháp từ đầu...", points: 2, feedback: "Tuyệt vời! Khó khăn là một phần của trò chơi. Sự kiên trì sẽ mở ra cơ hội mới." },
+                        { text: "Bỏ mặc khách hàng đó vĩnh viễn.", points: 0, feedback: "Bỏ lỡ cơ hội hồi sinh deal khi nhân sự mới đi vào vận hành ổn định." }
+                    ]
+                }
+            ],
+            getResult: (points) => {
+                if (points === 6) {
+                    return { sfx: 'win', title: "BD Có EQ Đỉnh Cao! ❤️", color: "var(--primary)", text: `Bạn đạt ${points}/6 điểm. Khả năng thấu cảm, kiên trì và quản trị mối quan hệ nội bộ của bạn là hình mẫu lý tưởng.` };
+                } else if (points >= 4) {
+                    return { sfx: 'correct', title: "EQ Trung Bình Khá! 📈", color: "var(--text-main)", text: `Bạn đạt ${points}/6 điểm. Cần rèn luyện thêm khả năng giữ bình tĩnh trước phàn nàn và kiên trì theo đuổi deal.` };
+                } else {
+                    return { sfx: 'lose', title: "Cần Quản Trị Cảm Xúc! 😅", color: "var(--danger)", text: `Bạn đạt ${points}/6 điểm. BD là một cuộc marathon dài hạn. Hãy rèn luyện sự kiên trì và đồng cảm sâu sắc hơn.` };
+                }
+            }
+        },
+        {
+            id: "game-painpoint",
+            title: "Thử Thách 2.5: Đọc Vị Pain Point Khách Hàng",
+            description: "Thực hành các câu hỏi đào sâu nỗi đau vận hành và chi phí ẩn của doanh nghiệp.",
+            type: "scenario_challenge",
+            icon: "🎯",
+            level: 2,
+            questions: [
+                {
+                    context: "Khách hàng nói: 'Quy trình hiện tại của bên anh vẫn chạy tốt, không cần thay đổi gì'. Bạn đào sâu thế nào?",
+                    options: [
+                        { text: "Dạ thế thì tốt quá ạ, chúc mừng anh.", isCorrect: false, feedback: "Bạn vừa tự đóng lại cánh cửa cơ hội giới thiệu giải pháp tối ưu hơn." },
+                        { text: "Dạ quy trình tốt là rất đáng mừng. Cho em hỏi thêm bên mình đang tốn bao nhiêu thời gian để tổng hợp báo cáo thủ công mỗi tuần ạ?", isCorrect: true, feedback: "Chính xác! Hỏi xoáy vào thời gian lãng phí/thất thoát ẩn giúp họ tự nhận ra điểm nghẽn." },
+                        { text: "Nhưng quy trình cũ của anh thủ công lắm, dùng bên em sẽ tự động hơn.", isCorrect: false, feedback: "Cách nói mang tính phán xét chủ quan tạo rào cản phòng thủ tâm lý." }
+                    ]
+                },
+                {
+                    context: "Khách hàng liên tục đòi thêm tính năng kỹ thuật mới. Đâu là động cơ thực sự sau những yêu cầu đó?",
+                    options: [
+                        { text: "Họ đơn thuần chỉ muốn phá bĩnh bạn.", isCorrect: false, feedback: "Nhận định sai lầm. Khách hàng luôn muốn giải quyết vấn đề của họ." },
+                        { text: "Họ muốn dùng các tính năng đó làm đòn bẩy thương lượng ép giảm giá.", isCorrect: false, feedback: "Đôi khi đúng nhưng chưa phải bản chất cốt lõi của pain point kỹ thuật." },
+                        { text: "Họ đang gặp một rào cản nghiệp vụ thực tế khiến công việc của họ bị chậm hoặc báo cáo bị sai lệch...", isCorrect: true, feedback: "Chính xác! Cần tìm hiểu nghiệp vụ đằng sau yêu cầu kỹ thuật để thiết kế giải pháp thay thế phù hợp." }
+                    ]
+                },
+                {
+                    context: "Khi hỏi về ngân sách dự toán (Budget), câu hỏi nào khéo léo và hiệu quả nhất?",
+                    options: [
+                        { text: "Dự án này anh chị dự kiến đầu tư khoảng bao nhiêu tiền ạ?", isCorrect: false, feedback: "Hỏi trực diện chi phí sớm dễ khiến khách hàng phòng thủ và nói tránh." },
+                        { text: "Dựa trên quy mô vận hành hiện tại, bên em ước lượng khoản đầu tư khoảng X-Y. Con số này có nằm trong tầm ngân sách phê duyệt của anh không?", isCorrect: true, feedback: "Chuyên gia! Đưa ra khoảng ước lượng trước để neo khung giá và giúp đối tác dễ dàng phản hồi." },
+                        { text: "Bên anh có đủ tiền mua gói này không?", isCorrect: false, feedback: "Hỏi cực kỳ thô lỗ, hủy hoại quan hệ đối tác lập tức." }
+                    ]
+                }
+            ],
+            getResult: (score) => {
+                if (score === 3) {
+                    return { sfx: 'win', title: "Vua Đọc Vị Pain Point! 🎯", color: "var(--primary)", text: "Kịch bản đào sâu của bạn rất thông minh, hướng thẳng vào tối ưu vận hành và tài chính của đối tác!" };
+                } else if (score >= 2) {
+                    return { sfx: 'correct', title: "Kỹ Năng Đào Sâu Khá! 📊", color: "var(--text-main)", text: `Bạn đúng 	hì đúng ${score}/3 câu. Hãy đặt thêm các câu hỏi định lượng số liệu thất thoát của khách hàng.` };
+                } else {
+                    return { sfx: 'lose', title: "Cần Học Hỏi Thêm! 😅", color: "var(--danger)", text: `Bạn đúng ${score}/3 câu. Hãy luyện tập mô hình SPIN Selling (Situation, Problem, Implication, Need-payoff).` };
+                }
+            }
+        },
+
+        // LEVEL 3: Trên 3 Năm (Chuyên Gia)
+        {
             id: "game-system",
-            title: "Quiz: Bạn đang làm BD kiểu 'thủ công' hay kiểu 'hệ thống'?",
-            description: "Bạn có đang làm việc chăm chỉ nhưng kết quả vẫn lẹt đẹt? Hay bạn đã có một quy trình bài bản giúp deal tự đến? Hãy dành 2 phút trả lời 8 câu hỏi.",
+            title: "Thử Thách 3.1: BD kiểu 'thủ công' hay 'hệ thống'?",
+            description: "Đo lường quy trình làm việc của bạn đang ở mức nỗ lực cơ bắp thủ công hay quy trình hệ thống hóa.",
             type: "personality_scoring",
+            icon: "⚙️",
+            level: 3,
             questions: [
                 {
                     context: "Khi bắt đầu tìm kiếm khách hàng mới, bạn thường:",
@@ -222,512 +634,88 @@ const initB2BApp = () => {
                         { text: "Gửi email nhắc nhở chung chung: 'Bên anh đã cân nhắc xong chưa?'", points: 1, feedback: "Thiếu giá trị cộng thêm, dễ gây phiền hà cho đối tác." },
                         { text: "Gửi tài liệu nghiên cứu hoặc bài toán tối ưu liên quan để follow-up có giá trị.", points: 2, feedback: "Đỉnh cao follow-up! Luôn cung cấp giá trị để thúc đẩy hành động." }
                     ]
-                },
-                {
-                    context: "Quy trình chăm sóc và upsell khách hàng cũ của bạn như thế nào?",
-                    options: [
-                        { text: "Ký xong là bàn giao hết cho CS, không còn tương tác gì thêm.", points: 0, feedback: "Lãng phí nguồn tài nguyên mở rộng deal vô cùng lớn." },
-                        { text: "Thỉnh thoảng hỏi thăm xã giao vào các dịp lễ tết.", points: 1, feedback: "Mối quan hệ tốt, nhưng chưa khai thác được nhu cầu kinh doanh mới." },
-                        { text: "Check-in định kỳ 3 tháng, đo lường sự hài lòng và đề xuất giải pháp mở rộng.", points: 2, feedback: "Tuyệt vời! Upsell/Cross-sell từ khách cũ là kênh doanh thu siêu bền vững." }
-                    ]
-                },
-                {
-                    context: "Bạn quản lý quỹ thời gian làm việc hàng ngày ra sao?",
-                    options: [
-                        { text: "Đến đâu hay đến đó, ưu tiên giải quyết các việc phát sinh trước.", points: 0, feedback: "Làm việc thụ động dễ bị cuốn trôi và không đạt chỉ tiêu quan trọng." },
-                        { text: "Lập danh sách việc cần làm (to-do list) nhưng đôi khi vẫn bị trễ hạn.", points: 1, feedback: "Tốt, cần áp dụng thêm quy tắc ma trận Eisenhower để lọc việc quan trọng." },
-                        { text: "Lên lịch block time cho các nhiệm vụ cốt lõi (research, outreach, follow-up).", points: 2, feedback: "Kỷ luật thép! Quản trị thời gian khoa học là chìa khóa của năng suất." }
-                    ]
-                },
-                {
-                    context: "Việc thu thập phản hồi (feedback) sau mỗi deal thất bại?",
-                    options: [
-                        { text: "Bỏ qua ngay để tập trung vào lead mới.", points: 0, feedback: "Bỏ lỡ bài học đắt giá giúp tối ưu hóa sản phẩm và dịch vụ." },
-                        { text: "Hỏi han qua loa rồi ghi chú sơ sài lý do 'giá đắt' hoặc 'chưa phù hợp'.", points: 1, feedback: "Chưa đào sâu được nguyên nhân gốc rễ thực sự." },
-                        { text: "Phân tích kỹ lưỡng, tổ chức họp rút kinh nghiệm (Post-mortem) cùng team.", points: 2, feedback: "Học hỏi liên tục! Thất bại là mẹ của những deal thành công tiếp theo." }
-                    ]
                 }
             ],
             getResult: (score) => {
-                if (score >= 12) {
-                    return { sfx: 'win', title: "BD Hệ Thống Đỉnh Cao! 🚀", color: "var(--primary)", text: `Bạn đạt ${score}/16 điểm. Quy trình làm việc của bạn rất bài bản, chuyên nghiệp và có tính tự động hóa cao. Bạn đang tối ưu hóa thời gian rất tốt!` };
-                } else if (score >= 6) {
-                    return { sfx: 'correct', title: "BD Kết Hợp (Bán Hệ Thống) 📊", color: "var(--text-main)", text: `Bạn đạt ${score}/16 điểm. Bạn đã có ý thức quy trình nhưng vẫn còn phụ thuộc nhiều vào nỗ lực thủ công. Hãy áp dụng thêm công cụ và tự động hóa để đột phá doanh số.` };
+                if (score >= 8) {
+                    return { sfx: 'win', title: "BD Hệ Thống Đỉnh Cao! 🚀", color: "var(--primary)", text: `Bạn đạt ${score}/10 điểm. Quy trình làm việc của bạn rất bài bản, chuyên nghiệp và có tính tự động hóa cao. Bạn đang tối ưu hóa thời gian rất tốt!` };
+                } else if (score >= 5) {
+                    return { sfx: 'correct', title: "BD Kết Hợp (Bán Hệ Thống) 📊", color: "var(--text-main)", text: `Bạn đạt ${score}/10 điểm. Bạn đã có ý thức quy trình nhưng vẫn còn phụ thuộc nhiều vào nỗ lực thủ công. Hãy áp dụng thêm công cụ và tự động hóa để đột phá doanh số.` };
                 } else {
-                    return { sfx: 'lose', title: "BD Thủ Công (Cơ Bắp) 😅", color: "var(--danger)", text: `Bạn đạt ${score}/16 điểm. Bạn đang làm việc rất chăm chỉ nhưng thiếu quy trình và công cụ hỗ trợ. Hãy bắt đầu xây dựng phễu khách hàng và sử dụng CRM ngay.` };
-                }
-            }
-        },
-        {
-            id: "game-suitability",
-            title: "Nhảy qua làm BD có dễ ko ta?",
-            description: "Đánh giá mức độ phù hợp về tố chất bản thân đối với nghề Business Development qua 5 câu hỏi khảo sát nhanh.",
-            type: "suitability_scoring",
-            questions: [
-                {
-                    context: "Bạn cảm thấy thế nào khi nhận được lời từ chối thẳng thừng từ đối tác?",
-                    options: [
-                        { text: "Cực kỳ xuống tinh thần và ngại liên hệ tiếp.", points: 0, feedback: "BD cần mặt dày và xem từ chối là điểm khởi đầu của đàm phán." },
-                        { text: "Hơi buồn nhưng sẽ tiếp tục cố gắng ở deal khác.", points: 1, feedback: "Thái độ tích cực, cần rèn luyện thêm bản lĩnh chịu đòn." },
-                        { text: "Xem đó là bình thường, chủ động tìm hiểu lý do để cải thiện tiếp cận.", points: 2, feedback: "Tinh thần thép! Bạn sinh ra để làm BD." }
-                    ]
-                },
-                {
-                    context: "Khả năng tự nghiên cứu (research) của bạn đối với một doanh nghiệp lạ?",
-                    options: [
-                        { text: "Chỉ tìm kiếm sơ sài trên Google trang chủ.", points: 0, feedback: "Thông tin nông sẽ không thể tạo ấn tượng cá nhân hóa." },
-                        { text: "Đọc kỹ web doanh nghiệp, tìm kiếm sơ qua profile lãnh đạo trên LinkedIn.", points: 1, feedback: "Khá tốt, cần biết cách đọc báo cáo tài chính hoặc tin tức ngành sâu hơn." },
-                        { text: "Nghiên cứu cơ cấu tổ chức, đọc tin tức ngành, tìm đúng PIC và các bài viết của họ.", points: 2, feedback: "Kỹ năng thám tử! Bạn biết cách tìm điểm chạm vàng." }
-                    ]
-                },
-                {
-                    context: "Khi phải chủ động tiếp cận một người lạ có vị thế cao (C-Level):",
-                    options: [
-                        { text: "Rất e ngại và sợ làm phiền người khác.", points: 0, feedback: "BD cần sự tự tin đồng cấp (peer-to-peer mindset) khi giao tiếp." },
-                        { text: "Sẵn sàng liên hệ nhưng đôi khi viết văn phong hơi rụt rè.", points: 1, feedback: "Cần cải thiện kỹ năng viết email vị thế chuyên gia." },
-                        { text: "Tự tin tiếp cận bằng các giải pháp mang lại giá trị cụ thể cho họ.", points: 2, feedback: "Tuyệt vời! Tư duy tự tin và hướng tới giá trị." }
-                    ]
-                },
-                {
-                    context: "Tính chủ động của bạn trong công việc hàng ngày?",
-                    options: [
-                        { text: "Chờ sếp giao việc rồi làm theo hướng dẫn.", points: 0, feedback: "Nghề BD đòi hỏi tinh thần tự trị rất cao, tự tìm cơ hội." },
-                        { text: "Làm tốt việc được giao, thỉnh thoảng có đề xuất cải tiến mới.", points: 1, feedback: "Tốt, cần chủ động thử nghiệm các kênh tiếp cận mới." },
-                        { text: "Tự lập kế hoạch hành động, tự tìm cơ hội và chịu trách nhiệm số liệu.", points: 2, feedback: "Tinh thần tự chủ hoàn hảo!" }
-                    ]
-                },
-                {
-                    context: "Mức độ kiên trì của bạn khi theo đuổi mục tiêu dài hạn?",
-                    options: [
-                        { text: "Nếu sau 1-2 tuần không thấy kết quả là muốn đổi hướng.", points: 0, feedback: "Chu kỳ deal B2B trung bình từ 3-6 tháng, bạn cần kiên trì hơn." },
-                        { text: "Có thể kiên trì trong 1-2 tháng, sau đó dễ bị nản nếu không có tương tác.", points: 1, feedback: "Hãy tập trung vào quá trình và tối ưu hóa các điểm chạm nhỏ." },
-                        { text: "Kiên định bám đuổi mục tiêu dài hạn, liên tục tối ưu hóa phễu tiếp cận.", points: 2, feedback: "Ý chí bền bỉ! Bạn có tố chất làm nên đại nghiệp." }
-                    ]
-                }
-            ],
-            getResult: (points) => {
-                if (points >= 8) {
-                    return { sfx: 'win', title: "Nên theo BD (Tố chất cao) 🔥", color: "var(--primary)", text: `Bạn đạt ${points}/10 điểm. Bạn có đầy đủ tố chất cần thiết để thành công trong nghề BD: chịu được áp lực, chủ động, kiên trì và ham học hỏi. Hãy bắt đầu chiến đấu ngay thôi!` };
-                } else if (points >= 5) {
-                    return { sfx: 'correct', title: "Cần Trau Dồi Thêm (Tiềm năng) 📊", color: "var(--text-main)", text: `Bạn đạt ${points}/10 điểm. Bạn có tiềm năng nhưng cần rèn luyện thêm tính chủ động và khả năng chịu áp lực từ chối. Hãy thử tập research và gửi đề xuất hàng tuần nhé.` };
-                } else {
-                    return { sfx: 'lose', title: "Hợp Sales Hoặc Account Hơn 😅", color: "var(--danger)", text: `Bạn đạt ${points}/10 điểm. Nghề BD đòi hỏi tinh thần tự trị, tự tìm cơ hội và khả năng kiên trì trước hàng trăm lời từ chối. Bạn có thể sẽ tỏa sáng hơn ở các vai trò chăm sóc khách hàng (Account) hoặc Sales vận hành.` };
-                }
-            }
-        },
-        {
-            id: "game-objection",
-            title: "Xử Lý Từ Chối Kinh Điển",
-            description: "Học cách bẻ lái các câu từ chối phổ biến nhất của khách hàng B2B sang cơ hội thuyết trình giải pháp.",
-            type: "scenario_challenge",
-            questions: [
-                {
-                    context: "Khách hàng nói: \"Để chị suy nghĩ thêm.\"",
-                    options: [
-                        { text: "Dạ chị cứ cân nhắc thoải mái ạ.", isCorrect: false, feedback: "Bị động! Khoảng thời gian trống sẽ khiến deal nguội lạnh nhanh chóng." },
-                        { text: "Anh/chị cần suy nghĩ thêm về giá hay tính năng nào ạ?", isCorrect: true, feedback: "Chuyên gia! Thu hẹp lý do từ chối để tập trung giải quyết đúng điểm nghẽn." },
-                        { text: "Sản phẩm tốt thế này sao phải suy nghĩ ạ?", isCorrect: false, feedback: "Nghiệp dư! Cách hỏi này tạo cảm giác ép buộc và thiếu tôn trọng khách hàng." },
-                        { text: "Bên em sắp hết ưu đãi rồi, chị quyết nhanh đi.", isCorrect: false, feedback: "Nghiệp dư! Tạo sự khẩn cấp giả tạo dễ gây mất lòng tin ở phân khúc B2B." }
-                    ]
-                },
-                {
-                    context: "Khách hàng chê: \"Giá bên em đắt quá so với bên X.\"",
-                    options: [
-                        { text: "Bên em đắt xắt ra miếng chị ơi.", isCorrect: false, feedback: "Nghiệp dư! Cách nói sáo rỗng, chưa chứng minh được giá trị thực tế." },
-                        { text: "Dạ, để em làm đơn xin giảm giá cho anh/chị nhé.", isCorrect: false, feedback: "Nghiệp dư! Vội vàng giảm giá làm mất vị thế giải pháp và giảm biên lợi nhuận." },
-                        { text: "Không biết anh/chị đang so sánh trên cùng các tiêu chí kỹ thuật nào ạ?", isCorrect: true, feedback: "Chuyên gia! Đưa khách hàng về mặt bằng so sánh chuẩn (tính năng, dịch vụ kèm theo) thay vì chỉ nhìn con số giá." },
-                        { text: "Giá bên X rẻ là do chất lượng họ kém đó ạ.", isCorrect: false, feedback: "Cấm kỵ! Hạ thấp đối thủ là hành vi phi chuyên nghiệp lớn nhất trong B2B." }
-                    ]
-                },
-                {
-                    context: "Khách hàng bảo: \"Bên anh đang dùng dịch vụ của bên Y rất ổn định rồi.\"",
-                    options: [
-                        { text: "Bên em tốt hơn bên Y nhiều, anh dùng thử đi.", isCorrect: false, feedback: "Nghiệp dư! Không ai muốn thay đổi một hệ thống đang chạy ổn định chỉ vì lời hứa suông." },
-                        { text: "Dạ vậy khi nào bên Y có lỗi thì anh gọi em nhé.", isCorrect: false, feedback: "Quá thụ động! Bạn sẽ mãi chỉ là kẻ dự phòng vô vọng." },
-                        { text: "Chúc mừng anh. Không biết trong tương lai gần anh có dự định mở rộng quy mô kinh doanh không?", isCorrect: true, feedback: "Chuyên gia! Tôn trọng nhà cung cấp cũ và tìm cơ hội mới từ bài toán tăng trưởng quy mô mà đối tác cũ chưa đáp ứng." },
-                        { text: "Bên Y đắt lắm anh ơi, bên em rẻ hơn nhiều.", isCorrect: false, feedback: "Nghiệp dư! Lại cạnh tranh bằng giá và nói xấu đối thủ." }
-                    ]
-                },
-                {
-                    context: "Khách hàng từ chối: \"Bên em quy mô nhỏ quá, anh sợ không đủ năng lực phục vụ.\"",
-                    options: [
-                        { text: "Bên em tuy nhỏ nhưng làm việc rất nhiệt tình.", isCorrect: false, feedback: "Sự nhiệt tình không thể bù đắp được rủi ro vận hành của doanh nghiệp lớn." },
-                        { text: "Dạ tụi em đã làm dự án tương tự cho công ty Z (quy mô tương đương anh/chị) thành công...", isCorrect: true, feedback: "Chuyên gia! Case study thực tế của đối thủ hoặc doanh nghiệp cùng ngành là bằng chứng thép." },
-                        { text: "Bên em nhỏ nên giá rẻ hơn mấy ông lớn nhiều.", isCorrect: false, feedback: "Nghiệp dư! Lại dùng chiêu bài giá rẻ cho một nỗi lo về năng lực và rủi ro." },
-                        { text: "Anh yên tâm, bên em có đội ngũ cam kết trực 24/7.", isCorrect: false, feedback: "Chưa đủ thuyết phục nếu thiếu các số liệu cam kết dịch vụ (SLA) rõ ràng." }
-                    ]
-                },
-                {
-                    context: "Khi gặp từ chối: \"Năm nay bên anh không có ngân sách cho mảng này.\"",
-                    options: [
-                        { text: "Dạ tiếc quá, hẹn anh sang năm nhé.", isCorrect: false, feedback: "Nghiệp dư! Đầu hàng quá sớm." },
-                        { text: "Dạ, nếu bên em hỗ trợ giãn tiến độ thanh toán hoặc chia nhỏ gói chạy thử thì sao?", isCorrect: true, feedback: "Chuyên gia! Đưa ra giải pháp tài chính linh hoạt để lách qua rào cản ngân sách năm tài khóa." },
-                        { text: "Anh bớt chút ngân sách mảng khác qua là được mà.", isCorrect: false, feedback: "Nghiệp dư! Can thiệp vào nội bộ phân bổ tài chính của khách là hành vi thiếu lịch sự." },
-                        { text: "Bên em đang có chương trình miễn phí tháng đầu.", isCorrect: false, feedback: "Khách hàng B2B lo ngại chi phí triển khai dài hạn và công sức vận hành hơn là 1 tháng miễn phí." }
-                    ]
-                }
-            ],
-            getResult: (score) => {
-                if (score === 5) {
-                    return { sfx: 'win', title: "Vua Xử Lý Từ Chối! 🛡️", color: "var(--primary)", text: "Tuyệt vời! Bạn có khả năng bẻ lái tình huống và thuyết phục khách hàng vô cùng sắc bén." };
-                } else if (score >= 3) {
-                    return { sfx: 'correct', title: "Kỹ Năng Khá! 🤔", color: "var(--text-main)", text: `Bạn đúng ${score}/5 câu. Cần hiểu rõ hơn về các kỹ thuật cô lập và làm rõ nỗi đau khách hàng.` };
-                } else {
-                    return { sfx: 'lose', title: "Cần Rèn Luyện Thêm! 😅", color: "var(--danger)", text: `Bạn đúng ${score}/5 câu. Hãy ghi nhớ: đừng vội giảm giá hay đối đầu, hãy đồng cảm và làm rõ lý do từ chối.` };
-                }
-            }
-        },
-        {
-            id: "game-email",
-            title: "Nghệ Thuật Viết Cold Email",
-            description: "Tối ưu tỷ lệ mở và phản hồi email tiếp cận đối tác với các cấu trúc chuẩn chuyên gia.",
-            type: "scenario_challenge",
-            questions: [
-                {
-                    context: "Khi chọn Tiêu đề (Subject Line) gửi cho Giám đốc Marketing (CMO) doanh nghiệp lớn:",
-                    options: [
-                        { text: "Hợp tác kinh doanh dịch vụ Marketing hiệu quả", isCorrect: false, feedback: "Nhạt nhòa! Trông giống như hàng ngàn email spam khác trong hòm thư của họ." },
-                        { text: "[Tên Công Ty Đối Tác] x [Tên Công Ty Bạn]: Đề xuất tăng 25% tỷ lệ chuyển đổi khách hàng", isCorrect: true, feedback: "Chuyên gia! Tập trung vào giá trị cốt lõi và kết quả cụ thể đo lường được." },
-                        { text: "Sản phẩm Marketing đột phá nhất năm 2026!!!", isCorrect: false, feedback: "Spam! Sử dụng quá nhiều dấu chấm than và từ ngữ đao to búa lớn sẽ bị bộ lọc spam chặn đứng." },
-                        { text: "Chào anh/chị, em xin phép gửi thông tin giới thiệu dịch vụ.", isCorrect: false, feedback: "Tẻ nhạt! Không khơi gợi được bất kỳ sự tò mò hay giá trị nào." }
-                    ]
-                },
-                {
-                    context: "Câu mở đầu (Opening Line) của Cold Email nên là:",
-                    options: [
-                        { text: "Em tên là Nam, đến từ công ty A, chuyên cung cấp giải pháp...", isCorrect: false, feedback: "Nghiệp dư! Người nhận không quan tâm bạn là ai, họ chỉ quan tâm đến vấn đề của HỌ." },
-                        { text: "Chúc anh/chị một ngày làm việc vui vẻ và tràn đầy năng lượng.", isCorrect: false, feedback: "Khách sáo và tốn thời gian. Khách hàng B2B bận rộn muốn đi thẳng vào vấn đề." },
-                        { text: "Em thấy bài chia sẻ của anh trên LinkedIn về thách thức tối ưu hóa chi phí vận hành...", isCorrect: true, feedback: "Chuyên gia! Cá nhân hóa dựa trên hành vi thực tế của đối tác, tạo sự kết nối tự nhiên." },
-                        { text: "Bên em đang có chương trình khuyến mãi cực lớn dành cho doanh nghiệp.", isCorrect: false, feedback: "Trực diện bán hàng quá sớm khiến người đọc đề phòng và xóa email." }
-                    ]
-                },
-                {
-                    context: "Cách đưa số liệu (Case Study) vào email thuyết phục nhất:",
-                    options: [
-                        { text: "Bên em đã làm cho rất nhiều khách hàng lớn thành công.", isCorrect: false, feedback: "Chung chung! Thiếu bằng chứng cụ thể." },
-                        { text: "Tụi em đã giúp đối tác A tăng trưởng doanh thu vượt bậc.", isCorrect: false, feedback: "Mơ hồ! 'Vượt bậc' là bao nhiêu?" },
-                        { text: "Tụi em giúp [Đối thủ cùng ngành của họ] giảm 30% thời gian xử lý đơn hàng chỉ sau 3 tháng triển khai.", isCorrect: true, feedback: "Chuyên gia! Đối thủ cùng ngành + Con số cụ thể + Thời gian rõ ràng = Công thức kích thích cao độ." },
-                        { text: "Dự án của tụi em đạt điểm đánh giá 5 sao từ tất cả các khách hàng.", isCorrect: false, feedback: "Cảm tính! Khách hàng doanh nghiệp quan tâm đến chỉ số ROI (tỷ lệ hoàn vốn) thực tế." }
-                    ]
-                },
-                {
-                    context: "Lời kêu gọi hành động (Call to Action - CTA) tốt nhất ở cuối Cold Email:",
-                    options: [
-                        { text: "Anh/chị thấy thế nào ạ? Mong nhận được phản hồi.", isCorrect: false, feedback: "Quá chung chung, tạo gánh nặng phải suy nghĩ và trả lời dài dòng cho đối tác." },
-                        { text: "Anh ký hợp đồng thử nghiệm với bên em luôn nhé?", isCorrect: false, feedback: "Quá vội vã! Mục tiêu của cold email là chốt cuộc hẹn, không phải chốt hợp đồng." },
-                        { text: "Em xin phép đề xuất một cuộc gọi ngắn 10 phút vào 10:00 sáng Thứ Năm tuần này được không ạ?", isCorrect: true, feedback: "Chuyên gia! CTA cụ thể, rõ ràng, giới hạn thời gian ngắn giúp giảm tối đa rào cản đồng ý." },
-                        { text: "Dưới đây là link sản phẩm, anh cứ vào xem khi nào rảnh.", isCorrect: false, feedback: "Bị động! Khách hàng sẽ không bao giờ tự vào xem nếu không được dẫn dắt." }
-                    ]
-                },
-                {
-                    context: "Sau bao lâu thì bạn nên gửi email nhắc nhở (Follow-up Email) nếu họ chưa trả lời?",
-                    options: [
-                        { text: "Ngay ngày hôm sau để thể hiện sự nhiệt tình.", isCorrect: false, feedback: "Gây phiền hà! Bạn sẽ bị đánh giá là spammer làm phiền khách hàng." },
-                        { text: "Khoảng 3-4 ngày làm việc, bổ sung thêm một giá trị mới (ví dụ: tài liệu nghiên cứu ngành).", isCorrect: true, feedback: "Chuyên gia! Khoảng cách vừa đủ và luôn mang lại giá trị mới thay vì chỉ đòi hỏi câu trả lời." },
-                        { text: "Đợi 1 tháng sau gửi lại từ đầu.", isCorrect: false, feedback: "Quá lâu! Đối tác đã hoàn toàn quên mất bạn là ai." },
-                        { text: "Không follow-up nữa, họ không trả lời nghĩa là không quan tâm.", isCorrect: false, feedback: "Sai lầm! Hơn 70% các cuộc hẹn B2B được chốt từ email follow-up thứ 3 đến thứ 5." }
-                    ]
-                }
-            ],
-            getResult: (score) => {
-                if (score === 5) {
-                    return { sfx: 'win', title: "Master Cold Email! ✉️", color: "var(--primary)", text: "Email của bạn viết cực kỳ cuốn hút, cá nhân hóa tốt và tập trung vào giá trị thực tế. Tỷ lệ mở và phản hồi chắc chắn sẽ rất cao!" };
-                } else if (score >= 3) {
-                    return { sfx: 'correct', title: "Email Khá Ổn! 📝", color: "var(--text-main)", text: `Bạn đúng ${score}/5 câu. Hãy chú ý tối ưu hóa tiêu đề ngắn gọn và CTA cụ thể hơn.` };
-                } else {
-                    return { sfx: 'lose', title: "Cần Viết Lại! 😅", color: "var(--danger)", text: `Bạn đúng ${score}/5 câu. Tránh viết email dài dòng chào bán dịch vụ ngay lập tức. Hãy tập trung vào nỗi đau của họ.` };
-                }
-            }
-        },
-        {
-            id: "game-gatekeeper",
-            title: "Vượt Ải Gatekeeper",
-            description: "Kỹ thuật giao tiếp khôn khéo để vượt qua bộ lọc lễ tân/thư ký và kết nối trực tiếp sếp lớn.",
-            type: "scenario_challenge",
-            questions: [
-                {
-                    context: "Gọi điện gặp lễ tân/thư ký (Gatekeeper) để xin gặp Giám đốc Công nghệ (CTO). Bạn sẽ nói:",
-                    options: [
-                        { text: "Chào bạn, mình bên công ty phần mềm muốn chào bán dịch vụ...", isCorrect: false, feedback: "Bị chặn ngay! Lễ tân được huấn luyện để từ chối các cuộc gọi chào hàng (sales call)." },
-                        { text: "Cho chị gặp anh Bình CTO đi cưng.", isCorrect: false, feedback: "Thiếu chuyên nghiệp và trịch thượng, dễ gây ác cảm với lễ tân." },
-                        { text: "Chào em, anh Nam gửi tài liệu kỹ thuật theo yêu cầu của anh Bình CTO, phiền em nối máy giúp anh xác nhận.", isCorrect: true, feedback: "Chuyên gia! Đưa ra lý do nghiệp vụ cụ thể, hợp lệ để vượt qua bộ lọc ban đầu." },
-                        { text: "Anh là bạn thân của anh Bình, nối máy cho anh.", isCorrect: false, feedback: "Nói dối là điều tối kỵ, khi bị phát hiện bạn sẽ bị đưa vào danh sách đen vĩnh viễn." }
-                    ]
-                },
-                {
-                    context: "Lễ tân từ chối: \"Dạ bên em không nhận cuộc gọi giới thiệu dịch vụ, anh gửi qua email chung nhé.\"",
-                    options: [
-                        { text: "Email chung là gì em, đọc anh ghi.", isCorrect: false, feedback: "Bị động! Gửi vào email chung (info@...) giống như ném đá xuống biển." },
-                        { text: "Em cho anh xin email riêng của sếp đi.", isCorrect: false, feedback: "Lễ tân bảo mật thông tin sếp rất nghiêm ngặt, bạn hỏi trực tiếp sẽ bị từ chối ngay." },
-                        { text: "Anh hiểu quy định của công ty. Anh muốn gửi tài liệu nghiên cứu bảo mật hệ thống dành riêng cho CTO, email của anh Bình là binh.nguyen@... hay tên khác em nhỉ?", isCorrect: true, feedback: "Chuyên gia! Kỹ thuật dò tìm email bằng cách đưa ra giả định đúng cấu trúc doanh nghiệp giúp đối tác dễ dàng đính chính." },
-                        { text: "Vậy thôi anh cảm ơn.", isCorrect: false, feedback: "Đầu hàng quá dễ dàng!" }
-                    ]
-                },
-                {
-                    context: "Thư ký sếp hỏi: \"Sếp em bận lắm, anh trao đổi trước với em đi.\"",
-                    options: [
-                        { text: "Cái này là việc quan trọng của sếp, em không quyết được đâu.", isCorrect: false, feedback: "Hạ thấp vai trò của thư ký sẽ khiến họ block bạn hoàn toàn." },
-                        { text: "Dạ, đây là đề xuất giải pháp tối ưu 15% chi phí hạ tầng cloud mà bên em từng triển khai thành công...", isCorrect: true, feedback: "Chuyên gia! Tôn trọng thư ký, cung cấp cho họ thông tin giá trị tóm tắt để họ báo cáo lại sếp thuyết phục hơn." },
-                        { text: "Dạ không có gì, khi nào sếp rảnh anh gọi lại.", isCorrect: false, feedback: "Lại một cơ hội bị bỏ lỡ do thiếu sự tương tác giá trị." },
-                        { text: "Em cho anh số điện thoại di động của sếp đi.", isCorrect: false, feedback: "Quá đường đột và vi phạm quyền riêng tư của khách hàng." }
-                    ]
-                },
-                {
-                    context: "Bạn tìm thấy số điện thoại cá nhân của sếp trên mạng. Khi gọi trực tiếp cho sếp:",
-                    options: [
-                        { text: "Chào anh, em xin lỗi đã làm phiền nhưng em có giải pháp...", isCorrect: false, feedback: "Yếu thế! Việc mở đầu bằng lời xin lỗi làm giảm giá trị và vị thế chuyên gia của bạn." },
-                        { text: "Chào anh Hùng, em thấy số anh trên mạng nên gọi chào dịch vụ...", isCorrect: false, feedback: "Tạo cảm giác bị theo dõi và xâm phạm thông tin cá nhân." },
-                        { text: "Chào anh Hùng, tôi là Nam từ công ty A. Tôi gọi trực tiếp vì thấy bài viết của anh về khó khăn khi đồng bộ dữ liệu...", isCorrect: true, feedback: "Chuyên gia! Đi thẳng vào giá trị và lý do liên hệ một cách tự tin, chuyên nghiệp." },
-                        { text: "Anh ơi mua phần mềm ủng hộ em đi.", isCorrect: false, feedback: "Nài nỉ mua hàng là hành vi tối kỵ trong giao dịch B2B chuyên nghiệp." }
-                    ]
-                },
-                {
-                    context: "Cách tốt nhất để biến Gatekeeper thành đồng minh của bạn là gì?",
-                    options: [
-                        { text: "Tặng quà cá nhân hoặc hoa hồng cho họ ngay từ đầu.", isCorrect: false, feedback: "Hối lộ sớm dễ bị đánh giá là thiếu chính trực và tạo ác cảm nghiệp vụ." },
-                        { text: "Tôn trọng công việc của họ, hỏi tên, trò chuyện lịch sự và giải thích rõ giá trị cuộc gọi giúp ích gì cho sếp của họ.", isCorrect: true, feedback: "Chuyên gia! Xây dựng mối quan hệ dựa trên sự tôn trọng nghề nghiệp và hỗ trợ lẫn nhau." },
-                        { text: "Dùng quyền lực từ trên ép xuống (ví dụ nói sếp tổng yêu cầu liên hệ).", isCorrect: false, feedback: "Nếu sếp tổng không thực sự yêu cầu, lời nói dối này sẽ hủy hoại uy tín của bạn lập tức." },
-                        { text: "Bỏ qua họ hoàn toàn và chỉ tìm cách add sếp trực tiếp.", isCorrect: false, feedback: "Kể cả khi bạn add sếp thành công, họ vẫn sẽ chuyển thông tin cho thư ký xử lý." }
-                    ]
-                }
-            ],
-            getResult: (score) => {
-                if (score === 5) {
-                    return { sfx: 'win', title: "Bất Bại Vượt Ải Lễ Tân! 🚪", color: "var(--primary)", text: "Kỹ năng giao tiếp và lách rào cản của bạn quá xuất sắc! Bạn biến Gatekeeper thành đồng minh một cách tự nhiên." };
-                } else if (score >= 3) {
-                    return { sfx: 'correct', title: "Vượt Ải Thành Công! 🗝️", color: "var(--text-main)", text: `Bạn đúng ${score}/5 câu. Cần tự tin và lịch sự hơn nữa để tạo lòng tin nhanh chóng.` };
-                } else {
-                    return { sfx: 'lose', title: "Bị Chặn Rất Tiếc! 😅", color: "var(--danger)", text: `Bạn đúng ${score}/5 câu. Đừng chào hàng trực tiếp với lễ tân, hãy nói về lý do nghiệp vụ hợp lệ.` };
-                }
-            }
-        },
-        {
-            id: "game-negotiation",
-            title: "Đàm Phán Hợp Đồng B2B",
-            description: "Thực hành kỹ chiến thuật thương lượng điều khoản hợp đồng để đạt thỏa thuận win-win tối ưu rủi ro.",
-            type: "scenario_challenge",
-            questions: [
-                {
-                    context: "Đối tác yêu cầu giảm giá 15% thì mới ký hợp đồng. Bạn xử lý:",
-                    options: [
-                        { text: "Dạ để em giảm luôn cho anh để ký cho nhanh.", isCorrect: false, feedback: "Nghiệp dư! Giảm giá quá dễ dàng làm giảm giá trị giải pháp và mất biên lợi nhuận." },
-                        { text: "Bên em không giảm được đồng nào đâu ạ.", isCorrect: false, feedback: "Cứng nhắc! Đàm phán B2B cần sự linh hoạt để đạt thỏa thuận win-win." },
-                        { text: "Dạ tụi em có thể hỗ trợ mức giá đó nếu anh đồng ý thanh toán trước 100% hoặc ký cam kết sử dụng 2 năm...", isCorrect: true, feedback: "Chuyên gia! Đàm phán có điều kiện (Give and Take) để bảo vệ giá trị hợp đồng." },
-                        { text: "Vậy thôi bên em không làm dự án này nữa.", isCorrect: false, feedback: "Đầu hàng quá sớm trước một lời đề nghị đàm phán thông thường." }
-                    ]
-                },
-                {
-                    context: "Khách hàng yêu cầu thêm các tính năng phát sinh ngoài scope nhưng không chịu trả thêm phí:",
-                    options: [
-                        { text: "Dạ thôi để bên em làm free luôn coi như khuyến mãi.", isCorrect: false, feedback: "Nguy hiểm! Phình to scope (scope creep) không kiểm soát sẽ làm vỡ tiến độ và chi phí dự án." },
-                        { text: "Bên em không làm, hợp đồng ghi sao làm vậy.", isCorrect: false, feedback: "Cứng nhắc quá mức dễ làm rạn nứt mối quan hệ hợp tác lâu dài." },
-                        { text: "Em đề xuất chúng ta đưa các tính năng phát sinh này vào Phase 2 của dự án với một phụ lục hợp đồng riêng...", isCorrect: true, feedback: "Chuyên gia! Định vị rõ ràng ranh giới hợp đồng đồng thời mở ra cơ hội upsell tăng doanh thu." },
-                        { text: "Tính năng này dễ mà, sếp em duyệt làm luôn cho anh.", isCorrect: false, feedback: "Tự ý hứa hẹn khi chưa được bộ phận kỹ thuật thẩm định rủi ro là sai lầm chết người." }
-                    ]
-                },
-                {
-                    context: "Đối tác B2B muốn áp điều khoản phạt chậm tiến độ cực nặng (vượt quá quy định pháp luật):",
-                    options: [
-                        { text: "Dạ không sao, bên em làm chuẩn chỉ nên ký luôn.", isCorrect: false, feedback: "Quá liều lĩnh! Rủi ro pháp lý và vận hành ngoài tầm kiểm soát có thể giết chết doanh nghiệp của bạn." },
-                        { text: "Bên anh áp phạt vậy là ép người quá đáng.", isCorrect: false, feedback: "Cảm xúc hóa cuộc đàm phán pháp lý làm mất tính chuyên nghiệp." },
-                        { text: "Em đề xuất điều chỉnh mức phạt theo đúng khung Luật Thương mại (tối đa 8%) và áp dụng phạt song phương...", isCorrect: true, feedback: "Chuyên gia! Sử dụng căn cứ pháp luật và nguyên tắc song phương (mutual) để cân bằng quyền lợi." },
-                        { text: "Bên em chưa bao giờ bị phạt nên anh không cần ghi điều khoản này.", isCorrect: false, feedback: "Mơ hồ! Mọi hợp đồng chuyên nghiệp đều phải quy định rõ ràng các kịch bản tranh chấp." }
-                    ]
-                },
-                {
-                    context: "Khách hàng muốn thanh toán sau 90 ngày kể từ khi nghiệm thu (Net 90):",
-                    options: [
-                        { text: "Dạ thanh toán lúc nào cũng được anh.", isCorrect: false, feedback: "Nguy hiểm dòng tiền! Doanh nghiệp của bạn sẽ chịu gánh nặng chi phí vận hành quá lớn." },
-                        { text: "Bên em chỉ chấp nhận thanh toán trước 100%.", isCorrect: false, feedback: "Khó chốt deal! Doanh nghiệp lớn hiếm khi trả trước 100% cho nhà cung cấp mới do quy trình tài chính." },
-                        { text: "Dòng tiền bên em cần tối ưu. Em đề xuất thanh toán theo tiến độ: 40% đặt cọc, 40% sau khi bàn giao bản beta, và 20% Net 30...", isCorrect: true, feedback: "Chuyên gia! Chia nhỏ giai đoạn thanh toán (Milestone-based payment) để giảm thiểu rủi ro dòng tiền cho cả hai bên." },
-                        { text: "Anh không trả sớm là bên em dừng dự án đó.", isCorrect: false, feedback: "Đe dọa đối tác khi đang đàm phán là hành vi hủy hoại lòng tin trầm trọng." }
-                    ]
-                },
-                {
-                    context: "Mục tiêu cốt lõi của một cuộc đàm phán hợp đồng B2B thành công là gì?",
-                    options: [
-                        { text: "Ép đối tác chấp nhận mọi điều khoản có lợi nhất cho mình.", isCorrect: false, feedback: "Đàm phán win-lose sẽ dẫn đến việc triển khai dự án khó khăn và không có hợp tác lâu dài." },
-                        { text: "Ký được hợp đồng bằng mọi giá, kể cả khi chịu thiệt hại.", isCorrect: false, feedback: "Ký hợp đồng lỗ hoặc quá rủi ro sẽ gây hại cho doanh nghiệp của bạn." },
-                        { text: "Đạt được thỏa thuận Win-Win, cân bằng giữa lợi ích kinh tế và mức độ rủi ro chấp nhận được của hai bên...", isCorrect: true, feedback: "Tuyệt vời! Đây là tư duy đàm phán bền vững của mọi chuyên gia B2B." },
-                        { text: "Kéo dài thời gian đàm phán càng lâu càng tốt.", isCorrect: false, feedback: "Lãng phí thời gian và cơ hội kinh doanh của cả hai doanh nghiệp." }
-                    ]
-                }
-            ],
-            getResult: (score) => {
-                if (score === 5) {
-                    return { sfx: 'win', title: "Chuyên Gia Đàm Phán Win-Win! 🤝", color: "var(--primary)", text: "Bạn bảo vệ giá trị hợp đồng rất tốt bằng nguyên tắc trao đổi có điều kiện. Thỏa thuận của bạn luôn bền vững." };
-                } else if (score >= 3) {
-                    return { sfx: 'correct', title: "Thỏa Thuận Tốt! 📊", color: "var(--text-main)", text: `Bạn đúng ${score}/5 câu. Cần tránh nhượng bộ quá nhanh mà không đòi hỏi lại quyền lợi tương xứng.` };
-                } else {
-                    return { sfx: 'lose', title: "Chịu Nhiều Thiệt Thòi! 😅", color: "var(--danger)", text: `Bạn đúng ${score}/5 câu. Hãy nhớ: luôn đàm phán có điều kiện (Give and Take) để tránh bị ép giá.` };
+                    return { sfx: 'lose', title: "BD Thủ Công (Cơ Bắp) 😅", color: "var(--danger)", text: `Bạn đạt ${score}/10 điểm. Bạn đang làm việc rất chăm chỉ nhưng thiếu quy trình và công cụ hỗ trợ. Hãy bắt đầu xây dựng phễu khách hàng và sử dụng CRM ngay.` };
                 }
             }
         },
         {
             id: "game-pitching",
-            title: "Kỹ Năng Pitching & Slide Thuyết Phục",
-            description: "Làm sao để trình bày giải pháp thuyết phục Ban giám đốc/C-level gật đầu đồng ý thử nghiệm.",
+            title: "Thử Thách 3.2: Pitching & Slide Thuyết Phục",
+            description: "Lập luận sắc bén thuyết phục Ban giám đốc/C-level gật đầu đồng ý thử nghiệm.",
             type: "scenario_challenge",
+            icon: "📊",
+            level: 3,
             questions: [
                 {
-                    context: "Khi thiết kế slide mở đầu cho buổi Pitching với Ban giám đốc đối tác:",
+                    context: "Khi trình bày slide cho Hội Đồng Quản Trị hoặc C-Level, cấu trúc thuyết trình nào hiệu quả nhất?",
                     options: [
-                        { text: "Slide giới thiệu lịch sử hình thành 20 năm của công ty bạn.", isCorrect: false, feedback: "Tẻ nhạt! Ban giám đốc không muốn nghe lịch sử của bạn, họ muốn nghe về vấn đề của họ." },
-                        { text: "Slide nêu rõ nỗi đau (pain point) và tổn thất tài chính họ đang gặp phải...", isCorrect: true, feedback: "Chuyên gia! Đánh thẳng vào vấn đề cốt lõi giúp thu hút sự chú ý của C-level lập tức." },
-                        { text: "Slide danh sách tất cả các giải thưởng công ty bạn đạt được.", isCorrect: false, feedback: "Khoe khoang quá sớm trước khi chứng minh được giá trị thực tế cho đối tác." },
-                        { text: "Slide bảng giá chi tiết các gói dịch vụ.", isCorrect: false, feedback: "Quá vội vàng! Đừng nói về giá trước khi họ thấy giá trị sản phẩm." }
+                        { text: "Dành 20 phút giới thiệu lịch sử công ty và chứng chỉ năng lực, sau đó giới thiệu sản phẩm.", isCorrect: false, feedback: "Thất bại! Sếp lớn không có thời gian nghe giới thiệu bản thân. Họ muốn thấy kết quả ngay." },
+                        { text: "Bắt đầu trực tiếp bằng Pain Point cốt lõi của họ, đề xuất Giải pháp định lượng tài chính, minh chứng case study thành công...", isCorrect: true, feedback: "Tuyệt vời! Cấu trúc đi thẳng vào vấn đề và tài chính là cách duy nhất thuyết phục C-level." },
+                        { text: "Đọc từng chữ trên slide từ đầu đến cuối.", isCorrect: false, feedback: "Cách thuyết trình buồn ngủ, phản cảm và thiếu tôn trọng người nghe." }
                     ]
                 },
                 {
-                    context: "Bạn có 20 phút để Pitching giải pháp. Cách phân bổ thời gian tối ưu nhất là:",
+                    context: "Slide của bạn chứa quá nhiều chữ và bảng biểu kỹ thuật phức tạp. Bạn tối ưu hóa thế nào?",
                     options: [
-                        { text: "Dành 15 phút nói về sản phẩm, 5 phút hỏi đáp.", isCorrect: false, feedback: "Nói quá nhiều về mình sẽ khiến khách hàng mệt mỏi và không tương tác." },
-                        { text: "Dành 10 phút trình bày vấn đề & giải pháp cốt lõi, 10 phút thảo luận phản hồi...", isCorrect: true, feedback: "Chuyên gia! Tỷ lệ 50/50 giúp lắng nghe sâu sắc các phản hồi và làm rõ nhu cầu thực tế." },
-                        { text: "Nói liên tục 20 phút không cho khách hàng ngắt lời.", isCorrect: false, feedback: "Thuyết trình một chiều là cách nhanh nhất để giết chết một buổi pitching." },
-                        { text: "Không cần chuẩn bị slide, vào phòng họp nói chuyện ngẫu hứng.", isCorrect: false, feedback: "Thiếu chuẩn bị là chuẩn bị cho sự thất bại." }
+                        { text: "Giữ nguyên vì đó là tài liệu kỹ thuật quan trọng.", isCorrect: false, feedback: "Slide quá tải thông tin khiến người xem mất tập trung vào thông điệp lõi." },
+                        { text: "Thay thế bằng các biểu đồ trực quan hóa dữ liệu (Data Visualization), tóm tắt các chỉ số ROI/tiết kiệm chi phí bằng số lớn nổi bật...", isCorrect: true, feedback: "Chính xác! Trực quan hóa giúp sếp lớn nắm bắt nhanh chóng bức tranh tài chính toàn cảnh." },
+                        { text: "Xóa hết bảng biểu chỉ giữ lại hình nền minh họa cho đẹp.", isCorrect: false, feedback: "Thiếu dữ liệu minh chứng khiến bài thuyết trình thiếu tính thuyết phục." }
                     ]
                 },
                 {
-                    context: "Khách hàng ngắt lời giữa buổi Pitching để hỏi một câu hỏi hóc búa về lỗi hệ thống:",
+                    context: "Khách hàng ngắt lời giữa buổi thuyết trình và hỏi dồn dập vào khâu rủi ro triển khai. Bạn ứng xử ra sao?",
                     options: [
-                        { text: "Dạ để em nói hết phần này rồi trả lời sau nhé.", isCorrect: false, feedback: "Thiếu tôn trọng! Trì hoãn câu hỏi của khách hàng làm mất đi nhịp tương tác tự nhiên." },
-                        { text: "Sản phẩm bên em hoàn hảo, không bao giờ có lỗi đó đâu ạ.", isCorrect: false, feedback: "Nói dối hoặc tự tin thái quá sẽ bị khách hàng đánh giá là thiếu trung thực." },
-                        { text: "Câu hỏi rất thực tế. Bên em xử lý lỗi đó bằng quy trình backup tự động và cam kết SLA đền bù...", isCorrect: true, feedback: "Chuyên gia! Trực diện trả lời bằng giải pháp kỹ thuật cụ thể và cam kết trách nhiệm rõ ràng." },
-                        { text: "Cái này thuộc bộ phận kỹ thuật, em làm sales nên không biết.", isCorrect: false, feedback: "Đẩy trách nhiệm làm giảm lòng tin của khách hàng vào năng lực chuyên môn của bạn." }
-                    ]
-                },
-                {
-                    context: "Cách tốt nhất để kết thúc một buổi Pitching B2B:",
-                    options: [
-                        { text: "Cảm ơn và chúc khách hàng may mắn.", isCorrect: false, feedback: "Nhạt nhòa, thiếu định hướng tiếp theo." },
-                        { text: "Đưa ra lộ trình thử nghiệm (POC) miễn phí trong 2 tuần kèm các tiêu chí đo lường thành công rõ ràng...", isCorrect: true, feedback: "Chuyên gia! Đưa ra hành động tiếp theo cụ thể và có rào cản thấp để khách hàng dễ dàng đồng ý tiến bước tiếp theo." },
-                        { text: "Yêu cầu họ ký nháp biên bản ghi nhớ hợp tác ngay tại chỗ.", isCorrect: false, feedback: "Ép buộc quá sớm khi họ chưa kịp thảo luận nội bộ." },
-                        { text: "Hỏi: 'Anh chị có mua sản phẩm bên em không?'", isCorrect: false, feedback: "Câu hỏi đóng quá ngây thơ và thiếu chuyên nghiệp ở phân khúc doanh nghiệp." }
-                    ]
-                },
-                {
-                    context: "Quy tắc thiết kế slide B2B hiệu quả nhất là gì?",
-                    options: [
-                        { text: "Càng nhiều chữ càng tốt để thể hiện sự chi tiết.", isCorrect: false, feedback: "Slide quá nhiều chữ sẽ khiến người nghe mất tập trung vào lời bạn nói." },
-                        { text: "Sử dụng thật nhiều hiệu ứng chuyển động bắt mắt.", isCorrect: false, feedback: "Gây rối mắt và giảm đi tính nghiêm túc chuyên nghiệp của buổi họp doanh nghiệp." },
-                        { text: "Sử dụng sơ đồ trực quan, số liệu rõ ràng và quy tắc 1 ý tưởng chính cho mỗi slide...", isCorrect: true, feedback: "Tuyệt vời! Slide rõ ràng giúp truyền tải thông điệp nhanh chóng và ấn tượng." },
-                        { text: "Copy toàn bộ file Word tài liệu kỹ thuật dán vào slide.", isCorrect: false, feedback: "Lười biếng và phản tác dụng hoàn toàn." }
+                        { text: "Dạ xin anh để em thuyết trình xong slide rồi em trả lời sau.", isCorrect: false, feedback: "Từ chối trả lời ngay làm mất sự hứng thú và tạo cảm giác bạn đang trốn tránh rủi ro." },
+                        { text: "Đồng cảm, dừng slide và trả lời thẳng thắn vào phương án quản trị rủi ro đã chuẩn bị sẵn, sau đó liên kết lại bài giải pháp...", isCorrect: true, feedback: "Chuyên gia xuất sắc! Luôn sẵn sàng đối thoại trực diện rủi ro để khẳng định tính thực chiến của giải pháp." },
+                        { text: "Khẳng định sản phẩm hoàn hảo 100% không có bất kỳ rủi ro nào.", isCorrect: false, feedback: "Hứa hẹn thiếu thực tế tạo cảm giác không đáng tin cậy." }
                     ]
                 }
             ],
             getResult: (score) => {
-                if (score === 5) {
+                if (score === 3) {
                     return { sfx: 'win', title: "Siêu Sao Thuyết Trình B2B! 📊", color: "var(--primary)", text: "Slide của bạn trực quan, cấu trúc chặt chẽ và bài thuyết trình thu hút C-level từ giây đầu tiên!" };
-                } else if (score >= 3) {
-                    return { sfx: 'correct', title: "Buổi Pitching Khá! 🗣️", color: "var(--text-main)", text: `Bạn đúng ${score}/5 câu. Nên phân bổ nhiều thời gian hơn cho việc hỏi đáp và lắng nghe khách hàng.` };
+                } else if (score >= 2) {
+                    return { sfx: 'correct', title: "Buổi Pitching Khá! 🗣️", color: "var(--text-main)", text: `Bạn đúng ${score}/3 câu. Nên phân bổ nhiều thời gian hơn cho việc hỏi đáp và lắng nghe khách hàng.` };
                 } else {
-                    return { sfx: 'lose', title: "Bài Pitching Tẻ Nhạt! 😅", color: "var(--danger)", text: `Bạn đúng ${score}/5 câu. Đừng biến slide thành file Word đọc tài liệu. Hãy tập trung vào Pain Point.` };
-                }
-            }
-        },
-        {
-            id: "game-eq",
-            title: "EQ trong B2B Sales",
-            description: "Khảo sát chỉ số EQ - khả năng chịu áp lực, thấu cảm và tự tạo động lực của chiến binh BD.",
-            type: "suitability_scoring",
-            questions: [
-                {
-                    context: "Khi khách hàng B2B tỏ ra giận dữ và phàn nàn rất nặng lời về chất lượng dịch vụ:",
-                    options: [
-                        { text: "Lập tức tranh cãi và giải thích lỗi không phải do bên mình.", points: 0, feedback: "Tăng thêm xung đột và đổ thêm dầu vào lửa." },
-                        { text: "Lắng nghe hết cuộc gọi, ghi chú lại và xin lỗi lịch sự, sau đó chuyển giao cho bộ phận kỹ thuật.", points: 1, feedback: "Xử lý chuẩn mực nhưng cần chủ động đưa ra thời gian cam kết khắc phục cụ thể." },
-                        { text: "Đồng cảm với thiệt hại của họ, lắng nghe không ngắt lời, xác định nguyên nhân cốt lõi và cam kết lộ trình xử lý đền bù cụ thể.", points: 2, feedback: "Xuất sắc! EQ cao giúp biến một khách hàng đang giận dữ thành đối tác trung thành lâu dài." }
-                    ]
-                },
-                {
-                    context: "Khi một đối tác thân thiết từ chối hợp đồng này để chọn đối thủ cạnh tranh:",
-                    options: [
-                        { text: "Tỏ thái độ giận dỗi và không bao giờ liên hệ lại nữa.", points: 0, feedback: "Hủy hoại mối quan hệ cá nhân dài hạn chỉ vì một deal ngắn hạn." },
-                        { text: "Chúc mừng họ lịch sự và hỏi lý do tại sao họ chọn đối thủ để rút kinh nghiệm.", points: 1, feedback: "Tốt, giúp tích lũy dữ liệu thị trường và giữ mối quan hệ ôn hòa." },
-                        { text: "Tôn trọng quyết định của họ, gửi lời chúc mừng chân thành và đề xuất làm phương án dự phòng (backup plan) khi nhà cung cấp kia gặp sự cố.", points: 2, feedback: "Chuyên gia EQ đỉnh cao! Cửa của bạn luôn mở và đối tác sẽ nhớ tới bạn ngay khi đối thủ xảy ra lỗi vận hành." }
-                    ]
-                },
-                {
-                    context: "Bạn có khả năng kiên trì tiếp tục liên hệ (outreach) sau khi bị đối tác từ chối thẳng thừng bao nhiêu lần?",
-                    options: [
-                        { text: "Bỏ cuộc ngay lần đầu tiên bị từ chối để tránh mất thời gian.", points: 0, feedback: "Tỷ lệ chốt deal B2B trung bình cần từ 5-8 điểm chạm." },
-                        { text: "Thử gửi thêm 1-2 email follow-up giãn cách rồi dừng lại nếu họ không trả lời.", points: 1, feedback: "Nỗ lực ở mức trung bình, cần đa dạng hóa kênh liên hệ (LinkedIn, Phone, Event)." },
-                        { text: "Tiếp tục xây dựng mối quan hệ bằng cách chia sẻ tài liệu giá trị định kỳ, kết nối LinkedIn và kiên trì tiếp cận trong 3-6 tháng.", points: 2, feedback: "Tố chất thép của siêu sao BD! Kiên trì có chiến thuật luôn mang lại quả ngọt." }
-                    ]
-                },
-                {
-                    context: "Khi làm việc nhóm với bộ phận Kỹ thuật/Sản phẩm (Product/Tech team) trong công ty:",
-                    options: [
-                        { text: "Luôn thúc ép họ làm nhanh tính năng mới theo yêu cầu của khách hàng mà không cần quan tâm đến tài nguyên hệ thống.", points: 0, feedback: "Gây xung đột nội bộ nghiêm trọng và làm giảm chất lượng sản phẩm." },
-                        { text: "Trao đổi lịch sự, gửi file spec yêu cầu rõ ràng và chờ họ xếp lịch làm việc.", points: 1, feedback: "Cách làm việc chuẩn quy trình nhưng thiếu sự phối hợp chủ động." },
-                        { text: "Tìm hiểu quy trình kỹ thuật của họ, cùng thảo luận để đơn giản hóa yêu cầu của khách và bảo vệ tech team trước sức ép vô lý.", points: 2, feedback: "Tuyệt vời! Khả năng kết nối nội bộ (internal alignment) tốt giúp BD có được sự hỗ trợ tối đa từ tech team." }
-                    ]
-                },
-                {
-                    context: "Bạn tự đánh giá thế nào về khả năng tự tạo động lực (self-motivation) khi không có doanh số trong 2-3 tháng liền?",
-                    options: [
-                        { text: "Cực kỳ chán nản, mất phương hướng và nghĩ đến việc chuyển nghề.", points: 0, feedback: "BD chu kỳ deal dài rất cần tinh thần thép và sự kiên định." },
-                        { text: "Cố gắng làm việc theo đúng KPI được giao và mong chờ may mắn sẽ đến.", points: 1, feedback: "Bài động! Động lực cần đến từ việc phân tích nguyên nhân và cải tiến phương pháp." },
-                        { text: "Xem đây là chu kỳ bình thường của B2B, chủ động phân tích phễu chuyển đổi, tối ưu hóa tệp lead và tin tưởng vào quy trình tích lũy.", points: 2, feedback: "Tư duy đỉnh cao! Sự kiên định dựa trên số liệu giúp bạn vượt qua mọi khó khăn của thị trường." }
-                    ]
-                }
-            ],
-            getResult: (points) => {
-                if (points >= 8) {
-                    return { sfx: 'win', title: "BD Có EQ Đỉnh Cao! ❤️", color: "var(--primary)", text: `Bạn đạt ${points}/10 điểm. Khả năng thấu cảm, kiên trì và quản trị mối quan hệ nội bộ của bạn là hình mẫu lý tưởng.` };
-                } else if (points >= 5) {
-                    return { sfx: 'correct', title: "EQ Trung Bình Khá! 📈", color: "var(--text-main)", text: `Bạn đạt ${points}/10 điểm. Cần rèn luyện thêm khả năng giữ bình tĩnh trước phàn nàn và kiên trì theo đuổi deal.` };
-                } else {
-                    return { sfx: 'lose', title: "Cần Quản Trị Cảm Xúc! 😅", color: "var(--danger)", text: `Bạn đạt ${points}/10 điểm. BD là một cuộc marathon dài hạn. Hãy rèn luyện sự kiên trì và đồng cảm sâu sắc hơn.` };
+                    return { sfx: 'lose', title: "Bài Pitching Tẻ Nhạt! 😅", color: "var(--danger)", text: `Bạn đúng ${score}/3 câu. Đừng biến slide thành file Word đọc tài liệu. Hãy tập trung vào Pain Point.` };
                 }
             }
         },
         {
             id: "game-upsell",
-            title: "Upsell & Giữ Chân Khách Hàng",
-            description: "Chăm sóc khách hàng cũ hiệu quả để tối ưu hóa giá trị tài khoản trọn đời (LTV) và tăng doanh thu upsell.",
+            title: "Thử Thách 3.3: Upsell & Giữ Chân Khách",
+            description: "Chăm sóc khách hàng cũ hiệu quả để tối ưu hóa giá trị trọn đời (LTV) và thúc đẩy gia hạn hợp đồng.",
             type: "scenario_challenge",
+            icon: "📈",
+            level: 3,
             questions: [
                 {
-                    context: "Sau khi ký hợp đồng thành công, bước tiếp theo của BD là gì?",
+                    context: "Khách hàng cũ chuẩn bị đến hạn tái ký hợp đồng nhưng im lặng không phản hồi. Bạn kích hoạt thương vụ thế nào?",
                     options: [
-                        { text: "Bàn giao toàn bộ cho đội ngũ vận hành (Operations/CS) và tập trung tìm khách mới ngay lập tức.", isCorrect: false, feedback: "Nghiệp dư! Bỏ rơi khách hàng sau khi ký hợp đồng làm giảm tỷ lệ tái ký và upsell." },
-                        { text: "Đợi đến khi sắp hết hạn hợp đồng mới liên hệ lại để mời gia hạn.", isCorrect: false, feedback: "Quá muộn! Đối thủ có thể đã tiếp cận và cướp khách hàng từ trước." },
-                        { text: "Tổ chức buổi họp khởi động (Kick-off meeting) cùng CS team để bàn giao chi tiết kỳ vọng của khách và duy trì check-in định kỳ 3 tháng...", isCorrect: true, feedback: "Chuyên gia! Đảm bảo khách hàng đạt được giá trị mong muốn (Customer Success) là gốc rễ của upsell." },
-                        { text: "Thường xuyên gọi điện hỏi xem khách hàng có cần mua thêm gì khác không.", isCorrect: false, feedback: "Gây phiền hà! Đừng cố bán hàng khi chưa mang lại giá trị thực tế." }
+                        { text: "Gửi báo giá đề nghị tái ký ngay lập tức.", isCorrect: false, feedback: "Thiếu giá trị thúc đẩy, tạo cảm giác chỉ muốn lấy tiền của họ." },
+                        { text: "Hẹn gặp đánh giá hiệu quả (Quarterly Business Review), chứng minh các giá trị tài chính bên bạn đã mang lại sau 1 năm và đề xuất kế hoạch năm tới...", isCorrect: true, feedback: "Chuyên gia! Dùng số liệu thực tế chứng minh giá trị (ROI) đã bàn giao là cách tốt nhất để tái ký." },
+                        { text: "Báo cáo sếp chuẩn bị thanh lý hợp đồng.", isCorrect: false, feedback: "Bỏ cuộc quá sớm khi chưa nỗ lực kết nối lại." }
                     ]
                 },
                 {
-                    context: "Khách hàng phàn nàn: \"Hệ thống của bên em chạy rất chậm và ảnh hưởng đến công việc của tụi anh.\"",
-                    options: [
-                        { text: "\"Dạ do mạng nhà anh yếu đó chứ bên em chạy nhanh lắm.\"", isCorrect: false, feedback: "Đổ lỗi cho khách hàng là cách nhanh nhất để chấm dứt hợp tác." },
-                        { text: "\"Dạ em ghi nhận, để em báo kỹ thuật kiểm tra khi nào rảnh.\"", isCorrect: false, feedback: "Thiếu cam kết khẩn cấp khiến khách hàng cảm thấy không được tôn trọng." },
-                        { text: "\"Em xin lỗi vì trải nghiệm không tốt này. Em đã yêu cầu Tech Lead kiểm tra hệ thống và sẽ gửi báo cáo khắc phục cho anh trước 17:00 hôm nay...\"", isCorrect: true, feedback: "Chuyên gia! Chủ động nhận trách nhiệm, đưa ra thời hạn cụ thể và lộ trình khắc phục rõ ràng." },
-                        { text: "\"Anh nâng cấp lên gói Enterprise đắt tiền hơn là hết chậm liền.\"", isCorrect: false, feedback: "Vo lý! Bán thêm sản phẩm khi giải pháp cũ đang lỗi là hành vi phi đạo đức kinh doanh." }
-                    ]
-                },
-                {
-                    context: "Cơ hội tốt nhất để đề xuất bán thêm (Upsell/Cross-sell) cho khách hàng cũ là:",
-                    options: [
-                        { text: "Khi họ đang gặp sự cố hệ thống nghiêm trọng.", isCorrect: false, feedback: "Tệ hại! Họ đang bực mình mà bạn đi bán hàng sẽ phản tác dụng lập tức." },
-                        { text: "Ngay ngày đầu tiên nghiệm thu Phase 1 dự án.", isCorrect: false, feedback: "Quá sớm! Họ chưa kịp cảm nhận giá trị thực tế của giải pháp." },
-                        { text: "Ngay sau khi bạn gửi báo cáo chứng minh dự án của họ đạt vượt chỉ số ROI cam kết (ví dụ tăng 30% doanh số)...", isCorrect: true, feedback: "Chuyên gia! Thời điểm khách hàng hạnh phúc và thấy rõ giá trị thực tế là cơ hội vàng để mở rộng quy mô hợp tác." },
-                        { text: "Cuối năm khi công ty bạn cần chạy chỉ tiêu doanh số.", isCorrect: false, feedback: "Bán hàng dựa trên nhu cầu của bạn chứ không phải của khách hàng là thất bại." }
-                    ]
-                },
-                {
-                    context: "Khách hàng cũ muốn hủy hợp đồng vì lý do cắt giảm ngân sách toàn công ty:",
+                    context: "Đối tác đang gặp khó khăn tài chính đột xuất và muốn hủy hợp đồng dịch vụ trước hạn. Bạn xử lý thế nào?",
                     options: [
                         { text: "Chấp nhận hủy ngay và chúc họ may mắn.", isCorrect: false, feedback: "Thiếu sự nỗ lực cứu vãn và giữ mối quan hệ." },
-                        { text: "Ép họ phải bồi thường hợp đồng theo đúng điều khoản cam kết.", isCorrect: false, feedback: "Cứng nhắc! Ép buộc pháp lý có thể giúp bạn lấy được chút tiền phạt nhưng mất vĩnh viễn mối quan hệ trong tương lai." },
                         { text: "Đề xuất gói dịch vụ thu gọn (Downgrade) giữ lại tính năng lõi với chi phí thấp hơn để giúp họ vượt khó, duy trì sự hiện diện của bạn...", isCorrect: true, feedback: "Chuyên gia! Linh hoạt đồng hành cùng khó khăn của đối tác để giữ chân tài khoản dài hạn." },
-                        { text: "Nói xấu ban giám đốc của họ thiếu tầm nhìn tài chính.", isCorrect: false, feedback: "Hành vi phi chuyên nghiệp cực kỳ nghiêm trọng." }
+                        { text: "Ép họ phải bồi thường hợp đồng theo đúng điều khoản cam kết.", isCorrect: false, feedback: "Cứng nhắc! Ép buộc pháp lý có thể giúp bạn lấy được chút tiền phạt nhưng mất vĩnh viễn mối quan hệ trong tương lai." }
                     ]
                 },
                 {
                     context: "Tỷ lệ đóng góp doanh thu lý tưởng nhất của khách hàng cũ (Retention Revenue) đối với một doanh nghiệp B2B bền vững là:",
                     options: [
-                        { text: "Gần 0%, doanh nghiệp chỉ cần tập trung săn khách hàng mới (New Hunter).", isCorrect: false, feedback: "Chi phí tìm khách mới (CAC) đắt gấp 5-25 lần chi phí giữ khách cũ. Doanh nghiệp sẽ kiệt quệ tài chính." },
                         { text: "Khoảng 20% doanh thu toàn công ty.", isCorrect: false, feedback: "Vẫn quá thấp, phản ánh dịch vụ sau bán hàng kém khiến khách rời đi liên tục." },
                         { text: "Chiếm từ 60% đến 80% doanh thu hàng năm nhờ cơ chế gia hạn và upsell (Farm & Expand)...", isCorrect: true, feedback: "Chính xác! Khách hàng cũ là mỏ vàng bền vững của mọi mô hình B2B thành công." },
                         { text: "100%, không cần tìm bất kỳ khách hàng mới nào.", isCorrect: false, feedback: "Rủi ro tập trung quá cao! Nếu một vài khách hàng lớn rời đi, công ty sẽ sụp đổ lập tức." }
@@ -735,12 +723,98 @@ const initB2BApp = () => {
                 }
             ],
             getResult: (score) => {
-                if (score === 5) {
+                if (score === 3) {
                     return { sfx: 'win', title: "Vua Upsell & Chăm Sóc Khách Hàng! 📈", color: "var(--primary)", text: "Khách hàng cũ sẽ liên tục tái ký và mua thêm giải pháp nhờ quy trình chăm sóc chuyên nghiệp của bạn!" };
-                } else if (score >= 3) {
-                    return { sfx: 'correct', title: "Tỷ Lệ Giữ Chân Tốt! 📊", color: "var(--text-main)", text: `Bạn đúng ${score}/5 câu. Hãy tận dụng thời điểm khách hàng đạt được giá trị thực tế để đề xuất upsell.` };
+                } else if (score >= 2) {
+                    return { sfx: 'correct', title: "Tỷ Lệ Giữ Chân Tốt! 📊", color: "var(--text-main)", text: `Bạn đúng ${score}/3 câu. Hãy tận dụng thời điểm khách hàng đạt được giá trị thực tế để đề xuất upsell.` };
                 } else {
-                    return { sfx: 'lose', title: "Khách Hàng Rời Đi Nhiều! 😅", color: "var(--danger)", text: `Bạn đúng ${score}/5 câu. Đừng bỏ rơi khách sau khi ký hợp đồng. Customer Success là chìa khóa của sự bền vững.` };
+                    return { sfx: 'lose', title: "Khách Hàng Rời Đi Nhiều! 😅", color: "var(--danger)", text: `Bạn đúng ${score}/3 câu. Đừng bỏ rơi khách sau khi ký hợp đồng. Customer Success là chìa khóa của sự bền vững.` };
+                }
+            }
+        },
+        {
+            id: "game-partnership",
+            title: "Thử Thách 3.4: Phát Triển Đối Tác Chiến Lược",
+            description: "Thực hành thiết lập liên minh đối tác và xây dựng chương trình Co-Marketing/Reseller hiệu quả.",
+            type: "scenario_challenge",
+            icon: "🤝",
+            level: 3,
+            questions: [
+                {
+                    context: "Bạn muốn thuyết phục một đối tác công nghệ lớn tích hợp chéo (cross-integration) sản phẩm của họ với bạn. Đâu là lập luận thuyết phục nhất?",
+                    options: [
+                        { text: "Sản phẩm bên em tích hợp vào sẽ giúp hệ thống bên anh trông hiện đại hơn.", isCorrect: false, feedback: "Lập luận quá mơ hồ, thiếu định lượng giá trị kinh doanh thực tế." },
+                        { text: "Tích hợp chéo sẽ giải quyết trọn gói bài toán X cho tệp khách hàng chung, tăng tỷ lệ giữ chân khách (Retention) và tạo doanh thu phụ trội...", isCorrect: true, feedback: "Chuyên gia xuất sắc! Nêu bật được lợi ích sát sườn về giữ chân khách hàng và doanh thu chung." },
+                        { text: "Bên em sẽ trả anh hoa hồng giới thiệu 10%.", isCorrect: false, feedback: "Đối tác lớn quan tâm đến giá trị giải pháp hệ thống hơn là hoa hồng nhỏ lẻ." }
+                    ]
+                },
+                {
+                    context: "Khi ký kết hợp tác Reseller (Đại lý bán lại), rào cản lớn nhất khiến đại lý không chủ động bán sản phẩm của bạn là gì?",
+                    options: [
+                        { text: "Do chiết khấu hoa hồng của bạn chưa đủ cao.", isCorrect: false, feedback: "Chưa hẳn, chiết khấu cao mà khó bán thì đại lý vẫn bỏ xó sản phẩm." },
+                        { text: "Do nhân viên sale của đại lý chưa được đào tạo (Enablement) kỹ và không có tài liệu marketing hỗ trợ sẵn để tự tin tư vấn...", isCorrect: true, feedback: "Chính xác! Sales Enablement là yếu tố sống còn để kích hoạt kênh phân phối bán hàng." },
+                        { text: "Do sản phẩm của bạn không có thương hiệu lớn toàn cầu.", isCorrect: false, feedback: "Sản phẩm ngách giải quyết tốt nỗi đau vẫn bán chạy qua kênh đại lý." }
+                    ]
+                },
+                {
+                    context: "Chỉ số hàng đầu (Leading Indicator) quan trọng nhất để đánh giá sức khỏe của một mối quan hệ Đối Tác Chiến Lược là gì?",
+                    options: [
+                        { text: "Số lượng biên bản ghi nhớ hợp tác (MOU) đã ký.", isCorrect: false, feedback: "MOU chỉ là thủ tục ban đầu, không phản ánh năng lực vận hành thực tế." },
+                        { text: "Số lượng cơ hội chất lượng được giới thiệu qua lại (Referral Pipeline) và tần suất họp đồng tiếp thị (Co-selling)...", isCorrect: true, feedback: "Chính xác! Pipeline chuyển giao thực tế phản ánh mức độ cam kết và hiệu quả hợp tác." },
+                        { text: "Số lượng ảnh chụp lễ ký kết đăng báo.", isCorrect: false, feedback: "Đó chỉ là hoạt động PR bề nổi, không mang lại giá trị kinh tế trực tiếp." }
+                    ]
+                }
+            ],
+            getResult: (score) => {
+                if (score === 3) {
+                    return { sfx: 'win', title: "Vua Đối Tác Chiến Lược! 🤝", color: "var(--primary)", text: "Tư duy thiết lập liên minh và kích hoạt kênh phân phối của bạn rất đẳng cấp và bài bản!" };
+                } else if (score >= 2) {
+                    return { sfx: 'correct', title: "Kỹ Năng Hợp Tác Khá! 📊", color: "var(--text-main)", text: `Bạn đúng ${score}/3 câu. Hãy chú ý hơn đến quy trình Sales Enablement cho đại lý.` };
+                } else {
+                    return { sfx: 'lose', title: "Cần Trau Dồi Thêm! 😅", color: "var(--danger)", text: `Bạn đúng ${score}/3 câu. Hãy nghiên cứu kỹ mô hình Channel Sales và Strategic Alliance.` };
+                }
+            }
+        },
+        {
+            id: "game-kpi",
+            title: "Thử Thách 3.5: Thiết Kế KPIs & Phễu Ngược",
+            description: "Thực hành quy đổi mục tiêu doanh thu thành chỉ số hành động cụ thể cho đội ngũ BD.",
+            type: "scenario_challenge",
+            icon: "📊",
+            level: 3,
+            questions: [
+                {
+                    context: "Mục tiêu doanh thu outbound mới năm nay là 10 tỷ. Giá trị trung bình 1 deal chốt là 500 triệu. Tỷ lệ chốt sau demo là 20%. Tỷ lệ demo thành công từ lead là 10%. Hỏi cần bao nhiêu lead thô ban đầu?",
+                    options: [
+                        { text: "Cần 500 lead thô.", isCorrect: false, feedback: "Tính toán sai số lượng lead chuyển đổi qua phễu." },
+                        { text: "Cần 1000 lead thô (10 tỷ = 20 deal chốt -> Cần 100 cuộc họp demo -> Cần 1000 lead thô)...", isCorrect: true, feedback: "Chính xác! Lập kế hoạch phễu ngược chuẩn xác giúp định lượng rõ rệt khối lượng công việc." },
+                        { text: "Cần 2000 lead thô.", isCorrect: false, feedback: "Con số quá cao không cần thiết, làm giảm hiệu suất quản lý lead." }
+                    ]
+                },
+                {
+                    context: "Để đánh giá hiệu suất hàng tuần của một BD Outbound, chỉ số nào dưới đây là KPI Hành Động (Leading Indicator) phù hợp nhất?",
+                    options: [
+                        { text: "Doanh số thực tế thu về cuối tháng.", isCorrect: false, feedback: "Đây là KPI Kết Quả (Lagging Indicator), không giúp kiểm soát hành vi hàng ngày." },
+                        { text: "Số lượng tài khoản mục tiêu được nghiên cứu sâu và gửi email/Zalo cá nhân hóa (Accounts Outreached)...", isCorrect: true, feedback: "Chính xác! Đây là chỉ số hành vi kiểm soát được trực tiếp, quyết định đầu vào của phễu." },
+                        { text: "Số lượng hợp đồng đang chờ pháp lý duyệt.", isCorrect: false, feedback: "Chỉ số này phụ thuộc nhiều vào các yếu tố khách quan và quy trình nội bộ." }
+                    ]
+                },
+                {
+                    context: "Phễu ngược báo cáo khâu 'Họp Demo xong khách im lặng' chiếm 80% tỷ lệ rơi rớt. Bạn sửa lỗi hệ thống này thế nào?",
+                    options: [
+                        { text: "Tăng cường chạy quảng cáo tìm thêm lead mới.", isCorrect: false, feedback: "Lãng phí ngân sách! Phễu đang bị rò rỉ ở giữa, đổ thêm nước vào chỉ làm lãng phí." },
+                        { text: "Chuẩn hóa tiêu chí thẩm định chất lượng lead trước demo (Qualification) và ràng buộc 'Bước tiếp theo' (Next Step) ở cuối buổi demo...", isCorrect: true, feedback: "Chuyên gia xuất sắc! Sửa lỗi ngay tại khâu lọc lead và khâu chốt cuộc họp để giữ chân cơ hội." },
+                        { text: "Yêu cầu đội sale gọi điện giục khách hàng ký hợp đồng mỗi ngày.", isCorrect: false, feedback: "Làm khách hàng phiền lòng và đẩy deal vào bế tắc." }
+                    ]
+                }
+            ],
+            getResult: (score) => {
+                if (score === 3) {
+                    return { sfx: 'win', title: "Master Phễu Ngược & KPIs! 📊", color: "var(--primary)", text: "Tư duy quản trị dữ liệu và thiết kế hệ thống vận hành BD của bạn rất chuyên nghiệp và thực chiến!" };
+                } else if (score >= 2) {
+                    return { sfx: 'correct', title: "Thiết Kế Khá Tốt! 📈", color: "var(--text-main)", text: `Bạn đúng ${score}/3 câu. Hãy chú ý kiểm soát chặt chẽ tỷ lệ chuyển đổi giữa các bước trên CRM.` };
+                } else {
+                    return { sfx: 'lose', title: "Cần Rèn Luyện Thêm! 😅", color: "var(--danger)", text: `Bạn đúng ${score}/3 câu. Hãy thiết lập lại hệ thống B2B Sales Operation.` };
                 }
             }
         }
@@ -771,26 +845,116 @@ const initB2BApp = () => {
     const progressBar = document.getElementById('progress');
     const timerDisplay = document.getElementById('timer-display');
 
-    // Attach selection event to selector cards and internal buttons for robustness
-    const gameCards = document.querySelectorAll('#game-selector .game-card');
-    gameCards.forEach(card => {
-        card.addEventListener('click', () => {
-            const idx = parseInt(card.getAttribute('data-game-index'), 10);
-            selectGame(idx);
+    // Horizontal Slide & Level Selector Logic
+    let autoSlideInterval = null;
+    let currentSlideIndex = 0;
+
+    function startAutoSlide() {
+        stopAutoSlide();
+        autoSlideInterval = setInterval(() => {
+            const container = document.querySelector('.game-slider-container');
+            const track = document.getElementById('game-slider-track');
+            if (!container || !track) return;
+            const cards = track.querySelectorAll('.game-card');
+            if (cards.length <= 1) return;
+            
+            currentSlideIndex = (currentSlideIndex + 1) % cards.length;
+            const targetCard = cards[currentSlideIndex];
+            if (targetCard) {
+                const targetLeft = targetCard.offsetLeft - (container.clientWidth - targetCard.clientWidth) / 2;
+                container.scrollTo({ left: targetLeft, behavior: 'smooth' });
+            }
+        }, 3500);
+    }
+
+    function stopAutoSlide() {
+        if (autoSlideInterval) {
+            clearInterval(autoSlideInterval);
+            autoSlideInterval = null;
+        }
+    }
+
+    // Dynamic Render Minigames based on selected Level
+    function renderGamesForLevel(level) {
+        const track = document.getElementById('game-slider-track');
+        if (!track) return;
+        
+        const levelGames = games.filter(g => g.level === parseInt(level, 10));
+        
+        track.innerHTML = levelGames.map(game => {
+            const globalIndex = games.findIndex(g => g.id === game.id);
+            const icon = game.icon || "🧠";
+            return `
+                <div class="game-card glass-panel" style="padding: 20px; display: flex; flex-direction: column; gap: 10px; cursor: pointer; border: 1px solid var(--border-color); border-radius: 12px; background: rgba(255, 255, 255, 0.6);" data-game-index="${globalIndex}">
+                    <div style="font-size: 1.8rem; margin-bottom: 5px;">${icon}</div>
+                    <h4 style="font-size: 1.1rem; font-weight: 700; margin: 0; color: var(--text-main);">${game.title}</h4>
+                    <p style="font-size: 0.85rem; color: var(--text-light); flex: 1; margin: 5px 0 0 0;">${game.description}</p>
+                    <button class="btn btn-primary" style="padding: 8px 12px; font-size: 0.85rem; margin-top: 15px; width: 100%;">Chơi Ngay</button>
+                </div>
+            `;
+        }).join('');
+        
+        // Re-attach selection events
+        const cards = track.querySelectorAll('.game-card');
+        cards.forEach(card => {
+            card.addEventListener('click', () => {
+                const idx = parseInt(card.getAttribute('data-game-index'), 10);
+                selectGame(idx);
+            });
+            
+            const btn = card.querySelector('button');
+            if (btn) {
+                btn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const idx = parseInt(card.getAttribute('data-game-index'), 10);
+                    selectGame(idx);
+                });
+            }
+        });
+
+        // Add Hover triggers to pause/resume auto-slide
+        const container = document.querySelector('.game-slider-container');
+        if (container) {
+            container.removeEventListener('mouseenter', stopAutoSlide);
+            container.removeEventListener('mouseleave', startAutoSlide);
+            container.addEventListener('mouseenter', stopAutoSlide);
+            container.addEventListener('mouseleave', startAutoSlide);
+            
+            // Also pause on touch interaction for mobile robustness
+            container.removeEventListener('touchstart', stopAutoSlide);
+            container.addEventListener('touchstart', stopAutoSlide, { passive: true });
+            
+            container.scrollLeft = 0;
+        }
+
+        currentSlideIndex = 0;
+        startAutoSlide();
+    }
+
+    // Wire up Level tab click triggers
+    const levelTabs = document.querySelectorAll('.level-tab-btn');
+    levelTabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+            levelTabs.forEach(t => {
+                t.classList.remove('active');
+                t.style.background = 'rgba(255,255,255,0.05)';
+                t.style.borderColor = 'var(--border-color)';
+                t.style.color = 'var(--text-main)';
+                t.style.boxShadow = 'none';
+            });
+            tab.classList.add('active');
+            tab.style.background = 'var(--primary)';
+            tab.style.borderColor = 'var(--primary)';
+            tab.style.color = '#fff';
+            tab.style.boxShadow = '0 4px 15px rgba(239, 68, 68, 0.3)';
+            
+            const level = tab.getAttribute('data-level');
+            renderGamesForLevel(level);
         });
     });
 
-    const gameCardBtns = document.querySelectorAll('#game-selector .game-card button');
-    gameCardBtns.forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            e.stopPropagation(); // Avoid duplicate calls
-            const card = btn.closest('.game-card');
-            if (card) {
-                const idx = parseInt(card.getAttribute('data-game-index'), 10);
-                selectGame(idx);
-            }
-        });
-    });
+    // Initialize with Level 1 games
+    renderGamesForLevel(1);
 
     function selectGame(index) {
         try {
