@@ -2315,16 +2315,6 @@ body.dark-theme .cosmic-galaxy-container {
     text-shadow: 0 2px 4px rgba(0,0,0,0.6);
 }
 
-@keyframes orbit-rotation {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-}
-
-@keyframes counter-rotation {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(-360deg); }
-}
-
 .galaxy-orbit-system {
     position: absolute;
     width: 100%;
@@ -2332,7 +2322,6 @@ body.dark-theme .cosmic-galaxy-container {
     display: flex;
     align-items: center;
     justify-content: center;
-    animation: orbit-rotation 60s linear infinite;
 }
 
 .galaxy-orbit {
@@ -2417,13 +2406,6 @@ body.dark-theme .planet-label {
     justify-content: center;
     font-size: 1.3rem;
     transition: all 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    animation: counter-rotation 60s linear infinite;
-}
-
-/* Pause animations on hover */
-.cosmic-galaxy-container:hover .galaxy-orbit-system,
-.cosmic-galaxy-container:hover .planet-sphere {
-    animation-play-state: paused;
 }
 
 body.dark-theme .planet-sphere {
