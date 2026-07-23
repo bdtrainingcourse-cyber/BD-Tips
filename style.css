@@ -1369,9 +1369,9 @@ body.dark-theme .feature-card {
 
 .form-group input:focus {
     outline: none;
-    border-color: var(--primary);
-    background: rgba(162, 10, 10, 0.05);
-    box-shadow: 0 0 15px rgba(162, 10, 10, 0.15);
+    border-color: #6366f1;
+    background: rgba(99, 102, 241, 0.05);
+    box-shadow: 0 0 15px rgba(99, 102, 241, 0.15);
 }
 
 .form-group select {
@@ -1387,8 +1387,8 @@ body.dark-theme .feature-card {
 
 .form-group select:focus {
     outline: none;
-    border-color: var(--primary);
-    background: rgba(162, 10, 10, 0.05);
+    border-color: #6366f1;
+    background: rgba(99, 102, 241, 0.05);
 }
 
 .modal-actions {
