@@ -6,9 +6,9 @@
     <title>5 Pha Chuyển Mình Về Ngôn Từ B2B | BD Bình Dân Học Vụ</title>
     <meta name="description" content="Đừng để 'Cái miệng hại cái deal' - 5 pha chuyển mình về ngôn từ dành cho B2B Business Development">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css?v=1.8.0">
-    <link rel="stylesheet" href="ai-chat.css?v=1.8.0">
-    <script src="theme-toggle.js?v=1.8.0"></script>
+    <link rel="stylesheet" href="style.css?v=1.9.0">
+    <link rel="stylesheet" href="ai-chat.css?v=1.9.0">
+    <script src="theme-toggle.js?v=1.9.0"></script>
 </head>
 <body class="dark-theme">
     <!-- Navbar -->
@@ -190,11 +190,20 @@
                         <button class="level-tab-btn" data-level="3" style="padding: 10px 24px; border-radius: 20px; font-weight: 700; border: 1px solid var(--border-color); background: rgba(255,255,255,0.05); color: var(--text-main); cursor: pointer; transition: all 0.3s ease; font-size: 0.9rem;">Trên 3 Năm (Chuyên Gia)</button>
                     </div>
 
-                    <!-- Horizontal Slider Container -->
-                    <div class="game-slider-container" style="position: relative; overflow: hidden; width: 100%; padding: 10px 0;">
-                        <div class="game-slider-track" id="game-slider-track" style="display: flex; gap: 20px; transition: transform 0.5s ease; width: max-content; padding: 10px 5px;">
-                            <!-- Dynamically loaded game cards will appear here -->
+                    <!-- Horizontal Slider Wrapper -->
+                    <div class="game-slider-wrapper" style="position: relative; width: 100%;">
+                        <!-- Left Navigation Arrow -->
+                        <button class="slider-nav-btn prev-btn" id="slider-prev-btn" aria-label="Previous Games">◀</button>
+
+                        <!-- Slider Container -->
+                        <div class="game-slider-container" style="position: relative; overflow: hidden; width: 100%; padding: 10px 0;">
+                            <div class="game-slider-track" id="game-slider-track" style="display: flex; gap: 20px; transition: transform 0.5s ease; width: max-content; padding: 10px 5px;">
+                                <!-- Dynamically loaded game cards will appear here -->
+                            </div>
                         </div>
+
+                        <!-- Right Navigation Arrow -->
+                        <button class="slider-nav-btn next-btn" id="slider-next-btn" aria-label="Next Games">▶</button>
                     </div>
                 </div>
 
@@ -422,8 +431,8 @@
 
 </footer>
 
-    <script src="script.js?v=1.8.0"></script>
-    <script src="ai-chat.js?v=1.8.0"></script>
+    <script src="script.js?v=1.9.0"></script>
+    <script src="ai-chat.js?v=1.9.0"></script>
     <script defer src="/_vercel/insights/script.js"></script>
 </body>
 </html>
