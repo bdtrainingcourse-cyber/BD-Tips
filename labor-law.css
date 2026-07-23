@@ -1,5 +1,25 @@
 /* B2B Labor Law Styles (Premium Dark Glass Theme) */
 
+:root {
+    --bg-dark: #f7f4ee;
+    --panel-bg: #ffffff;
+    --border-color: rgba(0, 0, 0, 0.08);
+    --text-primary: #2b2d42;
+    --text-muted: #6c757d;
+    --primary-glow: rgba(162, 10, 10, 0.15);
+    --accent-glow: rgba(243, 168, 59, 0.15);
+    --warning-glow: rgba(245, 158, 11, 0.15);
+    --danger-glow: rgba(239, 68, 68, 0.15);
+}
+
+body {
+    background-color: var(--bg-dark);
+    background-image: none;
+    color: var(--text-primary);
+    min-height: 100vh;
+    transition: background-color 0.3s, color 0.3s;
+}
+
 body.dark-theme {
     --bg-dark: #0c0707;
     --panel-bg: rgba(22, 14, 14, 0.85);
@@ -10,11 +30,6 @@ body.dark-theme {
     --accent-glow: #f3a83b;
     --warning-glow: #f59e0b;
     --danger-glow: #ef4444;
-    
-    background-color: var(--bg-dark);
-    background-image: none;
-    color: var(--text-primary);
-    min-height: 100vh;
 }
 
 .labor-main {
@@ -28,7 +43,7 @@ body.dark-theme {
 }
 
 .labor-hero .hero-title {
-    font-family: 'Outfit', sans-serif;
+    font-family: 'Plus Jakarta Sans', sans-serif;
     font-weight: 900;
     font-size: 3rem;
     margin-bottom: 10px;
@@ -75,7 +90,7 @@ body.dark-theme {
     font-weight: 500;
     cursor: pointer;
     transition: all 0.2s ease;
-    font-family: 'Inter', sans-serif;
+    font-family: 'Be Vietnam Pro', sans-serif;
 }
 
 .filter-pill:hover, .filter-pill.active {
@@ -94,7 +109,7 @@ body.dark-theme {
 }
 
 .section-heading {
-    font-family: 'Outfit', sans-serif;
+    font-family: 'Plus Jakarta Sans', sans-serif;
     font-size: 1.5rem;
     font-weight: 700;
     margin-bottom: 20px;
@@ -123,7 +138,7 @@ body.dark-theme {
 }
 
 .law-title-box h3 {
-    font-family: 'Outfit', sans-serif;
+    font-family: 'Plus Jakarta Sans', sans-serif;
     font-size: 1.2rem;
     font-weight: 700;
     color: var(--text-primary);
@@ -187,7 +202,7 @@ body.dark-theme {
 }
 
 .case-card h3 {
-    font-family: 'Outfit', sans-serif;
+    font-family: 'Plus Jakarta Sans', sans-serif;
     font-size: 1.15rem;
     font-weight: 700;
 }
@@ -228,7 +243,7 @@ body.dark-theme {
 }
 
 .case-section-box h4 {
-    font-family: 'Outfit', sans-serif;
+    font-family: 'Plus Jakarta Sans', sans-serif;
     font-size: 0.95rem;
     text-transform: uppercase;
     letter-spacing: 0.5px;
@@ -327,7 +342,7 @@ body.dark-theme {
 }
 
 .modal-section-card .section-title {
-    font-family: 'Outfit', sans-serif;
+    font-family: 'Plus Jakarta Sans', sans-serif;
     font-size: 1.25rem;
     font-weight: 800;
     margin: 0 0 5px 0;
