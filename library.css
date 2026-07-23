@@ -1,5 +1,23 @@
 /* B2B Library Styles (Premium Dark Glass Theme) */
 
+:root {
+    --bg-dark: #f7f4ee;
+    --panel-bg: #ffffff;
+    --border-color: rgba(0, 0, 0, 0.08);
+    --text-primary: #2b2d42;
+    --text-muted: #6c757d;
+    --primary-glow: rgba(162, 10, 10, 0.15);
+    --accent-glow: rgba(243, 168, 59, 0.15);
+}
+
+body {
+    background-color: var(--bg-dark);
+    background-image: none;
+    color: var(--text-primary);
+    min-height: 100vh;
+    transition: background-color 0.3s, color 0.3s;
+}
+
 body.dark-theme {
     --bg-dark: #0c0707;
     --panel-bg: rgba(22, 14, 14, 0.85);
@@ -8,11 +26,6 @@ body.dark-theme {
     --text-muted: #94a3b8;
     --primary-glow: #a20a0a;
     --accent-glow: #f3a83b;
-    
-    background-color: var(--bg-dark);
-    background-image: none;
-    color: var(--text-primary);
-    min-height: 100vh;
 }
 
 .library-main {
