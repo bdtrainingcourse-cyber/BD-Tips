@@ -1617,8 +1617,24 @@ const initB2BApp = () => {
             });
 
             node.addEventListener('click', (e) => {
-                e.preventDefault();
-                selectPlanet(index);
+                if (activePlanetIndex === index) {
+                    const link = node.getAttribute('data-link');
+                    if (link) {
+                        if (link.startsWith('#')) {
+                            const target = document.getElementById(link.substring(1));
+                            if (target) {
+                                e.preventDefault();
+                                target.scrollIntoView({ behavior: 'smooth' });
+                                history.pushState(null, null, link);
+                            }
+                        } else {
+                            window.location.href = link;
+                        }
+                    }
+                } else {
+                    e.preventDefault();
+                    selectPlanet(index);
+                }
             });
         });
 
