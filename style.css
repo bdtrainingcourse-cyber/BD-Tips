@@ -662,8 +662,8 @@ h1, h2, h3, h4 {
 
 /* Footer */
 .footer {
-    background: var(--text-main);
-    color: white;
+    background: transparent;
+    color: var(--text-main);
     padding: 80px 0;
     position: relative;
     overflow: hidden;
@@ -690,6 +690,12 @@ h1, h2, h3, h4 {
     max-width: 900px;
     margin: 0 auto;
     position: relative;
+    color: #800020; /* Default Red Wine (Burgundy) for Light Theme */
+    transition: color 0.3s ease;
+}
+
+body.dark-theme .final-quote {
+    color: #ff6b6b; /* Lighter Wine Red/Coral for High Contrast in Dark Theme */
 }
 
 .final-quote::before {
