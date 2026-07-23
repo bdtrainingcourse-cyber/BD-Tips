@@ -2218,3 +2218,265 @@ if (document.readyState === 'loading') {
             formDiv.innerHTML = `<p style="color: var(--text-main); font-weight: bold; margin: 0; font-size: 0.85rem;">🎉 Chuỗi ngày (Streak) đang hoạt động! Email hàng ngày gửi đến: ${savedEmail}</p>`;
         }
     }
+
+    // --- Phase 2: Streak, Exit Intent, Rewards Shop, and Social Sharing ---
+
+    // Tab switcher logic
+    const tabStreakBtn = document.getElementById('tab-streak-btn');
+    const tabRewardsBtn = document.getElementById('tab-rewards-btn');
+    const tabContentStreak = document.getElementById('tab-content-streak');
+    const tabContentRewards = document.getElementById('tab-content-rewards');
+    
+    if (tabStreakBtn && tabRewardsBtn && tabContentStreak && tabContentRewards) {
+        tabStreakBtn.addEventListener('click', () => {
+            tabStreakBtn.classList.add('active');
+            tabRewardsBtn.classList.remove('active');
+            tabContentStreak.classList.remove('hidden');
+            tabContentRewards.classList.add('hidden');
+        });
+        tabRewardsBtn.addEventListener('click', () => {
+            tabRewardsBtn.classList.add('active');
+            tabStreakBtn.classList.remove('active');
+            tabContentRewards.classList.remove('hidden');
+            tabContentStreak.classList.add('hidden');
+        });
+    }
+
+    // Exit Intent Dialog closing and submissions
+    const exitIntentModal = document.getElementById('exit-intent-modal');
+    const btnCloseExitModal = document.getElementById('btn-close-exit-modal');
+    const btnDeclineExit = document.getElementById('btn-decline-exit');
+    const exitIntentForm = document.getElementById('exit-intent-form');
+
+    if (btnCloseExitModal) {
+        btnCloseExitModal.addEventListener('click', () => {
+            if (exitIntentModal) exitIntentModal.classList.add('hidden');
+        });
+    }
+    if (btnDeclineExit) {
+        btnDeclineExit.addEventListener('click', () => {
+            if (exitIntentModal) exitIntentModal.classList.add('hidden');
+        });
+    }
+    if (exitIntentForm) {
+        exitIntentForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const nameInput = document.getElementById('exit-name');
+            const emailInput = document.getElementById('exit-email');
+            if (!nameInput || !emailInput) return;
+            const name = nameInput.value.trim();
+            const email = emailInput.value.trim();
+
+            const submitBtn = exitIntentForm.querySelector('button[type="submit"]');
+            if (submitBtn) {
+                submitBtn.disabled = true;
+                submitBtn.textContent = 'Đang xử lý...';
+            }
+
+            try {
+                const res = await fetch('/api/log-email', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name, email, tool: 'exit-intent-ebook' })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    localStorage.setItem('streak_name', name);
+                    localStorage.setItem('streak_email', email);
+                    localStorage.setItem('streak_active', 'true');
+                    
+                    // Reset streak on fresh registration
+                    localStorage.setItem('streak_days', '1');
+                    localStorage.setItem('streak_last_active_date', new Date().toISOString().split('T')[0]);
+
+                    // Instantly update welcome banner & tab counts
+                    initStreakAndTracking();
+                    
+                    alert(`🎉 Đăng ký thành công! Ebook "9 Nguyên Tắc Bán Hàng B2B" đã được đăng ký gửi tới email ${email}.`);
+                    if (exitIntentModal) exitIntentModal.classList.add('hidden');
+                } else {
+                    alert('Có lỗi xảy ra, vui lòng thử lại.');
+                }
+            } catch(err) {
+                console.error(err);
+                alert('Lỗi kết nối máy chủ.');
+            } finally {
+                if (submitBtn) {
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Nhận Ebook & Bật Nhắc Nhở 🚀';
+                }
+            }
+        });
+    }
+
+    // Claim Reward action
+    const claimBtns = document.querySelectorAll('.btn-claim');
+    claimBtns.forEach(btn => {
+        btn.addEventListener('click', async () => {
+            const reward = btn.getAttribute('data-reward');
+            const streak = parseInt(localStorage.getItem('streak_days') || '0', 10);
+            
+            if (streak < 7) {
+                alert(`🦉 Cú Peter lắc đầu từ chối! Bạn mới giữ streak liên tục được ${streak} ngày. Cần đạt tối thiểu 7 ngày để mở khóa món quà "${reward}" nhé!`);
+                return;
+            }
+
+            // Streak is valid, prompt for contact
+            const name = localStorage.getItem('streak_name') || prompt('Nhập tên của bạn để nhận quà:');
+            const email = localStorage.getItem('streak_email') || prompt('Nhập email nhận quà của bạn:');
+            
+            if (!name || !email) {
+                alert('Thông tin không hợp lệ, không thể đổi quà!');
+                return;
+            }
+
+            btn.disabled = true;
+            btn.textContent = 'Đang đổi...';
+
+            try {
+                const res = await fetch('/api/log-email', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name, email, tool: 'claim-reward', reward: reward, streak: streak })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    alert(`🎉 Chúc mừng! Đã gửi yêu cầu đổi quà "${reward}" thành công. Peter Võ sẽ liên hệ bạn qua email ${email} trong vòng 24 giờ.`);
+                } else {
+                    alert('Có lỗi xảy ra, vui lòng thử lại.');
+                    btn.disabled = false;
+                    btn.textContent = 'Đổi Quà';
+                }
+            } catch(err) {
+                console.error(err);
+                alert('Lỗi kết nối máy chủ.');
+                btn.disabled = false;
+                btn.textContent = 'Đổi Quà';
+            }
+        });
+    });
+
+    // Social share triggers
+    const shareLinkedin = document.getElementById('share-linkedin-btn');
+    const shareFacebook = document.getElementById('share-facebook-btn');
+    const shareCopy = document.getElementById('share-copy-btn');
+
+    if (shareLinkedin) {
+        shareLinkedin.addEventListener('click', () => {
+            const shareText = `Tôi vừa đạt điểm tối đa trong thử thách B2B Challenge của Peter Võ! 🚀 Học hỏi thực chiến mỗi ngày để nâng cấp tư duy BD B2B. Luyện tập cùng tôi tại: https://bd-tips.vercel.app/`;
+            const url = encodeURIComponent(window.location.href);
+            window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${url}`, '_blank');
+        });
+    }
+    if (shareFacebook) {
+        shareFacebook.addEventListener('click', () => {
+            window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(window.location.href)}`, '_blank');
+        });
+    }
+    if (shareCopy) {
+        shareCopy.addEventListener('click', () => {
+            const copyText = `Tôi vừa đạt điểm tối đa trong thử thách B2B Challenge của Peter Võ! 🚀 Luyện tập cùng tôi tại: https://bd-tips.vercel.app/`;
+            navigator.clipboard.writeText(copyText).then(() => {
+                alert('📋 Đã sao chép liên kết chia sẻ! Bạn có thể dán trực tiếp lên LinkedIn, Facebook, Instagram hoặc Tiktok.');
+            }).catch(err => {
+                console.error('Error copying text:', err);
+            });
+        });
+    }
+
+    // Helper functions for Streak and Banners
+    function updateWelcomeBanner(streak) {
+        const banner = document.getElementById('personalized-welcome-banner');
+        const bannerTitle = document.getElementById('welcome-banner-title');
+        const bannerStreak = document.getElementById('welcome-banner-streak');
+        const streakActive = localStorage.getItem('streak_active') === 'true';
+        const name = localStorage.getItem('streak_name');
+
+        if (banner && streakActive && name) {
+            banner.classList.remove('hidden');
+            bannerTitle.textContent = `Chào mừng trở lại, ${name}! 🦉`;
+            bannerStreak.textContent = `Streak: ${streak} ngày 🔥`;
+        } else if (banner) {
+            banner.classList.add('hidden');
+        }
+    }
+
+    function updateRewardShopUI(streak) {
+        const claimBtns = document.querySelectorAll('.btn-claim');
+        claimBtns.forEach(btn => {
+            if (streak >= 7) {
+                btn.style.background = 'var(--primary)';
+                btn.style.borderColor = 'var(--primary)';
+                btn.style.color = '#fff';
+                btn.textContent = 'Mở Khóa Quà';
+            } else {
+                btn.style.background = 'rgba(255,255,255,0.05)';
+                btn.style.borderColor = 'var(--border-color)';
+                btn.style.color = 'var(--text-light)';
+                btn.textContent = 'Khóa 🔒';
+            }
+        });
+    }
+
+    function initStreakAndTracking() {
+        const todayStr = new Date().toISOString().split('T')[0];
+        const lastActive = localStorage.getItem('streak_last_active_date');
+        let streak = parseInt(localStorage.getItem('streak_days') || '0', 10);
+
+        if (!lastActive) {
+            streak = 1;
+            localStorage.setItem('streak_days', '1');
+            localStorage.setItem('streak_last_active_date', todayStr);
+        } else {
+            const lastDate = new Date(lastActive);
+            const todayDate = new Date(todayStr);
+            lastDate.setHours(0,0,0,0);
+            todayDate.setHours(0,0,0,0);
+
+            const diffTime = todayDate - lastDate;
+            const diffDays = Math.round(diffTime / (1000 * 60 * 60 * 24));
+
+            if (diffDays === 1) {
+                streak += 1;
+                localStorage.setItem('streak_days', streak.toString());
+                localStorage.setItem('streak_last_active_date', todayStr);
+            } else if (diffDays > 1) {
+                streak = 1;
+                localStorage.setItem('streak_days', '1');
+                localStorage.setItem('streak_last_active_date', todayStr);
+            }
+        }
+        updateWelcomeBanner(streak);
+        updateRewardShopUI(streak);
+    }
+
+    let exitIntentTriggered = false;
+    function initExitIntent() {
+        if (localStorage.getItem('streak_active') === 'true') return;
+
+        // Desktop mouseleave exit intent
+        document.addEventListener('mouseleave', (e) => {
+            if (e.clientY < 50 && !exitIntentTriggered && localStorage.getItem('streak_active') !== 'true') {
+                showExitIntentPopup();
+            }
+        });
+
+        // Mobile timer exit intent fallback
+        setTimeout(() => {
+            if (!exitIntentTriggered && localStorage.getItem('streak_active') !== 'true') {
+                showExitIntentPopup();
+            }
+        }, 40000);
+    }
+
+    function showExitIntentPopup() {
+        const modal = document.getElementById('exit-intent-modal');
+        if (modal) {
+            modal.classList.remove('hidden');
+            exitIntentTriggered = true;
+        }
+    }
+
+    // Run initializations on startup
+    initStreakAndTracking();
+    initExitIntent();
