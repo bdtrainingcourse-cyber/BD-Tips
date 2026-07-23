@@ -6,9 +6,9 @@
     <title>5 Pha Chuyển Mình Về Ngôn Từ B2B | BD Bình Dân Học Vụ</title>
     <meta name="description" content="Đừng để 'Cái miệng hại cái deal' - 5 pha chuyển mình về ngôn từ dành cho B2B Business Development">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css?v=1.9.0">
-    <link rel="stylesheet" href="ai-chat.css?v=1.9.0">
-    <script src="theme-toggle.js?v=1.9.0"></script>
+    <link rel="stylesheet" href="style.css?v=2.0.0">
+    <link rel="stylesheet" href="ai-chat.css?v=2.0.0">
+    <script src="theme-toggle.js?v=2.0.0"></script>
 </head>
 <body class="dark-theme">
     <!-- Navbar -->
@@ -190,7 +190,7 @@
                         <button class="level-tab-btn" data-level="3" style="padding: 10px 24px; border-radius: 20px; font-weight: 700; border: 1px solid var(--border-color); background: rgba(255,255,255,0.05); color: var(--text-main); cursor: pointer; transition: all 0.3s ease; font-size: 0.9rem;">Trên 3 Năm (Chuyên Gia)</button>
                     </div>
 
-                    <!-- Horizontal Slider Wrapper -->
+                                        <!-- Horizontal Slider Wrapper -->
                     <div class="game-slider-wrapper" style="position: relative; width: 100%;">
                         <!-- Left Navigation Arrow -->
                         <button class="slider-nav-btn prev-btn" id="slider-prev-btn" aria-label="Previous Games">◀</button>
@@ -205,6 +205,23 @@
                         <!-- Right Navigation Arrow -->
                         <button class="slider-nav-btn next-btn" id="slider-next-btn" aria-label="Next Games">▶</button>
                     </div>
+
+                    <!-- Slide Progress Indicator -->
+                    <div id="slider-indicator" style="text-align: center; margin-top: 15px; font-weight: 700; color: var(--text-light); font-size: 0.85rem;">Thử thách 1 / 7</div>
+
+                    <!-- Duolingo Streak Activation Card -->
+                    <div class="duolingo-activation-card glass-panel" style="padding: 20px; border-radius: 12px; margin-top: 25px; border: 1px solid var(--primary); background: rgba(239, 68, 68, 0.02); display: flex; align-items: center; gap: 15px; flex-wrap: wrap;">
+                        <div style="font-size: 2.2rem; line-height: 1;">🦉</div>
+                        <div style="flex: 1; min-width: 240px;">
+                            <h4 style="margin: 0; font-size: 0.95rem; font-weight: 800; color: var(--text-main);">Kích hoạt Chuỗi Ngày (Daily Streak)</h4>
+                            <p style="margin: 5px 0 0 0; font-size: 0.8rem; color: var(--text-light); line-height: 1.4;">Nhận email "nhắc nhở thân thiện" (và cà khịa vui vẻ) mỗi ngày từ Cú Peter để không bỏ lỡ kiến thức BD B2B thực chiến.</p>
+                        </div>
+                        <div style="display: flex; gap: 10px; width: 100%; margin-top: 5px; flex-wrap: wrap;" id="streak-form">
+                            <input type="text" id="streak-name" placeholder="Tên của bạn" style="flex: 1; min-width: 120px; padding: 8px 12px; border-radius: 6px; border: 1px solid var(--border-color); background: rgba(255,255,255,0.02); color: var(--text-main); font-family: inherit; font-size: 0.85rem;" required>
+                            <input type="email" id="streak-email" placeholder="Email của bạn" style="flex: 1; min-width: 150px; padding: 8px 12px; border-radius: 6px; border: 1px solid var(--border-color); background: rgba(255,255,255,0.02); color: var(--text-main); font-family: inherit; font-size: 0.85rem;" required>
+                            <button id="btn-activate-streak" class="btn btn-primary" style="padding: 8px 16px; font-size: 0.85rem; font-weight: bold; white-space: nowrap;">Bật Nhắc Nhở</button>
+                        </div>
+                    </div></div>
                 </div>
 
                 <!-- Intro Panel -->
@@ -431,8 +448,8 @@
 
 </footer>
 
-    <script src="script.js?v=1.9.0"></script>
-    <script src="ai-chat.js?v=1.9.0"></script>
+    <script src="script.js?v=2.0.0"></script>
+    <script src="ai-chat.js?v=2.0.0"></script>
     <script defer src="/_vercel/insights/script.js"></script>
 </body>
 </html>
