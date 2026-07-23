@@ -3,35 +3,47 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cộng Đồng BD - B2B Business Development Portal</title>
+    <title>Cộng Đồng BD - B2B Business Development Portal | BD Bình Dân Học Vụ</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="community.css">
+    <link rel="stylesheet" href="style.css?v=1.6.0">
+    <link rel="stylesheet" href="community.css?v=1.6.0">
     
-    <script src="theme-toggle.js"></script>
+    <script src="theme-toggle.js?v=1.6.0"></script>
 </head>
 <body class="course-page">
 
     <!-- Navigation Bar -->
     <header class="app-nav">
         <div class="nav-container">
-            <a href="index.html" class="nav-logo">
-                <span class="logo-accent">B2B</span> BD Portal
+            <a href="index.html" class="nav-logo" title="BD Bình Dân Học Vụ - Nơi Học Hỏi & Kết Nối của BD">
+                <span class="logo-main"><span class="logo-accent">BD</span> Bình Dân Học Vụ</span>
+                <span class="logo-sub">Nơi Học Hỏi & Kết Nối của BD</span>
             </a>
-                                    <nav class="nav-links">
-                <a href="index.html" class="">Ngôn Từ B2B</a>
-                <a href="index.html#minigame-section">B2B Challenge</a>
-                <a href="finder.html" class="">PIC Finder</a>
-                <a href="library.html" class="">Thư Viện B2B</a>
-                <a href="labor-law.html" class="">Luật Lao Động</a>
-                <a href="salary.html" class="">Tính Lương</a>
-                <a href="email-assistant.html" class="">Email Assistant</a>
-                <a href="kpi-estimation.html" class="">Ước Tính KPI</a>
-                <a href="community.html" class="active">Cộng Đồng</a>
-                <a href="course.html" class="">Khóa Học BD</a>
+            <nav class="nav-links" id="nav-menu">
+                <a href="index.html" class="">🏠 Homepage</a>
+                <a href="library.html" class="">📚 Thư Viện <span class="nav-badge hot">HOT</span></a>
+                <div class="nav-dropdown ">
+                    <button class="nav-dropdown-toggle">🛠️ Bộ Công Cụ BD <span class="dropdown-arrow">▾</span></button>
+                    <div class="nav-dropdown-menu">
+                        <a href="finder.html" class="">🔍 B2B PIC Finder <span class="nav-badge pro">Pro</span></a>
+                        <a href="email-assistant.html" class="">✉️ AI Email Assistant <span class="nav-badge ai">AI</span></a>
+                        <a href="kpi-estimation.html" class="">📊 Ma Trận KPI BD</a>
+                        <a href="salary.html" class="">🧮 Tính Lương Gross - Net</a>
+                        <a href="labor-law.html" class="">⚖️ Tra Cứu Luật Lao Động</a>
+                    </div>
+                </div>
+                <a href="index.html#minigame-section">🎮 B2B Challenge <span class="nav-badge new">New</span></a>
+                <a href="community.html" class="active">🌐 Cộng Đồng</a>
+                <a href="https://www.linkedin.com/in/vp-tan/" target="_blank" class="nav-contact-author" title="Kết nối Zalo/SĐT: 0931100569">
+                    <img src="peter_1.jpg" alt="Peter Vo" class="nav-avatar">
+                    <span>Peter Vo</span>
+                </a>
                 <button id="theme-toggle" class="theme-toggle-btn" aria-label="Toggle theme">🌓</button>
             </nav>
+            <button class="mobile-menu-toggle" id="mobile-menu-toggle" aria-label="Open Mobile Menu">
+                <span class="hamburger-icon">☰</span>
+            </button>
         </div>
     </header>
 
@@ -87,7 +99,33 @@
             <p style="margin-bottom: 10px;">&copy; 2026 B2B BD Portal. Đào tạo Business Development thực chiến hàng đầu.</p>
             <p style="font-size: 0.8rem; color: var(--text-light);">Developed by Peter Vo & Team</p>
         </div>
-    </footer>
+    <!-- Founder & Author Contact Card -->
+    
+    <!-- High-Impact Founder Contact Section -->
+    
+    <!-- High-Impact Founder Contact Section -->
+    <section class="peter-author-footer-card" style="margin: 40px auto 20px; max-width: 1150px; padding: 28px 36px; background: #12131c; border-left: 6px solid #f3a83b; border-radius: 20px; display: flex; align-items: center; justify-content: space-between; gap: 24px; flex-wrap: wrap; box-shadow: 0 12px 40px rgba(0,0,0,0.35);">
+        <div style="display: flex; align-items: center; gap: 20px; flex-wrap: wrap;">
+            <img src="peter_1.jpg" alt="Peter Vo (Tân Võ Phước)" style="width: 75px; height: 75px; border-radius: 50%; object-fit: cover; border: 3px solid #f3a83b; box-shadow: 0 4px 16px rgba(243, 168, 59, 0.35);">
+            <div>
+                <div style="font-size: 0.8rem; font-weight: 800; color: #f3a83b; text-transform: uppercase; letter-spacing: 0.8px;">THÔNG TIN LIÊN HỆ FOUNDER</div>
+                <h4 style="font-size: 1.3rem; font-weight: 900; color: #ffffff; margin: 3px 0;">Peter Vo (Tân Võ Phước) – BD Bình Dân Học Vụ</h4>
+                <p style="font-size: 0.95rem; color: #e2e8f0; margin: 4px 0 0 0;">
+                    📞 SĐT / Zalo: <strong style="color: #6ee7b7; font-size: 1.05rem;">0931.100.569</strong> &nbsp;|&nbsp; ✉️ Email: <strong style="color: #ffffff;">vp.tan92@gmail.com</strong>
+                </p>
+                <p style="font-size: 0.82rem; color: #94a3b8; margin-top: 2px;">Chuyên gia Tư vấn B2B Business Development & Strategic Partnership</p>
+            </div>
+        </div>
+        <div style="display: flex; gap: 14px; flex-wrap: wrap; align-items: center;">
+            <a href="https://www.linkedin.com/in/vp-tan/" target="_blank" class="btn" style="font-size: 0.9rem; padding: 10px 22px; border-radius: 25px; display: inline-flex; align-items: center; gap: 8px; text-decoration: none; background: #0a66c2; color: #ffffff; font-weight: 700; box-shadow: 0 4px 14px rgba(10, 102, 194, 0.4);">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.75M6.88 8.56a1.68 1.68 0 0 0 1.68-1.68c0-.93-.75-1.69-1.68-1.69a1.69 1.69 0 0 0-1.69 1.69c0 .93.76 1.68 1.69 1.68m1.39 9.94v-8.37H5.5v8.37h2.77z"/></svg> LinkedIn Profile
+            </a>
+            <a href="https://zalo.me/0931100569" target="_blank" class="btn" style="font-size: 0.9rem; padding: 10px 22px; border-radius: 25px; display: inline-flex; align-items: center; gap: 8px; text-decoration: none; background: linear-gradient(135deg, #10b981, #059669); color: #ffffff; font-weight: 700; box-shadow: 0 4px 14px rgba(16, 185, 129, 0.4);">
+                💬 Chat Zalo (0931100569)
+            </a>
+        </div>
+    </section>
+</footer>
 
     <!-- Create Post Modal Dialog -->
     <div class="modal-overlay" id="create-post-modal">
@@ -135,6 +173,6 @@
         </div>
     </div>
 
-    <script src="community.js"></script>
+    <script src="community.js?v=1.6.0"></script>
 </body>
 </html>
