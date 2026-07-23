@@ -2423,18 +2423,27 @@ body.dark-theme .planet-tooltip-card {
 @media (max-width: 992px) {
     .cosmic-galaxy-container {
         height: auto;
-        min-height: 520px;
+        min-height: auto;
+        padding: 24px 16px;
         flex-direction: column;
-        padding: 30px 15px 40px;
         gap: 20px;
+        background: transparent;
+        border: none;
+        box-shadow: none;
+    }
+
+    .galaxy-core-wrapper {
+        display: none !important;
     }
 
     .galaxy-orbit-system {
         position: relative;
-        width: 290px;
-        height: 290px;
-        margin: 20px auto;
-        animation: none !important;
+        width: 100%;
+        height: auto;
+        display: grid !important;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 12px;
+        justify-content: center;
     }
 
     .galaxy-orbit {
@@ -2442,45 +2451,69 @@ body.dark-theme .planet-tooltip-card {
     }
 
     .planet-node {
-        position: absolute !important;
-    }
-
-    .planet-label {
-        display: none !important;
-    }
-
-    .planet-node.active .planet-label {
-        display: block !important;
-        position: absolute;
-        top: 48px;
-        left: 50%;
-        transform: translateX(-50%);
-        z-index: 15;
-        font-size: 0.68rem;
-        padding: 2px 6px;
+        position: relative !important;
+        left: auto !important;
+        top: auto !important;
+        transform: none !important;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
         background: var(--card-bg);
-        border: 1px solid var(--planet-color);
-        box-shadow: 0 3px 8px rgba(var(--planet-rgb), 0.25);
+        border: 1px solid var(--border-color);
+        border-radius: 16px;
+        padding: 12px 6px;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.02);
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+
+    body.dark-theme .planet-node {
+        background: rgba(22, 14, 14, 0.85);
+        border-color: rgba(255, 255, 255, 0.08);
     }
 
     .planet-sphere {
-        width: 40px;
-        height: 40px;
-        font-size: 1.15rem;
+        width: 48px;
+        height: 48px;
+        font-size: 1.4rem;
+        margin-bottom: 8px;
+        border-radius: 50%;
+        background: rgba(var(--planet-rgb), 0.08);
+        border: 2px solid var(--planet-color);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s ease;
         animation: none !important;
     }
 
-    .galaxy-core {
-        width: 80px;
-        height: 80px;
+    .planet-node.active {
+        border-color: var(--planet-color);
+        box-shadow: 0 8px 20px rgba(var(--planet-rgb), 0.15);
+        transform: translateY(-2px);
     }
-    .core-avatar {
-        width: 40px;
-        height: 40px;
+
+    .planet-node.active .planet-sphere {
+        background: var(--planet-color);
+        color: #ffffff;
+        box-shadow: 0 0 15px var(--planet-color);
     }
-    .core-label {
-        font-size: 0.6rem;
-        margin-top: 3px;
+
+    .planet-label {
+        position: static !important;
+        transform: none !important;
+        font-size: 0.72rem !important;
+        font-weight: 700 !important;
+        color: var(--text-main) !important;
+        background: transparent !important;
+        border: none !important;
+        box-shadow: none !important;
+        padding: 0 !important;
+        opacity: 1 !important;
+        text-align: center;
+        white-space: normal !important;
+        display: block !important;
     }
 
     .planet-tooltip-card {
@@ -2488,12 +2521,12 @@ body.dark-theme .planet-tooltip-card {
         bottom: auto;
         right: auto;
         width: 100%;
-        max-width: 380px;
-        margin: 0 auto;
-        box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+        max-width: 100%;
+        margin: 15px auto 0;
+        box-shadow: 0 8px 24px rgba(0,0,0,0.08);
     }
 
     .cosmic-carousel-nav {
-        display: flex !important;
+        display: none !important; /* Hide carousel buttons since we show all in grid now */
     }
 }
