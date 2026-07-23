@@ -956,6 +956,51 @@ const initB2BApp = () => {
     // Initialize with Level 1 games
     renderGamesForLevel(1);
 
+    // B2B Challenge Slider Navigation Arrow click triggers
+    const sliderPrevBtn = document.getElementById('slider-prev-btn');
+    const sliderNextBtn = document.getElementById('slider-next-btn');
+
+    if (sliderPrevBtn) {
+        sliderPrevBtn.addEventListener('click', () => {
+            const container = document.querySelector('.game-slider-container');
+            const track = document.getElementById('game-slider-track');
+            if (!container || !track) return;
+            const cards = track.querySelectorAll('.game-card');
+            if (cards.length === 0) return;
+
+            currentSlideIndex = (currentSlideIndex - 1 + cards.length) % cards.length;
+            const targetCard = cards[currentSlideIndex];
+            if (targetCard) {
+                const targetLeft = targetCard.offsetLeft - (container.clientWidth - targetCard.clientWidth) / 2;
+                container.scrollTo({ left: targetLeft, behavior: 'smooth' });
+            }
+            // Temporarily pause auto slide to let reader focus
+            stopAutoSlide();
+            setTimeout(startAutoSlide, 5000);
+        });
+    }
+
+    if (sliderNextBtn) {
+        sliderNextBtn.addEventListener('click', () => {
+            const container = document.querySelector('.game-slider-container');
+            const track = document.getElementById('game-slider-track');
+            if (!container || !track) return;
+            const cards = track.querySelectorAll('.game-card');
+            if (cards.length === 0) return;
+
+            currentSlideIndex = (currentSlideIndex + 1) % cards.length;
+            const targetCard = cards[currentSlideIndex];
+            if (targetCard) {
+                const targetLeft = targetCard.offsetLeft - (container.clientWidth - targetCard.clientWidth) / 2;
+                container.scrollTo({ left: targetLeft, behavior: 'smooth' });
+            }
+            // Temporarily pause auto slide to let reader focus
+            stopAutoSlide();
+            setTimeout(startAutoSlide, 5000);
+        });
+    }
+
+
     function selectGame(index) {
         try {
             if (audioCtx && audioCtx.state === 'suspended') {
