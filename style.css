@@ -1141,11 +1141,47 @@ body.dark-theme .feature-card {
     box-shadow: 0 10px 25px rgba(162, 10, 10, 0.15);
 }
 
+.slider-nav-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 1px solid var(--border-color);
+    background: var(--card-bg);
+    color: var(--text-main);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    transition: all 0.3s ease;
+    z-index: 10;
+}
+.slider-nav-btn:hover {
+    border-color: var(--primary) !important;
+    color: var(--primary) !important;
+    background: rgba(239, 68, 68, 0.08) !important;
+    transform: scale(1.05);
+}
+.slider-nav-btn.prev-btn {
+    position: absolute;
+    left: -25px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+.slider-nav-btn.next-btn {
+    position: absolute;
+    right: -25px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
 .game-slider-container {
     overflow-x: auto;
     scroll-behavior: smooth;
     -ms-overflow-style: none;
     scrollbar-width: none;
+    scroll-snap-type: x mandatory;
 }
 .game-slider-container::-webkit-scrollbar {
     display: none;
@@ -1153,6 +1189,7 @@ body.dark-theme .feature-card {
 .game-slider-track .game-card {
     flex: 0 0 320px;
     width: 320px;
+    scroll-snap-align: center;
 }
 .level-tab-btn {
     border: 1px solid var(--border-color);
@@ -1169,12 +1206,6 @@ body.dark-theme .feature-card {
     background: var(--primary) !important;
     color: #fff !important;
     box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3);
-}
-@media (max-width: 992px) {
-    .game-slider-track .game-card {
-        flex: 0 0 82vw !important;
-        width: 82vw !important;
-    }
 }
 
 
@@ -2565,5 +2596,66 @@ body.dark-theme .planet-tooltip-card {
 
     .cosmic-carousel-nav {
         display: none !important; /* Hide carousel buttons since we show all in grid now */
+    }
+
+    /* B2B Challenge Mobile Styles Overrides */
+    .game-slider-wrapper {
+        display: grid;
+        grid-template-areas: 
+            "slider slider"
+            "prev next";
+        justify-content: center;
+        align-items: center;
+        gap: 15px;
+        width: 100%;
+        margin-top: 10px;
+    }
+    .game-slider-container {
+        grid-area: slider;
+        scroll-snap-type: x mandatory;
+    }
+    .game-slider-track {
+        padding: 10px 7.5vw !important;
+        gap: 16px !important;
+    }
+    .game-slider-track .game-card {
+        flex: 0 0 85vw !important;
+        width: 85vw !important;
+        scroll-snap-align: center;
+    }
+    .slider-nav-btn {
+        position: static !important;
+        transform: none !important;
+    }
+    .slider-nav-btn.prev-btn {
+        grid-area: prev;
+        justify-self: end;
+        margin-right: 10px;
+    }
+    .slider-nav-btn.next-btn {
+        grid-area: next;
+        justify-self: start;
+        margin-left: 10px;
+    }
+    .game-level-selector {
+        gap: 8px !important;
+        margin-bottom: 20px !important;
+    }
+    .level-tab-btn {
+        padding: 8px 14px !important;
+        font-size: 0.8rem !important;
+        border-radius: 16px !important;
+    }
+    .game-container {
+        padding: 20px 15px !important;
+        border-radius: 16px !important;
+    }
+    .leaderboard-card {
+        padding: 20px 15px !important;
+        border-radius: 16px !important;
+    }
+    #leaderboard-submit-box {
+        padding: 15px !important;
+        margin: 15px auto !important;
     }
 }
