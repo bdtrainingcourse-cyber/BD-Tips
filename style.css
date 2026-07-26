@@ -2660,10 +2660,10 @@ body.dark-theme .planet-tooltip-card {
     }
 }
 
-/* Custom modifications for reward cards and exit modals */
+/* Phase 3 modifications for reward cards and exit modals */
 .challenge-layout {
     display: grid;
-    grid-template-columns: 1.2fr 0.8fr;
+    grid-template-columns: 1.25fr 0.75fr;
     gap: 25px;
     align-items: start;
     margin-top: 30px;
@@ -2714,7 +2714,7 @@ body.dark-theme .planet-tooltip-card {
     transition: all 0.3s ease;
 }
 .reward-card:hover {
-    border-color: var(--primary);
+    border-color: var(--accent);
     transform: translateY(-2px);
 }
 .modal-overlay {
