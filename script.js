@@ -2219,7 +2219,7 @@ if (document.readyState === 'loading') {
         }
     }
 
-    // --- Phase 2: Streak, Exit Intent, Rewards Shop, and Social Sharing ---
+    // --- Phase 3: Streak, Exit Intent, Rewards Shop, and Social Sharing ---
 
     // Tab switcher logic
     const tabStreakBtn = document.getElementById('tab-streak-btn');
@@ -2251,11 +2251,13 @@ if (document.readyState === 'loading') {
     if (btnCloseExitModal) {
         btnCloseExitModal.addEventListener('click', () => {
             if (exitIntentModal) exitIntentModal.classList.add('hidden');
+            localStorage.setItem('exit_intent_dismissed', 'true');
         });
     }
     if (btnDeclineExit) {
         btnDeclineExit.addEventListener('click', () => {
             if (exitIntentModal) exitIntentModal.classList.add('hidden');
+            localStorage.setItem('exit_intent_dismissed', 'true');
         });
     }
     if (exitIntentForm) {
@@ -2292,7 +2294,7 @@ if (document.readyState === 'loading') {
                     // Instantly update welcome banner & tab counts
                     initStreakAndTracking();
                     
-                    alert(`🎉 Đăng ký thành công! Ebook "9 Nguyên Tắc Bán Hàng B2B" đã được đăng ký gửi tới email ${email}.`);
+                    alert(`🎉 Đăng ký thành công! Ebook "9 Nguyên Tắc Bán Hàng B2B" đã được đăng ký gửi tới email ... ${email}.`);
                     if (exitIntentModal) exitIntentModal.classList.add('hidden');
                 } else {
                     alert('Có lỗi xảy ra, vui lòng thử lại.');
@@ -2314,10 +2316,11 @@ if (document.readyState === 'loading') {
     claimBtns.forEach(btn => {
         btn.addEventListener('click', async () => {
             const reward = btn.getAttribute('data-reward');
+            const reqVal = parseInt(btn.getAttribute('data-requirement') || '7', 10);
             const streak = parseInt(localStorage.getItem('streak_days') || '0', 10);
             
-            if (streak < 7) {
-                alert(`🦉 Cú Peter lắc đầu từ chối! Bạn mới giữ streak liên tục được ${streak} ngày. Cần đạt tối thiểu 7 ngày để mở khóa món quà "${reward}" nhé!`);
+            if (streak < reqVal) {
+                alert(`🦉 Cú Peter lắc đầu từ chối! Bạn mới giữ streak liên tục được ${streak} ngày. Cần đạt tối thiểu ${reqVal} ngày liên tục để mở khóa món quà "${reward}" nhé!`);
                 return;
             }
 
@@ -2404,16 +2407,19 @@ if (document.readyState === 'loading') {
     function updateRewardShopUI(streak) {
         const claimBtns = document.querySelectorAll('.btn-claim');
         claimBtns.forEach(btn => {
-            if (streak >= 7) {
+            const reqVal = parseInt(btn.getAttribute('data-requirement') || '7', 10);
+            const reward = btn.getAttribute('data-reward');
+            if (streak >= reqVal) {
                 btn.style.background = 'var(--primary)';
                 btn.style.borderColor = 'var(--primary)';
                 btn.style.color = '#fff';
                 btn.textContent = 'Mở Khóa Quà';
+                btn.disabled = false;
             } else {
                 btn.style.background = 'rgba(255,255,255,0.05)';
                 btn.style.borderColor = 'var(--border-color)';
                 btn.style.color = 'var(--text-light)';
-                btn.textContent = 'Khóa 🔒';
+                btn.textContent = `Khóa (${reqVal}d) 🔒`;
             }
         });
     }
@@ -2452,18 +2458,18 @@ if (document.readyState === 'loading') {
 
     let exitIntentTriggered = false;
     function initExitIntent() {
-        if (localStorage.getItem('streak_active') === 'true') return;
+        if (localStorage.getItem('streak_active') === 'true' || localStorage.getItem('exit_intent_dismissed') === 'true') return;
 
         // Desktop mouseleave exit intent
         document.addEventListener('mouseleave', (e) => {
-            if (e.clientY < 50 && !exitIntentTriggered && localStorage.getItem('streak_active') !== 'true') {
+            if (e.clientY < 50 && !exitIntentTriggered && localStorage.getItem('streak_active') !== 'true' && localStorage.getItem('exit_intent_dismissed') !== 'true') {
                 showExitIntentPopup();
             }
         });
 
         // Mobile timer exit intent fallback
         setTimeout(() => {
-            if (!exitIntentTriggered && localStorage.getItem('streak_active') !== 'true') {
+            if (!exitIntentTriggered && localStorage.getItem('streak_active') !== 'true' && localStorage.getItem('exit_intent_dismissed') !== 'true') {
                 showExitIntentPopup();
             }
         }, 40000);
