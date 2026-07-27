@@ -418,17 +418,74 @@ const initB2BApp = () => {
                         { text: "Khi nào quyết định thì gọi em nhé.", isCorrect: false, feedback: "Nghiệp dư! Sự bị động sẽ khiến bạn rớt deal vào tay đối thủ nhanh chóng." },
                         { text: "Bước tiếp theo chúng ta sẽ tiến hành...", isCorrect: true, feedback: "Chuyên gia! Chính xác. Hãy luôn chủ động dẫn dắt cuộc chơi và đưa ra lộ trình." }
                     ]
+                },
+                {
+                    context: "Khách hàng nói: 'Bên anh quy mô nhỏ lắm, chắc chưa dùng được'. Bạn phản hồi sao?",
+                    options: [
+                        { text: "Dạ quy mô nào cũng dùng được anh ơi.", isCorrect: false, feedback: "Nghiệp dư! Cách trả lời hời hợt, chưa giải quyết được tâm lý phòng thủ." },
+                        { text: "Dạ thế khi nào lớn gọi em nhé.", isCorrect: false, feedback: "BD chạy bằng cơm! Bạn vừa vứt đi một khách hàng tiềm năng tương lai." },
+                        { text: "Bên em có nhiều khách hàng quy mô giống anh, họ đã tối ưu được 30% chi phí vận hành...", isCorrect: true, feedback: "Chuyên gia! Đưa ra minh chứng tương tự giúp khách hàng tự tin đưa ra quyết định." }
+                    ]
+                },
+                {
+                    context: "Khi gửi Proposal (Đề xuất) qua Email, bạn nên làm gì để tăng tỷ lệ phản hồi?",
+                    options: [
+                        { text: "Đính kèm file PDF nặng 20MB và không viết gì thêm.", isCorrect: false, feedback: "Thư rác 100%! Rất dễ rơi vào bộ lọc spam." },
+                        { text: "Gửi liên tục 5 email nhắc nhở mỗi ngày.", isCorrect: false, feedback: "Hành động spam thô thiển làm khách hàng block bạn vĩnh viễn." },
+                        { text: "Tóm tắt 3 giá trị cốt lõi trong Email và đề xuất một cuộc gọi 10 phút để giải thích chi tiết...", isCorrect: true, feedback: "Tuyệt vời! B2B bận rộn cần sự ngắn gọn, rõ ràng giá trị và Call to action cụ thể." }
+                    ]
+                },
+                {
+                    context: "Khách hàng Enterprise yêu cầu thời gian dùng thử (POC) kéo dài 6 tháng. Bạn đàm phán thế nào?",
+                    options: [
+                        { text: "Đồng ý ngay để làm hài lòng khách hàng.", isCorrect: false, feedback: "Sai lầm! POC quá dài làm lãng phí tài nguyên hỗ trợ kỹ thuật mà không chốt được deal." },
+                        { text: "Từ chối thẳng thừng và yêu cầu mua ngay.", isCorrect: false, feedback: "Cứng nhắc! Làm đứt mạch đàm phán." },
+                        { text: "Đề xuất thời gian dùng thử 2-4 tuần với các tiêu chí nghiệm thu (success criteria) rõ ràng...", isCorrect: true, feedback: "Chuyên gia! Đóng khung thời gian và tiêu chí thành công giúp thúc đẩy tiến độ ký hợp đồng." }
+                    ]
+                },
+                {
+                    context: "Khi gặp tình huống 'Champion' (người ủng hộ bạn) trong công ty khách hàng bị chuyển công tác:",
+                    options: [
+                        { text: "Dừng theo đuổi deal vì mất liên lạc.", isCorrect: false, feedback: "Bỏ cuộc quá sớm! Bạn đang bỏ lỡ deal đã dày công nuôi dưỡng." },
+                        { text: "Tiếp tục gửi email cho hòm thư cũ.", isCorrect: false, feedback: "Vô ích!" },
+                        { text: "Nhờ Champion giới thiệu người thay thế và thiết lập mối quan hệ với Quyết định định đoạt (Decision Maker) mới...", isCorrect: true, feedback: "Chuyên gia! Kế thừa mối quan hệ và tiếp cận người tiếp quản nhanh chóng." }
+                    ]
+                },
+                {
+                    context: "Đối thủ cạnh tranh tung tin đồn ác ý về sản phẩm của bạn. Phản ứng của bạn là gì?",
+                    options: [
+                        { text: "Nói xấu lại đối thủ gấp đôi.", isCorrect: false, feedback: "Thiếu chuyên nghiệp! Khách hàng sẽ đánh giá thấp cả hai bên." },
+                        { text: "Im lặng và chấp nhận mất khách hàng.", isCorrect: false, feedback: "Bị động và yếu thế!" },
+                        { text: "Tập trung chứng minh năng lực bằng dữ liệu thực tế và các chứng chỉ bảo mật độc lập...", isCorrect: true, feedback: "Chuẩn chuyên gia! Dữ liệu khách quan là lá chắn thép đập tan tin đồn." }
+                    ]
+                },
+                {
+                    context: "Lần đầu gặp gỡ khách hàng B2B, mục tiêu lớn nhất của bạn là gì?",
+                    options: [
+                        { text: "Bán được hàng ngay lập tức.", isCorrect: false, feedback: "Quá vội vàng! Giao dịch B2B cần chu kỳ dài và xây dựng niềm tin." },
+                        { text: "Giới thiệu toàn bộ tính năng sản phẩm từ A đến Z.", isCorrect: false, feedback: "Quá tải thông tin! Khách hàng không muốn nghe bạn thuyết trình lý thuyết." },
+                        { text: "Lắng nghe để hiểu rõ quy trình vận hành và xác định các Pain Point thực sự của họ...", isCorrect: true, feedback: "Chính xác! Hiểu nỗi đau trước khi bán thuốc là cốt lõi của Solution Selling." }
+                    ]
+                },
+                {
+                    context: "Khi đàm phán hợp đồng, khách hàng đòi giảm giá thêm 5% vào phút chót. Bạn phản ứng thế nào?",
+                    options: [
+                        { text: "Dạ đồng ý ngay để ký hợp đồng.", isCorrect: false, feedback: "Yếu thế! Khách hàng sẽ nghĩ họ bị hớ và tiếp tục đòi giảm giá lần sau." },
+                        { text: "Từ chối và dọa hủy bỏ thỏa thuận.", isCorrect: false, feedback: "Dễ làm gãy deal vào phút chót." },
+                        { text: "Đề xuất giảm giá đi kèm với điều kiện thanh toán trước 100% hoặc kéo dài thời hạn hợp đồng...", isCorrect: true, feedback: "Chuyên gia! Nguyên tắc vàng trong đàm phán: Không bao giờ cho đi cái gì mà không nhận lại (Give and Take)." }
+                    ]
                 }
             ],
             getResult: (score) => {
-                if (score === 5) {
+                if (score === 12) {
                     return { sfx: 'win', title: "Xuất Sắc! BD Khó Có Peter Lo 💪", color: "var(--primary)", text: "Tuyệt vời, bạn phản ứng rất bén! Bạn đã hoàn toàn làm chủ ngôn từ của một chuyên gia B2B thực thụ." };
-                } else if (score >= 3) {
-                    return { sfx: 'correct', title: "Khá Tốt! 🤔", color: "var(--text-main)", text: `Bạn đạt .../5 điểm. Hãy rèn luyện thêm chút nữa để thành phản xạ bất bại nhé!` };
+                } else if (score >= 6) {
+                    return { sfx: 'correct', title: "Khá Tốt! 🤔", color: "var(--text-main)", text: "Bạn đạt " + score + "/12 điểm. Hãy rèn luyện thêm chút nữa để thành phản xạ bất bại nhé!" };
                 } else {
-                    return { sfx: 'lose', title: "Cần Rèn Luyện Thêm! 😅", color: "var(--danger)", text: `Bạn đạt ${score}/5 điểm. Bí kíp đã có, hãy ghi nhớ và thực hành nhiều hơn. Chúc bạn lần sau "chốt deal" mượt hơn!` };
+                    return { sfx: 'lose', title: "Cố Lên Bạn Ơi! 📈", color: "var(--danger)", text: "Hãy cố gắng rèn luyện thêm để nâng tầm kỹ năng nhé." };
                 }
             }
+
         },
         {
             id: "game-objection",
@@ -890,9 +947,99 @@ const initB2BApp = () => {
     ];
 
     let activeGameIndex = 0;
+
+    // Scale question counts by levels: Level 1 -> 8, Level 2 -> 12, Level 3 -> 16
+    function padGameQuestions() {
+        const pool = [
+            {
+                context: "Khách hàng nói: 'Để anh bàn với sếp đã'. Sếp của họ thực ra là ai trong tình huống trì hoãn?",
+                options: [
+                    { text: "Giám đốc điều hành bận rộn.", isCorrect: false, feedback: "Có thể, nhưng thường là cái cớ." },
+                    { text: "Một cái cớ khéo léo để từ chối bạn.", isCorrect: true, feedback: "Chính xác! Gần 80% trường hợp 'hỏi sếp' là để trì hoãn đàm phán." },
+                    { text: "Vợ của họ.", isCorrect: false, feedback: "Hài hước, nhưng không chuyên nghiệp trong B2B." }
+                ]
+            },
+            {
+                context: "Để cold email có tỷ lệ mở (Open Rate) cao nhất, tiêu đề nên viết thế nào?",
+                options: [
+                    { text: "[HỢP TÁC] Giới thiệu giải pháp doanh nghiệp...", isCorrect: false, feedback: "Nhìn như thư rác, tỷ lệ xóa cực cao." },
+                    { text: "Ý kiến của anh/chị về vấn đề vận hành tại [Tên công ty]?", isCorrect: true, feedback: "Tuyệt vời! Tiêu đề cá nhân hóa và khơi gợi tò mò." },
+                    { text: "GIẢM GIÁ 50% DỊCH VỤ BD B2B NGAY HÔM NAY!", isCorrect: false, feedback: "Sẽ rơi thẳng vào hộp thư Spam." }
+                ]
+            },
+            {
+                context: "Khi khách hàng nói: 'Để anh suy nghĩ thêm'. BD chuyên nghiệp sẽ nói gì?",
+                options: [
+                    { text: "Dạ vâng, anh cứ suy nghĩ đi ạ.", isCorrect: false, feedback: "Thụ động! Bạn vừa đóng lại cơ hội thảo luận." },
+                    { text: "Dạ em hiểu suy nghĩ kỹ là rất cần thiết. Cho em hỏi mình đang băn khoăn về phần chi phí hay tính năng nào để em làm rõ thêm ạ?", isCorrect: true, feedback: "Chuyên gia! Đặt câu hỏi làm rõ để giải quyết nỗi lo." },
+                    { text: "Bên em sắp hết khuyến mãi rồi, anh chốt nhanh đi.", isCorrect: false, feedback: "Gây áp lực thô thiển dễ làm khách hàng phản cảm." }
+                ]
+            },
+            {
+                context: "Trong mô hình SPIN Selling, chữ 'P' đại diện cho điều gì?",
+                options: [
+                    { text: "Product (Sản phẩm của bạn).", isCorrect: false, feedback: "SPIN tập trung vào khách hàng, không phải sản phẩm." },
+                    { text: "Problem (Nỗi đau/Vấn đề của khách hàng).", isCorrect: true, feedback: "Chính xác! Đào sâu vấn đề giúp khách hàng tự thấy nhu cầu thay đổi." },
+                    { text: "Price (Giá cả thương lượng).", isCorrect: false, feedback: "Giá là khâu sau cùng." }
+                ]
+            },
+            {
+                context: "Khi khách hàng phàn nàn dịch vụ lỗi ngay trong đêm, phản ứng đầu tiên của BD là gì?",
+                options: [
+                    { text: "Bảo khách hàng đợi đến giờ hành chính.", isCorrect: false, feedback: "Thiếu trách nhiệm! Bạn sẽ mất khách hàng Enterprise nhanh chóng." },
+                    { text: "Ghi nhận sự cố, đồng cảm với ảnh hưởng vận hành của họ và lập tức báo kỹ thuật xử lý khẩn cấp...", isCorrect: true, feedback: "Chính xác! Sự đồng hành lúc khó khăn tạo dựng lòng tin bền vững nhất." },
+                    { text: "Đổ lỗi cho nhà mạng hoặc bên thứ ba.", isCorrect: false, feedback: "Đổ lỗi chỉ làm tăng thêm sự bực tức của khách." }
+                ]
+            },
+            {
+                context: "Mục tiêu cốt lõi của một cuộc hẹn 'Networking' là gì?",
+                options: [
+                    { text: "Ký hợp đồng ngay lập tức.", isCorrect: false, feedback: "Không thực tế! Networking là để gieo hạt mối quan hệ." },
+                    { text: "Kết nối, hiểu biết về đối phương và hẹn một buổi làm việc chính thức sau đó...", isCorrect: true, feedback: "Chuẩn xác! Mối quan hệ tốt là nền tảng của mọi deal B2B." },
+                    { text: "Phát danh thiếp cho càng nhiều người càng tốt.", isCorrect: false, feedback: "Phát card vô tội vạ không đem lại giá trị thực tế." }
+                ]
+            },
+            {
+                context: "Tại sao không nên nói xấu đối thủ cạnh tranh trước mặt khách hàng?",
+                options: [
+                    { text: "Vì sợ đối thủ biết sẽ kiện bạn.", isCorrect: false, feedback: "Không hẳn." },
+                    { text: "Vì nói xấu đối thủ làm giảm uy tín chuyên nghiệp của chính bạn và tạo cảm giác phòng thủ cho khách...", isCorrect: true, feedback: "Chính xác! Hãy tập trung nói về thế mạnh của mình thay vì hạ bệ người khác." },
+                    { text: "Vì đối thủ thực ra rất tốt.", isCorrect: false, feedback: "Không liên quan." }
+                ]
+            },
+            {
+                context: "Khách hàng chê đề xuất của bạn 'quá phức tạp'. Bạn nên điều chỉnh thế nào?",
+                options: [
+                    { text: "Yêu cầu khách hàng tự đi học để hiểu.", isCorrect: false, feedback: "Thái độ không thể chấp nhận được!" },
+                    { text: "Đơn giản hóa đề xuất thành bảng so sánh tóm tắt một trang (One-pager) tập trung vào ROI...", isCorrect: true, feedback: "Chuẩn chuyên gia! Khách hàng bận rộn cần sự tinh gọn và kết quả tài chính." },
+                    { text: "Gửi thêm 50 trang tài liệu kỹ thuật để chứng minh.", isCorrect: false, feedback: "Gửi thêm tài liệu chỉ làm họ thêm quá tải." }
+                ]
+            }
+        ];
+
+        games.forEach(g => {
+            const targetCount = g.level === 1 ? 8 : (g.level === 2 ? 12 : 16);
+            if (g.questions.length < targetCount) {
+                let poolIdx = 0;
+                while (g.questions.length < targetCount) {
+                    const pQ = pool[poolIdx % pool.length];
+                    g.questions.push({
+                        context: `[Luyện tập] ${pQ.context}`,
+                        options: JSON.parse(JSON.stringify(pQ.options))
+                    });
+                    poolIdx++;
+                }
+            }
+        });
+    }
+
+    padGameQuestions();
+
+
     let currentQIndex = 0;
     let score = 0;
     let timerInterval = null;
+    let userAnswers = [];
     let timeLeft = 15;
 
     const gameSelector = document.getElementById('game-selector');
@@ -1221,15 +1368,17 @@ const initB2BApp = () => {
 
     function startGame() {
         console.log('startGame() called, activeGameIndex =', activeGameIndex);
-        console.log('gameIntro before:', gameIntro ? gameIntro.className : 'null');
-        console.log('gamePlay before:', gamePlay ? gamePlay.className : 'null');
         currentQIndex = 0;
         score = 0;
+        userAnswers = [];
+        
+        const activeGame = games[activeGameIndex];
+        // Shuffle questions for this session to mix order
+        activeGame.shuffledQuestions = [...activeGame.questions].sort(() => Math.random() - 0.5);
+
         gameIntro.classList.add('hidden');
         gameResult.classList.add('hidden');
         gamePlay.classList.remove('hidden');
-        console.log('gameIntro after:', gameIntro ? gameIntro.className : 'null');
-        console.log('gamePlay after:', gamePlay ? gamePlay.className : 'null');
         try {
             loadQuestion();
         } catch (e) {
@@ -1241,12 +1390,16 @@ const initB2BApp = () => {
         console.log('loadQuestion() called, currentQIndex =', currentQIndex);
         nextBtn.classList.add('hidden');
         feedbackMsg.classList.add('hidden');
+        
+        const feedbackOwl = document.getElementById('feedback-owl');
+        if (feedbackOwl) feedbackOwl.classList.add('hidden');
+
         optionsContainer.innerHTML = '';
         clearInterval(timerInterval);
         
         const activeGame = games[activeGameIndex];
         console.log('activeGame =', activeGame ? activeGame.id : 'none');
-        const q = activeGame.questions[currentQIndex];
+        const q = (activeGame.shuffledQuestions && activeGame.shuffledQuestions[currentQIndex]) || activeGame.questions[currentQIndex];
         console.log('q =', q ? q.context : 'none');
         questionText.textContent = `Câu ${currentQIndex + 1}/${activeGame.questions.length}: ${q.context}`;
         progressBar.style.width = `${((currentQIndex) / activeGame.questions.length) * 100}%`;
@@ -1285,26 +1438,54 @@ const initB2BApp = () => {
         });
     }
 
+    const owlCorrect = [
+        { emoji: "🦉✨", quote: "Cú BeeDee Thông Thái gật gù: Đúng rồi! Đỉnh chóp em ơi! ✨" },
+        { emoji: "🦉😎", quote: "Cú BeeDee Thông Thái cười tươi: Chuẩn không cần chỉnh, sếp Peter Võ khen! 😎" },
+        { emoji: "🦉👏", quote: "Cú BeeDee Thông Thái vỗ cánh: Hay quá, thần thái chuyên gia đây rồi! 👏" },
+        { emoji: "🦉🔥", quote: "Cú BeeDee Thông Thái tự hào: Nuột nà! Đóng deal này chắc rồi! 🔥" }
+    ];
+
+    const owlWrong = [
+        { emoji: "🦉🤦‍♂️", quote: "Cú BeeDee Thông Thái lắc đầu: Nghiệp dư quá em ơi! Ăn cơm trưa ngắm cảnh à? 🤦‍♂️" },
+        { emoji: "🦉🥺", quote: "Cú BeeDee Thông Thái thở dài: Ui là trời! Trả lời thế này là mất deal rồi! 🥺" },
+        { emoji: "🦉🧐", quote: "Cú BeeDee Thông Thái nhíu mày: Đọc kỹ hướng dẫn sử dụng sếp Peter Võ trước khi dùng! 🧐" },
+        { emoji: "🦉😱", quote: "Cú BeeDee Thông Thái té xỉu: Úi giời! Khách chạy mất dép rồi em ơi! 😱" },
+        { emoji: "🦉🥶", quote: "Cú BeeDee Thông Thái đóng băng: Khách từ chối nhẹ nhàng nhưng đau đớn... 🥶" }
+    ];
+
     function timeOutAction(allOptionsData) {
         sfx.wrong();
         const allBtns = optionsContainer.querySelectorAll('.btn-option');
         allBtns.forEach(b => b.disabled = true);
         
+        const feedbackOwl = document.getElementById('feedback-owl');
         feedbackMsg.classList.remove('hidden');
-        feedbackMsg.textContent = "HẾT GIỜ! Bạn đã chậm chân. Một chuyên gia cần phản ứng nhanh hơn.";
         feedbackMsg.className = 'feedback-msg error';
         
         const activeGame = games[activeGameIndex];
-        if (activeGame.type === 'scenario_challenge') {
-            const correctOpt = allOptionsData.find(o => o.isCorrect);
-            allBtns.forEach(b => {
-                if (correctOpt && b.textContent === correctOpt.text) {
-                    b.classList.add('correct');
-                }
-            });
-        } else {
-            allBtns.forEach(b => b.classList.add('wrong'));
+        const correctOpt = allOptionsData.find(o => o.isCorrect);
+        allBtns.forEach(b => {
+            if (correctOpt && b.textContent === correctOpt.text) {
+                b.classList.add('correct');
+            }
+        });
+
+        // Record empty timeout selection
+        userAnswers.push({ text: "Không trả lời (Hết giờ)", isCorrect: false });
+
+        // Owl mascot timeout expression
+        const picked = owlWrong[Math.floor(Math.random() * owlWrong.length)];
+        if (feedbackOwl) {
+            feedbackOwl.textContent = picked.emoji;
+            feedbackOwl.classList.remove('hidden');
         }
+        
+        let feedbackText = `<strong>HẾT GIỜ! Bạn đã chậm chân. Một chuyên gia cần phản ứng nhanh hơn.</strong><br><br><strong>${picked.quote}</strong><br><br>`;
+        if (correctOpt) {
+            feedbackText += `<span style="color: #166534; font-weight: bold;">🔑 Đáp án đúng: "${correctOpt.text}"</span><br>`;
+            feedbackText += `<span style="font-size: 0.85rem; color: #166534;">Lý do đúng: ${correctOpt.feedback || 'Chính xác!'}</span>`;
+        }
+        feedbackMsg.innerHTML = feedbackText;
         
         progressBar.style.width = `${((currentQIndex + 1) / activeGame.questions.length) * 100}%`;
         nextBtn.classList.remove('hidden');
@@ -1316,8 +1497,13 @@ const initB2BApp = () => {
         allBtns.forEach(b => b.disabled = true);
 
         const activeGame = games[activeGameIndex];
+        const feedbackOwl = document.getElementById('feedback-owl');
+        const mascotImg = document.getElementById('mascot-img');
+        const feedbackTextEl = document.getElementById('feedback-text');
         feedbackMsg.classList.remove('hidden');
-        feedbackMsg.textContent = selectedOpt.feedback || '';
+
+        // Record user selection
+        userAnswers.push(selectedOpt);
 
         if (activeGame.type === 'scenario_challenge') {
             if (selectedOpt.isCorrect) {
@@ -1325,6 +1511,17 @@ const initB2BApp = () => {
                 selectedBtn.classList.add('correct');
                 feedbackMsg.className = 'feedback-msg success';
                 score++;
+
+                // Owl mascot correct expression
+                const picked = owlCorrect[Math.floor(Math.random() * owlCorrect.length)];
+                if (feedbackOwl) {
+                    feedbackOwl.textContent = picked.emoji;
+                    feedbackOwl.classList.remove('hidden');
+                }
+                if (mascotImg) mascotImg.src = 'mascot_correct.jpg';
+                const htmlVal = `<strong>${picked.quote}</strong><br><br>${selectedOpt.feedback || ''}`;
+                if (feedbackTextEl) feedbackTextEl.innerHTML = htmlVal;
+                else feedbackMsg.innerHTML = htmlVal;
             } else {
                 sfx.wrong();
                 selectedBtn.classList.add('wrong');
@@ -1336,12 +1533,33 @@ const initB2BApp = () => {
                         b.classList.add('correct');
                     }
                 });
+
+                // Owl mascot wrong expression
+                const picked = owlWrong[Math.floor(Math.random() * owlWrong.length)];
+                if (feedbackOwl) {
+                    feedbackOwl.textContent = picked.emoji;
+                    feedbackOwl.classList.remove('hidden');
+                }
+                if (mascotImg) mascotImg.src = 'mascot_wrong.jpg';
+                
+                let feedbackText = `<strong>${picked.quote}</strong><br><br>`;
+                feedbackText += `<span style="color: #991b1b; font-weight: bold;">Bạn chọn: "${selectedOpt.text}"</span><br>`;
+                feedbackText += `<span style="font-size: 0.85rem; color: var(--text-light); font-style: italic;">${selectedOpt.feedback || ''}</span><br><br>`;
+                if (correctOpt) {
+                    feedbackText += `<span style="color: #166534; font-weight: bold;">🔑 Đáp án đúng: "${correctOpt.text}"</span><br>`;
+                    feedbackText += `<span style="font-size: 0.85rem; color: #166534;">Lý do đúng: ${correctOpt.feedback || 'Chính xác!'}</span>`;
+                }
+                if (feedbackTextEl) feedbackTextEl.innerHTML = feedbackText;
+                else feedbackMsg.innerHTML = feedbackText;
             }
         } else {
             sfx.correct();
             selectedBtn.classList.add('correct');
             feedbackMsg.className = 'feedback-msg success';
             score += (selectedOpt.points || 0);
+            if (mascotImg) mascotImg.src = 'mascot_correct.jpg';
+            if (feedbackTextEl) feedbackTextEl.textContent = selectedOpt.feedback || 'Chính xác!';
+            else feedbackMsg.textContent = selectedOpt.feedback || 'Chính xác!';
         }
         
         progressBar.style.width = `${((currentQIndex + 1) / activeGame.questions.length) * 100}%`;
@@ -1358,14 +1576,23 @@ const initB2BApp = () => {
         }
     }
 
-    function showResult() {
-        // User completed game tracking
-        const completedGames = JSON.parse(localStorage.getItem('completed_games') || '[]');
-        if (!completedGames.includes(games[activeGameIndex].id)) {
-            completedGames.push(games[activeGameIndex].id);
-            localStorage.setItem('completed_games', JSON.stringify(completedGames));
+        function showResult() {
+        const activeGame = games[activeGameIndex];
+        const totalQ = activeGame.questions.length;
+        const passThreshold = Math.ceil(totalQ * 0.5);
+        const didPass = score >= passThreshold;
+        const correctCount = score;
+        const wrongCount = totalQ - score;
+
+        if (didPass) {
+            // User completed game tracking
+            const completedGames = JSON.parse(localStorage.getItem('completed_games') || '[]');
+            if (!completedGames.includes(activeGame.id)) {
+                completedGames.push(activeGame.id);
+                localStorage.setItem('completed_games', JSON.stringify(completedGames));
+            }
+            updateTabCounts();
         }
-        updateTabCounts();
 
         gamePlay.classList.add('hidden');
         gameResult.classList.remove('hidden');
@@ -1373,86 +1600,125 @@ const initB2BApp = () => {
         
         const resultTitle = document.getElementById('result-title');
         const resultText = document.getElementById('result-text');
-        
-        const activeGame = games[activeGameIndex];
-        const result = activeGame.getResult(score);
-        
-        if (result.sfx === 'win') sfx.win();
-        else if (result.sfx === 'correct') sfx.correct();
-        else sfx.lose();
-        
-        resultTitle.textContent = result.title;
-        resultTitle.style.color = result.color;
-        resultText.textContent = result.text;
-
-        // Leaderboard Submission Logic
-        const assignedNick = funnyNicknames[Math.floor(Math.random() * funnyNicknames.length)] + " " + Math.floor(Math.random() * 90 + 10);
-        const assignedNickEl = document.getElementById('assigned-nickname');
         const submitBox = document.getElementById('leaderboard-submit-box');
-        
-        if (assignedNickEl && submitBox) {
-            assignedNickEl.textContent = assignedNick;
-            submitBox.innerHTML = `
-                <h4 style="font-weight: bold; margin-bottom: 5px; color: var(--text-main); font-size: 1rem;">🏆 ĐĂNG BẢNG VÀNG CHIẾN THẦN B2B</h4>
-                <p style="font-size: 0.85rem; color: var(--text-light); margin-bottom: 15px;">
-                    Tên đề xuất cho bạn: <strong id="assigned-nickname" style="color: var(--primary);">${assignedNick}</strong>. Bạn có muốn đổi tên khác hoặc lưu lại email để khóa danh hiệu không?
-                </p>
-                <div style="display: flex; flex-direction: column; gap: 10px;">
-                    <input type="text" id="leaderboard-name" placeholder="Biệt danh tự chọn (mặc định sẽ lấy tên đề xuất trên)" style="padding: 8px 12px; border-radius: 6px; border: 1px solid var(--border-color); background: var(--bg); color: var(--text-main); font-family: inherit; font-size: 0.9rem;">
-                    <input type="email" id="leaderboard-email" placeholder="Email của bạn (để khóa danh hiệu & nhận template kế hoạch)" style="padding: 8px 12px; border-radius: 6px; border: 1px solid var(--border-color); background: var(--bg); color: var(--text-main); font-family: inherit; font-size: 0.9rem;">
-                    <button id="btn-submit-leaderboard" class="btn btn-primary" style="padding: 10px; width: 100%; border: none; font-weight: bold;">Xác Nhận Đăng Bảng Vàng</button>
+        const statsBox = document.getElementById('result-stats-box');
+        const result = activeGame.getResult(score);
+
+        const resultMascot = document.getElementById('result-mascot-img');
+        if (resultMascot) {
+            resultMascot.src = didPass ? 'mascot_correct.jpg' : 'mascot_wrong.jpg';
+        }
+
+        // Populate result-stats-box
+        if (statsBox) {
+            statsBox.innerHTML = `
+                <h4 style="margin-top: 0; font-size: 1.05rem; font-weight: 800; border-bottom: 1px solid var(--border-color); padding-bottom: 8px; color: var(--text-main); margin-bottom: 10px;">
+                    📊 KẾT QUẢ THỬ THÁCH
+                </h4>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 0.9rem;">
+                    <div>✔️ Số câu đúng: <strong style="color: #15803d; font-size: 1.05rem;">${correctCount}</strong></div>
+                    <div>❌ Số câu sai: <strong style="color: #b91c1c; font-size: 1.05rem;">${wrongCount}</strong></div>
+                    <div style="grid-column: span 2; border-top: 1px solid rgba(0,0,0,0.05); padding-top: 8px; margin-top: 5px; font-weight: bold;">
+                        Trạng thái qua ải: 
+                        ${didPass 
+                            ? `<strong style="color: #166534; background: #dcfce7; padding: 3px 8px; border-radius: 4px; font-size: 0.8rem; border: 1px solid #15803d;">ĐẠT YÊU CẦU ✅</strong>` 
+                            : `<strong style="color: #991b1b; background: #fee2e2; padding: 3px 8px; border-radius: 4px; font-size: 0.8rem; border: 1px solid #b91c1c;">CHƯA ĐẠT ❌</strong> <span style="font-size: 0.75rem; color: var(--text-light); font-weight: normal;">(Yêu cầu tối thiểu 50%)</span>`
+                        }
+                    </div>
                 </div>
             `;
-            submitBox.style.display = 'block';
+        }
+
+        // Reset review answers toggle and panel
+        const toggleBtn = document.getElementById('btn-toggle-review');
+        const reviewPanel = document.getElementById('review-answers-panel');
+        if (toggleBtn && reviewPanel) {
+            reviewPanel.classList.add('hidden');
+            reviewPanel.innerHTML = '';
+            toggleBtn.textContent = '🔍 Xem Lại Đáp Án Chi Tiết';
             
-            const nameInput = document.getElementById('leaderboard-name');
-            const emailInput = document.getElementById('leaderboard-email');
-            const submitBtn = document.getElementById('btn-submit-leaderboard');
-
-            submitBtn.addEventListener('click', () => {
-                const finalName = nameInput.value.trim() || assignedNick;
-                const email = emailInput.value.trim();
-                
-                // Get title based on score
-                let title = "Tân Binh BD";
-                if (score === 5) title = "Chuyên Gia Chốt Deal";
-                else if (score === 4) title = "Chiến Binh Pipeline";
-                else if (score === 3) title = "Thực Tập Sinh Cold Call";
-
-                const newEntry = {
-                    name: finalName,
-                    email: email,
-                    title: title,
-                    score: score
-                };
-
-                const board = getLeaderboard();
-                board.push(newEntry);
-                
-                // Sort by score desc
-                board.sort((a, b) => b.score - a.score);
-                
-                // Cap at 10 items
-                const capped = board.slice(0, 10);
-                localStorage.setItem('bd_leaderboard', JSON.stringify(capped));
-                
-                // Log email if provided
-                if (email) {
-                    fetch('/api/log-email', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ email: email, source: 'leaderboard-submit' })
-                    }).catch(console.error);
+            // Remove old listener by replacing button with clone
+            const newToggleBtn = toggleBtn.cloneNode(true);
+            toggleBtn.parentNode.replaceChild(newToggleBtn, toggleBtn);
+            
+            newToggleBtn.addEventListener('click', () => {
+                const isHidden = reviewPanel.classList.contains('hidden');
+                if (isHidden) {
+                    renderReviewAnswers(reviewPanel, activeGame, userAnswers);
+                    reviewPanel.classList.remove('hidden');
+                    newToggleBtn.textContent = '🙈 Thu Gọn Đáp Án';
+                } else {
+                    reviewPanel.classList.add('hidden');
+                    newToggleBtn.textContent = '🔍 Xem Lại Đáp Án Chi Tiết';
                 }
-
-                renderLeaderboard();
-                
-                // Hide submit box and show thank you
-                submitBox.innerHTML = `<div style="text-align: center; font-weight: bold; color: var(--primary); padding: 10px;">🎉 Đăng Bảng Vàng thành công! Chúc mừng Chiến thần B2B!</div>`;
-                setTimeout(() => {
-                    submitBox.style.display = 'none';
-                }, 3000);
             });
+        }
+        let resultTextContent = (result.text || '').replace(/\/\d+\s*câu/g, '/' + totalQ + ' câu');
+
+        if (didPass) {
+            if (result.sfx === 'win') sfx.win();
+            else if (result.sfx === 'correct') sfx.correct();
+            else sfx.lose();
+
+            resultTitle.textContent = result.title;
+            resultTitle.style.color = result.color || 'var(--primary)';
+            resultText.innerHTML = resultTextContent;
+
+            // Leaderboard Submission Logic
+            const assignedNick = funnyNicknames[Math.floor(Math.random() * funnyNicknames.length)] + " " + Math.floor(Math.random() * 90 + 10);
+            const assignedNickEl = document.getElementById('assigned-nickname');
+            
+            if (assignedNickEl && submitBox) {
+                assignedNickEl.textContent = assignedNick;
+                submitBox.innerHTML = `
+                    <h4 style="font-weight: bold; margin-bottom: 5px; color: var(--text-main); font-size: 1rem;">🏆 ĐĂNG BẢNG VÀNG CHIẾN THẦN B2B</h4>
+                    <p style="font-size: 0.85rem; color: var(--text-light); margin-bottom: 15px;">
+                        Tên đề xuất cho bạn: <strong id="assigned-nickname" style="color: var(--primary);">${assignedNick}</strong>. Bạn có muốn đổi tên khác hoặc lưu lại email để khóa danh hiệu không?
+                    </p>
+                    <div style="display: flex; flex-direction: column; gap: 10px;">
+                        <input type="text" id="leaderboard-name" placeholder="Biệt danh tự chọn (mặc định sẽ lấy tên đề xuất trên)" style="padding: 8px 12px; border-radius: 6px; border: 1px solid var(--border-color); background: var(--bg); color: var(--text-main); font-family: inherit; font-size: 0.9rem;">
+                        <input type="email" id="leaderboard-email" placeholder="Email của bạn (để khóa danh hiệu & nhận template kế hoạch)" style="padding: 8px 12px; border-radius: 6px; border: 1px solid var(--border-color); background: var(--bg); color: var(--text-main); font-family: inherit; font-size: 0.9rem;">
+                        <button id="btn-submit-leaderboard" class="btn btn-primary" style="padding: 10px; width: 100%; border: none; font-weight: bold;">Xác Nhận Đăng Bảng Vàng</button>
+                    </div>
+                `;
+                submitBox.style.display = 'block';
+                
+                const nameInput = document.getElementById('leaderboard-name');
+                const emailInput = document.getElementById('leaderboard-email');
+                const submitBtn = document.getElementById('btn-submit-leaderboard');
+
+                submitBtn.addEventListener('click', () => {
+                    const finalName = nameInput.value.trim() || assignedNick;
+                    const email = emailInput.value.trim();
+                    
+                    // Get title based on score percentage
+                    let title = "Tân Binh BD";
+                    const percentage = (score / totalQ) * 100;
+                    if (percentage >= 90) title = "Chuyên Gia Chốt Deal";
+                    else if (percentage >= 70) title = "Chiến Binh Pipeline";
+                    else title = "Thực Tập Sinh Cold Call";
+
+                    const newEntry = {
+                        name: finalName,
+                        email: email,
+                        title: title,
+                        score: score
+                    };
+
+                    const board = getLeaderboard();
+                    board.push(newEntry);
+                    saveLeaderboard(board);
+                    renderLeaderboard();
+                    submitBox.style.display = 'none';
+                });
+            }
+        } else {
+            if (submitBox) submitBox.style.display = 'none';
+            sfx.lose();
+
+            resultTitle.textContent = "Chưa Đạt Yêu Cầu! 😅";
+            resultTitle.style.color = "var(--danger)";
+            resultText.innerHTML = `Bạn trả lời đúng <strong>${score}/${totalQ}</strong> câu hỏi (Dưới 50%). BD chuyên nghiệp cần phản xạ chính xác tối thiểu 50% để giữ uy tín. Hãy chơi lại để vượt qua nhé!`;
         }
     }
 
@@ -2195,7 +2461,7 @@ if (document.readyState === 'loading') {
                     localStorage.setItem('streak_email', email);
                     localStorage.setItem('streak_active', 'true');
                     
-                    formDiv.innerHTML = `<p style="color: var(--text-main); font-weight: bold; margin: 0; font-size: 0.85rem;">🎉 Kích hoạt chuỗi ngày (Streak) thành công! Cú Peter sẽ ghé thăm hòm thư ${email} mỗi ngày để gõ cửa ôn luyện.</p>`;
+                    formDiv.innerHTML = `<p style="color: var(--text-main); font-weight: bold; margin: 0; font-size: 0.85rem;">🎉 Kích hoạt chuỗi ngày (Streak) thành công! Cú BeeDeee sẽ ghé thăm hòm thư ${email} mỗi ngày để gõ cửa ôn luyện.</p>`;
                 } else {
                     alert('Có lỗi xảy ra, vui lòng thử lại sau.');
                     btnActivateStreak.disabled = false;
@@ -2218,7 +2484,6 @@ if (document.readyState === 'loading') {
             formDiv.innerHTML = `<p style="color: var(--text-main); font-weight: bold; margin: 0; font-size: 0.85rem;">🎉 Chuỗi ngày (Streak) đang hoạt động! Email hàng ngày gửi đến: ${savedEmail}</p>`;
         }
     }
-
     // --- Phase 3: Streak, Exit Intent, Rewards Shop, and Social Sharing ---
 
     // Tab switcher logic
@@ -2294,7 +2559,7 @@ if (document.readyState === 'loading') {
                     // Instantly update welcome banner & tab counts
                     initStreakAndTracking();
                     
-                    alert(`🎉 Đăng ký thành công! Ebook "9 Nguyên Tắc Bán Hàng B2B" đã được đăng ký gửi tới email ... ${email}.`);
+                    alert(`🎉 Đăng ký thành công! Ebook "9 Nguyên Tắc Bán Hàng B2B" đã được đăng ký gửi tới email ${email}.`);
                     if (exitIntentModal) exitIntentModal.classList.add('hidden');
                 } else {
                     alert('Có lỗi xảy ra, vui lòng thử lại.');
@@ -2320,7 +2585,7 @@ if (document.readyState === 'loading') {
             const streak = parseInt(localStorage.getItem('streak_days') || '0', 10);
             
             if (streak < reqVal) {
-                alert(`🦉 Cú Peter lắc đầu từ chối! Bạn mới giữ streak liên tục được ${streak} ngày. Cần đạt tối thiểu ${reqVal} ngày liên tục để mở khóa món quà "${reward}" nhé!`);
+                alert(`🦉 Cú BeeDee Thông Thái lắc đầu từ chối! Bạn mới giữ streak liên tục được ${streak} ngày. Cần đạt tối thiểu ${reqVal} ngày liên tục để mở khóa món quà "${reward}" nhé!`);
                 return;
             }
 
@@ -2486,3 +2751,53 @@ if (document.readyState === 'loading') {
     // Run initializations on startup
     initStreakAndTracking();
     initExitIntent();
+
+    function renderReviewAnswers(container, activeGame, userAnswers) {
+        const questionsList = activeGame.shuffledQuestions || activeGame.questions;
+        container.innerHTML = `
+            <h4 style="margin-top: 0; font-size: 1.05rem; font-weight: 800; border-bottom: 1px solid var(--border-color); padding-bottom: 10px; color: var(--text-main); margin-bottom: 15px;">
+                📋 CHI TIẾT CÂU HỎI & ĐÁP ÁN
+            </h4>
+            <div style="display: flex; flex-direction: column; gap: 20px;">
+                ${questionsList.map((q, qIdx) => {
+                    const userAns = userAnswers[qIdx];
+                    const correctOpt = q.options.find(o => o.isCorrect);
+                    const isUserCorrect = userAns && userAns.isCorrect;
+                    
+                    return `
+                        <div style="border-bottom: 1px solid rgba(0,0,0,0.05); padding-bottom: 15px; margin-bottom: 5px;">
+                            <h5 style="margin: 0 0 10px 0; font-size: 0.9rem; font-weight: bold; color: var(--text-main); line-height: 1.4;">
+                                Câu ${qIdx + 1}: ${q.context}
+                            </h5>
+                            <div style="display: flex; flex-direction: column; gap: 6px;">
+                                ${q.options.map(opt => {
+                                    let style = 'padding: 8px 12px; border-radius: 6px; border: 1px solid var(--border-color); font-size: 0.8rem; line-height: 1.3;';
+                                    let prefix = '';
+                                    
+                                    if (opt.isCorrect) {
+                                        style += ' background: #dcfce7 !important; border-color: #15803d !important; color: #166534 !important; font-weight: bold;';
+                                        prefix = '✅ ';
+                                    } else if (userAns && userAns.text === opt.text) {
+                                        style += ' background: #fee2e2 !important; border-color: #b91c1c !important; color: #991b1b !important;';
+                                        prefix = '❌ ';
+                                    } else {
+                                        style += ' opacity: 0.6;';
+                                    }
+                                    
+                                    return `
+                                        <div style="${style}">
+                                            ${prefix}${opt.text}
+                                        </div>
+                                    `;
+                                }).join('')}
+                            </div>
+                            <div style="margin-top: 10px; padding: 10px; background: rgba(0,0,0,0.02); border-left: 3px solid ${isUserCorrect ? '#15803d' : '#b91c1c'}; border-radius: 4px; font-size: 0.75rem; color: var(--text-light); line-height: 1.4;">
+                                <strong>Lý giải đáp án đúng:</strong> ${correctOpt ? (correctOpt.feedback || 'Chính xác.') : ''}
+                            </div>
+                        </div>
+                    `;
+                }).join('')}
+            </div>
+        `;
+    }
+
