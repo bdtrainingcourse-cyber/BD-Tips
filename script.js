@@ -1518,7 +1518,7 @@ const initB2BApp = () => {
                     feedbackOwl.textContent = picked.emoji;
                     feedbackOwl.classList.remove('hidden');
                 }
-                if (mascotImg) mascotImg.src = 'mascot_correct.jpg';
+                if (mascotImg) mascotImg.src = 'mascot_correct.jpg?v=1.0.3';
                 const htmlVal = `<strong>${picked.quote}</strong><br><br>${selectedOpt.feedback || ''}`;
                 if (feedbackTextEl) feedbackTextEl.innerHTML = htmlVal;
                 else feedbackMsg.innerHTML = htmlVal;
@@ -1540,7 +1540,7 @@ const initB2BApp = () => {
                     feedbackOwl.textContent = picked.emoji;
                     feedbackOwl.classList.remove('hidden');
                 }
-                if (mascotImg) mascotImg.src = 'mascot_wrong.jpg';
+                if (mascotImg) mascotImg.src = 'mascot_wrong.jpg?v=1.0.3';
                 
                 let feedbackText = `<strong>${picked.quote}</strong><br><br>`;
                 feedbackText += `<span style="color: #991b1b; font-weight: bold;">Bạn chọn: "${selectedOpt.text}"</span><br>`;
@@ -1557,7 +1557,7 @@ const initB2BApp = () => {
             selectedBtn.classList.add('correct');
             feedbackMsg.className = 'feedback-msg success';
             score += (selectedOpt.points || 0);
-            if (mascotImg) mascotImg.src = 'mascot_correct.jpg';
+            if (mascotImg) mascotImg.src = 'mascot_correct.jpg?v=1.0.3';
             if (feedbackTextEl) feedbackTextEl.textContent = selectedOpt.feedback || 'Chính xác!';
             else feedbackMsg.textContent = selectedOpt.feedback || 'Chính xác!';
         }
@@ -1606,7 +1606,7 @@ const initB2BApp = () => {
 
         const resultMascot = document.getElementById('result-mascot-img');
         if (resultMascot) {
-            resultMascot.src = didPass ? 'mascot_correct.jpg' : 'mascot_wrong.jpg';
+            resultMascot.src = didPass ? 'mascot_correct.jpg?v=1.0.3' : 'mascot_wrong.jpg?v=1.0.3';
         }
 
         // Populate result-stats-box
