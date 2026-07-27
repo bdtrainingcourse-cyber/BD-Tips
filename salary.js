@@ -762,24 +762,14 @@ document.addEventListener('DOMContentLoaded', () => {
             // Custom Advice Card based on exp level
             const adviceContainer = document.getElementById('det-advice');
             let adviceHtml = '';
-            if (exp === 'junior') {
-                adviceHtml = `
-                    Mức lương cho cấp độ Junior ở vị trí <strong>${data.title}</strong> thường tập trung xây dựng năng lực nền tảng. 
-                    <br><br>
-                    💡 <strong>Khuyến nghị:</strong> Bạn nên tập trung đàm phán cơ hội đào tạo thực chiến và lộ trình thăng tiến rõ ràng. Tham gia <a href="https://canva.link/plgyedwezllyrjr" target="_blank" rel="noopener noreferrer">Khóa học B2B BD Thực Chiến</a> để rút ngắn 2 năm thử sai, trang bị tư duy đàm phán hợp đồng lớn và bứt phá nhanh lên cấp bậc Mid-level với mức lương nhân đôi.
-                `;
-            } else if (exp === 'mid') {
-                adviceHtml = `
-                    Ở cấp bậc Mid-level cho vị trí <strong>${data.title}</strong>, bạn đã có năng lực độc lập tác chiến và chịu quota cá nhân.
-                    <br><br>
-                    💡 <strong>Khuyến nghị:</strong> Hãy đàm phán nâng tỷ lệ hoa hồng (Commission rate) thay vì chỉ nhìn vào lương cứng cơ bản. Sở hữu kỹ năng phân tích chân dung khách hàng tổ chức và viết Cold Email chuyên nghiệp tại <a href="https://canva.link/plgyedwezllyrjr" target="_blank" rel="noopener noreferrer">Khóa học B2B BD Thực Chiến</a> sẽ giúp bạn liên tục vượt chỉ tiêu (Overachieving Quota) và nhận thưởng accelerators.
-                `;
+            const expMap = {'junior': 1, 'mid': 3, 'senior': 5, 'director': 6};
+            const expVal = expMap[exp] || 0;
+            if (expVal <= 2) {
+                adviceHtml = `💡 <strong>Khuyến nghị:</strong> Bạn nên tập trung đàm phán cơ hội đào tạo thực chiến và lộ trình thăng tiến rõ ràng. Tham khảo <a href="library.html">Thư viện Ebook & Thuật ngữ BD</a> để rút ngắn 2 năm thử sai, trang bị tư duy đàm phán hợp đồng lớn và bứt phá nhanh lên cấp bậc Mid-level với mức lương nhân đôi.`;
+            } else if (expVal <= 4) {
+                adviceHtml = `💡 <strong>Khuyến nghị:</strong> Hãy đàm phán nâng tỷ lệ hoa hồng (Commission rate) thay vì chỉ nhìn vào lương cứng cơ bản. Sở hữu kỹ năng phân tích chân dung khách hàng tổ chức và dùng <a href="email-assistant.html">AI Email Assistant</a> để tiếp cận PIC doanh nghiệp hiệu quả.`;
             } else {
-                adviceHtml = `
-                    Với cấp bậc Senior/Director cho vị trí <strong>${data.title}</strong>, thù lao OTE của bạn chịu ảnh hưởng trực tiếp bởi doanh thu toàn bộ phận hoặc giá trị các hợp đồng Enterprise lớn.
-                    <br><br>
-                    💡 <strong>Khuyến nghị:</strong> Đảm bảo cấu trúc gói thù lao có thưởng theo quý/năm và các điều khoản thưởng vượt chỉ tiêu (Accelerators) hấp dẫn. Để đàm phán sắc bén các gói hợp đồng lớn triệu đô và tối ưu hóa chi phí vận hành phòng ban, hãy tham khảo các tình huống thực chiến tại <a href="https://canva.link/plgyedwezllyrjr" target="_blank" rel="noopener noreferrer">Khóa học B2B BD Thực Chiến</a>.
-                `;
+                adviceHtml = `💡 <strong>Khuyến nghị:</strong> Đảm bảo cấu trúc gói thù lao có thưởng theo quý/năm và các điều khoản thưởng vượt chỉ tiêu (Accelerators) hấp dẫn. Kết nối trực tiếp với <a href="https://www.linkedin.com/in/vp-tan/" target="_blank">Founder Peter Vo (Zalo: 0931100569)</a> để tư vấn chiến lược B2B BD & Partnership cấp cao.`;
             }
             adviceContainer.innerHTML = adviceHtml;
 
