@@ -183,7 +183,7 @@
                     <span style="font-size: 1.8rem; line-height: 1;">🦉</span>
                     <div>
                         <h4 style="margin: 0; font-size: 0.95rem; font-weight: 800; color: var(--text-main);" id="welcome-banner-title">Chào mừng trở lại, Chiến thần!</h4>
-                        <p style="margin: 3px 0 0 0; font-size: 0.8rem; color: var(--text-light);" id="welcome-banner-desc">Hôm nay bạn đã hoàn thành thử thách chưa? Cú Peter đang ngóng trông bạn.</p>
+                        <p style="margin: 3px 0 0 0; font-size: 0.8rem; color: var(--text-light);" id="welcome-banner-desc">Hôm nay bạn đã hoàn thành thử thách chưa? Cú BeeDee Thông Thái đang ngóng trông bạn.</p>
                     </div>
                 </div>
                 <div style="display: flex; align-items: center; gap: 10px;">
@@ -237,7 +237,7 @@
                                 <div style="font-size: 2.2rem; line-height: 1;">🦉</div>
                                 <div style="flex: 1; min-width: 240px;">
                                     <h4 style="margin: 0; font-size: 0.95rem; font-weight: 800; color: var(--text-main);">Kích hoạt Chuỗi Ngày (Daily Streak)</h4>
-                                    <p style="margin: 5px 0 0 0; font-size: 0.8rem; color: var(--text-light); line-height: 1.4;">Cú Peter sẽ gửi email nhắc nhở vui vẻ mỗi ngày để bạn giữ vững streak và nâng cấp tư duy BD B2B.</p>
+                                    <p style="margin: 5px 0 0 0; font-size: 0.8rem; color: var(--text-light); line-height: 1.4;">Cú BeeDee Thông Thái sẽ gửi email nhắc nhở vui vẻ mỗi ngày để bạn giữ vững streak và nâng cấp tư duy BD B2B.</p>
                                 </div>
                             </div>
                             <div style="display: flex; gap: 10px; width: 100%; flex-wrap: wrap;" id="streak-form">
@@ -299,11 +299,15 @@
                             </div>
                         </div>
                     </div>
+
                 </div>
 
                 <!-- Intro Panel -->
                 <div id="game-intro" class="hidden">
                     <button id="back-to-selector" class="btn btn-secondary" style="padding: 6px 16px; font-size: 0.85rem; margin: 0 auto 20px auto; display: block; width: fit-content;">&larr; Quay lại chọn game khác</button>
+                    <div style="text-align: center; margin-bottom: 20px;">
+                        <img src="mascot_mascot.jpg" alt="Mascot" style="width: 100px; height: 100px; border-radius: 50%; object-fit: cover; border: 3px solid var(--primary); box-shadow: 0 4px 10px rgba(0,0,0,0.15);">
+                    </div>
                     <h3 id="intro-game-title" style="font-size: 1.6rem; font-weight: 800; margin-bottom: 12px; color: var(--text-main);"></h3>
                     <p id="intro-game-desc" style="font-size: 1.1rem; margin-bottom: 25px; color: var(--text-light); max-width: 600px; margin-left: auto; margin-right: auto;"></p>
                     <button id="start-btn" class="btn btn-primary" style="padding: 12px 40px; font-size: 1.1rem;">Bắt Đầu Chơi</button>
@@ -319,14 +323,35 @@
                     <div class="options-container" id="options-container">
                         <!-- Options injected via JS -->
                     </div>
-                    <div id="feedback-msg" class="feedback-msg hidden"></div>
+                    <div id="feedback-msg" class="feedback-msg hidden" style="display: flex; align-items: center; gap: 15px; padding: 15px;">
+                        <img id="mascot-img" src="mascot_mascot.jpg" alt="Mascot" style="width: 55px; height: 55px; border-radius: 50%; object-fit: cover; border: 2px solid currentColor; flex-shrink: 0;">
+                        <div id="feedback-text" style="flex: 1; text-align: left; font-size: 0.85rem; line-height: 1.4;"></div>
+                    </div>
                     <button id="next-btn" class="btn btn-secondary hidden" style="margin-top: 20px;">Câu tiếp theo &rarr;</button>
                 </div>
 
                 <!-- Result Panel -->
                 <div id="game-result" class="hidden">
+                    <div style="text-align: center; margin-bottom: 20px;">
+                        <img id="result-mascot-img" src="mascot_mascot.jpg" alt="Mascot" style="width: 100px; height: 100px; border-radius: 50%; object-fit: cover; border: 3px solid var(--primary); box-shadow: 0 4px 10px rgba(0,0,0,0.15);">
+                    </div>
                     <h3 id="result-title" style="font-size: 2.2rem; font-weight: 800; margin-bottom: 15px;"></h3>
                     <p id="result-text" style="font-size: 1.15rem; color: var(--text-main); max-width: 600px; margin: 0 auto 10px auto; line-height: 1.6;"></p>
+
+                    <!-- Stats Overview -->
+                    <div id="result-stats-box" style="background: rgba(255,255,255,0.05); border: 1px solid var(--border-color); border-radius: 12px; padding: 15px 20px; max-width: 480px; margin: 15px auto; text-align: left;">
+                        <!-- Rendered by JS -->
+                    </div>
+
+                    <!-- Review Answers Button -->
+                    <button id="btn-toggle-review" class="btn btn-secondary" style="padding: 8px 20px; font-size: 0.9rem; font-weight: bold; margin: 15px auto 10px auto; display: block;">
+                        🔍 Xem Lại Đáp Án Chi Tiết
+                    </button>
+                    
+                    <!-- Review Answers List Panel -->
+                    <div id="review-answers-panel" class="hidden" style="margin-top: 20px; max-width: 600px; margin-left: auto; margin-right: auto; max-height: 400px; overflow-y: auto; text-align: left; padding: 10px; border-radius: 12px; border: 1px solid var(--border-color); background: rgba(0,0,0,0.02);">
+                        <!-- Rendered by JS -->
+                    </div>
                     
                     <!-- Hall of Fame Submit Form -->
                     <div id="leaderboard-submit-box" style="background: rgba(162, 10, 10, 0.03); border: 1px solid rgba(162, 10, 10, 0.12); border-radius: 12px; padding: 20px; max-width: 500px; margin: 20px auto; text-align: left;">
@@ -345,22 +370,7 @@
                         <button id="restart-btn" class="btn btn-primary" style="padding: 10px 30px; font-size: 1rem;">Chơi Lại</button>
                         <button id="selector-btn" class="btn btn-secondary" style="padding: 10px 30px; font-size: 1rem; margin: 0;">Đổi Game Khác</button>
                     </div>
-                <!-- Social Share Buttons -->
-                    <div style="margin-top: 25px; border-top: 1px solid var(--border-color); padding-top: 15px; text-align: center;" id="social-share-box">
-                        <p style="font-size: 0.8rem; color: var(--text-light); margin-bottom: 10px; font-weight: 700; letter-spacing: 0.5px;">📢 KHOE THÀNH TÍCH VỚI ĐỒNG NGHIỆP</p>
-                        <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
-                            <button id="share-linkedin-btn" class="btn btn-secondary" style="padding: 6px 14px; font-size: 0.8rem; display: flex; align-items: center; gap: 5px; background: rgba(0, 119, 181, 0.1); border: 1px solid rgba(0, 119, 181, 0.25); color: #0077b5;">
-                                💼 LinkedIn
-                            </button>
-                            <button id="share-facebook-btn" class="btn btn-secondary" style="padding: 6px 14px; font-size: 0.8rem; display: flex; align-items: center; gap: 5px; background: rgba(24, 119, 242, 0.1); border: 1px solid rgba(24, 119, 242, 0.25); color: #1877f2;">
-                                👥 Facebook
-                            </button>
-                            <button id="share-copy-btn" class="btn btn-secondary" style="padding: 6px 14px; font-size: 0.8rem; display: flex; align-items: center; gap: 5px; background: rgba(255,255,255,0.05); color: var(--text-main);">
-                                🔗 Sao chép link
-                            </button>
-                        </div>
-                    </div>
-                    </div>
+                </div>
             </div>
 
             <!-- Right Column: Sexy Hall of Fame -->
@@ -543,29 +553,5 @@
     <script src="script.js?v=2.0.0"></script>
     <script src="ai-chat.js?v=2.0.0"></script>
     <script defer src="/_vercel/insights/script.js"></script>
-
-    <!-- Exit Intent Popup Modal -->
-    <div id="exit-intent-modal" class="modal-overlay hidden" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.65); z-index: 10000; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(5px);">
-        <div class="modal-content glass-panel" style="max-width: 440px; width: 90%; padding: 30px; border-radius: 16px; border: 1px solid var(--primary); background: var(--bg); color: var(--text-main); position: relative; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.5); box-sizing: border-box;">
-            <button id="btn-close-exit-modal" style="position: absolute; top: 15px; right: 15px; background: none; border: none; color: var(--text-light); font-size: 1.5rem; cursor: pointer; line-height: 1;">&times;</button>
-            <div style="font-size: 3.5rem; margin-bottom: 12px; line-height: 1;">🦉</div>
-            <h3 style="font-size: 1.35rem; font-weight: 800; color: var(--text-main); margin-bottom: 10px; margin-top: 0;">Chạy đi đâu thế hả?</h3>
-            <p style="font-size: 0.85rem; color: var(--text-light); line-height: 1.5; margin-bottom: 20px; margin-top: 0;">
-                Bạn định rời đi mà không mang theo bộ bí kíp B2B sao? Để lại Tên & Email để Cú Peter gửi ngay <strong>Ebook "9 Nguyên Tắc Bán Hàng B2B" bởi Peter Võ</strong> và nhắc nhở học tập vui vẻ mỗi ngày. Hứa không spam!
-            </p>
-            <form id="exit-intent-form" style="display: flex; flex-direction: column; gap: 12px; text-align: left;">
-                <div>
-                    <label style="font-size: 0.75rem; color: var(--text-light); font-weight: bold; display: block; margin-bottom: 5px;">Họ và Tên</label>
-                    <input type="text" id="exit-name" placeholder="Ví dụ: Anh Nguyễn" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border-color); background: rgba(255,255,255,0.02); color: var(--text-main); font-family: inherit; font-size: 0.85rem; box-sizing: border-box;" required>
-                </div>
-                <div>
-                    <label style="font-size: 0.75rem; color: var(--text-light); font-weight: bold; display: block; margin-bottom: 5px;">Địa chỉ Email</label>
-                    <input type="email" id="exit-email" placeholder="Ví dụ: anh.nguyen@company.com" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border-color); background: rgba(255,255,255,0.02); color: var(--text-main); font-family: inherit; font-size: 0.85rem; box-sizing: border-box;" required>
-                </div>
-                <button type="submit" class="btn btn-primary" style="width: 100%; padding: 12px; font-weight: bold; margin-top: 10px; border: none; cursor: pointer; border-radius: 8px;">Nhận Ebook & Bật Nhắc Nhở 🚀</button>
-                <button type="button" id="btn-decline-exit" style="background: none; border: none; color: var(--text-light); font-size: 0.75rem; cursor: pointer; text-decoration: underline; margin-top: 5px; text-align: center; width: 100%;">Không, tôi muốn làm BD chạy bằng cơm</button>
-            </form>
-        </div>
-    </div>
 </body>
 </html>
