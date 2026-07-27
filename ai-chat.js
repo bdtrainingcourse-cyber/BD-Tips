@@ -8,7 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
     chatContainer.innerHTML = `
         <!-- Floating Launcher -->
         <div class="ai-chat-launcher" id="ai-chat-launcher" title="Hỏi Trợ Lý B2B">
-            <img src="bd_mascot.png" alt="BeeDee Mascot" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
+            <img src="bd_mascot.png?v=1.0.3" alt="BeeDee Mascot" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
             <span class="launcher-online-dot"></span>
         </div>
  
@@ -17,7 +17,7 @@ document.addEventListener('DOMContentLoaded', () => {
             <!-- Header -->
             <div class="chat-header">
                 <div style="display: flex; align-items: center; gap: 10px;">
-                    <img src="bd_mascot.png" alt="BeeDee" style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover; border: 1.5px solid var(--chat-primary);">
+                    <img src="bd_mascot.png?v=1.0.3" alt="BeeDee" style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover; border: 1.5px solid var(--chat-primary);">
                     <div class="chat-header-info">
                         <h3 style="margin: 0; display: flex; align-items: center; gap: 6px;">BeeDee AI</h3>
                         <span style="font-size: 0.72rem; color: var(--chat-text-muted);">Trợ Lý B2B Cá Nhân</span>
@@ -29,7 +29,7 @@ document.addEventListener('DOMContentLoaded', () => {
             <!-- Messages Area -->
             <div class="chat-messages" id="chat-messages">
                 <div class="chat-bubble-container bot">
-                    <img src="bd_mascot.png" class="chat-bot-avatar" alt="BeeDee">
+                    <img src="bd_mascot.png?v=1.0.3" class="chat-bot-avatar" alt="BeeDee">
                     <div class="chat-bubble-content">
                         <div class="chat-bubble">
                             Xin chào! Tôi là <strong>BeeDee</strong>, trợ lý ảo của bạn. Tôi có thể giúp bạn giải đáp các kỹ năng Sales B2B, tra cứu nhanh Luật Lao động (với 15 tình huống thực tế) hoặc hướng dẫn sử dụng các công cụ trên Portal. Hôm nay tôi có thể hỗ trợ gì cho bạn?
@@ -275,7 +275,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         let bubbleHtml = '';
         if (sender === 'bot') {
-            bubbleHtml += `<img src="bd_mascot.png" class="chat-bot-avatar" alt="BeeDee">`;
+            bubbleHtml += `<img src="bd_mascot.png?v=1.0.3" class="chat-bot-avatar" alt="BeeDee">`;
         }
         
         bubbleHtml += `<div class="chat-bubble-content">`;
@@ -306,7 +306,7 @@ document.addEventListener('DOMContentLoaded', () => {
         bubbleContainer.className = 'chat-bubble-container bot';
         bubbleContainer.id = id;
         bubbleContainer.innerHTML = `
-            <img src="bd_mascot.png" class="chat-bot-avatar" alt="BeeDee">
+            <img src="bd_mascot.png?v=1.0.3" class="chat-bot-avatar" alt="BeeDee">
             <div class="chat-bubble-content">
                 <div class="chat-bubble">
                     <div class="typing-indicator">
