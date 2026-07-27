@@ -2660,7 +2660,7 @@ body.dark-theme .planet-tooltip-card {
     }
 }
 
-/* Phase 3 modifications for reward cards and exit modals */
+/* Phase 3 & 4 styling overrides */
 .challenge-layout {
     display: grid;
     grid-template-columns: 1.25fr 0.75fr;
