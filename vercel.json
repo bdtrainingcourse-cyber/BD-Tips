@@ -4,7 +4,7 @@
   "crons": [
     {
       "path": "/api/daily-email",
-      "schedule": "0 9 * * *"
+      "schedule": "45 1 * * *"
     }
   ]
 }
