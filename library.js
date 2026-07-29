@@ -558,6 +558,23 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
+        // If they are a returning user who already registered in the past,
+        // they must earn a bonus credit today to unlock any new/different ebook!
+        const hasDownloadedBefore = localStorage.getItem('b2b_has_downloaded_before') === 'true';
+        if (hasDownloadedBefore && getTodayBonusCredits() < 1) {
+            // Force playing games / visiting community
+            const limitModalTitle = document.querySelector('#limit-modal .modal-title');
+            const limitModalDesc = document.querySelector('#limit-modal p');
+            if (limitModalTitle) {
+                limitModalTitle.textContent = "Cần Tích Điểm Để Mở Khóa Ebook Mới";
+            }
+            if (limitModalDesc) {
+                limitModalDesc.textContent = "Bạn đã tải Ebook chào mừng trước đó. Để mở khóa tải Ebook tiếp theo, vui lòng tham gia Thử thách B2B hoặc Cộng đồng BD để tích lũy điểm mở khóa nhé!";
+            }
+            limitModal.classList.remove('hidden');
+            return;
+        }
+
         const registered = localStorage.getItem('b2b_user_registration');
         if (registered) {
             triggerDownload(ebook);
@@ -571,6 +588,9 @@ document.addEventListener('DOMContentLoaded', () => {
         // Record download count
         incrementTodayDownloads();
         incrementEbookDownloadCount(ebook.id);
+        
+        // Save flag to identify returning downloaders
+        localStorage.setItem('b2b_has_downloaded_before', 'true');
 
         const link = document.createElement('a');
         link.href = ebook.fileUrl;
@@ -664,18 +684,14 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        // Save profile locally
-        const registrationData = {
-            firstName,
-            email,
-            experience: experience,
-            registeredAt: new Date().toISOString()
-        };
-        
-        localStorage.setItem('b2b_user_registration', JSON.stringify(registrationData));
-
         const ebookTitle = currentSelectedEbook ? currentSelectedEbook.title : 'Cẩm nang B2B BD';
         const downloadLink = currentSelectedEbook ? (window.location.origin + '/' + encodeURIComponent(currentSelectedEbook.fileUrl)) : window.location.href;
+
+        const submitBtn = downloadForm.querySelector('button[type="submit"]');
+        if (submitBtn) {
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Đang kiểm tra...';
+        }
 
         // Sync lead name, email & metadata to Google Sheets backend endpoint
         fetch('/api/log-email', {
@@ -689,13 +705,63 @@ document.addEventListener('DOMContentLoaded', () => {
                 ebookTitle: ebookTitle,
                 downloadLink: downloadLink
             })
-        }).catch(console.error);
-        
-        closeDownloadModal();
-        
-        if (currentSelectedEbook) {
-            triggerDownload(currentSelectedEbook);
-        }
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (submitBtn) {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Đăng Ký & Tải Xuống';
+            }
+            if (data.error === 'email_already_used') {
+                alert('Email này đã được dùng để tải Ebook trước đây. Bạn cần tham gia Mini Game hoặc Cộng đồng BD để tích điểm mở khóa Ebook mới!');
+                closeDownloadModal();
+                
+                // Customize and show limit modal
+                const limitModalTitle = document.querySelector('#limit-modal .modal-title');
+                const limitModalDesc = document.querySelector('#limit-modal p');
+                if (limitModalTitle) {
+                    limitModalTitle.textContent = "Cần Tích Điểm Để Mở Khóa Ebook Mới";
+                }
+                if (limitModalDesc) {
+                    limitModalDesc.textContent = "Email này đã nhận Ebook chào mừng. Để tải Ebook tiếp theo, vui lòng tham gia Mini Game hoặc Cộng Đồng BD để tích lũy điểm mở khóa nhé!";
+                }
+                limitModal.classList.remove('hidden');
+            } else {
+                // Success
+                const registrationData = {
+                    firstName,
+                    email,
+                    experience: experience,
+                    registeredAt: new Date().toISOString()
+                };
+                localStorage.setItem('b2b_user_registration', JSON.stringify(registrationData));
+                localStorage.setItem('b2b_has_downloaded_before', 'true');
+                closeDownloadModal();
+                if (currentSelectedEbook) {
+                    triggerDownload(currentSelectedEbook);
+                }
+            }
+        })
+        .catch(err => {
+            console.error(err);
+            if (submitBtn) {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Đăng Ký & Tải Xuống';
+            }
+            // Fallback success
+            const registrationData = {
+                firstName,
+                email,
+                experience: experience,
+                registeredAt: new Date().toISOString()
+            };
+            localStorage.setItem('b2b_user_registration', JSON.stringify(registrationData));
+            localStorage.setItem('b2b_has_downloaded_before', 'true');
+            closeDownloadModal();
+            if (currentSelectedEbook) {
+                triggerDownload(currentSelectedEbook);
+            }
+        });
     });
 
     // Close download modal listeners
