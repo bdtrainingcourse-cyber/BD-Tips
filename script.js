@@ -2507,14 +2507,14 @@ if (document.readyState === 'loading') {
         });
     }
 
-    // Dynamically inject Exit Intent Modal HTML & CSS if not present
+    // Dynamically inject Tabbed Exit Intent Modal HTML & CSS if not present
     if (!document.getElementById('exit-intent-modal')) {
         const style = document.createElement('style');
         style.innerHTML = `
             .exit-modal-overlay {
                 position: fixed;
                 top: 0; left: 0; width: 100%; height: 100%;
-                background: rgba(0, 0, 0, 0.7);
+                background: rgba(0, 0, 0, 0.75);
                 display: flex; align-items: center; justify-content: center;
                 z-index: 10000;
                 backdrop-filter: blur(8px);
@@ -2527,13 +2527,58 @@ if (document.readyState === 'loading') {
                 background: var(--bg-card, #1e1e24);
                 border: 2px solid var(--primary, #f3a83b);
                 border-radius: 20px;
-                width: 90%; max-width: 480px;
-                padding: 30px;
+                width: 92%; max-width: 680px;
                 position: relative;
-                box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+                box-shadow: 0 20px 50px rgba(0,0,0,0.6);
                 color: var(--text-main, #ffffff);
-                text-align: center;
+                display: flex;
+                overflow: hidden;
+                height: 420px;
                 animation: exitSlideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            }
+            .exit-modal-left-nav {
+                width: 180px;
+                background: rgba(255, 255, 255, 0.02);
+                border-right: 1px solid var(--border-color, #2d3748);
+                display: flex;
+                flex-direction: column;
+                padding: 30px 12px;
+                gap: 10px;
+                box-sizing: border-box;
+                flex-shrink: 0;
+            }
+            .exit-nav-tab {
+                background: none;
+                border: none;
+                padding: 12px 14px;
+                border-radius: 8px;
+                color: var(--text-light, #a0aec0);
+                font-size: 0.85rem;
+                font-weight: 700;
+                text-align: left;
+                cursor: pointer;
+                transition: all 0.2s;
+                font-family: inherit;
+            }
+            .exit-nav-tab:hover {
+                background: rgba(255, 255, 255, 0.05);
+                color: var(--text-main, #fff);
+            }
+            .exit-nav-tab.active {
+                background: rgba(243, 168, 59, 0.15);
+                color: var(--primary, #f3a83b);
+                border-left: 3px solid var(--primary, #f3a83b);
+            }
+            .exit-modal-right-body {
+                flex: 1;
+                padding: 35px;
+                display: flex;
+                flex-direction: column;
+                justify-content: space-between;
+                box-sizing: border-box;
+                position: relative;
+                text-align: left;
+                overflow-y: auto;
             }
             .exit-close-btn {
                 position: absolute;
@@ -2542,6 +2587,7 @@ if (document.readyState === 'loading') {
                 font-size: 2rem; color: var(--text-light, #a0aec0);
                 cursor: pointer;
                 line-height: 1;
+                z-index: 10;
             }
             .exit-close-btn:hover {
                 color: var(--primary, #f3a83b);
@@ -2551,72 +2597,79 @@ if (document.readyState === 'loading') {
                 color: var(--primary, #f3a83b);
                 padding: 4px 12px;
                 border-radius: 12px;
-                font-size: 0.75rem;
+                font-size: 0.72rem;
                 font-weight: bold;
                 letter-spacing: 1px;
+                width: fit-content;
+                display: inline-block;
             }
-            .exit-modal-header h2 {
-                font-size: 1.6rem;
-                margin: 15px 0 10px 0;
+            .exit-tab-content {
+                animation: exitFadeIn 0.3s ease;
+                display: flex;
+                flex-direction: column;
+                height: 100%;
+            }
+            .exit-tab-content.hidden {
+                display: none !important;
+            }
+            .exit-tab-content h2 {
+                font-size: 1.5rem;
+                margin: 12px 0 8px 0;
                 font-weight: 800;
                 line-height: 1.3;
+                color: var(--text-main);
             }
-            .exit-book-container {
+            .exit-book-box {
                 display: flex;
                 align-items: center;
                 gap: 15px;
-                background: rgba(255, 255, 255, 0.05);
+                background: rgba(255, 255, 255, 0.04);
                 border-radius: 12px;
-                padding: 15px;
-                margin: 20px 0;
-                text-align: left;
+                padding: 12px 15px;
+                margin: 12px 0 18px 0;
             }
             .exit-book-emoji {
-                font-size: 3rem;
+                font-size: 2.5rem;
                 flex-shrink: 0;
             }
-            .exit-book-info h3 {
-                margin: 0 0 5px 0;
-                font-size: 1.05rem;
-                color: var(--primary, #f3a83b);
-                font-weight: 700;
-            }
-            .exit-book-info p {
+            .exit-book-box p {
                 margin: 0;
                 font-size: 0.8rem;
-                color: var(--text-light, #a0aec0);
-                line-height: 1.4;
+                color: var(--text-light);
+                line-height: 1.45;
             }
             .exit-form-group {
-                margin-bottom: 12px;
+                margin-bottom: 10px;
             }
             .exit-form-group input {
                 width: 100%;
-                padding: 12px;
+                padding: 11px;
                 border-radius: 8px;
                 border: 1px solid var(--border-color, #2d3748);
                 background: var(--bg, #1a202c);
                 color: var(--text-main, #ffffff);
-                font-size: 0.9rem;
+                font-size: 0.85rem;
                 outline: none;
                 box-sizing: border-box;
+                font-family: inherit;
             }
             .exit-form-group input:focus {
                 border-color: var(--primary, #f3a83b);
             }
             .exit-submit-btn {
                 width: 100%;
-                padding: 14px;
+                padding: 12px;
                 border-radius: 8px;
                 background: linear-gradient(135deg, var(--primary, #f3a83b), #e29022);
                 color: #1a202c;
                 font-weight: 700;
                 border: none;
                 cursor: pointer;
-                font-size: 0.95rem;
-                margin-top: 10px;
+                font-size: 0.9rem;
+                margin-top: 5px;
                 transition: all 0.2s;
                 box-shadow: 0 4px 15px rgba(243, 168, 59, 0.3);
+                font-family: inherit;
             }
             .exit-submit-btn:hover {
                 transform: translateY(-2px);
@@ -2635,9 +2688,91 @@ if (document.readyState === 'loading') {
                 margin-top: 15px;
                 cursor: pointer;
                 text-decoration: underline;
+                align-self: center;
+                font-family: inherit;
             }
             .exit-decline-btn:hover {
                 color: var(--danger, #fc8181);
+            }
+            .exit-scenario-preview {
+                background: rgba(255, 255, 255, 0.03);
+                border-left: 3px solid var(--primary);
+                padding: 12px 15px;
+                border-radius: 4px;
+                margin: 15px 0 20px 0;
+            }
+            .exit-scenario-preview strong {
+                font-size: 0.72rem;
+                color: var(--primary);
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+                display: block;
+                margin-bottom: 4px;
+            }
+            .exit-scenario-preview p {
+                margin: 0;
+                font-size: 0.85rem;
+                font-style: italic;
+                color: var(--text-main);
+                line-height: 1.4;
+            }
+            .exit-action-btn {
+                width: 100%;
+                padding: 12px;
+                border-radius: 8px;
+                background: linear-gradient(135deg, var(--primary, #f3a83b), #e29022);
+                color: #1a202c;
+                font-weight: 700;
+                border: none;
+                cursor: pointer;
+                font-size: 0.9rem;
+                transition: all 0.2s;
+                box-shadow: 0 4px 15px rgba(243, 168, 59, 0.3);
+                font-family: inherit;
+                text-align: center;
+            }
+            .exit-action-btn:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 6px 20px rgba(243, 168, 59, 0.4);
+            }
+            .exit-tools-list {
+                display: flex;
+                flex-direction: column;
+                gap: 8px;
+                margin: 15px 0 20px 0;
+            }
+            .exit-tool-item {
+                background: rgba(255, 255, 255, 0.03);
+                padding: 10px 14px;
+                border-radius: 8px;
+                font-size: 0.78rem;
+                cursor: pointer;
+                border: 1px solid transparent;
+                transition: all 0.2s;
+                line-height: 1.4;
+            }
+            .exit-tool-item:hover {
+                border-color: var(--primary);
+                background: rgba(243, 168, 59, 0.05);
+            }
+            .exit-tool-item strong {
+                color: var(--primary);
+            }
+            .exit-community-preview {
+                display: flex;
+                flex-direction: column;
+                gap: 8px;
+                margin: 15px 0 20px 0;
+            }
+            .exit-news-item {
+                background: rgba(255, 255, 255, 0.03);
+                padding: 12px;
+                border-radius: 8px;
+                font-size: 0.75rem;
+                line-height: 1.45;
+            }
+            .exit-news-item strong {
+                color: var(--accent);
             }
             @keyframes exitFadeIn {
                 from { opacity: 0; }
@@ -2646,6 +2781,30 @@ if (document.readyState === 'loading') {
             @keyframes exitSlideUp {
                 from { transform: translateY(30px); opacity: 0; }
                 to { transform: translateY(0); opacity: 1; }
+            }
+            @media (max-width: 580px) {
+                .exit-modal-content {
+                    flex-direction: column;
+                    height: auto;
+                    max-height: 90vh;
+                    overflow-y: auto;
+                }
+                .exit-modal-left-nav {
+                    width: 100%;
+                    flex-direction: row;
+                    overflow-x: auto;
+                    border-right: none;
+                    border-bottom: 1px solid var(--border-color);
+                    padding: 10px;
+                }
+                .exit-nav-tab {
+                    white-space: nowrap;
+                    padding: 8px 12px;
+                    font-size: 0.75rem;
+                }
+                .exit-modal-right-body {
+                    padding: 25px;
+                }
             }
         `;
         document.head.appendChild(style);
@@ -2656,28 +2815,81 @@ if (document.readyState === 'loading') {
         modalDiv.innerHTML = `
             <div class="exit-modal-content">
                 <button id="btn-close-exit-modal" class="exit-close-btn">&times;</button>
-                <div class="exit-modal-header">
-                  <span class="exit-badge">🎁 QUÀ TẶNG GIỮ CHÂN</span>
-                  <h2>Chờ đã! Đừng rời đi tay trắng...</h2>
+                
+                <div class="exit-modal-left-nav">
+                    <button class="exit-nav-tab active" data-tab="tab-gift">🎁 Nhận Quà</button>
+                    <button class="exit-nav-tab" data-tab="tab-challenge">🎮 Luyện Tập</button>
+                    <button class="exit-nav-tab" data-tab="tab-tools">⚡ Trợ Thủ AI</button>
+                    <button class="exit-nav-tab" data-tab="tab-community">💬 Cộng Đồng</button>
                 </div>
-                <div class="exit-modal-body">
-                  <div class="exit-book-container">
-                    <span class="exit-book-emoji">📖</span>
-                    <div class="exit-book-info">
-                      <h3>Ebook: Mindset Thép của BD</h3>
-                      <p>Bí quyết rèn luyện tinh thần kiên cường, vượt qua mọi lời từ chối để chốt deal B2B triệu đô từ anh Peter Vo.</p>
+                
+                <div class="exit-modal-right-body">
+                    <!-- Tab Content: Gift -->
+                    <div id="exit-tab-gift" class="exit-tab-content">
+                        <span class="exit-badge">🎁 QUÀ TẶNG GIỮ CHÂN</span>
+                        <h2>Đừng rời đi tay trắng!</h2>
+                        <div class="exit-book-box">
+                            <span class="exit-book-emoji">📖</span>
+                            <p>Nhận miễn phí Ebook <strong>"Mindset Thép của BD"</strong> để rèn luyện tinh thần kiên cường, vượt qua mọi từ chối của khách hàng B2B.</p>
+                        </div>
+                        <form id="exit-intent-form">
+                            <div class="exit-form-group">
+                                <input type="text" id="exit-name" placeholder="Tên của bạn" required />
+                            </div>
+                            <div class="exit-form-group">
+                                <input type="email" id="exit-email" placeholder="Email nhận sách" required />
+                            </div>
+                            <button type="submit" class="exit-submit-btn">📥 Nhận Ebook Free & Bật Nhắc Nhở</button>
+                        </form>
                     </div>
-                  </div>
-                  <form id="exit-intent-form">
-                    <div class="exit-form-group">
-                      <input type="text" id="exit-name" placeholder="Nhập tên của bạn" required />
+
+                    <!-- Tab Content: Challenge -->
+                    <div id="exit-tab-challenge" class="exit-tab-content hidden">
+                        <span class="exit-badge">🎮 LUYỆN TẬP HÀNG NGÀY</span>
+                        <h2>B2B Challenge Tình Huống</h2>
+                        <p style="font-size: 0.8rem; color: var(--text-light); line-height: 1.45; margin: 8px 0 0 0;">Chỉ 3 phút mỗi ngày để rèn luyện phản xạ đỉnh cao trước khách hàng. Thử thách của hôm nay đang chờ bạn:</p>
+                        <div class="exit-scenario-preview">
+                            <strong>🔥 Câu Hỏi Hot Hôm Nay:</strong>
+                            <p>"Khi khách hàng Enterprise đòi thời gian dùng thử (POC) kéo dài tới 6 tháng..."</p>
+                        </div>
+                        <button id="btn-exit-play" class="exit-action-btn">🎮 Chơi Thử Thách Ngay</button>
                     </div>
-                    <div class="exit-form-group">
-                      <input type="email" id="exit-email" placeholder="Nhập email để nhận sách" required />
+
+                    <!-- Tab Content: Tools -->
+                    <div id="exit-tab-tools" class="exit-tab-content hidden">
+                        <span class="exit-badge">⚡ TRỢ THỦ BD B2B</span>
+                        <h2>Tối Ưu 80% Vận Hành</h2>
+                        <p style="font-size: 0.8rem; color: var(--text-light); line-height: 1.4; margin: 8px 0 0 0;">Trải nghiệm các tính năng miễn phí giúp bạn chốt hợp đồng nhanh hơn:</p>
+                        <div class="exit-tools-list">
+                            <div class="exit-tool-item" data-url="finder.html">
+                                <strong>🔍 PIC Finder:</strong> Tìm email sếp tổng & check SMTP/DNS trong 5s.
+                            </div>
+                            <div class="exit-tool-item" data-url="email-assistant.html">
+                                <strong>✉️ AI Email:</strong> Viết cold email cá nhân hóa chuẩn chuyên gia.
+                            </div>
+                            <div class="exit-tool-item" data-url="salary.html">
+                                <strong>📊 Lương Gross-Net:</strong> Tính toán hoa hồng B2B thực tế.
+                            </div>
+                        </div>
                     </div>
-                    <button type="submit" class="exit-submit-btn">📥 Nhận Ebook Miễn Phí & Kích Hoạt Streak</button>
-                  </form>
-                  <button id="btn-decline-exit" class="exit-decline-btn">Không, tôi muốn rời đi</button>
+
+                    <!-- Tab Content: Community -->
+                    <div id="exit-tab-community" class="exit-tab-content hidden">
+                        <span class="exit-badge">💬 KẾT NỐI ĐỒNG ĐỘI</span>
+                        <h2>Cộng Đồng BD Thực Chiến</h2>
+                        <p style="font-size: 0.8rem; color: var(--text-light); line-height: 1.4; margin: 8px 0 0 0;">Nơi thảo luận case-study thực tế và nhận feedback trực tiếp từ anh Peter Vo:</p>
+                        <div class="exit-community-preview">
+                            <div class="exit-news-item">
+                                🔥 <strong>Hot Post:</strong> Kịch bản xử lý khi sếp đối tác hoãn ký phút chót.
+                            </div>
+                            <div class="exit-news-item">
+                                💬 <strong>Thảo luận:</strong> Pitching trực tiếp vs Gửi Proposal qua mail - cái nào tốt hơn?
+                            </div>
+                        </div>
+                        <a href="community.html" class="exit-action-btn" style="text-decoration: none; display: block; text-align: center; line-height: 40px; height: 40px; padding: 0;">💬 Ghé Thăm Cộng Đồng Ngay</a>
+                    </div>
+
+                    <button id="btn-decline-exit" class="exit-decline-btn">Không, tôi muốn rời đi</button>
                 </div>
             </div>
         `;
@@ -2689,6 +2901,45 @@ if (document.readyState === 'loading') {
     const btnCloseExitModal = document.getElementById('btn-close-exit-modal');
     const btnDeclineExit = document.getElementById('btn-decline-exit');
     const exitIntentForm = document.getElementById('exit-intent-form');
+
+    // Tab switcher logic
+    const exitNavTabs = document.querySelectorAll('.exit-nav-tab');
+    const exitTabContents = document.querySelectorAll('.exit-tab-content');
+    exitNavTabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+            exitNavTabs.forEach(t => t.classList.remove('active'));
+            exitTabContents.forEach(c => c.classList.add('hidden'));
+            
+            tab.classList.add('active');
+            const targetTabId = 'exit-' + tab.getAttribute('data-tab');
+            const targetContent = document.getElementById(targetTabId);
+            if (targetContent) targetContent.classList.remove('hidden');
+        });
+    });
+
+    // Play action trigger
+    const btnExitPlay = document.getElementById('btn-exit-play');
+    if (btnExitPlay) {
+        btnExitPlay.addEventListener('click', () => {
+            if (exitIntentModal) exitIntentModal.classList.add('hidden');
+            const minigameSection = document.getElementById('minigame-section');
+            if (minigameSection) {
+                minigameSection.scrollIntoView({ behavior: 'smooth' });
+            } else {
+                window.location.href = '/index.html#minigame-section';
+            }
+        });
+    }
+
+    // Tool items redirect trigger
+    const exitToolItems = document.querySelectorAll('.exit-tool-item');
+    exitToolItems.forEach(item => {
+        item.addEventListener('click', () => {
+            if (exitIntentModal) exitIntentModal.classList.add('hidden');
+            const url = item.getAttribute('data-url');
+            if (url) window.location.href = url;
+        });
+    });
 
     if (btnCloseExitModal) {
         btnCloseExitModal.addEventListener('click', () => {
@@ -2752,7 +3003,7 @@ if (document.readyState === 'loading') {
                     alert('Có lỗi xảy ra, vui lòng thử lại.');
                     if (submitBtn) {
                         submitBtn.disabled = false;
-                        submitBtn.textContent = '📥 Nhận Ebook Miễn Phí & Kích Hoạt Streak';
+                        submitBtn.textContent = '📥 Nhận Ebook Free & Bật Nhắc Nhở';
                     }
                 }
             } catch (err) {
@@ -2760,13 +3011,12 @@ if (document.readyState === 'loading') {
                 alert('Lỗi kết nối máy chủ.');
                 if (submitBtn) {
                     submitBtn.disabled = false;
-                    submitBtn.textContent = '📥 Nhận Ebook Miễn Phí & Kích Hoạt Streak';
+                    submitBtn.textContent = '📥 Nhận Ebook Free & Bật Nhắc Nhở';
                 }
             }
         });
     }
-
-    // Claim Reward action
+// Claim Reward action
     const claimBtns = document.querySelectorAll('.btn-claim');
     claimBtns.forEach(btn => {
         btn.addEventListener('click', async () => {
