@@ -2507,6 +2507,183 @@ if (document.readyState === 'loading') {
         });
     }
 
+    // Dynamically inject Exit Intent Modal HTML & CSS if not present
+    if (!document.getElementById('exit-intent-modal')) {
+        const style = document.createElement('style');
+        style.innerHTML = `
+            .exit-modal-overlay {
+                position: fixed;
+                top: 0; left: 0; width: 100%; height: 100%;
+                background: rgba(0, 0, 0, 0.7);
+                display: flex; align-items: center; justify-content: center;
+                z-index: 10000;
+                backdrop-filter: blur(8px);
+                animation: exitFadeIn 0.3s ease;
+            }
+            .exit-modal-overlay.hidden {
+                display: none !important;
+            }
+            .exit-modal-content {
+                background: var(--bg-card, #1e1e24);
+                border: 2px solid var(--primary, #f3a83b);
+                border-radius: 20px;
+                width: 90%; max-width: 480px;
+                padding: 30px;
+                position: relative;
+                box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+                color: var(--text-main, #ffffff);
+                text-align: center;
+                animation: exitSlideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            }
+            .exit-close-btn {
+                position: absolute;
+                top: 15px; right: 20px;
+                background: none; border: none;
+                font-size: 2rem; color: var(--text-light, #a0aec0);
+                cursor: pointer;
+                line-height: 1;
+            }
+            .exit-close-btn:hover {
+                color: var(--primary, #f3a83b);
+            }
+            .exit-badge {
+                background: rgba(243, 168, 59, 0.15);
+                color: var(--primary, #f3a83b);
+                padding: 4px 12px;
+                border-radius: 12px;
+                font-size: 0.75rem;
+                font-weight: bold;
+                letter-spacing: 1px;
+            }
+            .exit-modal-header h2 {
+                font-size: 1.6rem;
+                margin: 15px 0 10px 0;
+                font-weight: 800;
+                line-height: 1.3;
+            }
+            .exit-book-container {
+                display: flex;
+                align-items: center;
+                gap: 15px;
+                background: rgba(255, 255, 255, 0.05);
+                border-radius: 12px;
+                padding: 15px;
+                margin: 20px 0;
+                text-align: left;
+            }
+            .exit-book-emoji {
+                font-size: 3rem;
+                flex-shrink: 0;
+            }
+            .exit-book-info h3 {
+                margin: 0 0 5px 0;
+                font-size: 1.05rem;
+                color: var(--primary, #f3a83b);
+                font-weight: 700;
+            }
+            .exit-book-info p {
+                margin: 0;
+                font-size: 0.8rem;
+                color: var(--text-light, #a0aec0);
+                line-height: 1.4;
+            }
+            .exit-form-group {
+                margin-bottom: 12px;
+            }
+            .exit-form-group input {
+                width: 100%;
+                padding: 12px;
+                border-radius: 8px;
+                border: 1px solid var(--border-color, #2d3748);
+                background: var(--bg, #1a202c);
+                color: var(--text-main, #ffffff);
+                font-size: 0.9rem;
+                outline: none;
+                box-sizing: border-box;
+            }
+            .exit-form-group input:focus {
+                border-color: var(--primary, #f3a83b);
+            }
+            .exit-submit-btn {
+                width: 100%;
+                padding: 14px;
+                border-radius: 8px;
+                background: linear-gradient(135deg, var(--primary, #f3a83b), #e29022);
+                color: #1a202c;
+                font-weight: 700;
+                border: none;
+                cursor: pointer;
+                font-size: 0.95rem;
+                margin-top: 10px;
+                transition: all 0.2s;
+                box-shadow: 0 4px 15px rgba(243, 168, 59, 0.3);
+            }
+            .exit-submit-btn:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 6px 20px rgba(243, 168, 59, 0.4);
+            }
+            .exit-submit-btn:disabled {
+                background: #4a5568;
+                cursor: not-allowed;
+                box-shadow: none;
+                color: #a0aec0;
+            }
+            .exit-decline-btn {
+                background: none; border: none;
+                color: var(--text-light, #a0aec0);
+                font-size: 0.8rem;
+                margin-top: 15px;
+                cursor: pointer;
+                text-decoration: underline;
+            }
+            .exit-decline-btn:hover {
+                color: var(--danger, #fc8181);
+            }
+            @keyframes exitFadeIn {
+                from { opacity: 0; }
+                to { opacity: 1; }
+            }
+            @keyframes exitSlideUp {
+                from { transform: translateY(30px); opacity: 0; }
+                to { transform: translateY(0); opacity: 1; }
+            }
+        `;
+        document.head.appendChild(style);
+
+        const modalDiv = document.createElement('div');
+        modalDiv.id = 'exit-intent-modal';
+        modalDiv.className = 'exit-modal-overlay hidden';
+        modalDiv.innerHTML = `
+            <div class="exit-modal-content">
+                <button id="btn-close-exit-modal" class="exit-close-btn">&times;</button>
+                <div class="exit-modal-header">
+                  <span class="exit-badge">🎁 QUÀ TẶNG GIỮ CHÂN</span>
+                  <h2>Chờ đã! Đừng rời đi tay trắng...</h2>
+                </div>
+                <div class="exit-modal-body">
+                  <div class="exit-book-container">
+                    <span class="exit-book-emoji">📖</span>
+                    <div class="exit-book-info">
+                      <h3>Ebook: Mindset Thép của BD</h3>
+                      <p>Bí quyết rèn luyện tinh thần kiên cường, vượt qua mọi lời từ chối để chốt deal B2B triệu đô từ anh Peter Vo.</p>
+                    </div>
+                  </div>
+                  <form id="exit-intent-form">
+                    <div class="exit-form-group">
+                      <input type="text" id="exit-name" placeholder="Nhập tên của bạn" required />
+                    </div>
+                    <div class="exit-form-group">
+                      <input type="email" id="exit-email" placeholder="Nhập email để nhận sách" required />
+                    </div>
+                    <button type="submit" class="exit-submit-btn">📥 Nhận Ebook Miễn Phí & Kích Hoạt Streak</button>
+                  </form>
+                  <button id="btn-decline-exit" class="exit-decline-btn">Không, tôi muốn rời đi</button>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(modalDiv);
+    }
+
     // Exit Intent Dialog closing and submissions
     const exitIntentModal = document.getElementById('exit-intent-modal');
     const btnCloseExitModal = document.getElementById('btn-close-exit-modal');
@@ -2541,10 +2718,17 @@ if (document.readyState === 'loading') {
             }
 
             try {
+                const ebookUrl = '/ebooks/Mindset BD Ebook.pdf';
                 const res = await fetch('/api/log-email', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ name, email, tool: 'exit-intent-ebook' })
+                    body: JSON.stringify({ 
+                        name, 
+                        email, 
+                        tool: 'exit-intent-ebook',
+                        ebookTitle: 'Mindset Thép của BD',
+                        downloadLink: window.location.origin + ebookUrl
+                    })
                 });
                 const data = await res.json();
                 if (data.success) {
@@ -2559,18 +2743,24 @@ if (document.readyState === 'loading') {
                     // Instantly update welcome banner & tab counts
                     initStreakAndTracking();
                     
-                    alert(`🎉 Đăng ký thành công! Ebook "9 Nguyên Tắc Bán Hàng B2B" đã được đăng ký gửi tới email ${email}.`);
+                    // Instantly open the ebook PDF in a new window/tab
+                    window.open(ebookUrl, '_blank');
+                    
+                    alert(`🎉 Đăng ký thành công! Ebook "Mindset Thép của BD" đã được mở trong tab mới và gửi tới email của bạn.`);
                     if (exitIntentModal) exitIntentModal.classList.add('hidden');
                 } else {
                     alert('Có lỗi xảy ra, vui lòng thử lại.');
+                    if (submitBtn) {
+                        submitBtn.disabled = false;
+                        submitBtn.textContent = '📥 Nhận Ebook Miễn Phí & Kích Hoạt Streak';
+                    }
                 }
-            } catch(err) {
+            } catch (err) {
                 console.error(err);
                 alert('Lỗi kết nối máy chủ.');
-            } finally {
                 if (submitBtn) {
                     submitBtn.disabled = false;
-                    submitBtn.textContent = 'Nhận Ebook & Bật Nhắc Nhở 🚀';
+                    submitBtn.textContent = '📥 Nhận Ebook Miễn Phí & Kích Hoạt Streak';
                 }
             }
         });
