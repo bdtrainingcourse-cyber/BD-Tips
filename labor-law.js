@@ -312,9 +312,9 @@ document.addEventListener('DOMContentLoaded', () => {
         modalCaseResolution.innerHTML = caseStudy.resolution.replace(/\n/g, '<br>');
         caseModal.classList.remove('hidden');
 
-        // Trigger action-based streak increase
+        // Trigger action-based quest/point increase
         if (window.registerUserAction) {
-            window.registerUserAction();
+            window.registerUserAction('labor_read');
         }
     }
 
