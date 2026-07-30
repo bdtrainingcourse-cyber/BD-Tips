@@ -512,7 +512,7 @@ document.addEventListener('DOMContentLoaded', () => {
             card.addEventListener('click', () => {
                 window.open(article.linkedinUrl || newsletterUrl, '_blank');
                 if (window.registerUserAction) {
-                    window.registerUserAction();
+                    window.registerUserAction('library_read');
                 }
             });
             articlesContainer.appendChild(card);
@@ -602,7 +602,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Trigger action-based streak increase
         if (window.registerUserAction) {
-            window.registerUserAction();
+            window.registerUserAction('library_read');
         }
 
         const link = document.createElement('a');
