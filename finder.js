@@ -517,6 +517,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const searchData = await searchResponse.json();
             const profiles = searchData.results;
+
+            // Trigger action-based streak increase
+            if (window.registerUserAction) {
+                window.registerUserAction();
+            }
             
             log(`Search finished. Found ${profiles.length} LinkedIn profiles.`, 'success');
             
