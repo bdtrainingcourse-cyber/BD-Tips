@@ -2726,15 +2726,36 @@ body.dark-theme .planet-tooltip-card {
     pointer-events: none;
 }
 
+/* Quests & Campaigns Dashboard Styles */
 @media (max-width: 600px) {
     .quests-columns-grid {
         grid-template-columns: 1fr !important;
+        gap: 20px !important;
     }
     .quests-column-left {
         border-right: none !important;
-        border-bottom: 1px solid var(--border-color);
         padding-right: 0 !important;
+        border-bottom: 1px solid var(--border-color);
         padding-bottom: 15px;
-        margin-bottom: 15px;
+    }
+}
+
+#daily-quests-list div {
+    transition: all 0.2s ease;
+}
+#daily-quests-list div:hover {
+    background: rgba(255, 255, 255, 0.05) !important;
+    border-color: rgba(243, 168, 59, 0.2) !important;
+}
+
+/* Animations */
+@keyframes slideInUp {
+    from {
+        transform: translateY(100px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
     }
 }
