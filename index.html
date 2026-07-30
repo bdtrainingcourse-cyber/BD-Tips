@@ -236,14 +236,61 @@
                             <div style="display: flex; align-items: center; gap: 15px; flex-wrap: wrap; margin-bottom: 15px;">
                                 <div style="font-size: 2.2rem; line-height: 1;">🦉</div>
                                 <div style="flex: 1; min-width: 240px;">
-                                    <h4 style="margin: 0; font-size: 0.95rem; font-weight: 800; color: var(--text-main);">Kích hoạt Chuỗi Ngày (Daily Streak)</h4>
-                                    <p style="margin: 5px 0 0 0; font-size: 0.8rem; color: var(--text-light); line-height: 1.4;">Cú BeeDee Thông Thái sẽ gửi email nhắc nhở vui vẻ mỗi ngày để bạn giữ vững streak và nâng cấp tư duy BD B2B.</p>
+                            <!-- Registration Form (Visible when not registered) -->
+                            <div id="streak-registration-box">
+                                <div style="display: flex; align-items: center; gap: 15px; flex-wrap: wrap; margin-bottom: 15px;">
+                                    <div style="font-size: 2.2rem; line-height: 1;">🦉</div>
+                                    <div style="flex: 1; min-width: 240px;">
+                                        <h4 style="margin: 0; font-size: 0.95rem; font-weight: 800; color: var(--text-main);">Kích hoạt Hệ thống Điểm Tích Lũy</h4>
+                                        <p style="margin: 5px 0 0 0; font-size: 0.8rem; color: var(--text-light); line-height: 1.4;">Đăng ký để Cú BeeDee mở tài khoản tích lũy BD-Points, gửi email nhắc nhở mỗi sáng giúp bạn rèn luyện và đổi quà thực chiến.</p>
+                                    </div>
+                                </div>
+                                <div style="display: flex; gap: 10px; width: 100%; flex-wrap: wrap;" id="streak-form">
+                                    <input type="text" id="streak-name" placeholder="Tên của bạn" style="flex: 1; min-width: 120px; padding: 8px 12px; border-radius: 6px; border: 1px solid var(--border-color); background: rgba(255,255,255,0.02); color: var(--text-main); font-family: inherit; font-size: 0.85rem;" required>
+                                    <input type="email" id="streak-email" placeholder="Email của bạn" style="flex: 1; min-width: 150px; padding: 8px 12px; border-radius: 6px; border: 1px solid var(--border-color); background: rgba(255,255,255,0.02); color: var(--text-main); font-family: inherit; font-size: 0.85rem;" required>
+                                    <button id="btn-activate-streak" class="btn btn-primary" style="padding: 8px 16px; font-size: 0.85rem; font-weight: bold; white-space: nowrap;">Kích Hoạt Ngay</button>
                                 </div>
                             </div>
-                            <div style="display: flex; gap: 10px; width: 100%; flex-wrap: wrap;" id="streak-form">
-                                <input type="text" id="streak-name" placeholder="Tên của bạn" style="flex: 1; min-width: 120px; padding: 8px 12px; border-radius: 6px; border: 1px solid var(--border-color); background: rgba(255,255,255,0.02); color: var(--text-main); font-family: inherit; font-size: 0.85rem;" required>
-                                <input type="email" id="streak-email" placeholder="Email của bạn" style="flex: 1; min-width: 150px; padding: 8px 12px; border-radius: 6px; border: 1px solid var(--border-color); background: rgba(255,255,255,0.02); color: var(--text-main); font-family: inherit; font-size: 0.85rem;" required>
-                                <button id="btn-activate-streak" class="btn btn-primary" style="padding: 8px 16px; font-size: 0.85rem; font-weight: bold; white-space: nowrap;">Bật Nhắc Nhở</button>
+
+                            <!-- Quests & Campaigns Dashboard (Visible when registered) -->
+                            <div id="quests-dashboard-box" class="hidden">
+                                <!-- Wallet & Progress HUD -->
+                                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 15px; border-bottom: 1px solid var(--border-color); padding-bottom: 12px;">
+                                    <div style="display: flex; align-items: center; gap: 8px;">
+                                        <span style="font-size: 1.8rem; line-height: 1;">🪙</span>
+                                        <div>
+                                            <div style="font-size: 0.75rem; color: var(--text-light);">Số dư tích lũy</div>
+                                            <div style="font-size: 1.3rem; font-weight: 800; color: var(--primary);" id="hud-points-val">0 BD-Points</div>
+                                        </div>
+                                    </div>
+                                    <div style="text-align: right;">
+                                        <div style="font-size: 0.7rem; color: var(--text-light); margin-bottom: 4px;" id="hud-next-gift-lbl">Cách quà tiếp theo: 200đ</div>
+                                        <div style="width: 120px; height: 6px; background: rgba(255,255,255,0.05); border-radius: 3px; overflow: hidden; display: inline-block;">
+                                            <div id="hud-next-gift-bar" style="width: 0%; height: 100%; background: var(--primary); transition: width 0.3s ease;"></div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Grid layout for Quests and Campaign -->
+                                <div style="display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 15px;" class="quests-columns-grid">
+                                    
+                                    <!-- Daily Quests Column -->
+                                    <div style="border-right: 1px solid var(--border-color); padding-right: 15px;" class="quests-column-left">
+                                        <h5 style="margin: 0 0 10px 0; font-size: 0.85rem; font-weight: 800; color: var(--text-main); display: flex; align-items: center; gap: 5px;">📅 NHIỆM VỤ HÀNG NGÀY</h5>
+                                        <div id="daily-quests-list" style="display: flex; flex-direction: column; gap: 8px;">
+                                            <!-- Dynamically rendered Daily Quests -->
+                                        </div>
+                                    </div>
+
+                                    <!-- Campaigns Column -->
+                                    <div class="quests-column-right">
+                                        <h5 style="margin: 0 0 10px 0; font-size: 0.85rem; font-weight: 800; color: var(--primary); display: flex; align-items: center; gap: 5px;">🚀 CHIẾN DỊCH TUẦN</h5>
+                                        <div id="active-campaign-box" style="background: rgba(243, 168, 59, 0.05); border: 1px dashed var(--primary); border-radius: 8px; padding: 12px; display: flex; flex-direction: column; gap: 8px;">
+                                            <!-- Dynamically rendered Active Campaign -->
+                                        </div>
+                                    </div>
+
+                                </div>
                             </div>
                         </div>
 
@@ -257,36 +304,36 @@
                                 <div class="reward-card">
                                     <span style="font-size: 1.5rem;">📖</span>
                                     <span style="font-size: 0.75rem; font-weight: bold; color: var(--text-main);">Tải Ebook Mới</span>
-                                    <span style="font-size: 0.7rem; color: var(--accent); font-weight: bold;">Mốc 7 Ngày 🔥</span>
-                                    <button class="btn btn-secondary btn-claim" data-reward="Mở khóa tải Ebook mới (Mốc 7 ngày)" data-requirement="7" style="padding: 3px 8px; font-size: 0.65rem; margin-top: 5px; width: 100%;">Khóa (7d) 🔒</button>
+                                    <span style="font-size: 0.7rem; color: var(--accent); font-weight: bold;">Mốc 200 Điểm 🪙</span>
+                                    <button class="btn btn-secondary btn-claim" data-reward="Mở khóa tải Ebook mới (Vĩnh viễn)" data-requirement="200" style="padding: 3px 8px; font-size: 0.65rem; margin-top: 5px; width: 100%;">Khóa (200đ) 🔒</button>
                                 </div>
                                 <!-- 14 Days reward -->
                                 <div class="reward-card">
                                     <span style="font-size: 1.5rem;">🥤</span>
                                     <span style="font-size: 0.75rem; font-weight: bold; color: var(--text-main);">Trà Sữa OR Đồ Decor</span>
-                                    <span style="font-size: 0.7rem; color: var(--accent); font-weight: bold;">Mốc 14 Ngày 🔥</span>
-                                    <button class="btn btn-secondary btn-claim" data-reward="Ly Trà Sữa hoặc Đồ Trang Trí Bàn Cute (Mốc 14 ngày)" data-requirement="14" style="padding: 3px 8px; font-size: 0.65rem; margin-top: 5px; width: 100%;">Khóa (14d) 🔒</button>
+                                    <span style="font-size: 0.7rem; color: var(--accent); font-weight: bold;">Mốc 600 Điểm 🪙</span>
+                                    <button class="btn btn-secondary btn-claim" data-reward="Ly Trà Sữa hoặc Đồ Trang Trí Bàn Cute (Mốc 14 ngày)" data-requirement="600" style="padding: 3px 8px; font-size: 0.65rem; margin-top: 5px; width: 100%;">Khóa (600đ) 🔒</button>
                                 </div>
                                 <!-- 20 Days reward -->
                                 <div class="reward-card">
                                     <span style="font-size: 1.5rem;">🎓</span>
                                     <span style="font-size: 0.75rem; font-weight: bold; color: var(--text-main);">Giảm 50% Học Phí Khóa BD</span>
-                                    <span style="font-size: 0.7rem; color: var(--accent); font-weight: bold;">Mốc 20 Ngày 🔥</span>
-                                    <button class="btn btn-secondary btn-claim" data-reward="Giảm 50% Học Phí Khóa BD Thực Chiến (Mốc 20 ngày)" data-requirement="20" style="padding: 3px 8px; font-size: 0.65rem; margin-top: 5px; width: 100%;">Khóa (20d) 🔒</button>
+                                    <span style="font-size: 0.7rem; color: var(--accent); font-weight: bold;">Mốc 1200 Điểm 🪙</span>
+                                    <button class="btn btn-secondary btn-claim" data-reward="Giảm 50% Học Phí Khóa BD Thực Chiến (Mốc 20 ngày)" data-requirement="1200" style="padding: 3px 8px; font-size: 0.65rem; margin-top: 5px; width: 100%;">Khóa (1200đ) 🔒</button>
                                 </div>
                                 <!-- 25 Days reward -->
                                 <div class="reward-card">
                                     <span style="font-size: 1.5rem;">💻</span>
                                     <span style="font-size: 0.75rem; font-weight: bold; color: var(--text-main);">Tư Vấn 1-1 với anh Peter</span>
-                                    <span style="font-size: 0.7rem; color: var(--accent); font-weight: bold;">Mốc 25 Ngày 🔥</span>
-                                    <button class="btn btn-secondary btn-claim" data-reward="Tư vấn Online 1-1 với anh Peter (Mốc 25 ngày)" data-requirement="25" style="padding: 3px 8px; font-size: 0.65rem; margin-top: 5px; width: 100%;">Khóa (25d) 🔒</button>
+                                    <span style="font-size: 0.7rem; color: var(--accent); font-weight: bold;">Mốc 1800 Điểm 🪙</span>
+                                    <button class="btn btn-secondary btn-claim" data-reward="Tư vấn Online 1-1 với anh Peter (Mốc 25 ngày)" data-requirement="1800" style="padding: 3px 8px; font-size: 0.65rem; margin-top: 5px; width: 100%;">Khóa (1800đ) 🔒</button>
                                 </div>
                                 <!-- 45 Days reward -->
                                 <div class="reward-card">
                                     <span style="font-size: 1.5rem;">🥗</span>
                                     <span style="font-size: 0.75rem; font-weight: bold; color: var(--text-main);">Ăn Trưa Cùng Anh Peter</span>
-                                    <span style="font-size: 0.7rem; color: var(--accent); font-weight: bold;">Mốc 45 Ngày 🔥</span>
-                                    <button class="btn btn-secondary btn-claim" data-reward="Đi Ăn Trưa Cùng Anh Peter (Mốc 45 ngày)" data-requirement="45" style="padding: 3px 8px; font-size: 0.65rem; margin-top: 5px; width: 100%;">Khóa (45d) 🔒</button>
+                                    <span style="font-size: 0.7rem; color: var(--accent); font-weight: bold;">Mốc 3000 Điểm 🪙</span>
+                                    <button class="btn btn-secondary btn-claim" data-reward="Đi Ăn Trưa Cùng Anh Peter (Mốc 45 ngày)" data-requirement="3000" style="padding: 3px 8px; font-size: 0.65rem; margin-top: 5px; width: 100%;">Khóa (3000đ) 🔒</button>
                                 </div>
                             </div>
                             
