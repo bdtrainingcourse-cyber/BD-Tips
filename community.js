@@ -203,6 +203,11 @@ document.addEventListener('DOMContentLoaded', () => {
         postsListContainer.classList.add('hidden');
         postDetailContainer.classList.remove('hidden');
 
+        // Trigger action-based streak increase
+        if (window.registerUserAction) {
+            window.registerUserAction('library_read');
+        }
+
         const badgeClass = post.category === 'qna' ? 'badge-qna' : post.category === 'pic' ? 'badge-pic' : 'badge-story';
         const badgeLabel = post.category === 'qna' ? 'Hỏi Đáp' : post.category === 'pic' ? 'Tìm PIC' : 'Câu Chuyện';
         const verifiedBadgeHtml = post.email ? `<span class="verified-badge">✔ Verified BD</span>` : '';
@@ -297,6 +302,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 showPostDetails(postId); // Refresh view
             }
+
+            // Trigger action-based streak increase
+            if (window.registerUserAction) {
+                window.registerUserAction('forum_comment');
+            }
         });
     }
 
@@ -385,6 +395,11 @@ document.addEventListener('DOMContentLoaded', () => {
             closeModal();
             createPostForm.reset();
             renderPosts();
+
+            // Trigger action-based streak increase
+            if (window.registerUserAction) {
+                window.registerUserAction('forum_post');
+            }
         });
     }
 
