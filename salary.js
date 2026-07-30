@@ -618,7 +618,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         updateUI(result);
         if (window.registerUserAction) {
-            window.registerUserAction();
+            window.registerUserAction('salary_calc');
         }
     });
 
@@ -780,7 +780,7 @@ document.addEventListener('DOMContentLoaded', () => {
             lookupResultsPanel.scrollIntoView({ behavior: 'smooth' });
 
             if (window.registerUserAction) {
-                window.registerUserAction();
+                window.registerUserAction('salary_calc');
             }
         });
     }
