@@ -311,6 +311,11 @@ document.addEventListener('DOMContentLoaded', () => {
         modalCaseAnalysis.innerHTML = caseStudy.analysis.replace(/\n/g, '<br>');
         modalCaseResolution.innerHTML = caseStudy.resolution.replace(/\n/g, '<br>');
         caseModal.classList.remove('hidden');
+
+        // Trigger action-based streak increase
+        if (window.registerUserAction) {
+            window.registerUserAction();
+        }
     }
 
     function closeCaseModal() {
