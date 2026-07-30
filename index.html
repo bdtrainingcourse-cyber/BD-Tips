@@ -271,19 +271,24 @@
                                 <!-- Grid layout for Quests and Campaign -->
                                 <div style="display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 15px;" class="quests-columns-grid">
                                     
-                                    <!-- Daily Quests Column -->
+                                    <!-- Daily & Weekly Quests Column -->
                                     <div style="border-right: 1px solid var(--border-color); padding-right: 15px;" class="quests-column-left">
                                         <h5 style="margin: 0 0 10px 0; font-size: 0.85rem; font-weight: 800; color: var(--text-main); display: flex; align-items: center; gap: 5px;">📅 NHIỆM VỤ HÀNG NGÀY</h5>
-                                        <div id="daily-quests-list" style="display: flex; flex-direction: column; gap: 8px;">
+                                        <div id="daily-quests-list" style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 20px;">
                                             <!-- Dynamically rendered Daily Quests -->
+                                        </div>
+                                        
+                                        <h5 style="margin: 20px 0 10px 0; font-size: 0.85rem; font-weight: 800; color: var(--text-main); display: flex; align-items: center; gap: 5px;">🗓️ NHIỆM VỤ HÀNG TUẦN</h5>
+                                        <div id="weekly-quests-list" style="display: flex; flex-direction: column; gap: 8px;">
+                                            <!-- Dynamically rendered Weekly Quests -->
                                         </div>
                                     </div>
 
                                     <!-- Campaigns Column -->
                                     <div class="quests-column-right">
                                         <h5 style="margin: 0 0 10px 0; font-size: 0.85rem; font-weight: 800; color: var(--primary); display: flex; align-items: center; gap: 5px;">🚀 CHIẾN DỊCH TUẦN</h5>
-                                        <div id="active-campaign-box" style="background: rgba(243, 168, 59, 0.05); border: 1px dashed var(--primary); border-radius: 8px; padding: 12px; display: flex; flex-direction: column; gap: 8px;">
-                                            <!-- Dynamically rendered Active Campaign -->
+                                        <div id="active-campaign-box" style="display: flex; flex-direction: column; gap: 12px;">
+                                            <!-- Dynamically rendered Active Campaigns -->
                                         </div>
                                     </div>
 
