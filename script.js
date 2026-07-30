@@ -1584,11 +1584,6 @@ const initB2BApp = () => {
         const correctCount = score;
         const wrongCount = totalQ - score;
 
-        // Trigger action-based quest/point increase
-        if (window.registerUserAction) {
-            window.registerUserAction('game_complete', { perfect: score === totalQ });
-        }
-
         if (didPass) {
             // User completed game tracking
             const completedGames = JSON.parse(localStorage.getItem('completed_games') || '[]');
@@ -1597,6 +1592,11 @@ const initB2BApp = () => {
                 localStorage.setItem('completed_games', JSON.stringify(completedGames));
             }
             updateTabCounts();
+
+            // Trigger action-based quest/point increase
+            if (window.registerUserAction) {
+                window.registerUserAction('game_complete', { perfect: score === totalQ });
+            }
         }
 
         gamePlay.classList.add('hidden');
@@ -2452,10 +2452,11 @@ if (document.readyState === 'loading') {
             btnActivateStreak.textContent = 'Đang kích hoạt...';
 
             try {
+                // Call serverless log-email function
                 const response = await fetch('/api/log-email', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ name, email, tool: 'daily-streak' })
+                    body: JSON.stringify({ name, email, tool: 'daily-points' })
                 });
                 
                 const data = await response.json();
@@ -2486,6 +2487,14 @@ if (document.readyState === 'loading') {
                 btnActivateStreak.textContent = 'Kích Hoạt Ngay';
             }
         });
+    }
+
+    // Auto-initialize points dashboard if already active
+    if (localStorage.getItem('streak_active') === 'true') {
+        const regBox = document.getElementById('streak-registration-box');
+        const questBox = document.getElementById('quests-dashboard-box');
+        if (regBox) regBox.classList.add('hidden');
+        if (questBox) questBox.classList.remove('hidden');
     }
     // --- Phase 3: Streak, Exit Intent, Rewards Shop, and Social Sharing ---
 
@@ -3030,7 +3039,7 @@ if (document.readyState === 'loading') {
                 return;
             }
 
-            // Valid point balance, prompt for confirmation
+            // Valid points balance, prompt for confirmation
             const name = localStorage.getItem('streak_name') || prompt('Nhập tên của bạn để nhận quà:');
             const email = localStorage.getItem('streak_email') || prompt('Nhập email nhận quà của bạn:');
             
@@ -3052,7 +3061,7 @@ if (document.readyState === 'loading') {
                 btn.textContent = 'Đã Mở Khóa';
                 btn.disabled = true;
 
-                // Also log to spreadsheet
+                // Log to spreadsheet
                 try {
                     await fetch('/api/log-email', {
                         method: 'POST',
@@ -3106,31 +3115,29 @@ if (document.readyState === 'loading') {
 
     if (shareLinkedin) {
         shareLinkedin.addEventListener('click', () => {
+            if (window.registerUserAction) window.registerUserAction('share_click');
             const shareText = `Tôi vừa đạt điểm tối đa trong thử thách B2B Challenge của Peter Võ! 🚀 Học hỏi thực chiến mỗi ngày để nâng cấp tư duy BD B2B. Luyện tập cùng tôi tại: https://bd-tips.vercel.app/`;
             const url = encodeURIComponent(window.location.href);
             window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${url}`, '_blank');
-            if (window.registerUserAction) window.registerUserAction('share_click');
         });
     }
     if (shareFacebook) {
         shareFacebook.addEventListener('click', () => {
-            window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(window.location.href)}`, '_blank');
             if (window.registerUserAction) window.registerUserAction('share_click');
+            window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(window.location.href)}`, '_blank');
         });
     }
     if (shareCopy) {
         shareCopy.addEventListener('click', () => {
+            if (window.registerUserAction) window.registerUserAction('share_click');
             const copyText = `Tôi vừa đạt điểm tối đa trong thử thách B2B Challenge của Peter Võ! 🚀 Luyện tập cùng tôi tại: https://bd-tips.vercel.app/`;
             navigator.clipboard.writeText(copyText).then(() => {
                 alert('📋 Đã sao chép liên kết chia sẻ! Bạn có thể dán trực tiếp lên LinkedIn, Facebook, Instagram hoặc Tiktok.');
-                if (window.registerUserAction) window.registerUserAction('share_click');
             }).catch(err => {
                 console.error('Error copying text:', err);
             });
         });
     }
-
-    // Helper functions for Points, Quests and Banners
 
     const CAMPAIGN_NAMES = {
         pic_search: '🔍 Săn đầu mối PIC',
@@ -3159,7 +3166,7 @@ if (document.readyState === 'loading') {
             const quest = QUEST_CONFIG[key];
             const current = progress[key] || 0;
             const isCompleted = current >= quest.limit;
-            
+
             const questEl = document.createElement('div');
             questEl.style.display = 'flex';
             questEl.style.alignItems = 'center';
