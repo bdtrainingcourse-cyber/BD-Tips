@@ -284,6 +284,9 @@ document.addEventListener('DOMContentLoaded', () => {
             const data = await res.json();
             
             renderEvaluation(data);
+            if (window.registerUserAction) {
+                window.registerUserAction();
+            }
         } catch (error) {
             console.error('Evaluation failed:', error);
             alert(error.message || 'Gặp lỗi khi kết nối hệ thống AI. Vui lòng thử lại.');
@@ -339,6 +342,9 @@ document.addEventListener('DOMContentLoaded', () => {
             const data = await res.json();
 
             renderGeneration(data);
+            if (window.registerUserAction) {
+                window.registerUserAction();
+            }
         } catch (error) {
             console.error('Generation failed:', error);
             alert(error.message || 'Gặp lỗi khi soạn email bằng AI. Vui lòng thử lại.');
