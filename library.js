@@ -511,6 +511,9 @@ document.addEventListener('DOMContentLoaded', () => {
             
             card.addEventListener('click', () => {
                 window.open(article.linkedinUrl || newsletterUrl, '_blank');
+                if (window.registerUserAction) {
+                    window.registerUserAction();
+                }
             });
             articlesContainer.appendChild(card);
         });
@@ -548,31 +551,36 @@ document.addEventListener('DOMContentLoaded', () => {
     function handleEbookDownload(ebook) {
         currentSelectedEbook = ebook;
         
-        // Check Daily Download Limit (1 per day default + bonus credits)
-        const todayDl = getTodayDownloads();
-        const allowedDl = 1 + getTodayBonusCredits();
+        // If they unlocked the 7-day streak reward, they are exempt from all limits!
+        const streakUnlocked = localStorage.getItem('b2b_streak_unlocked_ebook') === 'true';
+        
+        if (!streakUnlocked) {
+            // Check Daily Download Limit (1 per day default + bonus credits)
+            const todayDl = getTodayDownloads();
+            const allowedDl = 1 + getTodayBonusCredits();
 
-        if (todayDl >= allowedDl) {
-            // Daily limit reached -> Open retention modal to invite playing mini game or community!
-            limitModal.classList.remove('hidden');
-            return;
-        }
+            if (todayDl >= allowedDl) {
+                // Daily limit reached -> Open retention modal to invite playing mini game or community!
+                limitModal.classList.remove('hidden');
+                return;
+            }
 
-        // If they are a returning user who already registered in the past,
-        // they must earn a bonus credit today to unlock any new/different ebook!
-        const hasDownloadedBefore = localStorage.getItem('b2b_has_downloaded_before') === 'true';
-        if (hasDownloadedBefore && getTodayBonusCredits() < 1) {
-            // Force playing games / visiting community
-            const limitModalTitle = document.querySelector('#limit-modal .modal-title');
-            const limitModalDesc = document.querySelector('#limit-modal p');
-            if (limitModalTitle) {
-                limitModalTitle.textContent = "Cần Tích Điểm Để Mở Khóa Ebook Mới";
+            // If they are a returning user who already registered in the past,
+            // they must earn a bonus credit today to unlock any new/different ebook!
+            const hasDownloadedBefore = localStorage.getItem('b2b_has_downloaded_before') === 'true';
+            if (hasDownloadedBefore && getTodayBonusCredits() < 1) {
+                // Force playing games / visiting community
+                const limitModalTitle = document.querySelector('#limit-modal .modal-title');
+                const limitModalDesc = document.querySelector('#limit-modal p');
+                if (limitModalTitle) {
+                    limitModalTitle.textContent = "Cần Tích Điểm Để Mở Khóa Ebook Mới";
+                }
+                if (limitModalDesc) {
+                    limitModalDesc.textContent = "Bạn đã tải Ebook chào mừng trước đó. Để mở khóa tải Ebook tiếp theo, vui lòng tham gia Thử thách B2B hoặc Cộng đồng BD để tích lũy điểm mở khóa nhé!";
+                }
+                limitModal.classList.remove('hidden');
+                return;
             }
-            if (limitModalDesc) {
-                limitModalDesc.textContent = "Bạn đã tải Ebook chào mừng trước đó. Để mở khóa tải Ebook tiếp theo, vui lòng tham gia Thử thách B2B hoặc Cộng đồng BD để tích lũy điểm mở khóa nhé!";
-            }
-            limitModal.classList.remove('hidden');
-            return;
         }
 
         const registered = localStorage.getItem('b2b_user_registration');
@@ -591,6 +599,11 @@ document.addEventListener('DOMContentLoaded', () => {
         
         // Save flag to identify returning downloaders
         localStorage.setItem('b2b_has_downloaded_before', 'true');
+
+        // Trigger action-based streak increase
+        if (window.registerUserAction) {
+            window.registerUserAction();
+        }
 
         const link = document.createElement('a');
         link.href = ebook.fileUrl;
