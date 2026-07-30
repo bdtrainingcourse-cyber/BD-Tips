@@ -617,6 +617,9 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         updateUI(result);
+        if (window.registerUserAction) {
+            window.registerUserAction();
+        }
     });
 
     // ==========================================
@@ -775,6 +778,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // Scroll to results panel smoothly
             lookupResultsPanel.scrollIntoView({ behavior: 'smooth' });
+
+            if (window.registerUserAction) {
+                window.registerUserAction();
+            }
         });
     }
 
