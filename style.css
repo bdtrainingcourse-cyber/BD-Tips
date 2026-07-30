@@ -2725,3 +2725,16 @@ body.dark-theme .planet-tooltip-card {
     visibility: hidden;
     pointer-events: none;
 }
+
+@media (max-width: 600px) {
+    .quests-columns-grid {
+        grid-template-columns: 1fr !important;
+    }
+    .quests-column-left {
+        border-right: none !important;
+        border-bottom: 1px solid var(--border-color);
+        padding-right: 0 !important;
+        padding-bottom: 15px;
+        margin-bottom: 15px;
+    }
+}
