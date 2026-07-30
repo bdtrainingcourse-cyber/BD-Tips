@@ -16,6 +16,22 @@ const initB2BApp = () => {
         });
     }
 
+    const questsLink = document.querySelector('nav.nav-links a[href*="#quests-section"]');
+    if (questsLink) {
+        questsLink.addEventListener('click', (e) => {
+            const currentPath = window.location.pathname;
+            if (currentPath.endsWith('index.html') || currentPath === '/' || currentPath === '' || currentPath.endsWith('/')) {
+                const target = document.getElementById('quests-section');
+                if (target) {
+                    e.preventDefault();
+                    target.scrollIntoView({ behavior: 'smooth' });
+                    // Update URL hash without reload
+                    history.pushState(null, null, '#quests-section');
+                }
+            }
+        });
+    }
+
     const homeLinks = document.querySelectorAll('nav.nav-links a[href="index.html"]');
     homeLinks.forEach(link => {
         link.addEventListener('click', (e) => {
@@ -3329,6 +3345,7 @@ if (document.readyState === 'loading') {
             const current = progressDaily[key] || 0;
             if (current < quest.limit) {
                 remainingQuests.push({
+                    key: key,
                     name: quest.name,
                     points: quest.points,
                     current: current,
@@ -3345,37 +3362,66 @@ if (document.readyState === 'loading') {
 
         const name = localStorage.getItem('streak_name') || 'Chiến thần';
         
-        let checklistHtml = remainingQuests.map(q => `
-            <div style="display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); border-radius: 8px; margin-bottom: 8px;">
-                <div style="display: flex; align-items: center; gap: 10px;">
-                    <span style="font-size: 1.1rem; color: var(--text-light); line-height: 1;">⬜</span>
-                    <span style="font-size: 0.8rem; font-weight: bold; color: var(--text-main);">${q.name}</span>
+        const destMap = {
+            check_in: '#personalized-welcome-banner',
+            game_complete: '#minigame-section',
+            perfect_game: '#minigame-section',
+            pic_search: 'finder.html',
+            ai_email: 'email-assistant.html',
+            share_click: 'email-assistant.html',
+            labor_read: 'labor-law.html',
+            salary_calc: 'salary.html',
+            library_read: 'library.html',
+            forum_post: 'community.html',
+            forum_comment: 'community.html'
+        };
+
+        const closeModal = () => {
+            modalOverlay.style.opacity = '0';
+            if (typeof modalOverlay.querySelector === 'function') {
+                const innerDiv = modalOverlay.querySelector('div');
+                if (innerDiv) innerDiv.style.transform = 'scale(0.9)';
+            }
+            setTimeout(() => {
+                modalOverlay.remove();
+            }, 300);
+        };
+        window.closeWelcomeBackModal = closeModal;
+
+        let checklistHtml = remainingQuests.map(q => {
+            const dest = destMap[q.key] || '#';
+            return `
+                <div style="display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; margin-bottom: 8px; cursor: pointer; transition: all 0.2s ease;" class="welcome-popup-item" onclick="window.closeWelcomeBackModal(); if ('${dest}'.startsWith('#')) { const t = document.getElementById('${dest.substring(1)}'); if (t) t.scrollIntoView({behavior:'smooth'}); } else { window.location.href='${dest}'; }">
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <span style="display: inline-block; width: 14px; height: 14px; border: 1.5px solid #94a3b8; border-radius: 3px; background: transparent; flex-shrink: 0;"></span>
+                        <span style="font-size: 0.8rem; font-weight: bold; color: #ffffff;">${q.name}</span>
+                    </div>
+                    <span style="font-weight: 800; font-size: 0.75rem; color: #ff6b6b;">+${q.points}đ</span>
                 </div>
-                <span style="font-weight: 800; font-size: 0.75rem; color: var(--primary);">+${q.points}đ</span>
-            </div>
-        `).join('');
+            `;
+        }).join('');
 
         modalOverlay.innerHTML = `
-            <div style="background: linear-gradient(135deg, #1d1e2a 0%, #11121d 100%); border: 1.5px solid var(--primary); border-radius: 24px; max-width: 480px; width: 90%; padding: 30px; box-shadow: 0 25px 60px rgba(0,0,0,0.55); position: relative; text-align: left; transform: scale(0.9); transition: transform 0.3s ease;">
-                <button id="btn-close-welcome-back" style="position: absolute; top: 15px; right: 15px; background: none; border: none; font-size: 1.3rem; color: var(--text-light); cursor: pointer; line-height: 1;">&times;</button>
+            <div style="background: linear-gradient(135deg, #1d1e2a 0%, #11121d 100%); border: 1.5px solid var(--primary); border-radius: 24px; max-width: 480px; width: 90%; padding: 30px; box-shadow: 0 25px 60px rgba(0,0,0,0.55); position: relative; text-align: left; transform: scale(0.9); transition: transform 0.3s ease; font-family: 'Plus Jakarta Sans', sans-serif;">
+                <button id="btn-close-welcome-back" style="position: absolute; top: 15px; right: 15px; background: none; border: none; font-size: 1.3rem; color: #94a3b8; cursor: pointer; line-height: 1;">&times;</button>
                 
                 <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 20px;">
                     <div style="width: 50px; height: 50px; border-radius: 50%; background: rgba(243, 168, 59, 0.15); display: flex; align-items: center; justify-content: center; font-size: 1.8rem; flex-shrink: 0;">🦉</div>
                     <div>
-                        <h3 style="margin: 0; font-size: 1.15rem; font-weight: 800; color: var(--text-main);">Chào mừng trở lại, ${name}!</h3>
-                        <p style="margin: 3px 0 0 0; font-size: 0.72rem; color: var(--primary); font-weight: bold;">Hôm nay bạn đã rèn luyện chưa?</p>
+                        <h3 style="margin: 0; font-size: 1.15rem; font-weight: 800; color: #ffffff;">Chào mừng trở lại, ${name}!</h3>
+                        <p style="margin: 3px 0 0 0; font-size: 0.72rem; color: #f3a83b; font-weight: bold;">Hôm nay bạn đã rèn luyện chưa?</p>
                     </div>
                 </div>
 
-                <p style="font-size: 0.8rem; line-height: 1.5; color: var(--text-light); margin: 0 0 20px 0;">
-                    Cú BeeDee vẫn luôn ở đây đồng hành cùng bạn trên con đường nâng tầm ngôn từ B2B. Hôm nay bạn còn <strong style="color: var(--primary);">${remainingQuests.length} nhiệm vụ hàng ngày</strong> chưa hoàn thành đấy nhé:
+                <p style="font-size: 0.8rem; line-height: 1.5; color: #94a3b8; margin: 0 0 20px 0;">
+                    Cú BeeDee vẫn luôn ở đây đồng hành cùng bạn trên con đường nâng tầm ngôn từ B2B. Hôm nay bạn còn <strong style="color: #ff6b6b;">${remainingQuests.length} nhiệm vụ hàng ngày</strong> chưa hoàn thành đấy nhé:
                 </p>
 
                 <div style="max-height: 220px; overflow-y: auto; margin-bottom: 25px; padding-right: 5px;">
                     ${checklistHtml}
                 </div>
 
-                <button id="btn-action-welcome-back" class="btn btn-primary" style="width: 100%; padding: 12px; border-radius: 10px; font-weight: bold; font-size: 0.9rem; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                <button id="btn-action-welcome-back" class="btn btn-primary" style="width: 100%; padding: 12px; border-radius: 10px; font-weight: bold; font-size: 0.9rem; display: flex; align-items: center; justify-content: center; gap: 8px; background: linear-gradient(135deg, #ff416c, #ff4b2b); border: none; color: #ffffff; cursor: pointer;">
                     ⚡ Bắt Đầu Thực Chiến Ngay!
                 </button>
            </div>
@@ -3391,17 +3437,6 @@ if (document.readyState === 'loading') {
                 if (innerDiv) innerDiv.style.transform = 'scale(1)';
             }
         }, 50);
-
-        const closeModal = () => {
-            modalOverlay.style.opacity = '0';
-            if (typeof modalOverlay.querySelector === 'function') {
-                const innerDiv = modalOverlay.querySelector('div');
-                if (innerDiv) innerDiv.style.transform = 'scale(0.9)';
-            }
-            setTimeout(() => {
-                modalOverlay.remove();
-            }, 300);
-        };
 
         document.getElementById('btn-close-welcome-back').addEventListener('click', closeModal);
         
@@ -3606,4 +3641,16 @@ if (document.readyState === 'loading') {
             </div>
         `;
     }
+
+    // Scroll to #quests-section if hash is present on load
+    window.addEventListener('load', () => {
+        if (window.location.hash === '#quests-section') {
+            const target = document.getElementById('quests-section');
+            if (target) {
+                setTimeout(() => {
+                    target.scrollIntoView({ behavior: 'smooth' });
+                }, 300);
+            }
+        }
+    });
 
