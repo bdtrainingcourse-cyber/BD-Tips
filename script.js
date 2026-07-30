@@ -3193,6 +3193,8 @@ if (document.readyState === 'loading') {
             questEl.style.borderRadius = '6px';
             questEl.style.border = '1px solid rgba(255, 255, 255, 0.05)';
             questEl.style.opacity = isCompleted ? '0.65' : '1';
+            questEl.style.cursor = 'pointer';
+            questEl.style.transition = 'all 0.2s ease';
 
             questEl.innerHTML = `
                 <div style="display: flex; align-items: center; gap: 8px;">
@@ -3204,6 +3206,35 @@ if (document.readyState === 'loading') {
                 </div>
                 <span style="font-size: 0.72rem; font-weight: bold; color: var(--primary);">+${quest.points}đ</span>
             `;
+
+            // Click navigation
+            const destMap = {
+                check_in: '#personalized-welcome-banner',
+                game_complete: '#minigame-section',
+                perfect_game: '#minigame-section',
+                pic_search: 'finder.html',
+                ai_email: 'email-assistant.html',
+                share_click: 'email-assistant.html',
+                labor_read: 'labor-law.html',
+                salary_calc: 'salary.html',
+                library_read: 'library.html',
+                forum_post: 'community.html',
+                forum_comment: 'community.html'
+            };
+            const dest = destMap[key];
+            if (dest) {
+                questEl.addEventListener('click', (e) => {
+                    // Prevent navigation click trigger if they click specific sub-elements if any
+                    if (dest.startsWith('#')) {
+                        const target = document.getElementById(dest.substring(1));
+                        if (target) {
+                            target.scrollIntoView({ behavior: 'smooth' });
+                        }
+                    } else {
+                        window.location.href = dest;
+                    }
+                });
+            }
 
             if (isWeekly && weeklyContainer) {
                 weeklyContainer.appendChild(questEl);
@@ -3229,17 +3260,32 @@ if (document.readyState === 'loading') {
                 campProgress = JSON.parse(localStorage.getItem(campaignProgressKey) || '{}');
             } catch(e) {}
 
+            const destMap = {
+                check_in: '#personalized-welcome-banner',
+                game_complete: '#minigame-section',
+                perfect_game: '#minigame-section',
+                pic_search: 'finder.html',
+                ai_email: 'email-assistant.html',
+                share_click: 'email-assistant.html',
+                labor_read: 'labor-law.html',
+                salary_calc: 'salary.html',
+                library_read: 'library.html',
+                forum_post: 'community.html',
+                forum_comment: 'community.html'
+            };
+
             let checklistHtml = '';
             for (let key in campaign.requirements) {
                 const current = campProgress[key] || 0;
                 const req = campaign.requirements[key];
                 const isTaskDone = current >= req;
                 const displayName = CAMPAIGN_NAMES[key] || key;
+                const dest = destMap[key] || '#';
 
                 checklistHtml += `
-                    <div style="display: flex; align-items: center; justify-content: space-between; font-size: 0.7rem; color: var(--text-light);">
-                        <span>${isTaskDone ? '🔹' : '🔸'} ${displayName}</span>
-                        <span style="font-weight: bold;">${current}/${req}</span>
+                    <div style="display: flex; align-items: center; justify-content: space-between; font-size: 0.7rem; color: var(--text-light); cursor: pointer; padding: 3px 6px; border-radius: 4px; transition: background 0.2s;" class="campaign-req-item" onclick="if ('${dest}'.startsWith('#')) { const t = document.getElementById('${dest.substring(1)}'); if (t) t.scrollIntoView({behavior:'smooth'}); } else { window.location.href='${dest}'; }">
+                        <span style="${isTaskDone ? 'text-decoration: line-through; opacity: 0.7;' : ''}">${isTaskDone ? '🔹' : '🔸'} ${displayName}</span>
+                        <span style="font-weight: bold; color: ${isTaskDone ? '#10b981' : 'inherit'};">${current}/${req}</span>
                     </div>
                 `;
             }
@@ -3466,8 +3512,8 @@ if (document.readyState === 'loading') {
                 localStorage.setItem('b2b_points_converted', 'true');
             }
 
-            if (typeof renderQuestBoard === 'function') renderQuestBoard();
-            if (typeof renderCampaignBoard === 'function') renderCampaignBoard();
+            if (typeof window.renderQuestBoard === 'function') window.renderQuestBoard();
+            if (typeof window.renderCampaignBoard === 'function') window.renderCampaignBoard();
         } else {
             if (regBox) regBox.classList.remove('hidden');
             if (questBox) questBox.classList.add('hidden');
