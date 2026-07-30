@@ -285,7 +285,7 @@ document.addEventListener('DOMContentLoaded', () => {
             
             renderEvaluation(data);
             if (window.registerUserAction) {
-                window.registerUserAction();
+                window.registerUserAction('ai_email');
             }
         } catch (error) {
             console.error('Evaluation failed:', error);
@@ -343,7 +343,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             renderGeneration(data);
             if (window.registerUserAction) {
-                window.registerUserAction();
+                window.registerUserAction('ai_email');
             }
         } catch (error) {
             console.error('Generation failed:', error);
