@@ -115,31 +115,67 @@ function updateToggleButton(btn) {
 // B2B POINTS-BASED GAMIFICATION SYSTEM
 // ==========================================
 
+function getWeekCode(date = new Date()) {
+    const oneJan = new Date(date.getFullYear(), 0, 1);
+    const numberOfDays = Math.floor((date - oneJan) / (24 * 60 * 60 * 1000));
+    const weekNum = Math.ceil((numberOfDays + oneJan.getDay() + 1) / 7);
+    return `${date.getFullYear()}-W${weekNum}`;
+}
+
 const QUEST_CONFIG = {
-    check_in: { points: 5, limit: 1, name: '☕ Chào Ngày Mới' },
-    game_complete: { points: 10, limit: 2, name: '🎮 Thực Chiến B2B Challenge' },
-    perfect_game: { points: 5, limit: 2, name: '⭐ Chốt Deal Xuất Sắc' },
-    pic_search: { points: 3, limit: 3, name: '🔍 Săn Đầu Mối (PIC Finder)' },
-    ai_email: { points: 3, limit: 3, name: '✍️ Soạn Cold Email AI' },
-    labor_read: { points: 2, limit: 3, name: '⚖️ Phòng Vệ Pháp Lý' },
-    salary_calc: { points: 2, limit: 3, name: '💸 Định Giá Hoa Hồng BD' },
-    library_read: { points: 2, limit: 3, name: '📖 Nâng Cấp Tư Duy' },
-    forum_post: { points: 8, limit: 1, name: '💬 Mở Khóa Case-Study' },
-    forum_comment: { points: 3, limit: 3, name: '💬 Đồng Kiến Tạo Giải Pháp' },
-    share_click: { points: 5, limit: 2, name: '📢 Đồng Hành Cùng Đồng Nghiệp' }
+    // Daily Quests
+    check_in: { points: 5, limit: 1, name: '☕ Cú Đêm Dậy Sớm Làm BD', period: 'daily' },
+    game_complete: { points: 10, limit: 2, name: '🎮 Cãi Khách Hàng Để Chốt Deal', period: 'daily' },
+    perfect_game: { points: 5, limit: 2, name: '⭐ Chốt Deal Xuất Sắc (Game 5/5)', period: 'daily' },
+    pic_search: { points: 3, limit: 3, name: '🔍 Thám Tử Tư Đi Săn Trùm Cuối', period: 'daily' },
+    ai_email: { points: 3, limit: 3, name: '✍️ Viết Thư Tình Cho Doanh Nghiệp', period: 'daily' },
+    share_click: { points: 5, limit: 2, name: '📢 Rủ Đồng Bọn Cùng Xuống Hố', period: 'daily' },
+
+    // Weekly Quests
+    labor_read: { points: 15, limit: 2, name: '⚖️ Đọc Luật Tránh Bị Bóc Lột', period: 'weekly' },
+    salary_calc: { points: 15, limit: 2, name: '💸 Định Giá Bản Thân - Đòi Hoa Hồng', period: 'weekly' },
+    library_read: { points: 15, limit: 3, name: '📖 Mọt Sách Thực Chiến Quyết Chí Giàu Sang', period: 'weekly' },
+    forum_post: { points: 20, limit: 1, name: '💬 Đóng Góp Bí Kíp Tán Khách Hàng', period: 'weekly' },
+    forum_comment: { points: 10, limit: 3, name: '💬 Chém Gió Có Khoa Học', period: 'weekly' }
 };
 
-const CAMPAIGN_CONFIG = {
-    id: 'campaign_outreach',
-    title: 'Chiến Thần Cold Outreach ✉️',
-    desc: 'Tối ưu hóa phễu tiếp cận khách hàng Enterprise.',
-    bonus: 50,
-    requirements: {
-        pic_search: 3,
-        ai_email: 3,
-        share_click: 1
+const CAMPAIGNS_CONFIG = {
+    campaign_outreach: {
+        id: 'campaign_outreach',
+        title: 'Tuyệt Kỹ "Mặt Dày" Inbox Khách Hàng Enterprise ✉️',
+        desc: 'Tích cực PIC search, soạn Cold Email và share để chinh phục Enterprise lead.',
+        bonus: 50,
+        requirements: {
+            pic_search: 3,
+            ai_email: 3,
+            share_click: 1
+        }
+    },
+    campaign_compliance: {
+        id: 'campaign_compliance',
+        title: 'Thợ Săn Tiền Thưởng Quyết Không Để Quỵt Hoa Hồng ⚖️',
+        desc: 'Nghiên cứu kỹ luật lao động và định giá commission của bản thân.',
+        bonus: 40,
+        requirements: {
+            labor_read: 2,
+            salary_calc: 2
+        }
+    },
+    campaign_thinker: {
+        id: 'campaign_thinker',
+        title: 'Trùm Lý Thuyết Thực Chiến Học Làm Sếp 📖',
+        desc: 'Hấp thụ kiến thức Thư viện và đóng góp case-study chất lượng cho diễn đàn.',
+        bonus: 45,
+        requirements: {
+            library_read: 3,
+            forum_post: 1
+        }
     }
 };
+
+window.QUEST_CONFIG = QUEST_CONFIG;
+window.CAMPAIGNS_CONFIG = CAMPAIGNS_CONFIG;
+window.getWeekCode = getWeekCode;
 
 function showQuestWelcomeBanner() {
     if (document.getElementById('streak-welcome-banner')) return;
@@ -226,20 +262,20 @@ function showPointToast(points, activityName) {
     }, 3500);
 }
 
-function showCampaignCompletePopup() {
+function showCampaignCompletePopup(campaignTitle, bonusPoints) {
     if (document.getElementById('b2b-campaign-popup')) return;
 
     const popupHtml = `
       <div id="b2b-campaign-popup" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(8px); display: flex; align-items: center; justify-content: center; z-index: 99999; opacity: 0; transition: opacity 0.3s ease;">
-        <div style="background: linear-gradient(135deg, #102d1f 0%, #081e13 100%); border: 2px solid #34d399; border-radius: 20px; max-width: 420px; width: 90%; padding: 30px; text-align: center; box-shadow: 0 20px 40px rgba(0,0,0,0.5); position: relative; transform: scale(0.9); transition: transform 0.3s ease;">
+        <div style="background: linear-gradient(135deg, #102d1f 0%, #081e13 100%); border: 2px solid #34d399; border-radius: 20px; max-width: 440px; width: 90%; padding: 30px; text-align: center; box-shadow: 0 20px 40px rgba(0,0,0,0.5); position: relative; transform: scale(0.9); transition: transform 0.3s ease;">
           <div style="width: 90px; height: 90px; margin: 0 auto 15px auto; border-radius: 50%; border: 3px solid #34d399; display: flex; align-items: center; justify-content: center; overflow: hidden; background: #fffaf0;">
             <img src="/bd_mascot.png" alt="Cú BeeDee" style="width: 76px; height: 76px; display: block; object-fit: contain;" onerror="this.src='https://bd-tips.vercel.app/bd_mascot.png'" />
           </div>
-          <h3 style="color: #34d399; margin: 10px 0; font-size: 1.4rem; font-weight: 800; font-family: sans-serif;">Chiến Dịch Hoàn Thành! 🏆</h3>
-          <p style="color: #ecd9c6; font-size: 0.95rem; line-height: 1.6; margin: 15px 0 25px 0; font-family: sans-serif;">Chúc mừng chiến thần! Bạn đã xuất sắc hoàn thành mọi thử thách của chiến dịch <b>"Chiến Thần Cold Outreach" ✉️</b>! Cú BeeDee rất khâm phục tài năng outreach của bạn.</p>
+          <h3 style="color: #34d399; margin: 10px 0; font-size: 1.25rem; font-weight: 800; font-family: sans-serif;">Chiến Dịch Hoàn Thành! 🏆</h3>
+          <p style="color: #ecd9c6; font-size: 0.95rem; line-height: 1.6; margin: 15px 0 25px 0; font-family: sans-serif;">Chúc mừng chiến thần! Bạn đã xuất sắc hoàn thành mọi thử thách của chiến dịch:<br><b style="color: #34d399;">"${campaignTitle}"</b>! Cú BeeDee rất khâm phục tài năng thực chiến của bạn.</p>
           <div style="background: rgba(52, 211, 153, 0.15); border-radius: 12px; padding: 12px; margin-bottom: 25px; display: flex; align-items: center; justify-content: center; gap: 8px;">
              <span style="font-size: 1.5rem;">🔥</span>
-             <span style="color: #ffffff; font-size: 1.1rem; font-weight: bold; font-family: sans-serif;">+50 Bonus BD-Points</span>
+             <span style="color: #ffffff; font-size: 1.1rem; font-weight: bold; font-family: sans-serif;">+${bonusPoints} Bonus BD-Points</span>
           </div>
           <button id="btn-campaign-popup-close" style="background: linear-gradient(135deg, #34d399 0%, #059669 100%); color: #ffffff; border: none; border-radius: 8px; padding: 12px 30px; font-size: 0.95rem; font-weight: bold; cursor: pointer; transition: transform 0.2s ease; width: 100%;">Tuyệt Vời!</button>
         </div>
@@ -267,46 +303,102 @@ function showCampaignCompletePopup() {
 }
 
 function updateCampaignProgress(actionType, count) {
-    if (localStorage.getItem('b2b_campaign_completed_outreach') === 'true') return;
-    
-    const campaignProgressKey = 'b2b_campaign_progress_outreach';
-    let campProgress = {};
-    try {
-        campProgress = JSON.parse(localStorage.getItem(campaignProgressKey) || '{}');
-    } catch(e) {}
-    
-    if (!campProgress.pic_search) campProgress.pic_search = 0;
-    if (!campProgress.ai_email) campProgress.ai_email = 0;
-    if (!campProgress.share_click) campProgress.share_click = 0;
-    
-    if (CAMPAIGN_CONFIG.requirements[actionType]) {
+    for (let campId in CAMPAIGNS_CONFIG) {
+        if (localStorage.getItem(`b2b_campaign_completed_${campId}`) === 'true') continue;
+        
+        const campaign = CAMPAIGNS_CONFIG[campId];
+        if (!campaign.requirements[actionType]) continue;
+        
+        const campaignProgressKey = `b2b_campaign_progress_${campId}`;
+        let campProgress = {};
+        try {
+            campProgress = JSON.parse(localStorage.getItem(campaignProgressKey) || '{}');
+        } catch(e) {}
+        
+        // Initialize keys
+        for (let reqKey in campaign.requirements) {
+            if (campProgress[reqKey] === undefined) campProgress[reqKey] = 0;
+        }
+        
         let current = campProgress[actionType] || 0;
-        let req = CAMPAIGN_CONFIG.requirements[actionType];
+        let req = campaign.requirements[actionType];
         if (current < req) {
             campProgress[actionType] = Math.min(req, current + count);
             localStorage.setItem(campaignProgressKey, JSON.stringify(campProgress));
             
             let allDone = true;
-            for (let key in CAMPAIGN_CONFIG.requirements) {
-                if ((campProgress[key] || 0) < CAMPAIGN_CONFIG.requirements[key]) {
+            for (let key in campaign.requirements) {
+                if ((campProgress[key] || 0) < campaign.requirements[key]) {
                     allDone = false;
                 }
             }
             
             if (allDone) {
-                localStorage.setItem('b2b_campaign_completed_outreach', 'true');
+                localStorage.setItem(`b2b_campaign_completed_${campId}`, 'true');
                 let balance = parseInt(localStorage.getItem('b2b_points_balance') || '0', 10);
-                balance += CAMPAIGN_CONFIG.bonus;
+                balance += campaign.bonus;
                 localStorage.setItem('b2b_points_balance', balance.toString());
-                showCampaignCompletePopup();
+                showCampaignCompletePopup(campaign.title, campaign.bonus);
             }
         }
+    }
+}
+
+function injectNavbarUserHUD() {
+    const navMenu = document.getElementById('nav-menu');
+    if (!navMenu) return;
+    
+    if (document.getElementById('navbar-user-hud')) return;
+    
+    const hud = document.createElement('div');
+    hud.id = 'navbar-user-hud';
+    hud.className = 'hidden';
+    hud.style.cssText = 'display: flex; align-items: center; gap: 8px; background: rgba(243, 168, 59, 0.1); border: 1px solid var(--primary); padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: bold; color: var(--text-main); margin-right: 10px; margin-left: 10px; order: -1; align-self: center;';
+    
+    hud.innerHTML = `
+        <span style="font-size: 1rem; line-height: 1;">🦉</span>
+        <span id="navbar-user-name" style="max-width: 90px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">...</span>: 
+        <span id="navbar-user-points" style="color: var(--primary); margin-left: 2px;">0</span>đ
+    `;
+    
+    const themeToggle = document.getElementById('theme-toggle');
+    if (themeToggle) {
+        navMenu.insertBefore(hud, themeToggle);
+    } else {
+        navMenu.appendChild(hud);
+    }
+    
+    updateNavbarUserHUD();
+}
+
+function updateNavbarUserHUD() {
+    const hud = document.getElementById('navbar-user-hud');
+    if (!hud) {
+        injectNavbarUserHUD();
+        return;
+    }
+    
+    const active = localStorage.getItem('streak_active') === 'true';
+    if (active) {
+        hud.classList.remove('hidden');
+        hud.style.display = 'flex';
+        const name = localStorage.getItem('streak_name') || 'Chiến thần';
+        const points = localStorage.getItem('b2b_points_balance') || '0';
+        
+        const nameEl = document.getElementById('navbar-user-name');
+        const pointsEl = document.getElementById('navbar-user-points');
+        if (nameEl) nameEl.textContent = name;
+        if (pointsEl) pointsEl.textContent = points;
+    } else {
+        hud.classList.add('hidden');
+        hud.style.display = 'none';
     }
 }
 
 function updateUIElements() {
     if (typeof renderQuestBoard === 'function') renderQuestBoard();
     if (typeof renderCampaignBoard === 'function') renderCampaignBoard();
+    updateNavbarUserHUD();
     
     const balance = parseInt(localStorage.getItem('b2b_points_balance') || '0', 10);
     if (typeof updateWelcomeBanner === 'function') {
@@ -323,20 +415,30 @@ window.registerUserAction = function(actionType, metadata = {}) {
     const todayStr = new Date().toISOString().split('T')[0];
     let balance = parseInt(localStorage.getItem('b2b_points_balance') || '0', 10);
     
-    const progressKey = `b2b_quest_progress_${todayStr}`;
+    const config = QUEST_CONFIG[actionType];
+    if (!config) return;
+    
+    const isWeekly = config.period === 'weekly';
+    const progressKey = isWeekly ? `b2b_quest_progress_weekly_${getWeekCode()}` : `b2b_quest_progress_${todayStr}`;
+    
     let progress = {};
     try {
         progress = JSON.parse(localStorage.getItem(progressKey) || '{}');
     } catch(e) {}
     
-    const config = QUEST_CONFIG[actionType];
-    if (!config) return;
-    
     let currentCount = progress[actionType] || 0;
     
+    // Check in is always checked daily
+    const dailyProgressKey = `b2b_quest_progress_${todayStr}`;
+    let dailyProgress = {};
+    try {
+        dailyProgress = JSON.parse(localStorage.getItem(dailyProgressKey) || '{}');
+    } catch(e) {}
+    
     let checkInAwarded = false;
-    if (!progress['check_in']) {
-        progress['check_in'] = 1;
+    if (!dailyProgress['check_in']) {
+        dailyProgress['check_in'] = 1;
+        localStorage.setItem(dailyProgressKey, JSON.stringify(dailyProgress));
         balance += QUEST_CONFIG['check_in'].points;
         checkInAwarded = true;
     }
@@ -344,8 +446,7 @@ window.registerUserAction = function(actionType, metadata = {}) {
     if (currentCount >= config.limit) {
         if (checkInAwarded) {
             localStorage.setItem('b2b_points_balance', balance.toString());
-            localStorage.setItem(progressKey, JSON.stringify(progress));
-            showPointToast(QUEST_CONFIG['check_in'].points, '☕ Chào Ngày Mới (Điểm danh)');
+            showPointToast(QUEST_CONFIG['check_in'].points, '☕ Cú Đêm Dậy Sớm Làm BD');
             updateUIElements();
         }
         return;
@@ -355,9 +456,11 @@ window.registerUserAction = function(actionType, metadata = {}) {
     let addedPoints = config.points;
     
     if (actionType === 'game_complete' && metadata.perfect) {
-        let perfectCount = progress['perfect_game'] || 0;
+        // perfect game is daily
+        let perfectCount = dailyProgress['perfect_game'] || 0;
         if (perfectCount < QUEST_CONFIG['perfect_game'].limit) {
-            progress['perfect_game'] = perfectCount + 1;
+            dailyProgress['perfect_game'] = perfectCount + 1;
+            localStorage.setItem(dailyProgressKey, JSON.stringify(dailyProgress));
             addedPoints += QUEST_CONFIG['perfect_game'].points;
         }
     }
@@ -371,7 +474,7 @@ window.registerUserAction = function(actionType, metadata = {}) {
     if (welcomeBanner) welcomeBanner.remove();
 
     if (checkInAwarded) {
-        showPointToast(QUEST_CONFIG['check_in'].points + addedPoints, `${config.name} & Chào Ngày Mới!`);
+        showPointToast(QUEST_CONFIG['check_in'].points + addedPoints, `${config.name} & Cú Đêm Dậy Sớm!`);
     } else {
         showPointToast(addedPoints, config.name);
     }
@@ -379,6 +482,9 @@ window.registerUserAction = function(actionType, metadata = {}) {
     updateCampaignProgress(actionType, 1);
     updateUIElements();
 };
+
+window.updateNavbarUserHUD = updateNavbarUserHUD;
+window.injectNavbarUserHUD = injectNavbarUserHUD;
 
 // Check quest status on load
 if (document.readyState === 'loading') {
