@@ -2770,6 +2770,12 @@ body.dark-theme .planet-tooltip-card {
     color: var(--primary) !important;
 }
 
+.welcome-popup-item:hover {
+    background: rgba(255, 255, 255, 0.08) !important;
+    border-color: rgba(255, 255, 255, 0.15) !important;
+    transform: translateX(4px);
+}
+
 /* Animations */
 @keyframes slideInUp {
     from {
