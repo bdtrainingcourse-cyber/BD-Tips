@@ -3130,33 +3130,7 @@ if (document.readyState === 'loading') {
         });
     }
 
-    // Helper functions for Streak and Banners
     // Helper functions for Points, Quests and Banners
-    const QUEST_CONFIG = {
-        check_in: { points: 5, limit: 1, name: '☕ Chào Ngày Mới' },
-        game_complete: { points: 10, limit: 2, name: '🎮 Thực Chiến B2B Challenge' },
-        perfect_game: { points: 5, limit: 2, name: '⭐ Chốt Deal Xuất Sắc' },
-        pic_search: { points: 3, limit: 3, name: '🔍 Săn Đầu Mối (PIC Finder)' },
-        ai_email: { points: 3, limit: 3, name: '✍️ Soạn Cold Email AI' },
-        labor_read: { points: 2, limit: 3, name: '⚖️ Phòng Vệ Pháp Lý' },
-        salary_calc: { points: 2, limit: 3, name: '💸 Định Giá Hoa Hồng BD' },
-        library_read: { points: 2, limit: 3, name: '📖 Nâng Cấp Tư Duy' },
-        forum_post: { points: 8, limit: 1, name: '💬 Mở Khóa Case-Study' },
-        forum_comment: { points: 3, limit: 3, name: '💬 Đồng Kiến Tạo Giải Pháp' },
-        share_click: { points: 5, limit: 2, name: '📢 Đồng Hành Cùng Đồng Nghiệp' }
-    };
-
-    const CAMPAIGN_CONFIG = {
-        id: 'campaign_outreach',
-        title: 'Chiến Thần Cold Outreach ✉️',
-        desc: 'Tối ưu hóa phễu tiếp cận khách hàng Enterprise.',
-        bonus: 50,
-        requirements: {
-            pic_search: 3,
-            ai_email: 3,
-            share_click: 1
-        }
-    };
 
     const CAMPAIGN_NAMES = {
         pic_search: '🔍 Săn đầu mối PIC',
