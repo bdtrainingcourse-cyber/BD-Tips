@@ -1584,6 +1584,11 @@ const initB2BApp = () => {
         const correctCount = score;
         const wrongCount = totalQ - score;
 
+        // Trigger action-based streak increase
+        if (window.registerUserAction) {
+            window.registerUserAction();
+        }
+
         if (didPass) {
             // User completed game tracking
             const completedGames = JSON.parse(localStorage.getItem('completed_games') || '[]');
@@ -3038,28 +3043,55 @@ if (document.readyState === 'loading') {
                 return;
             }
 
+            if (reqVal === 7) {
+                // 7-day Ebook unlock: Local activation
+                localStorage.setItem('b2b_streak_unlocked_ebook', 'true');
+                btn.style.background = 'rgba(255,255,255,0.05)';
+                btn.style.borderColor = 'var(--border-color)';
+                btn.style.color = '#34d399';
+                btn.textContent = 'Đã Mở Khóa';
+                btn.disabled = true;
+
+                // Also log to spreadsheet
+                try {
+                    await fetch('/api/log-email', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ name, email, tool: 'claim-reward', reward: reward, streak: streak })
+                    });
+                } catch(e) {}
+
+                alert(`🎉 Chúc mừng! Bạn đã kích hoạt đặc quyền: "Mở khóa tải Ebook mới" thành công. Từ bây giờ bạn có thể tự do tải các tài liệu thực chiến trên Thư viện mà không bị giới hạn 1 cuốn/ngày!`);
+                return;
+            }
+
+            // For >=14 days: claim via email request
             btn.disabled = true;
-            btn.textContent = 'Đang đổi...';
+            btn.textContent = 'Đang đăng ký...';
 
             try {
-                const res = await fetch('/api/log-email', {
+                // Log to spreadsheet for backup
+                await fetch('/api/log-email', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ name, email, tool: 'claim-reward', reward: reward, streak: streak })
                 });
-                const data = await res.json();
-                if (data.success) {
-                    alert(`🎉 Chúc mừng! Đã gửi yêu cầu đổi quà "${reward}" thành công. Peter Võ sẽ liên hệ bạn qua email ${email} trong vòng 24 giờ.`);
-                } else {
-                    alert('Có lỗi xảy ra, vui lòng thử lại.');
-                    btn.disabled = false;
-                    btn.textContent = 'Đổi Quà';
-                }
+
+                alert(`🎉 Đủ điều kiện đổi quà! Để nhận món quà "${reward}", bạn vui lòng gửi email về: bdtrainingcourse@gmail.com kèm ảnh chụp màn hình số ngày Streak của bạn để anh Peter xác nhận và trao quà nhé! (Hệ thống sẽ tự động mở hòm thư soạn sẵn cho bạn bây giờ).`);
+
+                // Open mailto client
+                const mailtoSubject = `[Đổi Quà Streak] Đăng ký nhận: ${reward}`;
+                const mailtoBody = `Chào anh Peter Võ,\n\nTên tôi là: ${name}\nEmail của tôi: ${email}\n\nTôi muốn đổi phần quà mốc ${reqVal} ngày Streak: ${reward}.\nDưới đây là ảnh chụp màn hình số ngày Streak của tôi:\n\n[Vui lòng đính kèm ảnh chụp màn hình tại đây]\n\nCảm ơn anh!`;
+                const mailtoUrl = `mailto:bdtrainingcourse@gmail.com?subject=${encodeURIComponent(mailtoSubject)}&body=${encodeURIComponent(mailtoBody)}`;
+                window.location.href = mailtoUrl;
+
+                btn.textContent = 'Mở Khóa Quà';
+                btn.disabled = false;
             } catch(err) {
                 console.error(err);
-                alert('Lỗi kết nối máy chủ.');
+                alert('Lỗi kết nối máy chủ, nhưng bạn vẫn có thể gửi email thủ công về bdtrainingcourse@gmail.com để đổi quà!');
+                btn.textContent = 'Mở Khóa Quà';
                 btn.disabled = false;
-                btn.textContent = 'Đổi Quà';
             }
         });
     });
@@ -3114,6 +3146,17 @@ if (document.readyState === 'loading') {
         claimBtns.forEach(btn => {
             const reqVal = parseInt(btn.getAttribute('data-requirement') || '7', 10);
             const reward = btn.getAttribute('data-reward');
+
+            // Special check for 7-day ebook unlock reward
+            if (reqVal === 7 && localStorage.getItem('b2b_streak_unlocked_ebook') === 'true') {
+                btn.style.background = 'rgba(255,255,255,0.05)';
+                btn.style.borderColor = 'var(--border-color)';
+                btn.style.color = '#34d399';
+                btn.textContent = 'Đã Mở Khóa';
+                btn.disabled = true;
+                return;
+            }
+
             if (streak >= reqVal) {
                 btn.style.background = 'var(--primary)';
                 btn.style.borderColor = 'var(--primary)';
@@ -3135,9 +3178,7 @@ if (document.readyState === 'loading') {
         let streak = parseInt(localStorage.getItem('streak_days') || '0', 10);
 
         if (!lastActive) {
-            streak = 1;
-            localStorage.setItem('streak_days', '1');
-            localStorage.setItem('streak_last_active_date', todayStr);
+            streak = 0; // No active streak until first action
         } else {
             const lastDate = new Date(lastActive);
             const todayDate = new Date(todayStr);
@@ -3147,14 +3188,8 @@ if (document.readyState === 'loading') {
             const diffTime = todayDate - lastDate;
             const diffDays = Math.round(diffTime / (1000 * 60 * 60 * 24));
 
-            if (diffDays === 1) {
-                streak += 1;
-                localStorage.setItem('streak_days', streak.toString());
-                localStorage.setItem('streak_last_active_date', todayStr);
-            } else if (diffDays > 1) {
-                streak = 1;
-                localStorage.setItem('streak_days', '1');
-                localStorage.setItem('streak_last_active_date', todayStr);
+            if (diffDays > 1) {
+                streak = 0; // Streak broken
             }
         }
         updateWelcomeBanner(streak);
