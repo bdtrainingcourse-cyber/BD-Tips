@@ -3142,28 +3142,45 @@ if (document.readyState === 'loading') {
     const CAMPAIGN_NAMES = {
         pic_search: '🔍 Săn đầu mối PIC',
         ai_email: '✍️ Soạn Cold Email AI',
-        share_click: '📢 Chia sẻ template email'
+        share_click: '📢 Chia sẻ template',
+        labor_read: '⚖️ Nghiên cứu Luật',
+        salary_calc: '💸 Tính hoa hồng BD',
+        library_read: '📖 Đọc Thư viện',
+        forum_post: '💬 Đóng góp diễn đàn'
     };
 
     window.renderQuestBoard = function() {
-        const questListContainer = document.getElementById('daily-quests-list');
-        if (!questListContainer) return;
+        const dailyContainer = document.getElementById('daily-quests-list');
+        const weeklyContainer = document.getElementById('weekly-quests-list');
+        if (!dailyContainer) return;
 
+        const QUEST_CONFIG = window.QUEST_CONFIG || {};
         const todayStr = new Date().toISOString().split('T')[0];
-        const progressKey = `b2b_quest_progress_${todayStr}`;
-        let progress = {};
+        const progressKeyDaily = `b2b_quest_progress_${todayStr}`;
+        let progressDaily = {};
         try {
-            progress = JSON.parse(localStorage.getItem(progressKey) || '{}');
+            progressDaily = JSON.parse(localStorage.getItem(progressKeyDaily) || '{}');
         } catch(e) {}
 
-        if (!progress.check_in && Object.keys(progress).length > 0) {
-            progress.check_in = 1;
+        if (!progressDaily.check_in && Object.keys(progressDaily).length > 0) {
+            progressDaily.check_in = 1;
         }
 
-        questListContainer.innerHTML = '';
+        let progressWeekly = {};
+        if (typeof window.getWeekCode === 'function') {
+            const progressKeyWeekly = `b2b_quest_progress_weekly_${window.getWeekCode()}`;
+            try {
+                progressWeekly = JSON.parse(localStorage.getItem(progressKeyWeekly) || '{}');
+            } catch(e) {}
+        }
+
+        dailyContainer.innerHTML = '';
+        if (weeklyContainer) weeklyContainer.innerHTML = '';
 
         for (let key in QUEST_CONFIG) {
             const quest = QUEST_CONFIG[key];
+            const isWeekly = quest.period === 'weekly';
+            const progress = isWeekly ? progressWeekly : progressDaily;
             const current = progress[key] || 0;
             const isCompleted = current >= quest.limit;
 
@@ -3187,7 +3204,12 @@ if (document.readyState === 'loading') {
                 </div>
                 <span style="font-size: 0.72rem; font-weight: bold; color: var(--primary);">+${quest.points}đ</span>
             `;
-            questListContainer.appendChild(questEl);
+
+            if (isWeekly && weeklyContainer) {
+                weeklyContainer.appendChild(questEl);
+            } else {
+                dailyContainer.appendChild(questEl);
+            }
         }
     };
 
@@ -3195,40 +3217,156 @@ if (document.readyState === 'loading') {
         const campaignBox = document.getElementById('active-campaign-box');
         if (!campaignBox) return;
 
-        const isCompleted = localStorage.getItem('b2b_campaign_completed_outreach') === 'true';
-        const campaignProgressKey = 'b2b_campaign_progress_outreach';
-        let campProgress = {};
-        try {
-            campProgress = JSON.parse(localStorage.getItem(campaignProgressKey) || '{}');
-        } catch(e) {}
+        const CAMPAIGNS_CONFIG = window.CAMPAIGNS_CONFIG || {};
+        campaignBox.innerHTML = '';
 
-        let checklistHtml = '';
-        for (let key in CAMPAIGN_CONFIG.requirements) {
-            const current = campProgress[key] || 0;
-            const req = CAMPAIGN_CONFIG.requirements[key];
-            const isTaskDone = current >= req;
+        for (let campId in CAMPAIGNS_CONFIG) {
+            const campaign = CAMPAIGNS_CONFIG[campId];
+            const isCompleted = localStorage.getItem(`b2b_campaign_completed_${campId}`) === 'true';
+            const campaignProgressKey = `b2b_campaign_progress_${campId}`;
+            let campProgress = {};
+            try {
+                campProgress = JSON.parse(localStorage.getItem(campaignProgressKey) || '{}');
+            } catch(e) {}
 
-            checklistHtml += `
-                <div style="display: flex; align-items: center; justify-content: space-between; font-size: 0.7rem; color: var(--text-light);">
-                    <span>${isTaskDone ? '🔹' : '🔸'} ${CAMPAIGN_NAMES[key]}</span>
-                    <span style="font-weight: bold;">${current}/${req}</span>
+            let checklistHtml = '';
+            for (let key in campaign.requirements) {
+                const current = campProgress[key] || 0;
+                const req = campaign.requirements[key];
+                const isTaskDone = current >= req;
+                const displayName = CAMPAIGN_NAMES[key] || key;
+
+                checklistHtml += `
+                    <div style="display: flex; align-items: center; justify-content: space-between; font-size: 0.7rem; color: var(--text-light);">
+                        <span>${isTaskDone ? '🔹' : '🔸'} ${displayName}</span>
+                        <span style="font-weight: bold;">${current}/${req}</span>
+                    </div>
+                `;
+            }
+
+            const campaignCard = document.createElement('div');
+            campaignCard.style.cssText = 'background: rgba(243, 168, 59, 0.03); border: 1px dashed var(--primary); border-radius: 8px; padding: 12px; display: flex; flex-direction: column; gap: 8px; margin-bottom: 8px;';
+            campaignCard.innerHTML = `
+                <div style="font-size: 0.78rem; font-weight: bold; color: var(--primary); margin-bottom: 2px;">${campaign.title}</div>
+                <div style="font-size: 0.65rem; color: var(--text-light); line-height: 1.3; margin-bottom: 8px;">${campaign.desc}</div>
+                <div style="display: flex; flex-direction: column; gap: 6px; border-top: 1px solid rgba(243, 168, 59, 0.15); padding-top: 8px; margin-bottom: 10px;">
+                    ${checklistHtml}
+                </div>
+                <div style="display: flex; align-items: center; justify-content: space-between; border-top: 1px dashed rgba(243, 168, 59, 0.2); padding-top: 8px;">
+                    <span style="font-size: 0.65rem; color: #34d399; font-weight: bold;">Thưởng: +${campaign.bonus}đ bonus</span>
+                    <span style="font-size: 0.65rem; background: ${isCompleted ? '#10b981' : '#4b5563'}; color: #fff; padding: 2px 6px; border-radius: 4px; font-weight: bold;">
+                        ${isCompleted ? 'Đã xong 🏆' : 'Đang chạy ⚡'}
+                    </span>
                 </div>
             `;
+            campaignBox.appendChild(campaignCard);
+        }
+    };
+
+    window.initWelcomeBackPopup = function() {
+        if (localStorage.getItem('streak_active') !== 'true') return;
+
+        const todayStr = new Date().toISOString().split('T')[0];
+        if (localStorage.getItem('last_welcome_back_shown') === todayStr) return;
+
+        const QUEST_CONFIG = window.QUEST_CONFIG || {};
+        const progressKeyDaily = `b2b_quest_progress_${todayStr}`;
+        let progressDaily = {};
+        try {
+            progressDaily = JSON.parse(localStorage.getItem(progressKeyDaily) || '{}');
+        } catch(e) {}
+
+        let remainingQuests = [];
+        for (let key in QUEST_CONFIG) {
+            const quest = QUEST_CONFIG[key];
+            if (quest.period !== 'daily') continue;
+            const current = progressDaily[key] || 0;
+            if (current < quest.limit) {
+                remainingQuests.push({
+                    name: quest.name,
+                    points: quest.points,
+                    current: current,
+                    limit: quest.limit
+                });
+            }
         }
 
-        campaignBox.innerHTML = `
-            <div style="font-size: 0.78rem; font-weight: bold; color: var(--primary); margin-bottom: 2px;">${CAMPAIGN_CONFIG.title}</div>
-            <div style="font-size: 0.65rem; color: var(--text-light); line-height: 1.3; margin-bottom: 8px;">${CAMPAIGN_CONFIG.desc}</div>
-            <div style="display: flex; flex-direction: column; gap: 6px; border-top: 1px solid rgba(243, 168, 59, 0.15); padding-top: 8px; margin-bottom: 10px;">
-                ${checklistHtml}
+        if (remainingQuests.length === 0) return;
+
+        const modalOverlay = document.createElement('div');
+        modalOverlay.id = 'welcome-back-remind-modal';
+        modalOverlay.style.cssText = 'position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0, 0, 0, 0.75); backdrop-filter: blur(8px); display: flex; align-items: center; justify-content: center; z-index: 100000; opacity: 0; transition: opacity 0.3s ease;';
+
+        const name = localStorage.getItem('streak_name') || 'Chiến thần';
+        
+        let checklistHtml = remainingQuests.map(q => `
+            <div style="display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); border-radius: 8px; margin-bottom: 8px;">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <span style="font-size: 1.1rem; color: var(--text-light); line-height: 1;">⬜</span>
+                    <span style="font-size: 0.8rem; font-weight: bold; color: var(--text-main);">${q.name}</span>
+                </div>
+                <span style="font-weight: 800; font-size: 0.75rem; color: var(--primary);">+${q.points}đ</span>
             </div>
-            <div style="display: flex; align-items: center; justify-content: space-between; border-top: 1px dashed rgba(243, 168, 59, 0.2); padding-top: 8px;">
-                <span style="font-size: 0.65rem; color: #34d399; font-weight: bold;">Thưởng: +${CAMPAIGN_CONFIG.bonus}đ bonus</span>
-                <span style="font-size: 0.65rem; background: ${isCompleted ? '#10b981' : '#4b5563'}; color: #fff; padding: 2px 6px; border-radius: 4px; font-weight: bold;">
-                    ${isCompleted ? 'Đã xong 🏆' : 'Đang chạy ⚡'}
-                </span>
-            </div>
+        `).join('');
+
+        modalOverlay.innerHTML = `
+            <div style="background: linear-gradient(135deg, #1d1e2a 0%, #11121d 100%); border: 1.5px solid var(--primary); border-radius: 24px; max-width: 480px; width: 90%; padding: 30px; box-shadow: 0 25px 60px rgba(0,0,0,0.55); position: relative; text-align: left; transform: scale(0.9); transition: transform 0.3s ease;">
+                <button id="btn-close-welcome-back" style="position: absolute; top: 15px; right: 15px; background: none; border: none; font-size: 1.3rem; color: var(--text-light); cursor: pointer; line-height: 1;">&times;</button>
+                
+                <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 20px;">
+                    <div style="width: 50px; height: 50px; border-radius: 50%; background: rgba(243, 168, 59, 0.15); display: flex; align-items: center; justify-content: center; font-size: 1.8rem; flex-shrink: 0;">🦉</div>
+                    <div>
+                        <h3 style="margin: 0; font-size: 1.15rem; font-weight: 800; color: var(--text-main);">Chào mừng trở lại, ${name}!</h3>
+                        <p style="margin: 3px 0 0 0; font-size: 0.72rem; color: var(--primary); font-weight: bold;">Hôm nay bạn đã rèn luyện chưa?</p>
+                    </div>
+                </div>
+
+                <p style="font-size: 0.8rem; line-height: 1.5; color: var(--text-light); margin: 0 0 20px 0;">
+                    Cú BeeDee vẫn luôn ở đây đồng hành cùng bạn trên con đường nâng tầm ngôn từ B2B. Hôm nay bạn còn <strong style="color: var(--primary);">${remainingQuests.length} nhiệm vụ hàng ngày</strong> chưa hoàn thành đấy nhé:
+                </p>
+
+                <div style="max-height: 220px; overflow-y: auto; margin-bottom: 25px; padding-right: 5px;">
+                    ${checklistHtml}
+                </div>
+
+                <button id="btn-action-welcome-back" class="btn btn-primary" style="width: 100%; padding: 12px; border-radius: 10px; font-weight: bold; font-size: 0.9rem; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                    ⚡ Bắt Đầu Thực Chiến Ngay!
+                </button>
+           </div>
         `;
+
+        document.body.appendChild(modalOverlay);
+        localStorage.setItem('last_welcome_back_shown', todayStr);
+
+        setTimeout(() => {
+            modalOverlay.style.opacity = '1';
+            if (typeof modalOverlay.querySelector === 'function') {
+                const innerDiv = modalOverlay.querySelector('div');
+                if (innerDiv) innerDiv.style.transform = 'scale(1)';
+            }
+        }, 50);
+
+        const closeModal = () => {
+            modalOverlay.style.opacity = '0';
+            if (typeof modalOverlay.querySelector === 'function') {
+                const innerDiv = modalOverlay.querySelector('div');
+                if (innerDiv) innerDiv.style.transform = 'scale(0.9)';
+            }
+            setTimeout(() => {
+                modalOverlay.remove();
+            }, 300);
+        };
+
+        document.getElementById('btn-close-welcome-back').addEventListener('click', closeModal);
+        
+        const ctaBtn = document.getElementById('btn-action-welcome-back');
+        ctaBtn.addEventListener('click', () => {
+            closeModal();
+            const target = document.getElementById('minigame-section');
+            if (target) {
+                target.scrollIntoView({ behavior: 'smooth' });
+            }
+        });
     };
 
     function updateWelcomeBanner(points) {
@@ -3370,6 +3508,9 @@ if (document.readyState === 'loading') {
     // Run initializations on startup
     initPointsAndTracking();
     initExitIntent();
+    if (typeof window.initWelcomeBackPopup === 'function') {
+        window.initWelcomeBackPopup();
+    }
 
     function renderReviewAnswers(container, activeGame, userAnswers) {
         const questionsList = activeGame.shuffledQuestions || activeGame.questions;
