@@ -518,9 +518,9 @@ document.addEventListener('DOMContentLoaded', () => {
             const searchData = await searchResponse.json();
             const profiles = searchData.results;
 
-            // Trigger action-based streak increase
+            // Trigger action-based quest/point increase
             if (window.registerUserAction) {
-                window.registerUserAction();
+                window.registerUserAction('pic_search');
             }
             
             log(`Search finished. Found ${profiles.length} LinkedIn profiles.`, 'success');
