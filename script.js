@@ -3325,6 +3325,30 @@ if (document.readyState === 'loading') {
         }
     };
 
+    window.navigateFromWelcomeBack = function(dest) {
+        if (typeof window.closeWelcomeBackModal === 'function') {
+            window.closeWelcomeBackModal();
+        }
+        if (dest.includes('#')) {
+            const parts = dest.split('#');
+            const file = parts[0];
+            const hash = parts[1];
+            const currentPath = window.location.pathname;
+            const isOnSamePage = (file === '' || 
+                                  (file === 'index.html' && (currentPath === '/' || currentPath === '' || currentPath.endsWith('/') || currentPath.endsWith('index.html'))) ||
+                                  currentPath.endsWith(file));
+            if (isOnSamePage) {
+                const target = document.getElementById(hash);
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth' });
+                    history.pushState(null, null, '#' + hash);
+                    return;
+                }
+            }
+        }
+        window.location.href = dest;
+    };
+
     window.initWelcomeBackPopup = function() {
         if (localStorage.getItem('streak_active') !== 'true') return;
 
@@ -3363,9 +3387,9 @@ if (document.readyState === 'loading') {
         const name = localStorage.getItem('streak_name') || 'Chiến thần';
         
         const destMap = {
-            check_in: '#personalized-welcome-banner',
-            game_complete: '#minigame-section',
-            perfect_game: '#minigame-section',
+            check_in: 'quests.html#personalized-welcome-banner',
+            game_complete: 'index.html#minigame-section',
+            perfect_game: 'index.html#minigame-section',
             pic_search: 'finder.html',
             ai_email: 'email-assistant.html',
             share_click: 'email-assistant.html',
@@ -3391,7 +3415,7 @@ if (document.readyState === 'loading') {
         let checklistHtml = remainingQuests.map(q => {
             const dest = destMap[q.key] || '#';
             return `
-                <div style="display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; margin-bottom: 8px; cursor: pointer; transition: all 0.2s ease;" class="welcome-popup-item" onclick="window.closeWelcomeBackModal(); if ('${dest}'.startsWith('#')) { const t = document.getElementById('${dest.substring(1)}'); if (t) t.scrollIntoView({behavior:'smooth'}); } else { window.location.href='${dest}'; }">
+                <div style="display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; margin-bottom: 8px; cursor: pointer; transition: all 0.2s ease;" class="welcome-popup-item" onclick="window.navigateFromWelcomeBack('${dest}')">
                     <div style="display: flex; align-items: center; gap: 10px;">
                         <span style="display: inline-block; width: 14px; height: 14px; border: 1.5px solid #94a3b8; border-radius: 3px; background: transparent; flex-shrink: 0;"></span>
                         <span style="font-size: 0.8rem; font-weight: bold; color: #ffffff;">${q.name}</span>
@@ -3443,10 +3467,7 @@ if (document.readyState === 'loading') {
         const ctaBtn = document.getElementById('btn-action-welcome-back');
         ctaBtn.addEventListener('click', () => {
             closeModal();
-            const target = document.getElementById('minigame-section');
-            if (target) {
-                target.scrollIntoView({ behavior: 'smooth' });
-            }
+            window.location.href = 'quests.html';
         });
     };
 
