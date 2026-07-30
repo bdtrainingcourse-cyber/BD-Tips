@@ -2748,6 +2748,23 @@ body.dark-theme .planet-tooltip-card {
     border-color: rgba(243, 168, 59, 0.2) !important;
 }
 
+#weekly-quests-list div {
+    transition: all 0.2s ease;
+}
+#weekly-quests-list div:hover {
+    background: rgba(255, 255, 255, 0.05) !important;
+    border-color: rgba(243, 168, 59, 0.2) !important;
+}
+
+#navbar-user-hud {
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+#navbar-user-hud:hover {
+    transform: scale(1.05);
+    background: rgba(243, 168, 59, 0.15) !important;
+    box-shadow: 0 4px 12px rgba(243, 168, 59, 0.2);
+}
+
 /* Animations */
 @keyframes slideInUp {
     from {
