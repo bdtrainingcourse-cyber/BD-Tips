@@ -1584,9 +1584,9 @@ const initB2BApp = () => {
         const correctCount = score;
         const wrongCount = totalQ - score;
 
-        // Trigger action-based streak increase
+        // Trigger action-based quest/point increase
         if (window.registerUserAction) {
-            window.registerUserAction();
+            window.registerUserAction('game_complete', { perfect: score === totalQ });
         }
 
         if (didPass) {
@@ -2431,15 +2431,14 @@ if (document.readyState === 'loading') {
     initB2BApp();
 }
 
-    // Duolingo-style Daily Streak email subscriber activation
+    // points-based subscriber activation
     const btnActivateStreak = document.getElementById('btn-activate-streak');
     if (btnActivateStreak) {
         btnActivateStreak.addEventListener('click', async (e) => {
             e.preventDefault();
             const nameInput = document.getElementById('streak-name');
             const emailInput = document.getElementById('streak-email');
-            const formDiv = document.getElementById('streak-form');
-            if (!nameInput || !emailInput || !formDiv) return;
+            if (!nameInput || !emailInput) return;
 
             const name = nameInput.value.trim();
             const email = emailInput.value.trim();
@@ -2453,7 +2452,6 @@ if (document.readyState === 'loading') {
             btnActivateStreak.textContent = 'Đang kích hoạt...';
 
             try {
-                // Call serverless log-email function
                 const response = await fetch('/api/log-email', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -2465,29 +2463,29 @@ if (document.readyState === 'loading') {
                     localStorage.setItem('streak_name', name);
                     localStorage.setItem('streak_email', email);
                     localStorage.setItem('streak_active', 'true');
+                    localStorage.setItem('b2b_points_balance', '25'); // Welcoming bonus!
+                    localStorage.setItem('b2b_points_converted', 'true');
                     
-                    formDiv.innerHTML = `<p style="color: var(--text-main); font-weight: bold; margin: 0; font-size: 0.85rem;">🎉 Kích hoạt chuỗi ngày (Streak) thành công! Cú BeeDeee sẽ ghé thăm hòm thư ${email} mỗi ngày để gõ cửa ôn luyện.</p>`;
+                    // Show quest dashboard
+                    const regBox = document.getElementById('streak-registration-box');
+                    const questBox = document.getElementById('quests-dashboard-box');
+                    if (regBox) regBox.classList.add('hidden');
+                    if (questBox) questBox.classList.remove('hidden');
+
+                    initPointsAndTracking();
+                    alert(`🎉 Kích hoạt Hệ thống Điểm thành công! Bạn nhận được 25 BD-Points thưởng chào mừng. Bắt đầu làm nhiệm vụ để tích lũy thêm điểm nhé!`);
                 } else {
                     alert('Có lỗi xảy ra, vui lòng thử lại sau.');
                     btnActivateStreak.disabled = false;
-                    btnActivateStreak.textContent = 'Bật Nhắc Nhở';
+                    btnActivateStreak.textContent = 'Kích Hoạt Ngay';
                 }
             } catch (err) {
                 console.error(err);
-                alert('Không thể kết nối máy chủ để kích hoạt Streak.');
+                alert('Không thể kết nối máy chủ để kích hoạt.');
                 btnActivateStreak.disabled = false;
-                btnActivateStreak.textContent = 'Bật Nhắc Nhở';
+                btnActivateStreak.textContent = 'Kích Hoạt Ngay';
             }
         });
-    }
-
-    // Auto-fill streak form if already active
-    if (localStorage.getItem('streak_active') === 'true') {
-        const formDiv = document.getElementById('streak-form');
-        const savedEmail = localStorage.getItem('streak_email');
-        if (formDiv && savedEmail) {
-            formDiv.innerHTML = `<p style="color: var(--text-main); font-weight: bold; margin: 0; font-size: 0.85rem;">🎉 Chuỗi ngày (Streak) đang hoạt động! Email hàng ngày gửi đến: ${savedEmail}</p>`;
-        }
     }
     // --- Phase 3: Streak, Exit Intent, Rewards Shop, and Social Sharing ---
 
@@ -2991,18 +2989,16 @@ if (document.readyState === 'loading') {
                     localStorage.setItem('streak_name', name);
                     localStorage.setItem('streak_email', email);
                     localStorage.setItem('streak_active', 'true');
-                    
-                    // Reset streak on fresh registration
-                    localStorage.setItem('streak_days', '1');
-                    localStorage.setItem('streak_last_active_date', new Date().toISOString().split('T')[0]);
+                    localStorage.setItem('b2b_points_balance', '25'); // Welcoming bonus!
+                    localStorage.setItem('b2b_points_converted', 'true');
 
                     // Instantly update welcome banner & tab counts
-                    initStreakAndTracking();
+                    initPointsAndTracking();
                     
                     // Instantly open the ebook PDF in a new window/tab
                     window.open(ebookUrl, '_blank');
                     
-                    alert(`🎉 Đăng ký thành công! Ebook "Mindset Thép của BD" đã được mở trong tab mới và gửi tới email của bạn.`);
+                    alert(`🎉 Đăng ký thành công! Bạn nhận được 25 BD-Points thưởng chào mừng. Ebook "Mindset Thép của BD" đã được mở trong tab mới.`);
                     if (exitIntentModal) exitIntentModal.classList.add('hidden');
                 } else {
                     alert('Có lỗi xảy ra, vui lòng thử lại.');
@@ -3026,15 +3022,15 @@ if (document.readyState === 'loading') {
     claimBtns.forEach(btn => {
         btn.addEventListener('click', async () => {
             const reward = btn.getAttribute('data-reward');
-            const reqVal = parseInt(btn.getAttribute('data-requirement') || '7', 10);
-            const streak = parseInt(localStorage.getItem('streak_days') || '0', 10);
+            const reqVal = parseInt(btn.getAttribute('data-requirement') || '200', 10);
+            const points = parseInt(localStorage.getItem('b2b_points_balance') || '0', 10);
             
-            if (streak < reqVal) {
-                alert(`🦉 Cú BeeDee Thông Thái lắc đầu từ chối! Bạn mới giữ streak liên tục được ${streak} ngày. Cần đạt tối thiểu ${reqVal} ngày liên tục để mở khóa món quà "${reward}" nhé!`);
+            if (points < reqVal) {
+                alert(`🦉 Cú BeeDee Thông Thái lắc đầu từ chối! Bạn mới tích lũy được ${points} BD-Points. Cần đạt tối thiểu ${reqVal} điểm để mở khóa món quà "${reward}" nhé!`);
                 return;
             }
 
-            // Streak is valid, prompt for contact
+            // Valid point balance, prompt for confirmation
             const name = localStorage.getItem('streak_name') || prompt('Nhập tên của bạn để nhận quà:');
             const email = localStorage.getItem('streak_email') || prompt('Nhập email nhận quà của bạn:');
             
@@ -3043,8 +3039,12 @@ if (document.readyState === 'loading') {
                 return;
             }
 
-            if (reqVal === 7) {
-                // 7-day Ebook unlock: Local activation
+            // Deduct points
+            const newBalance = points - reqVal;
+            localStorage.setItem('b2b_points_balance', newBalance.toString());
+
+            if (reqVal === 200) {
+                // Ebook unlock: Local activation
                 localStorage.setItem('b2b_streak_unlocked_ebook', 'true');
                 btn.style.background = 'rgba(255,255,255,0.05)';
                 btn.style.borderColor = 'var(--border-color)';
@@ -3057,15 +3057,16 @@ if (document.readyState === 'loading') {
                     await fetch('/api/log-email', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ name, email, tool: 'claim-reward', reward: reward, streak: streak })
+                        body: JSON.stringify({ name, email, tool: 'claim-reward', reward: reward, streak: points })
                     });
                 } catch(e) {}
 
-                alert(`🎉 Chúc mừng! Bạn đã kích hoạt đặc quyền: "Mở khóa tải Ebook mới" thành công. Từ bây giờ bạn có thể tự do tải các tài liệu thực chiến trên Thư viện mà không bị giới hạn 1 cuốn/ngày!`);
+                alert(`🎉 Chúc mừng! Bạn đã mở khóa đặc quyền "Tải Ebook Mới" thành công (-200 BD-Points). Từ bây giờ bạn có thể tự do tải các tài liệu thực chiến trên Thư viện mà không bị giới hạn 1 cuốn/ngày!`);
+                if (typeof updateUIElements === 'function') updateUIElements();
                 return;
             }
 
-            // For >=14 days: claim via email request
+            // For >=600 points: claim via email request
             btn.disabled = true;
             btn.textContent = 'Đang đăng ký...';
 
@@ -3074,24 +3075,26 @@ if (document.readyState === 'loading') {
                 await fetch('/api/log-email', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ name, email, tool: 'claim-reward', reward: reward, streak: streak })
+                    body: JSON.stringify({ name, email, tool: 'claim-reward', reward: reward, streak: points })
                 });
 
-                alert(`🎉 Đủ điều kiện đổi quà! Để nhận món quà "${reward}", bạn vui lòng gửi email về: bdtrainingcourse@gmail.com kèm ảnh chụp màn hình số ngày Streak của bạn để anh Peter xác nhận và trao quà nhé! (Hệ thống sẽ tự động mở hòm thư soạn sẵn cho bạn bây giờ).`);
+                alert(`🎉 Đủ điều kiện đổi quà! Để nhận món quà "${reward}", bạn vui lòng gửi email về: bdtrainingcourse@gmail.com kèm ảnh chụp màn hình số Điểm của bạn để anh Peter xác nhận và trao quà nhé! (Hệ thống sẽ tự động mở hòm thư soạn sẵn cho bạn bây giờ).`);
 
                 // Open mailto client
-                const mailtoSubject = `[Đổi Quà Streak] Đăng ký nhận: ${reward}`;
-                const mailtoBody = `Chào anh Peter Võ,\n\nTên tôi là: ${name}\nEmail của tôi: ${email}\n\nTôi muốn đổi phần quà mốc ${reqVal} ngày Streak: ${reward}.\nDưới đây là ảnh chụp màn hình số ngày Streak của tôi:\n\n[Vui lòng đính kèm ảnh chụp màn hình tại đây]\n\nCảm ơn anh!`;
+                const mailtoSubject = `[Đổi Quà Tích Điểm] Đăng ký nhận: ${reward}`;
+                const mailtoBody = `Chào anh Peter Võ,\n\nTên tôi là: ${name}\nEmail của tôi: ${email}\n\nTôi muốn đổi phần quà mốc ${reqVal} BD-Points: ${reward}.\nDưới đây là ảnh chụp màn hình số Điểm & Nhiệm vụ của tôi trên portal.\n\nCảm ơn anh!`;
                 const mailtoUrl = `mailto:bdtrainingcourse@gmail.com?subject=${encodeURIComponent(mailtoSubject)}&body=${encodeURIComponent(mailtoBody)}`;
                 window.location.href = mailtoUrl;
 
                 btn.textContent = 'Mở Khóa Quà';
                 btn.disabled = false;
+                if (typeof updateUIElements === 'function') updateUIElements();
             } catch(err) {
                 console.error(err);
                 alert('Lỗi kết nối máy chủ, nhưng bạn vẫn có thể gửi email thủ công về bdtrainingcourse@gmail.com để đổi quà!');
                 btn.textContent = 'Mở Khóa Quà';
                 btn.disabled = false;
+                if (typeof updateUIElements === 'function') updateUIElements();
             }
         });
     });
@@ -3106,11 +3109,13 @@ if (document.readyState === 'loading') {
             const shareText = `Tôi vừa đạt điểm tối đa trong thử thách B2B Challenge của Peter Võ! 🚀 Học hỏi thực chiến mỗi ngày để nâng cấp tư duy BD B2B. Luyện tập cùng tôi tại: https://bd-tips.vercel.app/`;
             const url = encodeURIComponent(window.location.href);
             window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${url}`, '_blank');
+            if (window.registerUserAction) window.registerUserAction('share_click');
         });
     }
     if (shareFacebook) {
         shareFacebook.addEventListener('click', () => {
             window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(window.location.href)}`, '_blank');
+            if (window.registerUserAction) window.registerUserAction('share_click');
         });
     }
     if (shareCopy) {
@@ -3118,6 +3123,7 @@ if (document.readyState === 'loading') {
             const copyText = `Tôi vừa đạt điểm tối đa trong thử thách B2B Challenge của Peter Võ! 🚀 Luyện tập cùng tôi tại: https://bd-tips.vercel.app/`;
             navigator.clipboard.writeText(copyText).then(() => {
                 alert('📋 Đã sao chép liên kết chia sẻ! Bạn có thể dán trực tiếp lên LinkedIn, Facebook, Instagram hoặc Tiktok.');
+                if (window.registerUserAction) window.registerUserAction('share_click');
             }).catch(err => {
                 console.error('Error copying text:', err);
             });
@@ -3125,7 +3131,126 @@ if (document.readyState === 'loading') {
     }
 
     // Helper functions for Streak and Banners
-    function updateWelcomeBanner(streak) {
+    // Helper functions for Points, Quests and Banners
+    const QUEST_CONFIG = {
+        check_in: { points: 5, limit: 1, name: '☕ Chào Ngày Mới' },
+        game_complete: { points: 10, limit: 2, name: '🎮 Thực Chiến B2B Challenge' },
+        perfect_game: { points: 5, limit: 2, name: '⭐ Chốt Deal Xuất Sắc' },
+        pic_search: { points: 3, limit: 3, name: '🔍 Săn Đầu Mối (PIC Finder)' },
+        ai_email: { points: 3, limit: 3, name: '✍️ Soạn Cold Email AI' },
+        labor_read: { points: 2, limit: 3, name: '⚖️ Phòng Vệ Pháp Lý' },
+        salary_calc: { points: 2, limit: 3, name: '💸 Định Giá Hoa Hồng BD' },
+        library_read: { points: 2, limit: 3, name: '📖 Nâng Cấp Tư Duy' },
+        forum_post: { points: 8, limit: 1, name: '💬 Mở Khóa Case-Study' },
+        forum_comment: { points: 3, limit: 3, name: '💬 Đồng Kiến Tạo Giải Pháp' },
+        share_click: { points: 5, limit: 2, name: '📢 Đồng Hành Cùng Đồng Nghiệp' }
+    };
+
+    const CAMPAIGN_CONFIG = {
+        id: 'campaign_outreach',
+        title: 'Chiến Thần Cold Outreach ✉️',
+        desc: 'Tối ưu hóa phễu tiếp cận khách hàng Enterprise.',
+        bonus: 50,
+        requirements: {
+            pic_search: 3,
+            ai_email: 3,
+            share_click: 1
+        }
+    };
+
+    const CAMPAIGN_NAMES = {
+        pic_search: '🔍 Săn đầu mối PIC',
+        ai_email: '✍️ Soạn Cold Email AI',
+        share_click: '📢 Chia sẻ template email'
+    };
+
+    window.renderQuestBoard = function() {
+        const questListContainer = document.getElementById('daily-quests-list');
+        if (!questListContainer) return;
+
+        const todayStr = new Date().toISOString().split('T')[0];
+        const progressKey = `b2b_quest_progress_${todayStr}`;
+        let progress = {};
+        try {
+            progress = JSON.parse(localStorage.getItem(progressKey) || '{}');
+        } catch(e) {}
+
+        if (!progress.check_in && Object.keys(progress).length > 0) {
+            progress.check_in = 1;
+        }
+
+        questListContainer.innerHTML = '';
+
+        for (let key in QUEST_CONFIG) {
+            const quest = QUEST_CONFIG[key];
+            const current = progress[key] || 0;
+            const isCompleted = current >= quest.limit;
+            
+            const questEl = document.createElement('div');
+            questEl.style.display = 'flex';
+            questEl.style.alignItems = 'center';
+            questEl.style.justifyContent = 'space-between';
+            questEl.style.background = 'rgba(255, 255, 255, 0.02)';
+            questEl.style.padding = '8px 12px';
+            questEl.style.borderRadius = '6px';
+            questEl.style.border = '1px solid rgba(255, 255, 255, 0.05)';
+            questEl.style.opacity = isCompleted ? '0.65' : '1';
+
+            questEl.innerHTML = `
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <span style="font-size: 0.95rem; line-height: 1;">${isCompleted ? '✅' : '⬜'}</span>
+                    <div>
+                        <div style="font-size: 0.75rem; font-weight: bold; color: ${isCompleted ? 'var(--text-light)' : 'var(--text-main)'}; ${isCompleted ? 'text-decoration: line-through;' : ''}">${quest.name}</div>
+                        <div style="font-size: 0.65rem; color: var(--text-light); margin-top: 1px;">Tiến trình: ${current}/${quest.limit}</div>
+                    </div>
+                </div>
+                <span style="font-size: 0.72rem; font-weight: bold; color: var(--primary);">+${quest.points}đ</span>
+            `;
+            questListContainer.appendChild(questEl);
+        }
+    };
+
+    window.renderCampaignBoard = function() {
+        const campaignBox = document.getElementById('active-campaign-box');
+        if (!campaignBox) return;
+
+        const isCompleted = localStorage.getItem('b2b_campaign_completed_outreach') === 'true';
+        const campaignProgressKey = 'b2b_campaign_progress_outreach';
+        let campProgress = {};
+        try {
+            campProgress = JSON.parse(localStorage.getItem(campaignProgressKey) || '{}');
+        } catch(e) {}
+
+        let checklistHtml = '';
+        for (let key in CAMPAIGN_CONFIG.requirements) {
+            const current = campProgress[key] || 0;
+            const req = CAMPAIGN_CONFIG.requirements[key];
+            const isTaskDone = current >= req;
+
+            checklistHtml += `
+                <div style="display: flex; align-items: center; justify-content: space-between; font-size: 0.7rem; color: var(--text-light);">
+                    <span>${isTaskDone ? '🔹' : '🔸'} ${CAMPAIGN_NAMES[key]}</span>
+                    <span style="font-weight: bold;">${current}/${req}</span>
+                </div>
+            `;
+        }
+
+        campaignBox.innerHTML = `
+            <div style="font-size: 0.78rem; font-weight: bold; color: var(--primary); margin-bottom: 2px;">${CAMPAIGN_CONFIG.title}</div>
+            <div style="font-size: 0.65rem; color: var(--text-light); line-height: 1.3; margin-bottom: 8px;">${CAMPAIGN_CONFIG.desc}</div>
+            <div style="display: flex; flex-direction: column; gap: 6px; border-top: 1px solid rgba(243, 168, 59, 0.15); padding-top: 8px; margin-bottom: 10px;">
+                ${checklistHtml}
+            </div>
+            <div style="display: flex; align-items: center; justify-content: space-between; border-top: 1px dashed rgba(243, 168, 59, 0.2); padding-top: 8px;">
+                <span style="font-size: 0.65rem; color: #34d399; font-weight: bold;">Thưởng: +${CAMPAIGN_CONFIG.bonus}đ bonus</span>
+                <span style="font-size: 0.65rem; background: ${isCompleted ? '#10b981' : '#4b5563'}; color: #fff; padding: 2px 6px; border-radius: 4px; font-weight: bold;">
+                    ${isCompleted ? 'Đã xong 🏆' : 'Đang chạy ⚡'}
+                </span>
+            </div>
+        `;
+    };
+
+    function updateWelcomeBanner(points) {
         const banner = document.getElementById('personalized-welcome-banner');
         const bannerTitle = document.getElementById('welcome-banner-title');
         const bannerStreak = document.getElementById('welcome-banner-streak');
@@ -3135,20 +3260,54 @@ if (document.readyState === 'loading') {
         if (banner && streakActive && name) {
             banner.classList.remove('hidden');
             bannerTitle.textContent = `Chào mừng trở lại, ${name}! 🦉`;
-            bannerStreak.textContent = `Streak: ${streak} ngày 🔥`;
+            bannerStreak.textContent = `Số dư: ${points} BD-Points 🪙`;
         } else if (banner) {
             banner.classList.add('hidden');
         }
+
+        const hudPointsVal = document.getElementById('hud-points-val');
+        const hudNextGiftLbl = document.getElementById('hud-next-gift-lbl');
+        const hudNextGiftBar = document.getElementById('hud-next-gift-bar');
+        
+        if (hudPointsVal) {
+            hudPointsVal.textContent = `${points} BD-Points`;
+        }
+
+        if (hudNextGiftLbl && hudNextGiftBar) {
+            const rewards = [200, 600, 1200, 1800, 3000];
+            let nextThreshold = 200;
+            let prevThreshold = 0;
+            for (let r of rewards) {
+                if (points < r) {
+                    nextThreshold = r;
+                    break;
+                }
+                prevThreshold = r;
+                nextThreshold = 3000;
+            }
+
+            if (points >= 3000) {
+                hudNextGiftLbl.textContent = 'Đã đạt mốc tối đa! 🎉';
+                hudNextGiftBar.style.width = '100%';
+            } else {
+                const diff = nextThreshold - points;
+                hudNextGiftLbl.textContent = `Cách quà tiếp theo: ${diff}đ`;
+                
+                const range = nextThreshold - prevThreshold;
+                const progressVal = points - prevThreshold;
+                const pct = Math.min(100, Math.max(0, (progressVal / range) * 100));
+                hudNextGiftBar.style.width = `${pct}%`;
+            }
+        }
     }
 
-    function updateRewardShopUI(streak) {
+    function updateRewardShopUI(points) {
         const claimBtns = document.querySelectorAll('.btn-claim');
         claimBtns.forEach(btn => {
-            const reqVal = parseInt(btn.getAttribute('data-requirement') || '7', 10);
+            const reqVal = parseInt(btn.getAttribute('data-requirement') || '200', 10);
             const reward = btn.getAttribute('data-reward');
 
-            // Special check for 7-day ebook unlock reward
-            if (reqVal === 7 && localStorage.getItem('b2b_streak_unlocked_ebook') === 'true') {
+            if (reqVal === 200 && localStorage.getItem('b2b_streak_unlocked_ebook') === 'true') {
                 btn.style.background = 'rgba(255,255,255,0.05)';
                 btn.style.borderColor = 'var(--border-color)';
                 btn.style.color = '#34d399';
@@ -3157,7 +3316,7 @@ if (document.readyState === 'loading') {
                 return;
             }
 
-            if (streak >= reqVal) {
+            if (points >= reqVal) {
                 btn.style.background = 'var(--primary)';
                 btn.style.borderColor = 'var(--primary)';
                 btn.style.color = '#fff';
@@ -3167,33 +3326,37 @@ if (document.readyState === 'loading') {
                 btn.style.background = 'rgba(255,255,255,0.05)';
                 btn.style.borderColor = 'var(--border-color)';
                 btn.style.color = 'var(--text-light)';
-                btn.textContent = `Khóa (${reqVal}d) 🔒`;
+                btn.textContent = `Khóa (${reqVal}đ) 🔒`;
             }
         });
     }
 
-    function initStreakAndTracking() {
-        const todayStr = new Date().toISOString().split('T')[0];
-        const lastActive = localStorage.getItem('streak_last_active_date');
-        let streak = parseInt(localStorage.getItem('streak_days') || '0', 10);
+    function initPointsAndTracking() {
+        const streakActive = localStorage.getItem('streak_active') === 'true';
+        const regBox = document.getElementById('streak-registration-box');
+        const questBox = document.getElementById('quests-dashboard-box');
 
-        if (!lastActive) {
-            streak = 0; // No active streak until first action
-        } else {
-            const lastDate = new Date(lastActive);
-            const todayDate = new Date(todayStr);
-            lastDate.setHours(0,0,0,0);
-            todayDate.setHours(0,0,0,0);
+        if (streakActive) {
+            if (regBox) regBox.classList.add('hidden');
+            if (questBox) questBox.classList.remove('hidden');
 
-            const diffTime = todayDate - lastDate;
-            const diffDays = Math.round(diffTime / (1000 * 60 * 60 * 24));
-
-            if (diffDays > 1) {
-                streak = 0; // Streak broken
+            if (localStorage.getItem('b2b_points_converted') !== 'true') {
+                const streakVal = parseInt(localStorage.getItem('streak_days') || '0', 10);
+                const initialPoints = Math.max(25, streakVal * 25);
+                localStorage.setItem('b2b_points_balance', initialPoints.toString());
+                localStorage.setItem('b2b_points_converted', 'true');
             }
+
+            if (typeof renderQuestBoard === 'function') renderQuestBoard();
+            if (typeof renderCampaignBoard === 'function') renderCampaignBoard();
+        } else {
+            if (regBox) regBox.classList.remove('hidden');
+            if (questBox) questBox.classList.add('hidden');
         }
-        updateWelcomeBanner(streak);
-        updateRewardShopUI(streak);
+
+        const balance = parseInt(localStorage.getItem('b2b_points_balance') || '0', 10);
+        updateWelcomeBanner(balance);
+        updateRewardShopUI(balance);
     }
 
     let exitIntentTriggered = false;
@@ -3224,7 +3387,7 @@ if (document.readyState === 'loading') {
     }
 
     // Run initializations on startup
-    initStreakAndTracking();
+    initPointsAndTracking();
     initExitIntent();
 
     function renderReviewAnswers(container, activeGame, userAnswers) {
