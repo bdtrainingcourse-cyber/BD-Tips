@@ -396,8 +396,8 @@ function updateNavbarUserHUD() {
 }
 
 function updateUIElements() {
-    if (typeof renderQuestBoard === 'function') renderQuestBoard();
-    if (typeof renderCampaignBoard === 'function') renderCampaignBoard();
+    if (typeof window.renderQuestBoard === 'function') window.renderQuestBoard();
+    if (typeof window.renderCampaignBoard === 'function') window.renderCampaignBoard();
     updateNavbarUserHUD();
     
     const balance = parseInt(localStorage.getItem('b2b_points_balance') || '0', 10);
