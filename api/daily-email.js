@@ -1,6 +1,6 @@
 const https = require('https');
 
-// Helper to wrap message in a premium dark-themed HTML template
+// Helper to wrap message in a premium bright warm-themed HTML template
 function getHtmlTemplate(message, buttonText, buttonUrl) {
   return `<!DOCTYPE html>
 <html>
@@ -12,39 +12,44 @@ function getHtmlTemplate(message, buttonText, buttonUrl) {
     body {
       margin: 0;
       padding: 0;
-      background-color: #0c0707;
+      background-color: #fcf9f4;
       font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-      color: #f8fafc;
+      color: #334155;
     }
     .email-container {
       max-width: 500px;
       margin: 30px auto;
-      background-color: #180f0f;
+      background-color: #ffffff;
       border: 1.5px solid #f3a83b;
-      border-radius: 20px;
-      padding: 30px 25px;
+      border-radius: 24px;
+      padding: 35px 28px;
       text-align: center;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.55);
+      box-shadow: 0 10px 25px rgba(243, 168, 59, 0.08);
     }
     .mascot-container {
       margin-bottom: 20px;
+      display: inline-block;
+      padding: 10px;
+      background: rgba(243, 168, 59, 0.08);
+      border-radius: 50%;
     }
     .mascot-img {
-      width: 90px;
-      height: 90px;
+      width: 85px;
+      height: 85px;
       object-fit: contain;
+      display: block;
     }
     .headline {
       font-size: 1.35rem;
       font-weight: 800;
-      color: #ffffff;
-      margin: 0 0 15px 0;
+      color: #1e293b;
+      margin: 0 0 18px 0;
       line-height: 1.3;
     }
     .content-text {
-      font-size: 0.92rem;
-      line-height: 1.6;
-      color: #cbd5e1;
+      font-size: 0.95rem;
+      line-height: 1.65;
+      color: #475569;
       margin: 0 0 25px 0;
       text-align: left;
     }
@@ -53,28 +58,28 @@ function getHtmlTemplate(message, buttonText, buttonUrl) {
     }
     .cta-btn {
       display: inline-block;
-      padding: 13px 30px;
-      background: linear-gradient(135deg, #f3a83b 0%, #d97706 100%);
+      padding: 14px 32px;
+      background: linear-gradient(135deg, #f3a83b 0%, #f59e0b 100%);
       color: #ffffff !important;
       text-decoration: none !important;
       font-weight: 800;
-      font-size: 0.85rem;
-      border-radius: 10px;
-      box-shadow: 0 4px 15px rgba(243, 168, 59, 0.45);
+      font-size: 0.88rem;
+      border-radius: 12px;
+      box-shadow: 0 5px 18px rgba(243, 168, 59, 0.35);
       text-transform: uppercase;
       letter-spacing: 0.8px;
     }
     .footer-text {
-      font-size: 0.75rem;
+      font-size: 0.76rem;
       color: #94a3b8;
-      border-top: 1px solid rgba(255, 255, 255, 0.08);
-      padding-top: 20px;
-      margin-top: 20px;
-      line-height: 1.4;
+      border-top: 1px solid rgba(243, 168, 59, 0.15);
+      padding-top: 22px;
+      margin-top: 22px;
+      line-height: 1.45;
       text-align: center;
     }
     .accent-link {
-      color: #f3a83b;
+      color: #d97706;
       text-decoration: none;
       font-weight: bold;
     }
@@ -85,7 +90,7 @@ function getHtmlTemplate(message, buttonText, buttonUrl) {
     <div class="mascot-container">
       <img src="https://bd-tips.vercel.app/bd_mascot.png" class="mascot-img" alt="Cú BeeDee">
     </div>
-    <div class="headline">Tín hiệu từ Cú BeeDee! 🦉</div>
+    <div class="headline">Chào ngày mới đầy năng lượng cùng Cú BeeDee! 🦉☀️</div>
     <div class="content-text">
       ${message}
     </div>
@@ -101,90 +106,49 @@ function getHtmlTemplate(message, buttonText, buttonUrl) {
 </html>`;
 }
 
-// Customized funny Duolingo-style email templates for BD B2B tools
+// Customized templates with real-time contexts (weather, BD struggles, hot trends)
+// and mapping to specific website features.
 const emailTemplates = [
   {
-    subject: "Cú BeeDee đang nhìn bạn... 🦉",
-    message: "Chào Chiến thần B2B!<br><br>Hôm qua bạn không vào ôn luyện B2B Challenge. Cú BeeDee buồn phát khóc rồi đây này. Đừng để chú cú đáng yêu này biến thành cú dữ đi đòi nợ kiến thức nhé!<br><br>Bật mí: Hôm nay có tình huống xử lý từ chối mới cực hay trong game, vào xem ngay đi!",
-    buttonText: "⚡ Chiến Game Ngay",
-    buttonUrl: "https://bd-tips.vercel.app/#minigame-section"
-  },
-  {
-    subject: "Học BD không khó, bỏ cuộc mới khó giải thích với sếp! 💼",
-    message: "Chào Chiến thần B2B!<br><br>Lại một ngày trôi qua và bảng vàng Chiến Thần B2B vẫn chưa thấy tên bạn. Đối thủ của bạn đang tăng trưởng vù vù, còn bạn thì đang bận... lướt TikTok?<br><br>Hãy bắt đầu ôn luyện ngay hôm nay để nâng trình thực chiến!",
-    buttonText: "🚀 Luyện Tập Ngay",
-    buttonUrl: "https://bd-tips.vercel.app/"
-  },
-  {
-    subject: "Ủa, bạn block Cú BeeDee rồi hả? 😭",
-    message: "Ủa Chiến thần B2B ơi, bạn quên Cú BeeDee rồi đúng không? Cơn giận của Cú BeeDee đang tích tụ đấy.<br><br>Chỉ 3 phút mỗi ngày để nâng cấp tư duy BD, đừng để bộ óc bị rỉ sét nhé! Vào giải quyết một tình huống đi nào!",
-    buttonText: "🧠 Giải Quyết Tình Huống",
-    buttonUrl: "https://bd-tips.vercel.app/#minigame-section"
-  },
-  {
-    subject: "Tài khoản của bạn sắp đóng băng! ❄️",
-    message: "Này Chiến thần B2B!<br><br>Cú BeeDee vừa check CRM và thấy tài khoản của bạn đã đóng băng 4 ngày rồi. Đừng bắt BeeDee phải gọi điện lạnh (cold-calling) trực tiếp cho bạn nhé!<br><br>Lưu ý: Bạn chỉ còn cách cốc trà sữa miễn phí (mốc 7 ngày) hoặc buổi ăn trưa với anh Peter (mốc 30 ngày) vài ngày streak nữa thôi. Giữ streak ngay!",
-    buttonText: "🔥 Giữ Streak Ngay",
-    buttonUrl: "https://bd-tips.vercel.app/quests.html"
-  },
-  {
-    subject: "Cú BeeDee gửi tín hiệu vũ trụ tới bạn... ✨",
-    message: "Chào Chiến thần B2B,<br><br>Hôm nay anh Peter Vo vừa viết thêm bài chia sẻ thực chiến mới trong mục B2B Challenge. Vào đọc vị nỗi đau khách hàng và lấy điểm chốt hợp đồng ngay!",
-    buttonText: "📈 Đọc Bài Viết Mới",
-    buttonUrl: "https://bd-tips.vercel.app/library.html"
-  },
-  {
-    subject: "Làm Chiến Thần B2B hay làm BD chạy bằng cơm? 🤖",
-    message: "Chào Chiến thần B2B!<br><br>Công cụ \"AI Email Assistant\" vừa được nâng cấp giúp viết cold email nhanh gấp 10 lần. Bạn định tiếp tục viết tay từng cái một sao?<br><br>Vào trải nghiệm và làm game B2B Challenge ngay để tích lũy streak nhận trà sữa miễn phí nhé!",
-    buttonText: "✉️ Thử AI Email Assistant",
-    buttonUrl: "https://bd-tips.vercel.app/email-assistant.html"
-  },
-  {
-    subject: "Tin mật: Đối thủ của bạn vừa vào ôn luyện! 🤫",
-    message: "Này Chiến thần B2B!<br><br>Cú BeeDee vừa phát hiện đối thủ cạnh tranh của bạn đã đạt Streak 10 ngày rồi đấy. Bạn có muốn bị tụt lại phía sau trong cuộc đua chốt deal triệu đô không?<br><br>Hãy dùng thử công cụ \"B2B LinkedIn PIC Finder\" để tìm email sếp tổng doanh nghiệp mục tiêu chỉ trong 5 giây!",
-    buttonText: "🔍 Thử B2B PIC Finder",
+    subject: "Nắng 40 độ nhưng Pipeline của bạn vẫn đóng băng? ❄️",
+    message: "Chào Chiến thần B2B!<br><br>Hôm nay ngoài trời nắng nóng đỉnh điểm, dắt xe ra đường là mồ hôi đầm đìa. Nhưng nóng nhất lúc này chắc chắn là tin nhắn của sếp dí KPI hỏi: <i>\"Hôm nay tìm được bao nhiêu thông tin liên hệ (PIC) của đối tác rồi em?\"</i>.<br><br>Đừng để nhiệt độ văn phòng tăng thêm vì sếp gầm rú! Hãy bật điều hòa lên, uống một ngụm trà sữa mát lạnh và dùng ngay công cụ <b>B2B LinkedIn PIC Finder</b> của chúng tôi để quét ra email sếp tổng doanh nghiệp mục tiêu chỉ trong 5 giây. Có số báo cáo sếp ngay lập tức!<br><br>Quét xong, đừng quên click qua mục <b>B2B Challenge</b> giải trắc nghiệm thực chiến để duy trì chuỗi Streak rèn luyện nhé!",
+    buttonText: "🔍 Tìm PIC Doanh Nghiệp Ngay",
     buttonUrl: "https://bd-tips.vercel.app/finder.html"
   },
   {
-    subject: "Có một email chưa gửi đang chờ bạn... ✉️",
-    message: "Chào Chiến thần B2B!<br><br>Công cụ \"AI Email Assistant\" của bạn đang trống trải quá. Có phải bạn đang bí ý tưởng viết cold email tiếp cận khách hàng Enterprise?<br><br>Vào để AI viết hộ bạn bản nháp siêu chuyên nghiệp và tích thêm Streak nhé!",
-    buttonText: "✍️ Viết Email Bằng AI",
+    subject: "Mưa rơi ướt áo, đừng để cold email bị ghost! 🌧️",
+    message: "Chào Chiến thần B2B!<br><br>Trời đang đổ mưa giông ngoài cửa sổ, ngồi ngắm mưa ngẫm sự đời thì lãng mạn đấy, nhưng ngắm hòm thư gửi đi trống trơn không một lời hồi âm từ khách hàng thì chỉ thấy lòng giông bão. Sao email chào hàng Enterprise gửi đi cứ như muối bỏ bể vậy ta?<br><br>Thay vì ngồi \"suy\" một mình, hãy để trợ lý trí tuệ nhân tạo <b>AI Cold Email Assistant</b> viết hộ bạn những bản nháp email chào hàng cực sắc bén, đánh trúng trực tiếp nỗi đau của đối tác Enterprise. Soạn nhanh gấp 10 lần, nâng tỷ lệ mở thư và phản hồi vượt trội!<br><br>Soạn xong email, hãy click qua mục <b>Tính Lương & Hoa Hồng</b> để quy đổi thu nhập tháng này xem chốt deal xong có được tăng thưởng không nhé!",
+    buttonText: "✍️ Soạn Cold Email Bằng AI",
     buttonUrl: "https://bd-tips.vercel.app/email-assistant.html"
   },
   {
-    subject: "Đừng để sếp hỏi: 'Hôm nay em tìm được bao nhiêu PIC?' 😰",
-    message: "Chào Chiến thần B2B!<br><br>Đừng làm sếp thất vọng khi báo cáo cuối tuần nhé. Hãy để công cụ \"B2B LinkedIn PIC Finder\" hỗ trợ bạn tìm đúng người có quyền quyết định (PIC) của đối tác.",
-    buttonText: "🔍 Tìm PIC Doanh Nghiệp",
-    buttonUrl: "https://bd-tips.vercel.app/finder.html"
+    subject: "Sếp đang 'flex' KPI, bạn đã sẵn sàng 'chữa lành' chưa? 🦉",
+    message: "Chào Chiến thần B2B!<br><br>Trong khi mạng xã hội rầm rộ trào lưu \"flexing\" thành tựu, sếp bạn cũng vừa nhẹ nhàng flex bảng KPI đỏ lòm của tháng này kèm lời nhắn nhủ đầy áp lực. Bạn định lên kế hoạch đi Đà Lạt để \"chữa lành\" tâm hồn sao? Không đâu, thứ duy nhất chữa lành ví tiền lúc này là kỹ năng chốt deal thực chiến!<br><br>Hãy vào ngay <b>B2B Challenge (Minigame)</b> để rèn luyện 3 phút với các tình huống xử lý từ chối hóc búa nhất. Vừa chơi game giải trí, vừa tích điểm đổi quà, lại có thêm kịch bản sắc bén để đối phó với khách hàng.<br><br>Rèn luyện xong, hãy ghé qua **Thư viện BD** để hấp thụ các chia sẻ thực tế từ anh Peter Vo nhé!",
+    buttonText: "🎮 Chơi Game Thực Chiến Ngay",
+    buttonUrl: "https://bd-tips.vercel.app/#minigame-section"
   },
   {
-    subject: "15 Tình huống Luật Lao Động bạn đã nắm hết chưa? ⚖️",
-    message: "Chào Chiến thần B2B!<br><br>Hết thử việc mà công ty im lặng thì có được tính là nhân viên chính thức? Đi trễ bị trừ lương có đúng luật?<br><br>Cú BeeDee đã tổng hợp 15 tình huống thực tế siêu hot giúp bảo vệ quyền lợi của dân BD B2B tại đây!",
-    buttonText: "⚖️ Tra Cứu Luật Lao Động",
-    buttonUrl: "https://bd-tips.vercel.app/labor-law.html"
-  },
-  {
-    subject: "Cú BeeDee tặng bạn một chiếc ảnh avatar siêu năng lượng! 🦉",
-    message: "Chào Chiến thần B2B!<br><br>Chỉ cần 3 phút làm game B2B Challenge, bạn sẽ tự tin hơn khi pitching trước đối tác lớn. Cú BeeDee gửi bạn chiếc ảnh avatar siêu năng lượng học tập hôm nay!",
-    buttonText: "🎮 Chơi B2B Challenge",
-    buttonUrl: "https://bd-tips.vercel.app/"
-  },
-  {
-    subject: "Cách tính hoa hồng BD B2B tháng này của bạn? 💸",
-    message: "Chào Chiến thần B2B!<br><br>Bạn đã biết cách quy đổi lương từ Gross sang Net chính xác và tính xem mức hoa hồng thực nhận của mình chưa?<br><br>Sử dụng Công cụ Tính Lương thông minh ngay để quy đổi chuẩn xác!",
-    buttonText: "🧮 Tính Lương & Hoa Hồng",
+    subject: "Thợ săn tiền thưởng quyết không để 'quỵt' hoa hồng! 💸",
+    message: "Chào Chiến thần B2B!<br><br>Làm BD vất vả ngày đêm, đi tiếp khách uống cạn ly, đàm phán trầy da tróc vảy chốt hợp đồng. Nhưng đến cuối tháng bảng tính lương gửi về lại mập mờ, hoa hồng bị tính hụt làm bạn muốn hướng nội luôn?<br><br>Đừng im lặng chịu thiệt! Hãy sử dụng ngay công cụ <b>Tính Lương Gross-Net & Tra Cứu Luật Lao Động</b> để quy đổi chuẩn xác và tra cứu nhanh 15 tình huống tranh chấp thực tế (như nợ commission, ép doanh số thử việc...). Ngôn từ sắc bén của luật sẽ bảo vệ thành quả lao động của bạn!<br><br>Sau khi tính toán xong, hãy ghé qua **Diễn đàn Cộng đồng** để cùng thảo luận chia sẻ kinh nghiệm nhé!",
+    buttonText: "🧮 Tính Lương & Tra Luật Ngay",
     buttonUrl: "https://bd-tips.vercel.app/salary.html"
   },
   {
-    subject: "Anh Peter Vo vừa chia sẻ bài viết mới trên LinkedIn! 📰",
-    message: "Chào Chiến thần B2B!<br><br>Một bài phân tích thực chiến cực sâu về cách tiếp cận khách hàng B2B khó tính vừa được đồng bộ về thư viện.",
-    buttonText: "📚 Vào Đọc Thư Viện",
+    subject: "Khi khách hàng bỗng hóa thành 'hư vô'... 👻",
+    message: "Chào Chiến thần B2B!<br><br>Khách hàng hứa hẹn \"thứ Hai anh ký hợp đồng\", nhưng giờ đã là thứ Sáu và họ bỗng hóa thành \"hư vô\", nhắn tin không rep, gọi điện thuê bao. Cảm giác này còn đau đớn hơn cả bị người yêu cũ block đúng không?<br><br>Đừng nản lòng! Hãy truy cập mục <b>Thư Viện BD B2B</b> để xem các bài viết hướng dẫn độc quyền từ anh Peter Vo về cách \"kéo xác\" các lead đã nguội lạnh, cách bám đuổi (follow-up) khách hàng tinh tế mà hiệu quả.<br><br>Tìm hiểu xong, hãy rèn luyện nhanh một câu hỏi trong **B2B Challenge** để giữ vững chuỗi Streak nhận trà sữa miễn phí mốc 7 ngày của bạn nào!",
+    buttonText: "📚 Đọc Case-Study Thực Chiến",
     buttonUrl: "https://bd-tips.vercel.app/library.html"
   },
   {
-    subject: "Chỉ còn vài ngày nữa là được gặp anh Peter Vo! ☕",
-    message: "Chào Chiến thần B2B!<br><br>Bạn đã đạt được bao nhiêu ngày streak liên tục rồi? Mốc 14 ngày tư vấn 1on1 online và mốc 30 ngày ăn trưa cùng anh Peter đang rất gần rồi đó.<br><br>Cú BeeDee chúc bạn một ngày làm việc hiệu quả và chốt được nhiều deal!",
-    buttonText: "🎯 Xem Mốc Điểm Quà",
+    subject: "Một ly trà sữa chiều hay một topic thảo luận BD chất lượng? 🧋",
+    message: "Chào Chiến thần B2B!<br><br>Tầm này chiều rồi, bụng cồn cào và não bộ đang phát đi tín hiệu khẩn cấp: <i>\"Cần gấp một ly trà sữa full topping để nạp năng lượng!\"</i>. Nhưng trong lúc chờ shipper giao tới, tại sao không nâng tầm tư duy chốt deal của mình?<br><br>Ghé ngay <b>Diễn đàn Cộng đồng B2B BD Tips</b> để kết nối, thảo luận các chủ đề nóng hổi về nghề BD, cách đàm phán hợp đồng hoặc chia sẻ câu chuyện dở khóc dở cười hàng ngày. Giao lưu học hỏi từ những người đi trước là lối tắt dẫn đến thành công!<br><br>Đồng thời, trọn bộ công cụ hỗ trợ như **AI Cold Email Assistant** và **B2B PIC Finder** vẫn luôn sẵn sàng phục vụ bạn!",
+    buttonText: "💬 Tham Gia Thảo Luận Cộng Đồng",
+    buttonUrl: "https://bd-tips.vercel.app/community.html"
+  },
+  {
+    subject: "Thời tiết giông bão, nhưng Pipeline phải luôn rực rỡ! ⛈️",
+    message: "Chào Chiến thần B2B!<br><br>Ngoài trời mây đen kéo lối, giông bão sắp đổ bộ. Nhưng giông bão thời tiết không đáng sợ bằng \"giông bão\" trong pipeline của bạn khi không có bất kỳ deal mới nào trong phễu.<br><br>Hãy biến ngày mưa bão thành ngày bùng nổ doanh số! Hệ sinh thái hỗ trợ BD của chúng tôi đã online đầy đủ: Tìm email sếp lớn bằng **PIC Finder**, soạn email tự động bằng **AI Assistant**, kiểm tra hợp đồng bằng **Luật Lao Động** và trau dồi bài học tại **Thư Viện**.<br><br>Hãy làm một thử thách game hôm nay để giữ chuỗi ngày Streak nhận buổi ăn trưa tư vấn 1on1 cùng anh Peter Vo nào!",
+    buttonText: "🌐 Khám Phá Hệ Sinh Thái BD",
     buttonUrl: "https://bd-tips.vercel.app/quests.html"
   }
 ];
@@ -198,8 +162,15 @@ module.exports = async (req, res) => {
     return res.status(200).end();
   }
 
-  // Choose a random template
-  const template = emailTemplates[Math.floor(Math.random() * emailTemplates.length)];
+  // Calculate day of the year to rotate templates daily
+  const now = new Date();
+  const start = new Date(now.getFullYear(), 0, 0);
+  const diff = now - start;
+  const oneDay = 1000 * 60 * 60 * 24;
+  const dayOfYear = Math.floor(diff / oneDay);
+  
+  // Select template based on day of the year to guarantee rotation without repetition
+  const template = emailTemplates[dayOfYear % emailTemplates.length];
   const demoEmail = req.query.email || 'hocvien@gmail.com';
   const demoName = req.query.name || 'Chiến thần B2B';
 
