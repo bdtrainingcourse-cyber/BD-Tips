@@ -97,6 +97,26 @@ const initThemeToggle = () => {
     backToTopBtn.addEventListener('click', () => {
         window.scrollTo({ top: 0, behavior: 'smooth' });
     });
+
+    // Floating Quests Badge (Interroller Banner) Handler
+    if (window.location && window.location.pathname && !window.location.pathname.includes('quests.html') && !window.location.pathname.endsWith('/quests')) {
+        let questsBadge = document.getElementById('floating-quests-badge');
+        if (!questsBadge) {
+            questsBadge = document.createElement('div');
+            questsBadge.id = 'floating-quests-badge';
+            questsBadge.className = 'floating-quests-badge';
+            questsBadge.title = 'Nhiệm Vụ & Quà Tặng';
+            questsBadge.innerHTML = `
+                <div class="quests-badge-icon">🎯</div>
+                <div class="quests-badge-tooltip">Nhiệm Vụ & Quà Tặng</div>
+            `;
+            document.body.appendChild(questsBadge);
+            
+            questsBadge.addEventListener('click', () => {
+                window.location.href = 'quests.html';
+            });
+        }
+    }
 };
 
 if (document.readyState === 'loading') {
