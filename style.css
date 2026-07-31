@@ -114,6 +114,89 @@ body.dark-theme .nav-logo .logo-sub {
     transform: translateY(-4px) scale(1.08);
 }
 
+/* Floating Quests Badge (Interroller Banner) */
+.floating-quests-badge {
+    position: fixed;
+    bottom: 160px;
+    right: 25px;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #f3a83b, #d97706);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 8px 25px rgba(243, 168, 59, 0.4);
+    cursor: pointer;
+    z-index: 9995;
+    transition: all 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    border: 2px solid rgba(255, 255, 255, 0.15);
+}
+
+.floating-quests-badge::before {
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
+    border-radius: 50%;
+    background: rgba(243, 168, 59, 0.4);
+    z-index: -1;
+    animation: questsPulse 2s infinite;
+}
+
+@keyframes questsPulse {
+    0% {
+        transform: scale(1);
+        opacity: 0.8;
+    }
+    100% {
+        transform: scale(1.6);
+        opacity: 0;
+    }
+}
+
+.floating-quests-badge .quests-badge-icon {
+    font-size: 1.5rem;
+    user-select: none;
+    transition: transform 0.3s ease;
+}
+
+.floating-quests-badge:hover {
+    transform: translateY(-4px) scale(1.08);
+    box-shadow: 0 12px 30px rgba(243, 168, 59, 0.6);
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+}
+
+.floating-quests-badge:hover .quests-badge-icon {
+    transform: rotate(15deg) scale(1.1);
+}
+
+.floating-quests-badge .quests-badge-tooltip {
+    position: absolute;
+    right: 65px;
+    background: #11121d;
+    color: #fff;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transform: translateX(10px);
+    transition: all 0.3s ease;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    border: 1px solid rgba(243, 168, 59, 0.3);
+}
+
+.floating-quests-badge:hover .quests-badge-tooltip {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+
 .nav-links {
     display: flex;
     gap: 16px;
