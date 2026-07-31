@@ -1,6 +1,6 @@
 {
   "name": "b2b-pic-finder",
-  "version": "1.0.1785464056745",
+  "version": "1.0.1785464981933",
   "description": "Interactive Web Tool to Search and Find Company PIC information via LinkedIn",
   "main": "server.js",
   "scripts": {
