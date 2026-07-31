@@ -1892,7 +1892,7 @@ body.dark-theme {
     --bg: #0c0707;
     --card-bg: #180f0f;
     --text-main: #f8fafc;
-    --text-light: #94a3b8;
+    --text-light: #cbd5e1;
     --border-color: rgba(255, 255, 255, 0.08);
     background-color: var(--bg);
     color: var(--text-main);
@@ -2786,4 +2786,27 @@ body.dark-theme .planet-tooltip-card {
         transform: translateY(0);
         opacity: 1;
     }
+}
+
+/* Quests Layout & Sidebar styling */
+.quests-main-layout {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 30px;
+    align-items: start;
+    margin-top: 20px;
+    margin-bottom: 40px;
+}
+@media (min-width: 992px) {
+    .quests-main-layout {
+        grid-template-columns: 1fr 340px;
+    }
+}
+.peter-slogan-card {
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+.peter-slogan-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 20px 45px rgba(243, 168, 59, 0.2) !important;
+    border-color: rgba(243, 168, 59, 0.5) !important;
 }
