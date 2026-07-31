@@ -197,16 +197,32 @@ window.QUEST_CONFIG = QUEST_CONFIG;
 window.CAMPAIGNS_CONFIG = CAMPAIGNS_CONFIG;
 window.getWeekCode = getWeekCode;
 
+window.dismissQuestWelcomeBanner = function() {
+    const todayStr = new Date().toISOString().split('T')[0];
+    localStorage.setItem(`quest_banner_dismissed_${todayStr}`, 'true');
+    const banner = document.getElementById('streak-welcome-banner');
+    if (banner) banner.remove();
+    window.location.href = 'quests.html';
+};
+
+window.closeQuestWelcomeBanner = function() {
+    const todayStr = new Date().toISOString().split('T')[0];
+    localStorage.setItem(`quest_banner_dismissed_${todayStr}`, 'true');
+    const banner = document.getElementById('streak-welcome-banner');
+    if (banner) banner.remove();
+};
+
 function showQuestWelcomeBanner() {
     if (document.getElementById('streak-welcome-banner')) return;
     const message = '🦉 Chào chiến thần! Hôm nay bạn chưa tích luỹ điểm nào đâu nhé. Mau làm 1 hành động thực chiến để tích BD-Points đổi quà ngay đi nào!';
 
     const bannerHtml = `
         <div id="streak-welcome-banner" style="position: fixed; bottom: 20px; right: 20px; background: rgba(30, 20, 10, 0.95); backdrop-filter: blur(10px); border: 1.5px solid #f3a83b; border-radius: 12px; padding: 15px; max-width: 320px; box-shadow: 0 10px 25px rgba(0,0,0,0.3); display: flex; align-items: flex-start; gap: 12px; z-index: 9999; font-family: sans-serif; animation: slideInUp 0.5s ease;">
+            <button onclick="window.closeQuestWelcomeBanner()" style="position: absolute; top: 5px; right: 8px; background: none; border: none; color: #f3a83b; font-size: 1.1rem; cursor: pointer; padding: 0; line-height: 1;">&times;</button>
             <img src="/bd_mascot.png" alt="Cú" style="width: 40px; height: 40px; object-fit: contain; flex-shrink: 0;" onerror="this.src='https://bd-tips.vercel.app/bd_mascot.png'" />
             <div style="flex: 1;">
-                <p style="margin: 0; font-size: 0.8rem; line-height: 1.4; color: #ecd9c6;">${message}</p>
-                <button onclick="this.parentElement.parentElement.remove()" style="margin-top: 8px; background: transparent; border: 1px solid #f3a83b; color: #f3a83b; border-radius: 4px; padding: 3px 10px; font-size: 0.7rem; cursor: pointer;">Tôi đi làm ngay!</button>
+                <p style="margin: 0; font-size: 0.8rem; line-height: 1.4; color: #ecd9c6; padding-right: 10px;">${message}</p>
+                <button onclick="window.dismissQuestWelcomeBanner()" style="margin-top: 8px; background: transparent; border: 1px solid #f3a83b; color: #f3a83b; border-radius: 4px; padding: 3px 10px; font-size: 0.7rem; cursor: pointer; transition: all 0.2s;">Tôi đi làm ngay!</button>
             </div>
         </div>
     `;
@@ -224,7 +240,8 @@ function checkQuestsOnLoad() {
         progress = JSON.parse(localStorage.getItem(progressKey) || '{}');
     } catch(e) {}
 
-    if (!progress['check_in']) {
+    const dismissedToday = localStorage.getItem(`quest_banner_dismissed_${todayStr}`) === 'true';
+    if (!progress['check_in'] && !dismissedToday) {
         showQuestWelcomeBanner();
     }
 }
