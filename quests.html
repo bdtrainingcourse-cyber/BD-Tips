@@ -55,14 +55,16 @@
             <h1 class="hero-title" style="font-size: 2.5rem; font-weight: 800; margin: 0 0 10px 0; background: linear-gradient(135deg, #ffffff 0%, #a5b4fc 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
                 NHIỆM VỤ & QUÀ TẶNG
             </h1>
-            <p class="hero-subtitle" style="font-size: 1.1rem; color: var(--text-light); max-width: 600px; margin: 0 auto; line-height: 1.5;">
+            <p class="hero-subtitle" style="font-size: 1.1rem; color: #cbd5e1; max-width: 600px; margin: 0 auto; line-height: 1.5;">
                 Rèn luyện kỹ năng BD mỗi ngày, tích lũy BD-Points để mở khóa phần thưởng thực chiến độc quyền!
             </p>
         </section>
 
-        <!-- Quests Panel Container -->
-        <div class="streak-reward-card glass-panel" id="quests-section" style="padding: 28px; border-radius: 16px; border: 1px solid var(--primary); background: rgba(243, 168, 59, 0.02); box-shadow: 0 15px 35px rgba(0, 0, 0, 0.25);">
-            <div class="streak-tabs-header" style="margin-bottom: 25px;">
+        <!-- Main Layout with Sidebar -->
+        <div class="quests-main-layout">
+            <!-- Quests Panel Container -->
+            <div class="streak-reward-card glass-panel" id="quests-section" style="padding: 28px; border-radius: 16px; border: 1px solid var(--primary); background: rgba(243, 168, 59, 0.02); box-shadow: 0 15px 35px rgba(0, 0, 0, 0.25);">
+                <div class="streak-tabs-header" style="margin-bottom: 25px;">
                 <button class="streak-tab-link active" id="tab-streak-btn" style="font-size: 1.05rem; padding: 12px 24px;">🎯 NHIỆM VỤ & CHIẾN DỊCH</button>
                 <button class="streak-tab-link" id="tab-rewards-btn" style="font-size: 1.05rem; padding: 12px 24px;">🎁 CỬA HÀNG ĐỔI QUÀ</button>
             </div>
@@ -75,7 +77,7 @@
                         <div style="font-size: 2.5rem; line-height: 1;">🦉</div>
                         <div style="flex: 1; min-width: 240px;">
                             <h4 style="margin: 0; font-size: 1.1rem; font-weight: 800; color: var(--text-main);">Kích hoạt Hệ thống Điểm Tích Lũy</h4>
-                            <p style="margin: 5px 0 0 0; font-size: 0.85rem; color: var(--text-light); line-height: 1.45;">Đăng ký để Cú BeeDee mở tài khoản tích lũy BD-Points, gửi email nhắc nhở mỗi sáng giúp bạn rèn luyện và đổi quà thực chiến.</p>
+                            <p style="margin: 5px 0 0 0; font-size: 0.85rem; color: #cbd5e1; line-height: 1.45;">Đăng ký để Cú BeeDee mở tài khoản tích lũy BD-Points, gửi email nhắc nhở mỗi sáng giúp bạn rèn luyện và đổi quà thực chiến.</p>
                         </div>
                     </div>
                     <div style="display: flex; gap: 12px; width: 100%; flex-wrap: wrap;" id="streak-form">
@@ -92,12 +94,12 @@
                         <div style="display: flex; align-items: center; gap: 10px;">
                             <span style="font-size: 2rem; line-height: 1;">🪙</span>
                             <div>
-                                <div style="font-size: 0.8rem; color: var(--text-light);">Số dư tích lũy</div>
+                                <div style="font-size: 0.8rem; color: #cbd5e1;">Số dư tích lũy</div>
                                 <div style="font-size: 1.5rem; font-weight: 800; color: var(--primary);" id="hud-points-val">0 BD-Points</div>
                             </div>
                         </div>
                         <div style="text-align: right;">
-                            <div style="font-size: 0.75rem; color: var(--text-light); margin-bottom: 6px;" id="hud-next-gift-lbl">Cách quà tiếp theo: 200đ</div>
+                            <div style="font-size: 0.75rem; color: #cbd5e1; margin-bottom: 6px;" id="hud-next-gift-lbl">Cách quà tiếp theo: 200đ</div>
                             <div style="width: 140px; height: 8px; background: rgba(255,255,255,0.05); border-radius: 4px; overflow: hidden; display: inline-block;">
                                 <div id="hud-next-gift-bar" style="width: 0%; height: 100%; background: var(--primary); transition: width 0.3s ease;"></div>
                             </div>
@@ -134,7 +136,7 @@
 
             <!-- Tab Content: Reward list -->
             <div id="tab-content-rewards" class="hidden">
-                <p style="font-size: 0.85rem; color: var(--text-light); margin: 0 0 15px 0; line-height: 1.5;">
+                <p style="font-size: 0.85rem; color: #cbd5e1; margin: 0 0 15px 0; line-height: 1.5;">
                     Luyện tập đều đặn để tích lũy ngày Streak và nhận quà tương ứng:
                 </p>
                 <div class="reward-grid">
@@ -179,9 +181,23 @@
                 <div class="reward-card highlight-card" style="margin: 25px auto 0 auto; width: 100%; max-width: 500px; box-sizing: border-box; background: linear-gradient(135deg, rgba(243, 168, 59, 0.12), rgba(243, 168, 59, 0.05)); border: 1.5px dashed var(--primary); text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; gap: 8px; border-radius: 12px;">
                     <span style="font-size: 2rem; margin-bottom: 5px;">💬</span>
                     <span style="font-size: 0.9rem; font-weight: 800; color: var(--primary);">Cộng Đồng BD B2B Thực Chiến</span>
-                    <p style="font-size: 0.78rem; color: var(--text-light); margin: 5px 0 12px 0; line-height: 1.4;">Nơi thảo luận các case-study hóc búa, nhận feedback trực tiếp từ anh Peter Vo và tăng tốc Streak học tập của bạn!</p>
+                    <p style="font-size: 0.78rem; color: #cbd5e1; margin: 5px 0 12px 0; line-height: 1.4;">Nơi thảo luận các case-study hóc búa, nhận feedback trực tiếp từ anh Peter Vo và tăng tốc Streak học tập của bạn!</p>
                     <a href="community.html" class="btn btn-primary" style="padding: 8px 20px; font-size: 0.8rem; font-weight: bold; text-decoration: none; width: fit-content; border-radius: 8px; display: inline-block;">👉 Tham Gia Ngay (Free)</a>
                 </div>
+            </div>
+            </div>
+
+            <!-- Sidebar: LinkedIn QR Banner -->
+            <div class="peter-slogan-card glass-panel" style="padding: 14px; border-radius: 20px; border: 1.5px solid var(--primary); background: rgba(243, 168, 59, 0.03); display: flex; flex-direction: column; align-items: center; text-align: center; box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3); max-width: 380px; margin: 0 auto; width: 100%; box-sizing: border-box; backdrop-filter: blur(10px);">
+                <a href="https://www.linkedin.com/in/vp-tan/" target="_blank" style="display: block; width: 100%;">
+                    <img src="peter_slogan.png" alt="BD khó có Peter lo" style="width: 100%; border-radius: 14px; display: block; height: auto; transition: transform 0.2s ease;">
+                </a>
+                <p style="margin: 14px 0 0 0; font-size: 0.8rem; color: #cbd5e1; line-height: 1.45; font-weight: 600;">
+                    Scan mã QR hoặc nhấp vào ảnh để kết nối LinkedIn với anh **Peter Vo** để nhận thêm nhiều bí kíp BD hữu ích!
+                </p>
+                <a href="https://www.linkedin.com/in/vp-tan/" target="_blank" class="btn btn-primary" style="margin-top: 14px; width: 100%; padding: 10px 16px; font-size: 0.82rem; font-weight: 800; border-radius: 8px; text-decoration: none; text-align: center; box-sizing: border-box; background: linear-gradient(135deg, #f3a83b, #d97706); border: none; color: #ffffff; cursor: pointer; transition: all 0.2s;">
+                    👉 Kết nối LinkedIn
+                </a>
             </div>
         </div>
     </main>
