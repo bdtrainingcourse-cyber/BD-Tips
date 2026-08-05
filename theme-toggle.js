@@ -375,6 +375,12 @@ function updateCampaignProgress(actionType, count) {
                 let balance = parseInt(localStorage.getItem('b2b_points_balance') || '0', 10);
                 balance += campaign.bonus;
                 localStorage.setItem('b2b_points_balance', balance.toString());
+                
+                // Ghi log giao dịch hoàn thành chiến dịch
+                if (typeof window.logPointsTransaction === 'function') {
+                    window.logPointsTransaction(`🏆 Hoàn thành chiến dịch: ${campaign.title}`, campaign.bonus);
+                }
+                
                 showCampaignCompletePopup(campaign.title, campaign.bonus);
             }
         }
@@ -390,7 +396,7 @@ function injectNavbarUserHUD() {
     const hud = document.createElement('div');
     hud.id = 'navbar-user-hud';
     hud.className = 'hidden';
-    hud.style.cssText = 'display: flex; align-items: center; gap: 8px; background: rgba(243, 168, 59, 0.1); border: 1px solid var(--primary); padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: bold; color: var(--text-main); margin-right: 10px; margin-left: 10px; order: -1; align-self: center;';
+    hud.style.cssText = 'display: flex; align-items: center; gap: 8px; background: rgba(243, 168, 59, 0.1); border: 1px solid var(--primary); padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: bold; color: var(--text-main); margin-right: 10px; margin-left: 10px; align-self: center;';
     
     hud.innerHTML = `
         <span style="font-size: 1rem; line-height: 1;">🦉</span>
@@ -446,6 +452,47 @@ function updateUIElements() {
     }
 }
 
+// Hàm ghi chép Lịch sử Điểm tích lũy & Đồng bộ Sheets thời gian thực
+window.logPointsTransaction = function(action, change) {
+    if (localStorage.getItem('streak_active') !== 'true') return;
+    const today = new Date();
+    
+    // Định dạng ngày giờ Việt Nam
+    const dateStr = today.toLocaleDateString('vi-VN', { year: 'numeric', month: '2-digit', day: '2-digit' }) + ' ' + 
+                    today.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' });
+    
+    const balance = parseInt(localStorage.getItem('b2b_points_balance') || '0', 10);
+    
+    let history = [];
+    try {
+        history = JSON.parse(localStorage.getItem('b2b_points_history') || '[]');
+    } catch(e) {}
+    
+    // Thêm giao dịch mới lên đầu danh sách
+    history.unshift({
+        date: dateStr,
+        action: action,
+        change: change,
+        balance: balance
+    });
+    
+    if (history.length > 50) history = history.slice(0, 50);
+    localStorage.setItem('b2b_points_history', JSON.stringify(history));
+    
+    // Phát event thông báo để giao diện render cập nhật
+    window.dispatchEvent(new Event('points_history_updated'));
+    
+    // Đồng bộ điểm tích lũy lên Google Sheets
+    const email = localStorage.getItem('streak_email');
+    if (email && email.includes('@')) {
+        fetch('/api/log-email', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ action: 'updatePoints', email: email, points: balance })
+        }).catch(err => console.error('Gửi đồng bộ điểm lên Google Sheets thất bại:', err));
+    }
+};
+
 window.registerUserAction = function(actionType, metadata = {}) {
     if (localStorage.getItem('streak_active') !== 'true') return;
 
@@ -477,13 +524,14 @@ window.registerUserAction = function(actionType, metadata = {}) {
         dailyProgress['check_in'] = 1;
         localStorage.setItem(dailyProgressKey, JSON.stringify(dailyProgress));
         balance += QUEST_CONFIG['check_in'].points;
+        localStorage.setItem('b2b_points_balance', balance.toString());
+        window.logPointsTransaction("☕ Cú Đêm Dậy Sớm (Điểm danh hàng ngày)", QUEST_CONFIG['check_in'].points);
+        balance = parseInt(localStorage.getItem('b2b_points_balance') || '0', 10);
         checkInAwarded = true;
     }
 
     if (currentCount >= config.limit) {
         if (checkInAwarded) {
-            localStorage.setItem('b2b_points_balance', balance.toString());
-            showPointToast(QUEST_CONFIG['check_in'].points, '☕ Cú Đêm Dậy Sớm Làm BD');
             updateUIElements();
         }
         return;
@@ -492,19 +540,27 @@ window.registerUserAction = function(actionType, metadata = {}) {
     progress[actionType] = currentCount + 1;
     let addedPoints = config.points;
     
+    // Cộng điểm nhiệm vụ chính và ghi log
+    balance += addedPoints;
+    localStorage.setItem('b2b_points_balance', balance.toString());
+    window.logPointsTransaction(`Nhiệm vụ: ${config.name}`, addedPoints);
+    balance = parseInt(localStorage.getItem('b2b_points_balance') || '0', 10);
+    
     if (actionType === 'game_complete' && metadata.perfect) {
         // perfect game is daily
         let perfectCount = dailyProgress['perfect_game'] || 0;
         if (perfectCount < QUEST_CONFIG['perfect_game'].limit) {
             dailyProgress['perfect_game'] = perfectCount + 1;
             localStorage.setItem(dailyProgressKey, JSON.stringify(dailyProgress));
+            
+            balance += QUEST_CONFIG['perfect_game'].points;
+            localStorage.setItem('b2b_points_balance', balance.toString());
+            window.logPointsTransaction("🏆 Đạt điểm tuyệt đối trong game", QUEST_CONFIG['perfect_game'].points);
+            balance = parseInt(localStorage.getItem('b2b_points_balance') || '0', 10);
             addedPoints += QUEST_CONFIG['perfect_game'].points;
         }
     }
     
-    balance += addedPoints;
-    
-    localStorage.setItem('b2b_points_balance', balance.toString());
     localStorage.setItem(progressKey, JSON.stringify(progress));
     
     const welcomeBanner = document.getElementById('streak-welcome-banner');
@@ -528,4 +584,161 @@ if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', checkQuestsOnLoad);
 } else {
     checkQuestsOnLoad();
+}
+
+// ==========================================
+// CÚ BEEDEE EMAIL REMINDER REGISTRATION & SYNC LOGIC
+// ==========================================
+const DISPOSABLE_EMAIL_DOMAINS = [
+    'mailinator.com', 'yopmail.com', 'tempmail.com', 'guerrillamail.com', 
+    '10minutemail.com', 'sharklasers.com', 'dispostable.com', 'getairmail.com', 
+    'burnermail.io', 'trashmail.com', 'maildrop.cc', 'temp-mail.org', 
+    'fakeinbox.com', 'throwawaymail.com', 'mailnesia.com', 'mailcatch.com'
+];
+
+function isDisposableEmail(email) {
+    if (!email) return false;
+    const domain = email.split('@')[1];
+    if (!domain) return false;
+    return DISPOSABLE_EMAIL_DOMAINS.includes(domain.toLowerCase().trim());
+}
+
+function handleEmailReminderRegistration(nameInputId, emailInputId, submitBtnId, successMsgId) {
+    const nameInput = document.getElementById(nameInputId);
+    const emailInput = document.getElementById(emailInputId);
+    const submitBtn = document.getElementById(submitBtnId);
+    const successMsg = document.getElementById(successMsgId);
+
+    if (!submitBtn || !nameInput || !emailInput) return;
+
+    submitBtn.addEventListener('click', async (e) => {
+        e.preventDefault();
+        const name = nameInput.value.trim();
+        const email = emailInput.value.trim();
+
+        if (!name || !email) {
+            alert('Vui lòng nhập đầy đủ Họ tên và Email!');
+            return;
+        }
+
+        // Validate email format
+        if (!email.includes('@')) {
+            alert('Email không hợp lệ!');
+            return;
+        }
+
+        // Check for disposable email
+        if (isDisposableEmail(email)) {
+            alert('Vui lòng sử dụng email cá nhân hoặc công việc thật (tránh dùng email rác/tạm thời như mailinator, yopmail...) để Cú BeeDee gửi nhắc nhở nhé!');
+            return;
+        }
+
+        submitBtn.disabled = true;
+        const originalText = submitBtn.textContent;
+        submitBtn.textContent = 'Đang xử lý... ⏳';
+
+        try {
+            // Step 1: Check if email already exists in sheets
+            const checkUrl = `/api/log-email?action=checkEmail&email=${encodeURIComponent(email)}`;
+            const checkRes = await fetch(checkUrl);
+            const checkData = await checkRes.json();
+
+            if (checkData.exists && checkData.user) {
+                // Existing user: restore points and name
+                const user = checkData.user;
+                localStorage.setItem('streak_active', 'true');
+                localStorage.setItem('streak_name', user.name || name);
+                localStorage.setItem('streak_email', email);
+                localStorage.setItem('b2b_points_balance', (user.points || 0).toString());
+                
+                // Clear inputs
+                nameInput.value = '';
+                emailInput.value = '';
+
+                // Show HUD and success message
+                updateNavbarUserHUD();
+                if (successMsg) {
+                    successMsg.textContent = `🎉 Chào mừng quay trở lại, ${user.name || name}! Số điểm tích lũy ${user.points || 0}đ đã được khôi phục thành công.`;
+                    successMsg.classList.remove('hidden');
+                    successMsg.style.display = 'block';
+                }
+                showPointToast(0, `Đã khôi phục tài khoản: ${email}`);
+            } else {
+                // New user: grant 25 points and register
+                const startPoints = 25;
+                localStorage.setItem('streak_active', 'true');
+                localStorage.setItem('streak_name', name);
+                localStorage.setItem('streak_email', email);
+                localStorage.setItem('b2b_points_balance', startPoints.toString());
+                
+                // Sync user to sheets
+                const syncRes = await fetch('/api/log-email', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        action: 'syncUser',
+                        name: name,
+                        email: email,
+                        points: startPoints
+                    })
+                });
+
+                // Clear inputs
+                nameInput.value = '';
+                emailInput.value = '';
+
+                // Log points transaction locally & sync
+                window.logPointsTransaction("🦉 Kích hoạt Nhắc nhở Cú BeeDee (Đăng ký mới)", startPoints);
+
+                // Show HUD and success message
+                updateNavbarUserHUD();
+                if (successMsg) {
+                    successMsg.textContent = `🎉 Đăng ký thành công! Cú BeeDee đã mở tài khoản tích lũy 25 BD-Points cho bạn.`;
+                    successMsg.classList.remove('hidden');
+                    successMsg.style.display = 'block';
+                }
+                showPointToast(startPoints, "Kích hoạt Nhắc nhở Cú BeeDee!");
+            }
+
+            // Hide success message after 7 seconds
+            setTimeout(() => {
+                if (successMsg) {
+                    successMsg.classList.add('hidden');
+                    successMsg.style.display = 'none';
+                }
+            }, 7000);
+
+        } catch (err) {
+            console.error('Đăng ký nhắc nhở email thất bại:', err);
+            alert('Có lỗi xảy ra trong quá trình kết nối với máy chủ. Vui lòng thử lại!');
+        } finally {
+            submitBtn.disabled = false;
+            submitBtn.textContent = originalText;
+        }
+    });
+}
+
+function initEmailRegistrations() {
+    // Challenge trigger box (Homepage)
+    handleEmailReminderRegistration(
+        'challenge-trigger-name',
+        'challenge-trigger-email',
+        'btn-challenge-trigger-submit',
+        'challenge-trigger-success-msg'
+    );
+
+    // Sidebar trigger box (Community page)
+    handleEmailReminderRegistration(
+        'sidebar-trigger-name',
+        'sidebar-trigger-email',
+        'btn-sidebar-trigger-submit',
+        'sidebar-trigger-success-msg'
+    );
+}
+
+// Bind to window load / DOMContentLoaded
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initEmailRegistrations);
+} else {
+    initEmailRegistrations();
 }
