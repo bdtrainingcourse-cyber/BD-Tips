@@ -133,7 +133,7 @@ const emailTemplates = [
   },
   {
     subject: "Thợ săn tiền thưởng quyết không để 'quỵt' hoa hồng! 💸",
-    message: "Chào Chiến thần B2B!<br><br>Làm BD vất vả ngày đêm, đi tiếp khách uống cạn ly, đàm phán trầy da tróc vảy chốt hợp đồng. Nhưng đến cuối tháng bảng tính lương gửi về lại mập mờ, hoa hồng bị tính hụt làm bạn muốn hướng nội luôn?<br><br>Đừng im lặng chịu thiệt! Hãy sử dụng ngay công cụ <b>Tính Lương Gross-Net & Tra Cứu Luật Lao Động</b> để quy đổi chuẩn xác và tra cứu nhanh 15 tình huống tranh chấp thực tế (như nợ commission, ép doanh số thử việc...). Ngôn từ sắc bén của luật sẽ bảo vệ thành quả lao động của bạn!<br><br>After khi tính toán xong, hãy ghé qua <b>Diễn đàn Cộng đồng</b> để cùng thảo luận chia sẻ kinh nghiệm nhé!",
+    message: "Chào Chiến thần B2B!<br><br>Làm BD vất vả ngày đêm, đi tiếp khách uống cạn ly, đàm phán trầy da tróc vảy chốt hợp đồng. Nhưng đến cuối tháng bảng tính lương gửi về lại mập mờ, hoa hồng bị tính hụt làm bạn muốn hướng nội luôn?<br><br>Đừng im lặng chịu thiệt! Hãy sử dụng ngay công cụ <b>Tính Lương Gross-Net & Tra Cứu Luật Lao Động</b> để quy đổi chuẩn xác và tra cứu nhanh 15 tình huống tranh chấp thực tế (như nợ commission, ép doanh số thử việc...). Ngôn từ sắc bén của luật sẽ bảo vệ thành quả lao động của bạn!<br><br>Sau khi tính toán xong, hãy ghé qua <b>Diễn đàn Cộng đồng</b> để cùng thảo luận chia sẻ kinh nghiệm nhé!",
     buttonText: "🧮 Tính Lương & Tra Luật Ngay",
     buttonUrl: "https://bd-tips.vercel.app/salary.html",
     mascot: "https://bd-tips.vercel.app/mascot_law.jpg"
@@ -154,12 +154,28 @@ const emailTemplates = [
   },
   {
     subject: "Thời tiết giông bão, nhưng Pipeline phải luôn rực rỡ! ⛈️",
-    message: "Chào Chiến thần B2B!<br><br>Ngoài trời mây đen kéo lối, giông bão sắp đổ bộ. Nhưng giông bão thời tiết không đáng sợ bằng \"giông bão\" trong pipeline của bạn khi không có bất kỳ deal mới nào trong phễu.<br><br>Hãy biến ngày mưa bão thành ngày bùng nổ doanh số! Hệ sinh thái hỗ trợ BD của chúng tôi đã online đầy đủ: Tìm email sếp lớn bằng <b>B2B LinkedIn PIC Finder</b>, soạn email tự động bằng <b>AI Cold Email Assistant</b>, kiểm tra hợp đồng bằng <b>Luật Lao Động</b> và trau dồi bài học tại <b>Thư Viện</b>.<br><br>Hãy làm một thử thách game hôm nay để giữ chuỗi ngày Streak nhận buổi ăn trưa tư vấn 1on1 cùng anh Peter Vo nào!",
+    message: "Chào Chiến thần B2B!<br><br>Ngoài trời mây đen kéo lối, giông bão sắp đổ bộ. Nhưng giông bão thời tiết không đáng sợ bằng \"giông bão\" trong pipeline của bạn khi không có bất kỳ deal mới nào trong phễu.<br><br>Hãy biến ngày mưa bão thành ngày bùng nổ doanh số! Hệ sinh thái hỗ trợ BD của chúng tôi đã online đầy đủ: Tìm email sếp lớn bằng <b>B2B LinkedIn PIC Finder</b>, soạn email tự động bằng <b>AI Cold Email Assistant</b>, kiểm tra hợp đồng bằng <b>Luật Lao Động</b> và trau dồi bài học tại <b>Thư Viện</b>.<br><br>Hãy làm một thử thách game hôm nay để giữ chuỗi ngày Streak nhận buổi ăn trưa tri ân cùng anh Peter Vo nào!",
     buttonText: "🌐 Khám Phá Hệ Sinh Thái BD",
     buttonUrl: "https://bd-tips.vercel.app/quests.html",
     mascot: "https://bd-tips.vercel.app/mascot_storm.jpg"
   }
 ];
+
+const fridayMorningTemplate = {
+  subject: "Thứ 6 rồi! Cùng share chuyện vui lên cộng đồng nào! 🧋✨",
+  message: "Chào Chiến thần B2B!<br><br>Cuối cùng thì ngày thứ 6 mong đợi cũng đã tới! Một tuần làm việc bận rộn sắp qua đi. Hãy bắt đầu ngày làm việc cuối tuần bằng một nguồn năng lượng tích cực nhất nhé.<br><br>Hôm nay, sếp có dí KPI hay khách hàng có ghost thì cũng đừng lo! Hãy ghé ngay <b>Diễn đàn Cộng đồng</b> để chia sẻ những mẫu chuyện vui, những tình huống hài hước hoặc những meme thú vị mà bạn gặp phải trong tuần qua. Chia sẻ niềm vui sẽ nhân đôi niềm vui!<br><br>Đặc biệt, chiều nay lúc 6h00 sẽ có một món quà email cực kỳ hài hước để bạn giải tỏa mọi stress trước khi nghỉ cuối tuần đấy. Hóng nhé!",
+  buttonText: "💬 Chia Sẻ Chuyện Vui Ngay",
+  buttonUrl: "https://bd-tips.vercel.app/community.html",
+  mascot: "https://bd-tips.vercel.app/mascot_milktea.jpg"
+};
+
+const fridayEveningTemplate = {
+  subject: "Cuối tuần rồi! Xả stress cực mạnh cùng Cú BeeDee thôi! 🦉🎉",
+  message: "Chào Chiến thần B2B!<br><br>Keng keng keng! 6h00 chiều thứ Sáu đã điểm, giờ G đã tới! Hãy đóng laptop lại, cất hết deadline sang một bên và chuẩn bị tận hưởng kỳ nghỉ cuối tuần trọn vẹn nào.<br><br>Để giúp bạn xả stress cực mạnh sau một tuần 'săn lead' mệt mỏi, Cú BeeDee đã chuẩn bị sẵn một câu chuyện cười thực chiến BD cực kỳ 'mặn mòi' tại <b>Thư viện BD</b>. Hãy đọc để giải trí và nạp lại năng lượng nhé!<br><br>Chúc bạn có hai ngày cuối tuần ngập tràn niềm vui, không deadline, không check mail và sẵn sàng bung xõa!",
+  buttonText: "🤪 Đọc Chuyện Cười BD & Relax",
+  buttonUrl: "https://bd-tips.vercel.app/library.html",
+  mascot: "https://bd-tips.vercel.app/mascot_relax.jpg"
+};
 
 module.exports = async (req, res) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -170,16 +186,46 @@ module.exports = async (req, res) => {
     return res.status(200).end();
   }
 
-  // Calculate day of the year in Vietnam timezone (UTC+7)
+  // Calculate date fields in Vietnam timezone (UTC+7)
   const now = new Date(Date.now() + 7 * 60 * 60 * 1000);
   const year = now.getUTCFullYear();
+  
+  // Allow overriding day of week for manual testing
+  let dayOfWeek = now.getUTCDay(); // 0: Sunday, 1: Monday, ..., 5: Friday, 6: Saturday
+  if (req.query.day) {
+    dayOfWeek = parseInt(req.query.day, 10);
+  }
+
   const start = new Date(Date.UTC(year, 0, 0));
   const diff = now - start;
   const oneDay = 1000 * 60 * 60 * 24;
   const dayOfYear = Math.floor(diff / oneDay);
   
-  // Select template based on day of the year to guarantee rotation without repetition
-  const template = emailTemplates[dayOfYear % emailTemplates.length];
+  // Decide which template to use based on day of week and hour
+  let template;
+  let isWeekend = (dayOfWeek === 0 || dayOfWeek === 6);
+
+  if (isWeekend && !req.query.force) {
+    return res.status(200).json({
+      success: true,
+      message: "No emails scheduled on weekends (Saturday and Sunday)."
+    });
+  }
+
+  const hour = now.getUTCHours();    // 0 to 23
+  if (dayOfWeek === 5) {
+    // Friday
+    const isEvening = req.query.time ? (req.query.time === 'evening') : (hour >= 12);
+    if (isEvening) {
+      template = fridayEveningTemplate;
+    } else {
+      template = fridayMorningTemplate;
+    }
+  } else {
+    // Monday - Thursday (or forced weekend tests)
+    template = emailTemplates[dayOfYear % emailTemplates.length];
+  }
+
   const demoEmail = req.query.email || 'hocvien@gmail.com';
   const demoName = req.query.name || 'Chiến thần B2B';
 
