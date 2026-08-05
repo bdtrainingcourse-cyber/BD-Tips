@@ -21,24 +21,20 @@
                 <span class="logo-sub">Nơi Học Hỏi & Kết Nối của BD</span>
             </a>
             <nav class="nav-links" id="nav-menu">
-                <a href="index.html" class="">🏠 Homepage</a>
-                <a href="library.html" class="">📚 Thư Viện <span class="nav-badge hot">HOT</span></a>
+                <a href="index.html" class="">Homepage</a>
+                <a href="library.html" class="">Thư Viện <span class="nav-badge hot">HOT</span></a>
                 <div class="nav-dropdown ">
-                    <button class="nav-dropdown-toggle">🛠️ Bộ Công Cụ BD <span class="dropdown-arrow">▾</span></button>
+                    <button class="nav-dropdown-toggle">Bộ Công Cụ BD <span class="dropdown-arrow">▾</span></button>
                     <div class="nav-dropdown-menu">
-                        <a href="finder.html" class="">🔍 B2B PIC Finder <span class="nav-badge pro">Pro</span></a>
-                        <a href="email-assistant.html" class="">✉️ AI Email Assistant <span class="nav-badge ai">AI</span></a>
-                        <a href="kpi-estimation.html" class="">📊 Ma Trận KPI BD</a>
-                        <a href="salary.html" class="">🧮 Tính Lương Gross - Net</a>
-                        <a href="labor-law.html" class="">⚖️ Tra Cứu Luật Lao Động</a>
+                        <a href="finder.html" class="">B2B PIC Finder <span class="nav-badge pro">Pro</span></a>
+                        <a href="email-assistant.html" class="">AI Email Assistant <span class="nav-badge ai">AI</span></a>
+                        <a href="kpi-estimation.html" class="">Ma Trận KPI BD</a>
+                        <a href="salary.html" class="">Tính Lương Gross - Net</a>
+                        <a href="labor-law.html" class="">Tra Cứu Luật Lao Động</a>
                     </div>
                 </div>
-                <a href="index.html#minigame-section">🎮 B2B Challenge <span class="nav-badge new">New</span></a>
-                <a href="community.html" class="active">🌐 Cộng Đồng</a>
-                <a href="https://www.linkedin.com/in/vp-tan/" target="_blank" class="nav-contact-author" title="Kết nối Zalo/SĐT: 0931100569">
-                    <img src="peter_1.jpg" alt="Peter Vo" class="nav-avatar">
-                    <span>Peter Vo</span>
-                </a>
+                <a href="index.html#minigame-section">B2B Challenge <span class="nav-badge new">New</span></a>
+                <a href="community.html" class="active">Cộng Đồng</a>
                 <button id="theme-toggle" class="theme-toggle-btn" aria-label="Toggle theme">🌓</button>
             </nav>
             <button class="mobile-menu-toggle" id="mobile-menu-toggle" aria-label="Open Mobile Menu">
@@ -62,6 +58,23 @@
                 <button class="category-tab" data-category="qna">🧠 Hỏi đáp nghiệp vụ</button>
                 <button class="category-tab" data-category="pic">🔍 Yêu cầu kết nối PIC</button>
                 <button class="category-tab" data-category="story">🧗 Câu chuyện BD</button>
+                
+                <!-- Nhắc nhở email Cú BeeDee -->
+                <div class="funny-trigger-box glass-panel" id="sidebar-funny-trigger-box" style="margin-top: 25px; padding: 18px; border-radius: 12px; border: 1.5px dashed var(--primary); background: linear-gradient(135deg, rgba(243, 168, 59, 0.05) 0%, rgba(243, 168, 59, 0.01) 100%); text-align: center;">
+                    <div style="font-size: 1.8rem; margin-bottom: 6px;">🦉</div>
+                    <h5 style="margin: 0; font-size: 0.9rem; font-weight: 800; color: var(--text-main); text-transform: uppercase;">Mẹo Săn Deal Cú BeeDee</h5>
+                    <p style="margin: 6px 0 15px 0; font-size: 0.78rem; color: var(--text-light); line-height: 1.4;">
+                        Mỗi sáng <b>8h45</b>, Cú BeeDee sẽ gửi mail nhắc nhở vui vẻ để bạn không bao giờ bị ghost!
+                    </p>
+                    <div id="sidebar-trigger-form" style="display: flex; flex-direction: column; gap: 8px;">
+                        <input type="text" id="sidebar-trigger-name" placeholder="Tên của bạn" style="padding: 8px 10px; border-radius: 6px; border: 1px solid var(--border-color); background: rgba(255,255,255,0.02); color: var(--text-main); font-family: inherit; font-size: 0.8rem;" required>
+                        <input type="email" id="sidebar-trigger-email" placeholder="Email của bạn" style="padding: 8px 10px; border-radius: 6px; border: 1px solid var(--border-color); background: rgba(255,255,255,0.02); color: var(--text-main); font-family: inherit; font-size: 0.8rem;" required>
+                        <button id="btn-sidebar-trigger-submit" class="btn btn-primary" style="padding: 8px 12px; font-weight: bold; border-radius: 6px; font-size: 0.8rem; width: 100%;">Bật Nhắc Nhở & Nhận 25đ ⚡</button>
+                    </div>
+                    <div id="sidebar-trigger-success-msg" class="hidden" style="margin-top: 10px; font-size: 0.78rem; color: #10b981; font-weight: bold;">
+                        🎉 Đăng ký thành công! Nhận 25đ.
+                    </div>
+                </div>
             </aside>
 
             <!-- Main Content Area -->
