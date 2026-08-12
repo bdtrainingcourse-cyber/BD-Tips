@@ -600,6 +600,10 @@ document.addEventListener('DOMContentLoaded', () => {
         const amount = parseNumber(salaryAmountInput.value);
         if (amount <= 0) return;
 
+        if (window.trackUserBehavior) {
+            window.trackUserBehavior('salary_calculate', `${direction}: ${amount} VND`);
+        }
+
         const insType = document.querySelector('input[name="ins-type"]:checked').value;
         let insSalaryInput = 0;
         if (insType === 'custom') {
