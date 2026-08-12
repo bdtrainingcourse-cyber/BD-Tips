@@ -1,0 +1,771 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Sales Roleplay Simulator | BD Bình Dân Học Vụ</title>
+    <meta name="description" content="Luyện tập pitching, đàm phán và xử lý từ chối B2B thực chiến với Trợ lý ảo AI đóng vai khách hàng.">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css?v=2.0.0">
+    <link rel="stylesheet" href="pitching.css?v=2.0.0">
+    <link rel="stylesheet" href="ai-chat.css?v=2.0.0">
+    <script src="theme-toggle.js?v=2.0.0"></script>
+</head>
+<body class="dark-theme">
+    <!-- Navbar -->
+    <header class="app-nav">
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo" title="BD Bình Dân Học Vụ - Nơi Học Hỏi & Kết Nối của BD">
+                <span class="logo-main"><span class="logo-accent">BD</span> Bình Dân Học Vụ</span>
+                <span class="logo-sub">Nơi Học Hỏi & Kết Nối của BD</span>
+            </a>
+            <nav class="nav-links" id="nav-menu">
+                <a href="index.html" class="">Homepage</a>
+                <a href="library.html" class="">Thư Viện <span class="nav-badge hot">HOT</span></a>
+                <div class="nav-dropdown open">
+                    <button class="nav-dropdown-toggle">Bộ Công Cụ BD <span class="dropdown-arrow">▾</span></button>
+                    <div class="nav-dropdown-menu">
+                        <a href="finder.html" class="" style="display: none !important;">B2B PIC Finder <span class="nav-badge pro">Pro</span></a>
+                        <a href="pitching.html" class="active">Luyện Pitching AI <span class="nav-badge hot">🔥 VOICE AI</span></a>
+                        <a href="email-assistant.html" class="">AI Email Assistant <span class="nav-badge ai">✍️ EMAIL AI</span></a>
+                        <a href="kpi-estimation.html" class="">Ma Trận KPI BD <span class="nav-badge new">📊 NEW</span></a>
+                        <a href="salary.html" class="">Tính Lương Gross - Net</a>
+                        <a href="labor-law.html" class="">Tra Cứu Luật Lao Động</a>
+                    </div>
+                </div>
+                <a href="index.html#minigame-section">B2B Challenge <span class="nav-badge new">New</span></a>
+                <a href="community.html" class="">Cộng Đồng</a>
+                <button id="theme-toggle" class="theme-toggle-btn" aria-label="Toggle theme">🌓</button>
+            </nav>
+            <button class="mobile-menu-toggle" id="mobile-menu-toggle" aria-label="Open Mobile Menu">
+                <span class="hamburger-icon">☰</span>
+            </button>
+        </div>
+    </header>
+
+    <main class="pitching-main container">
+        <div class="pitching-hero">
+            <h1 class="hero-title">PITCHING WITH AI</h1>
+            <p class="hero-subtitle">Mô Phỏng Trực Chiến Đàm Phán & Xử Lý Từ Chối B2B Cùng AI Khách Hàng</p>
+        </div>
+
+        <div class="workspace-container">
+            <!-- Left Sidebar Navigation -->
+            <aside class="sidebar-panel glass-panel">
+                <button class="sidebar-menu-btn active" id="menu-btn-dashboard" onclick="switchTab('dashboard')">
+                    📊 Dashboard Chung
+                </button>
+                <button class="sidebar-menu-btn" id="menu-btn-simulator" onclick="switchTab('simulator')">
+                    🚀 Luyện Pitching Mới
+                </button>
+                <button class="sidebar-menu-btn" id="menu-btn-products" onclick="switchTab('products')">
+                    📦 Thư Viện Sản Phẩm
+                </button>
+                <button class="sidebar-menu-btn" id="menu-btn-history" onclick="switchTab('history')">
+                    📜 Lịch Sử Đánh Giá
+                </button>
+                <button class="sidebar-menu-btn" id="menu-btn-admin" onclick="switchTab('admin')">
+                    👑 Admin Console
+                </button>
+
+                <!-- Gamification Card -->
+                <div class="sidebar-gamification-box">
+                    <div style="display: flex; align-items: center; justify-content: space-between;">
+                        <span class="level-badge-circle" id="sidebar-level-badge">1</span>
+                        <div style="text-align: right;">
+                            <div style="font-size: 0.7rem; color: var(--text-muted); font-weight: bold;">CẤP ĐỘ BD</div>
+                            <div style="font-size: 0.85rem; font-weight: 800; color: #f3a83b;" id="sidebar-level-name">Tân Binh</div>
+                        </div>
+                    </div>
+                    <div class="gamification-progress-bar">
+                        <div class="gamification-progress-fill" id="sidebar-xp-progress" style="width: 0%"></div>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; font-size: 0.7rem; color: var(--text-muted);">
+                        <span id="sidebar-xp-text">0 / 100 XP</span>
+                        <span id="sidebar-streak-text">Streak: 0 ngày 🔥</span>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- Main Dynamic Workspace Pane -->
+            <section class="workspace-main-content">
+                
+                <!-- TAB 1: DASHBOARD CHUNG -->
+                <div class="screen-panel glass-panel" id="screen-dashboard">
+                    <h2 class="panel-title">Hồ Sơ Năng Lực BD Thực Chiến</h2>
+                    
+                    <div class="report-dashboard-grid" style="margin-bottom: 30px;">
+                        <div class="score-card-radial" style="background: rgba(243, 168, 59, 0.02); border-color: rgba(243, 168, 59, 0.25);">
+                            <div class="radial-score-svg">
+                                <svg width="140" height="140">
+                                    <defs>
+                                        <linearGradient id="scoreGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                            <stop offset="0%" stop-color="#f3a83b" />
+                                            <stop offset="100%" stop-color="#ef4444" />
+                                        </linearGradient>
+                                    </defs>
+                                    <circle class="radial-score-bg" cx="70" cy="70" r="64" />
+                                    <circle class="radial-score-fill" id="dashboard-overall-score-circle" cx="70" cy="70" r="64" />
+                                </svg>
+                                <div class="radial-score-text" id="dashboard-overall-score-val">0</div>
+                            </div>
+                            <h3 style="margin: 15px 0 5px 0; font-size: 1.15rem; font-weight: 800;">Điểm Săn Deal Trung Bình</h3>
+                            <p style="font-size: 0.8rem; color: var(--text-muted); margin: 0;" id="dashboard-eval-count">Chưa hoàn thành lượt roleplay nào</p>
+                        </div>
+
+                        <div class="skills-chart-box">
+                            <h3 style="margin-top: 0; font-size: 1.05rem; font-weight: 800; color: var(--text-primary); margin-bottom: 15px;">Xếp Hạng Kỹ Năng B2B</h3>
+                            
+                            <div class="skill-bar-row">
+                                <div class="skill-bar-meta">
+                                    <span>Khai Phá Nhu Cầu (Discovery)</span>
+                                    <span id="bar-val-discovery">0%</span>
+                                </div>
+                                <div class="skill-bar-bg"><div class="skill-bar-fill" id="bar-fill-discovery" style="width: 0%"></div></div>
+                            </div>
+                            <div class="skill-bar-row">
+                                <div class="skill-bar-meta">
+                                    <span>Xử Lý Từ Chối (Objection Handling)</span>
+                                    <span id="bar-val-objection">0%</span>
+                                </div>
+                                <div class="skill-bar-bg"><div class="skill-bar-fill" id="bar-fill-objection" style="width: 0%"></div></div>
+                            </div>
+                            <div class="skill-bar-row">
+                                <div class="skill-bar-meta">
+                                    <span>Đàm Phán Thương Lượng (Negotiation)</span>
+                                    <span id="bar-val-negotiation">0%</span>
+                                </div>
+                                <div class="skill-bar-bg"><div class="skill-bar-fill" id="bar-fill-negotiation" style="width: 0%"></div></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Achieved Badges Showcase -->
+                    <div>
+                        <h3 style="font-size: 1.1rem; font-weight: 800; margin-bottom: 5px;">Huy Chương Đã Mở Khóa</h3>
+                        <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 15px;">Luyện tập nhiều kịch bản khó để thu thập danh hiệu cao quý.</p>
+                        <div class="badges-showcase-grid">
+                            <div class="badge-item-card" id="badge-pitch-master">
+                                <span class="badge-icon">🎤</span>
+                                <span class="badge-name">Pitch Master</span>
+                            </div>
+                            <div class="badge-item-card" id="badge-discovery-expert">
+                                <span class="badge-icon">🕵️‍♂️</span>
+                                <span class="badge-name">Discovery Expert</span>
+                            </div>
+                            <div class="badge-item-card" id="badge-negotiation-king">
+                                <span class="badge-icon">👑</span>
+                                <span class="badge-name">Negotiation King</span>
+                            </div>
+                            <div class="badge-item-card" id="badge-top-performer">
+                                <span class="badge-icon">🏆</span>
+                                <span class="badge-name">Top Performer</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TAB 2: AI SALES ROLEPLAY SIMULATOR -->
+                <div class="screen-panel glass-panel hidden" id="screen-simulator">
+                    
+                    <!-- STEP 1: SELECT SCENARIO -->
+                    <div id="sim-step-1" class="wizard-step">
+                        <div class="step-header">
+                            <h2 class="panel-title" style="margin: 0; border: none; padding: 0;">Bước 1: Chọn Kịch Bản Thử Thách</h2>
+                            <div class="step-indicator-dots">
+                                <div class="step-dot active"></div>
+                                <div class="step-dot"></div>
+                                <div class="step-dot"></div>
+                                <div class="step-dot"></div>
+                                <div class="step-dot"></div>
+                            </div>
+                        </div>
+                        <p style="font-size: 0.9rem; color: var(--text-muted); margin-top: -10px; margin-bottom: 25px;">Hãy chọn tình huống thực tế bạn muốn giả lập để rèn luyện kỹ năng:</p>
+                        
+                        <div class="scenario-grid" id="scenarios-container-list">
+                            <!-- Injected dynamically by JS -->
+                        </div>
+                        
+
+                        
+                        <div style="text-align: right;">
+                            <button class="btn btn-primary" onclick="nextWizardStep(1)">Tiếp Tục &rarr;</button>
+                        </div>
+                    </div>
+
+                    <!-- STEP 2: CONFIGURE AI PARAMETERS -->
+                    <div id="sim-step-2" class="wizard-step hidden">
+                        <div class="step-header">
+                            <h2 class="panel-title" style="margin: 0; border: none; padding: 0;">Bước 2: Cấu Hình Khách Hàng (AI)</h2>
+                            <div class="step-indicator-dots">
+                                <div class="step-dot completed"></div>
+                                <div class="step-dot active"></div>
+                                <div class="step-dot"></div>
+                                <div class="step-dot"></div>
+                                <div class="step-dot"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="config-options-grid">
+                            <div class="form-group">
+                                <label class="dossier-label">Lĩnh Vực Khách Hàng</label>
+                                <select id="config-industry" style="width: 100%; padding: 10px 14px; border-radius: 8px; border: 1px solid var(--border-color); background: rgba(255,255,255,0.03); color: var(--text-primary); font-family: inherit;">
+                                    <option value="SaaS">SaaS (Software-as-a-Service)</option>
+                                    <option value="Martech">Martech (Marketing Tech)</option>
+                                    <option value="Fintech">Fintech (Công nghệ tài chính)</option>
+                                    <option value="HRTech">HRTech (Quản trị nhân sự)</option>
+                                    <option value="Healthcare">Healthcare (Y tế - Sức khỏe)</option>
+                                    <option value="Retail">Retail (Bán lẻ)</option>
+                                    <option value="FMCG">FMCG (Tiêu dùng nhanh)</option>
+                                    <option value="AI">AI / Deep Learning</option>
+                                    <option value="Logistics">Logistics & Vận tải</option>
+                                    <option value="Real Estate">Real Estate (Bất động sản)</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="dossier-label">Quy Mô Công Ty</label>
+                                <select id="config-size" style="width: 100%; padding: 10px 14px; border-radius: 8px; border: 1px solid var(--border-color); background: rgba(255,255,255,0.03); color: var(--text-primary); font-family: inherit;">
+                                    <option value="Startup">Startup (Khởi nghiệp)</option>
+                                    <option value="SME">SME (Doanh nghiệp vừa và nhỏ)</option>
+                                    <option value="Enterprise">Enterprise (Tập đoàn lớn)</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="dossier-label">Độ Khó Thách Thức</label>
+                                <select id="config-difficulty" style="width: 100%; padding: 10px 14px; border-radius: 8px; border: 1px solid var(--border-color); background: rgba(255,255,255,0.03); color: var(--text-primary); font-family: inherit;">
+                                    <option value="Beginner">Dễ (Beginner)</option>
+                                    <option value="Intermediate" selected>Trung Bình (Intermediate)</option>
+                                    <option value="Advanced">Khó (Advanced)</option>
+                                    <option value="Expert">Cực Khó (Expert)</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="dossier-label">Tính Cách Người Giao Tiếp</label>
+                                <select id="config-personality" style="width: 100%; padding: 10px 14px; border-radius: 8px; border: 1px solid var(--border-color); background: rgba(255,255,255,0.03); color: var(--text-primary); font-family: inherit;">
+                                    <option value="Friendly">Thân thiện, cởi mở</option>
+                                    <option value="Busy">Bận rộn, thích ngắn gọn</option>
+                                    <option value="Analytical">Phân tích kỹ lưỡng, cần số liệu</option>
+                                    <option value="Skeptical">Hoài nghi, khó tin tưởng</option>
+                                    <option value="Aggressive">Hung hăng, thích ép giá</option>
+                                    <option value="Very Technical">Thiên về kỹ thuật, hỏi sâu API</option>
+                                    <option value="CEO">CEO - Chỉ nhìn bức tranh tổng thể</option>
+                                    <option value="Procurement">Phòng mua hàng - Chỉ ép giá</option>
+                                    <option value="Random">Ngẫu nhiên</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="dossier-label">Ngôn Ngữ Trao Đổi</label>
+                                <select id="config-language" style="width: 100%; padding: 10px 14px; border-radius: 8px; border: 1px solid var(--border-color); background: rgba(255,255,255,0.03); color: var(--text-primary); font-family: inherit;">
+                                    <option value="vi" selected>Tiếng Việt 🇻🇳</option>
+                                    <option value="en">English 🇬🇧</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group" style="display: none;">
+                                <label class="dossier-label">Giọng Nhân Vật</label>
+                                <select id="config-voice-gender" style="width: 100%; padding: 10px 14px; border-radius: 8px; border: 1px solid var(--border-color); background: rgba(255,255,255,0.03); color: var(--text-primary); font-family: inherit;">
+                                    <option value="female" selected>Giọng Nữ (Female) 👩</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div style="display: flex; justify-content: space-between;">
+                            <button class="btn btn-secondary" onclick="prevWizardStep(2)">&larr; Quay lại</button>
+                            <button class="btn btn-primary" onclick="nextWizardStep(2)">Tiếp Tục &rarr;</button>
+                        </div>
+                    </div>
+
+                    <!-- STEP 3: CONFIGURE PRODUCT OR SAVED PROFILE -->
+                    <div id="sim-step-3" class="wizard-step hidden">
+                        <div class="step-header">
+                            <h2 class="panel-title" style="margin: 0; border: none; padding: 0;">Bước 3: Chọn Sản Phẩm Bán Hàng</h2>
+                            <div class="step-indicator-dots">
+                                <div class="step-dot completed"></div>
+                                <div class="step-dot completed"></div>
+                                <div class="step-dot active"></div>
+                                <div class="step-dot"></div>
+                                <div class="step-dot"></div>
+                            </div>
+                        </div>
+
+                        <div class="product-picker-container">
+                            <label class="dossier-label">Sử dụng thư viện sản phẩm đã lưu:</label>
+                            <div class="saved-products-grid" id="sim-product-picker-grid">
+                                <!-- Loaded dynamically -->
+                            </div>
+
+                            <div style="border-top: 1px solid var(--border-color); padding-top: 20px; margin-top: 15px;">
+                                <label class="dossier-label">Hoặc nhập sản phẩm thủ công nhanh:</label>
+                                <div class="form-grid" style="margin-top: 10px;">
+                                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                                        <div class="form-group">
+                                            <input type="text" id="manual-company-name" placeholder="Tên công ty bán (VD: Antigravity Tech)" style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid var(--border-color); background: rgba(255,255,255,0.02); color: var(--text-primary); font-family: inherit;">
+                                        </div>
+                                        <div class="form-group">
+                                            <input type="text" id="manual-product-name" placeholder="Tên sản phẩm bán (VD: CRM Auto-Sales)" style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid var(--border-color); background: rgba(255,255,255,0.02); color: var(--text-primary); font-family: inherit;">
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <textarea id="manual-product-desc" placeholder="Mô tả sản phẩm và lợi ích cốt lõi" style="width: 100%; height: 60px; padding: 10px; border-radius: 6px; border: 1px solid var(--border-color); background: rgba(255,255,255,0.02); color: var(--text-primary); font-family: inherit; resize: none;"></textarea>
+                                    </div>
+                                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                                        <input type="text" id="manual-product-usp" placeholder="USP - Điểm bán hàng độc nhất" style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid var(--border-color); background: rgba(255,255,255,0.02); color: var(--text-primary); font-family: inherit;">
+                                        <input type="text" id="manual-product-pricing" placeholder="Mức giá (VD: $50/user/tháng)" style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid var(--border-color); background: rgba(255,255,255,0.02); color: var(--text-primary); font-family: inherit;">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div style="display: flex; justify-content: space-between;">
+                            <button class="btn btn-secondary" onclick="prevWizardStep(3)">&larr; Quay lại</button>
+                            <button class="btn btn-primary" onclick="nextWizardStep(3)">Xem Bối Cảnh Gặp &rarr;</button>
+                        </div>
+                    </div>
+
+                    <!-- STEP 4: GENERATED CONTEXT DOSSIER -->
+                    <div id="sim-step-4" class="wizard-step hidden">
+                        <div class="step-header">
+                            <h2 class="panel-title" style="margin: 0; border: none; padding: 0;">Bước 4: Hồ Sơ Bối Cảnh Doanh Nghiệp</h2>
+                            <div class="step-indicator-dots">
+                                <div class="step-dot completed"></div>
+                                <div class="step-dot completed"></div>
+                                <div class="step-dot completed"></div>
+                                <div class="step-dot active"></div>
+                                <div class="step-dot"></div>
+                            </div>
+                        </div>
+
+                        <div class="dossier-box" id="generated-dossier-panel">
+                            <h3 style="margin-top: 0; font-size: 1.15rem; font-weight: 800; display: flex; align-items: center; gap: 8px;">
+                                📂 HỒ SƠ KHÁCH HÀNG MỤC TIÊU <span id="dossier-load-spinner" class="hidden">⏳ Đang tạo hồ sơ...</span>
+                            </h3>
+                            <div class="dossier-grid">
+                                <div class="dossier-item"><span class="dossier-label">Công ty</span><span class="dossier-val" id="dossier-company">...</span></div>
+                                <div class="dossier-item"><span class="dossier-label">Giai đoạn mua</span><span class="dossier-val" id="dossier-stage">...</span></div>
+                                <div class="dossier-item"><span class="dossier-label">Ngân sách dự kiến</span><span class="dossier-val" id="dossier-budget">...</span></div>
+                                <div class="dossier-item"><span class="dossier-label">Timeline quyết định</span><span class="dossier-val" id="dossier-timeline">...</span></div>
+                            </div>
+                            <div class="form-group" style="margin-top: 20px;">
+                                <span class="dossier-label">Khó Khăn Lớn Nhất (Current Challenges)</span>
+                                <p class="dossier-val" id="dossier-challenges" style="margin: 5px 0 0 0;">...</p>
+                            </div>
+                            <div class="form-group" style="margin-top: 15px;">
+                                <span class="dossier-label">Nhu Cầu Gỡ Rối (Pain Points)</span>
+                                <p class="dossier-val" id="dossier-painpoints" style="margin: 5px 0 0 0;">...</p>
+                            </div>
+                            <div class="form-group" style="margin-top: 15px;">
+                                <span class="dossier-label">Người Duyệt (Decision Makers)</span>
+                                <p class="dossier-val" id="dossier-decisionmakers" style="margin: 5px 0 0 0;">...</p>
+                            </div>
+                        </div>
+
+                        <div style="display: flex; justify-content: space-between;">
+                            <button class="btn btn-secondary" onclick="prevWizardStep(4)">&larr; Quay lại</button>
+                            <button class="btn btn-primary" id="btn-start-chat-simulation" onclick="startChatSimulation()">Bắt Đầu Gặp Khách Hàng 🚀</button>
+                        </div>
+                    </div>
+
+                    <!-- STEP 5: ACTIVE ROLEPLAY CHAT & COACH -->
+                    <div id="sim-step-5" class="wizard-step hidden" style="flex: 1; display: flex; flex-direction: column;">
+                        <div class="step-header">
+                            <h2 class="panel-title" style="margin: 0; border: none; padding: 0; display: flex; align-items: center; gap: 8px;">
+                                <span class="live-dot" style="display: inline-block; width: 10px; height: 10px; background-color: #ef4444; border-radius: 50%; box-shadow: 0 0 8px #ef4444; animation: pulse 1.5s infinite;"></span>
+                                Cuộc Họp Thực Chiến Đang Diễn Ra
+                            </h2>
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                <a class="btn" style="background: rgba(255,255,255,0.06); border: 1px solid var(--border-color); padding: 8px 16px; font-size: 0.85rem; color: var(--text-primary); cursor: pointer; text-decoration: none; display: inline-block;" onclick="toggleDossierModal()">📂 Xem Bối Cảnh (Dossier)</a>
+                                <button class="btn btn-primary" style="background: #a20a0a; border-color: #a20a0a; padding: 8px 16px; font-size: 0.85rem;" onclick="endSalesSimulation()">Kết Thúc Cuộc Họp & Đánh Giá 🏁</button>
+                            </div>
+                        </div>
+
+                        <div class="simulator-layout" id="text-simulator-layout">
+                            <!-- Left: ChatGPT Style Interface -->
+                            <div class="chat-area-container">
+                                <div class="chat-messages-scroll" id="simulation-messages-container">
+                                    <!-- Injected dynamically by JS -->
+                                </div>
+                                <div class="chat-input-bar-wrapper">
+                                    <div class="chat-input-row" id="text-input-row">
+                                        <input type="text" id="simulation-user-input" placeholder="Nhập câu thoại thuyết trình hoặc đàm phán của bạn..." class="chat-input-field" onkeypress="handleChatEnter(event)">
+                                        <button class="btn" style="border-radius: 20px; padding: 10px 24px; background: #f3a83b; color: #fff; border: none; cursor: pointer;" onclick="sendSimulatorMessage()">Gửi 💬</button>
+                                    </div>
+                                    <div class="chat-input-row hidden" id="voice-input-row" style="display: flex; align-items: center; justify-content: space-between; padding: 8px 0; gap: 15px;">
+                                        <button id="btn-voice-mic" class="mic-pulse-btn" onclick="toggleVoiceSpeechInput()" style="width: 54px; height: 54px; border-radius: 50%; border: none; background: #ef4444; color: #fff; font-size: 1.5rem; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 15px rgba(239, 68, 68, 0.35); flex-shrink: 0; transition: all 0.25s ease;">🎙️</button>
+                                        <div style="flex: 1;">
+                                            <div style="font-size: 0.82rem; font-weight: bold; color: var(--text-primary);" id="voice-status-label">Bấm Micro để ghi âm câu thoại nói của bạn</div>
+                                            <div id="voice-transcription-preview" style="font-size: 0.75rem; color: var(--text-muted); font-style: italic; margin-top: 3px; line-height: 1.3;">Microphone chưa kích hoạt. Bấm nút để ghi âm...</div>
+                                        </div>
+                                        <button class="btn" style="padding: 6px 12px; font-size: 0.72rem; background: rgba(255,255,255,0.06); border: 1px solid var(--border-color); color: var(--text-muted);" onclick="toggleKeyboardFallback()">Gõ phím ⌨️</button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Right: Live Sales Coach Pane -->
+                            <aside class="coach-sidebar">
+                                <div class="coach-header">
+                                    <h4 style="margin: 0; font-size: 0.9rem; font-weight: 800; color: var(--text-primary);">💡 HUẤN LUYỆN VIÊN</h4>
+                                    <label class="switch-toggle" style="display: flex; align-items: center; gap: 6px; font-size: 0.72rem; cursor: pointer;">
+                                        <input type="checkbox" id="coach-toggle-checkbox" checked onchange="toggleCoachPanel()"> Gợi ý
+                                    </label>
+                                </div>
+                                
+                                <div class="coach-tip-box" id="coach-hint-display-box">
+                                    Chào mừng! Hãy mở đầu buổi gặp thật thân thiện, tìm cách gây thiện cảm (Rapport Building) và giới thiệu bản thân trước nhé.
+                                </div>
+                                
+                                <div style="font-size: 0.75rem; color: var(--text-muted); line-height: 1.4; border-top: 1px solid var(--border-color); padding-top: 12px; margin-top: 10px;">
+                                    📌 <b>Mẹo B2B</b>: Đặt nhiều câu hỏi mở để tìm hiểu kỹ Pain Point thay vì vội vã giới thiệu tính năng.
+                                </div>
+
+                                <div class="dossier-accordion" style="margin-top: 15px; border-top: 1px solid var(--border-color); padding-top: 10px;">
+                                    <a onclick="toggleDossierDrawer()" class="btn" style="width: 100%; display: flex; align-items: center; justify-content: space-between; font-size: 0.8rem; padding: 6px 12px; background: rgba(255,255,255,0.04); border: 1px solid var(--border-color); color: var(--text-primary); cursor: pointer; border-radius: 6px; text-decoration: none;">
+                                        <span>📂 Bối Cảnh Khách Hàng</span>
+                                        <span id="dossier-drawer-arrow">▼</span>
+                                    </button>
+                                    <div id="dossier-drawer-content" class="hidden" style="margin-top: 10px; font-size: 0.78rem; background: rgba(255,255,255,0.02); padding: 10px; border-radius: 6px; border: 1px solid var(--border-color); max-height: 250px; overflow-y: auto; line-height: 1.4; text-align: left;">
+                                        <p style="margin: 4px 0;"><b>Công ty:</b> <span id="sidebar-dossier-company">...</span></p>
+                                        <p style="margin: 4px 0;"><b>Giai đoạn mua:</b> <span id="sidebar-dossier-stage">...</span></p>
+                                        <p style="margin: 4px 0;"><b>Ngân sách:</b> <span id="sidebar-dossier-budget">...</span></p>
+                                        <p style="margin: 4px 0;"><b>Timeline:</b> <span id="sidebar-dossier-timeline">...</span></p>
+                                        <p style="margin: 4px 0;"><b>Khó khăn:</b> <span id="sidebar-dossier-challenges">...</span></p>
+                                        <p style="margin: 4px 0;"><b>Pain Points:</b> <span id="sidebar-dossier-painpoints">...</span></p>
+                                        <p style="margin: 4px 0;"><b>Người duyệt:</b> <span id="sidebar-dossier-decisionmakers">...</span></p>
+                                    </div>
+                                </div>
+                            </aside>
+                        </div>
+
+                        <!-- Voice Call Screen Panel Layout -->
+                        <div id="voice-simulator-layout" class="voice-call-layout-wrapper hidden">
+                            <!-- Top Info & Timer -->
+                            <div class="voice-call-top-header">
+                                <h3 id="voice-call-scenario-title" style="margin: 0; font-size: 1.15rem; font-weight: 800; color: var(--text-primary); display: flex; align-items: center; gap: 8px;">Pitching a Loyalty Program Idea ℹ️</h3>
+                                <div style="display: flex; align-items: center; gap: 12px;">
+                                    <a class="btn" style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.15); padding: 6px 12px; font-size: 0.8rem; color: var(--text-primary); cursor: pointer; border-radius: 6px; text-decoration: none; display: inline-block;" onclick="toggleDossierModal()">📂 Xem Bối Cảnh (Dossier)</a>
+                                    <div class="voice-call-timer" id="voice-call-timer-val">00:00</div>
+                                </div>
+                            </div>
+
+                            <!-- Main 2-Person Visual Call Screen -->
+                            <div class="voice-call-card-view">
+                                <!-- User profile box -->
+                                <div class="voice-profile-box" id="voice-user-profile-box">
+                                    <div class="voice-avatar-wrapper" id="voice-user-avatar-wrapper">
+                                        <div class="voice-ripple-rings" id="voice-user-ripple"></div>
+                                        <img src="peter_1.jpg" class="voice-avatar" alt="You">
+                                    </div>
+                                    <div class="voice-profile-name">You</div>
+                                    <div class="voice-profile-role" id="voice-user-role-label">Specialist</div>
+                                    <div class="voice-speaking-indicator-bar" id="voice-user-speaking-bar"></div>
+                                </div>
+
+                                <!-- Stakeholder profile box -->
+                                <div class="voice-profile-box" id="voice-ai-profile-box">
+                                    <div class="voice-avatar-wrapper" id="voice-ai-avatar-wrapper">
+                                        <div class="voice-ripple-rings" id="voice-ai-ripple"></div>
+                                        <div class="voice-avatar voice-ai-node-icon" id="voice-ai-avatar">✦</div>
+                                    </div>
+                                    <div class="voice-profile-name" id="voice-ai-name-label">LinkedIn AI</div>
+                                    <div class="voice-profile-role" id="voice-ai-role-label">Manager</div>
+                                    <div class="voice-speaking-indicator-bar" id="voice-ai-speaking-bar"></div>
+                                </div>
+                            </div>
+
+                            <!-- Speech Transcript Box -->
+                            <div class="voice-subtitles-box" style="display: flex; flex-direction: column; gap: 8px;">
+                                <div style="font-size: 0.75rem; color: #f3a83b; font-weight: bold; background: rgba(243, 168, 59, 0.1); padding: 6px 12px; border-radius: 6px; border-left: 3px solid #f3a83b; text-align: left;" id="voice-coach-hint-display">
+                                    💡 HUẤN LUYỆN VIÊN: Hãy mở đầu cuộc gọi thật cởi mở và xin 2 phút trình bày mục tiêu.
+                                </div>
+                                <p id="voice-subtitles-text" style="margin: 0; text-align: left;">Đang kết nối đàm thoại thoại... Hãy nhấp Micro bên dưới để nói chuyện.</p>
+                            </div>
+
+                            <!-- Floating Control Pill -->
+                            <div class="voice-controls-pill-wrapper">
+                                <div class="voice-controls-pill">
+                                    <button id="btn-voice-mic-main" class="voice-pill-btn mic-btn" onclick="toggleVoiceSpeechInput()" title="Bật/Tắt Micro">🎙️</button>
+                                    <button class="voice-pill-btn end-btn" onclick="endSalesSimulation()" title="Kết thúc cuộc họp">End session</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Floating Dossier Modal for Voice/Text Mode -->
+                    <div id="voice-dossier-modal" class="modal-overlay hidden" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); display: flex; align-items: center; justify-content: center; z-index: 10000; backdrop-filter: blur(8px);">
+                        <div class="modal-content" style="background: var(--bg-card); border: 1px solid var(--border-color); padding: 25px; border-radius: 12px; width: 90%; max-width: 550px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
+                            <h3 style="margin-top: 0; font-size: 1.2rem; font-weight: 800; color: var(--text-primary); border-bottom: 1px solid var(--border-color); padding-bottom: 10px; display: flex; justify-content: space-between; align-items: center;">
+                                <span>📂 Hồ Sơ Bối Cảnh Doanh Nghiệp</span>
+                                <button onclick="toggleDossierModal()" style="background: none; border: none; color: var(--text-muted); font-size: 1.5rem; cursor: pointer;">&times;</button>
+                            </h3>
+                            <div style="margin-top: 15px; font-size: 0.85rem; line-height: 1.5; color: var(--text-primary); max-height: 350px; overflow-y: auto; text-align: left;">
+                                <p style="margin: 6px 0;"><b>Công ty:</b> <span id="modal-dossier-company">...</span></p>
+                                <p style="margin: 6px 0;"><b>Giai đoạn mua:</b> <span id="modal-dossier-stage">...</span></p>
+                                <p style="margin: 6px 0;"><b>Ngân sách:</b> <span id="modal-dossier-budget">...</span></p>
+                                <p style="margin: 6px 0;"><b>Timeline quyết định:</b> <span id="modal-dossier-timeline">...</span></p>
+                                <p style="margin-top: 12px; margin-bottom: 4px; font-weight: bold;">Khó khăn lớn nhất (Current Challenges):</p>
+                                <p id="modal-dossier-challenges" style="color: var(--text-muted); background: rgba(255,255,255,0.02); padding: 8px; border-radius: 6px; border: 1px solid var(--border-color); margin: 0;"></p>
+                                <p style="margin-top: 12px; margin-bottom: 4px; font-weight: bold;">Nhu cầu gỡ rối (Pain Points):</p>
+                                <p id="modal-dossier-painpoints" style="color: var(--text-muted); background: rgba(255,255,255,0.02); padding: 8px; border-radius: 6px; border: 1px solid var(--border-color); margin: 0;"></p>
+                                <p style="margin-top: 12px; margin-bottom: 4px; font-weight: bold;">Người duyệt (Decision Makers):</p>
+                                <p id="modal-dossier-decisionmakers" style="color: var(--text-muted); background: rgba(255,255,255,0.02); padding: 8px; border-radius: 6px; border: 1px solid var(--border-color); margin: 0;"></p>
+                            </div>
+                            <div style="text-align: right; margin-top: 20px;">
+                                <button class="btn btn-primary" onclick="toggleDossierModal()">Đóng</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- STEP 6: END SESSION DETAILED REPORT -->
+                    <div id="sim-step-6" class="wizard-step hidden">
+                        <div class="step-header">
+                            <h2 class="panel-title" style="margin: 0; border: none; padding: 0;">Kết Quả Đánh Giá Năng Lực Pitching</h2>
+                            <button class="btn btn-primary" onclick="restartSimulationWizard()">Luyện Tập Lượt Mới 🔄</button>
+                        </div>
+
+                        <div class="report-dashboard-grid" style="margin-bottom: 30px;">
+                            <!-- Radial Score Chart -->
+                            <div class="score-card-radial">
+                                <div class="radial-score-svg">
+                                    <svg width="140" height="140">
+                                        <circle class="radial-score-bg" cx="70" cy="70" r="64" />
+                                        <circle class="radial-score-fill" id="report-overall-score-circle" cx="70" cy="70" r="64" />
+                                    </svg>
+                                    <div class="radial-score-text" id="report-overall-score-val">0</div>
+                                </div>
+                                <h3 style="margin: 15px 0 3px 0; font-size: 1.2rem; font-weight: 800;" id="report-overall-title">Chiến Binh Đàm Phán</h3>
+                                <p style="font-size: 0.8rem; color: var(--text-muted); margin: 0 0 10px 0;">Cấp độ ước tính: <span id="report-skill-level" style="color: #f3a83b; font-weight: 800;">Intermediate</span></p>
+                                <span style="font-size: 0.72rem; font-weight: 800; color: #10b981; background: rgba(16,185,129,0.1); padding: 4px 12px; border-radius: 12px;" id="report-sales-framework">Khung: BANT</span>
+                            </div>
+
+                            <!-- Skills Breakdown Chart -->
+                            <div class="skills-chart-box">
+                                <h3 style="margin-top: 0; font-size: 1.05rem; font-weight: 800; color: var(--text-primary); margin-bottom: 12px;">Đánh Giá Chi Tiết Kỹ Năng B2B</h3>
+                                <div id="report-bar-skills-container">
+                                    <!-- Dynamic skill bars injected here -->
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Strengths / Weaknesses Grids -->
+                        <div class="report-dashboard-grid" style="margin-bottom: 30px;">
+                            <div style="background: rgba(16, 185, 129, 0.02); border: 1.5px dashed rgba(16, 185, 129, 0.25); border-radius: 16px; padding: 25px;">
+                                <h4 style="color: #10b981; margin-top: 0; font-weight: 800; display: flex; align-items: center; gap: 8px;">💚 ĐIỂM MẠNH ĐẠT ĐƯỢC</h4>
+                                <ul id="report-strengths-list" style="margin: 10px 0 0 0; padding-left: 20px; font-size: 0.88rem; line-height: 1.6; color: var(--text-primary);">
+                                    <!-- Injected -->
+                                </ul>
+                            </div>
+                            <div style="background: rgba(239, 68, 68, 0.02); border: 1.5px dashed rgba(239, 68, 68, 0.25); border-radius: 16px; padding: 25px;">
+                                <h4 style="color: #ef4444; margin-top: 0; font-weight: 800; display: flex; align-items: center; gap: 8px;">💔 ĐIỂM CẦN CẢI THIỆN</h4>
+                                <ul id="report-weaknesses-list" style="margin: 10px 0 0 0; padding-left: 20px; font-size: 0.88rem; line-height: 1.6; color: var(--text-primary);">
+                                    <!-- Injected -->
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- Suggestions and replay transcript panel -->
+                        <div class="glass-panel" style="margin-bottom: 30px; padding: 25px;">
+                            <h3 style="margin-top: 0; font-size: 1.15rem; font-weight: 800; color: var(--text-primary);">💡 Khuyến Nghị Câu Thoại Tối Ưu</h3>
+                            <div id="report-suggested-answers-container" style="display: flex; flex-direction: column; gap: 15px; margin-top: 15px;">
+                                <!-- Injected -->
+                            </div>
+                        </div>
+
+                        <!-- Replay transcript details -->
+                        <div class="glass-panel" style="padding: 25px;">
+                            <h3 style="margin-top: 0; font-size: 1.15rem; font-weight: 800; color: var(--text-primary); margin-bottom: 15px;">📜 Xem Lại Cuộc Hội Thoại & Chi Tiết Lỗi</h3>
+                            <div id="report-replay-transcript-list">
+                                <!-- List with highlighted good/bad/missed moments -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TAB 3: PRODUCTS LIBRARY -->
+                <div class="screen-panel glass-panel hidden" id="screen-products">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid var(--border-color); padding-bottom: 15px;">
+                        <h2 class="panel-title" style="margin: 0; border: none; padding: 0;">Thư Viện Sản Phẩm Của Tôi</h2>
+                        <button class="btn btn-primary" onclick="openNewProductModal()">+ Thêm Sản Phẩm Mới</button>
+                    </div>
+                    <p style="font-size: 0.88rem; color: var(--text-muted); margin-top: -10px; margin-bottom: 20px;">Lưu trữ thông tin các dịch vụ/sản phẩm của bạn để AI làm bối cảnh đàm phán chính xác nhất.</p>
+                    
+                    <div class="saved-products-grid" id="library-products-grid">
+                        <!-- Loaded dynamically -->
+                    </div>
+
+                    <!-- Add product modal/form overlay inline -->
+                    <div id="new-product-form-panel" class="hidden" style="margin-top: 25px; padding: 20px; border: 1.5px dashed var(--primary); border-radius: 16px; background: rgba(255,255,255,0.01);">
+                        <h3 style="margin-top: 0; font-size: 1.1rem; font-weight: 800; color: var(--text-primary); margin-bottom: 15px;">Tạo Hồ Sơ Sản Phẩm Mới</h3>
+                        <div class="form-grid">
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                                <div class="form-group">
+                                    <label class="dossier-label">Tên Doanh Nghiệp</label>
+                                    <input type="text" id="prod-form-company" placeholder="Ví dụ: TechCorp CRM" style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid var(--border-color); background: rgba(255,255,255,0.02); color: var(--text-primary); font-family: inherit;">
+                                </div>
+                                <div class="form-group">
+                                    <label class="dossier-label">Tên Sản Phẩm/Giải Pháp</label>
+                                    <input type="text" id="prod-form-name" placeholder="Ví dụ: CRM Auto-Sales System" style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid var(--border-color); background: rgba(255,255,255,0.02); color: var(--text-primary); font-family: inherit;">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="dossier-label">Mô tả sản phẩm (Product Description)</label>
+                                <textarea id="prod-form-desc" placeholder="Giới thiệu các tính năng cốt lõi và bài toán doanh nghiệp giải quyết được..." style="width: 100%; height: 80px; padding: 10px; border-radius: 6px; border: 1px solid var(--border-color); background: rgba(255,255,255,0.02); color: var(--text-primary); font-family: inherit; resize: none;"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label class="dossier-label">Điểm Bán Hàng Độc Nhất (USP)</label>
+                                <input type="text" id="prod-form-usp" placeholder="Ví dụ: Tự động hóa CRM kết nối qua Zalo, giảm 30% thời gian phản hồi" style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid var(--border-color); background: rgba(255,255,255,0.02); color: var(--text-primary); font-family: inherit;">
+                            </div>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                                <div class="form-group">
+                                    <label class="dossier-label">Mức Giá / Gói Bản Quyền</label>
+                                    <input type="text" id="prod-form-pricing" placeholder="Ví dụ: $20/người dùng/tháng" style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid var(--border-color); background: rgba(255,255,255,0.02); color: var(--text-primary); font-family: inherit;">
+                                </div>
+                                <div class="form-group">
+                                    <label class="dossier-label">Đối Thủ Cạnh Tranh</label>
+                                    <input type="text" id="prod-form-competitors" placeholder="Ví dụ: Salesforce, HubSpot, GetFly" style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid var(--border-color); background: rgba(255,255,255,0.02); color: var(--text-primary); font-family: inherit;">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="dossier-label">Khách Hàng Mục Tiêu</label>
+                                <input type="text" id="prod-form-targets" placeholder="Ví dụ: SMEs bán lẻ, các đội Sales Outbound từ 5-20 người" style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid var(--border-color); background: rgba(255,255,255,0.02); color: var(--text-primary); font-family: inherit;">
+                            </div>
+                            <div style="text-align: right; display: flex; justify-content: flex-end; gap: 12px; margin-top: 10px;">
+                                <button class="btn btn-secondary" onclick="closeNewProductModal()">Hủy Bỏ</button>
+                                <button class="btn btn-primary" onclick="saveProductForm()">Lưu Sản Phẩm</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TAB 4: EVALUATION HISTORY LOGS -->
+                <div class="screen-panel glass-panel hidden" id="screen-history">
+                    <h2 class="panel-title">Lịch Sử Đánh Giá Thuyết Trình</h2>
+                    <p style="font-size: 0.88rem; color: var(--text-muted); margin-top: -10px; margin-bottom: 20px;">Theo dõi sự tiến bộ của bạn qua các lượt pitching với AI khách hàng khác nhau.</p>
+                    
+                    <div style="overflow-x: auto;">
+                        <table class="history-table">
+                            <thead>
+                                <tr>
+                                    <th>Thời gian</th>
+                                    <th>Kịch bản</th>
+                                    <th>Công ty / Lĩnh vực</th>
+                                    <th>Độ khó</th>
+                                    <th>Điểm số</th>
+                                    <th>Khung Sales</th>
+                                    <th>Hành động</th>
+                                </tr>
+                            </thead>
+                            <tbody id="history-table-body">
+                                <!-- Loaded dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- TAB 5: ADMIN CONSOLE -->
+                <div class="screen-panel glass-panel hidden" id="screen-admin">
+                    <h2 class="panel-title">Admin Console - Thiết Lập Kịch Bản</h2>
+                    <p style="font-size: 0.88rem; color: var(--text-muted); margin-top: -10px; margin-bottom: 25px;">Quản trị hệ thống: Thêm/Sửa kịch bản gặp mặt khách hàng và cấu hình thư viện phản đối.</p>
+                    
+                    <div style="display: flex; gap: 20px; flex-wrap: wrap; margin-bottom: 30px;">
+                        <button class="btn btn-primary" onclick="openNewScenarioModal()">+ Thêm Kịch Bản Mới</button>
+                        <button class="btn btn-secondary" onclick="resetDefaultAdminConfig()">🔄 Khôi Phục Kịch Bản Mặc Định</button>
+                    </div>
+
+                    <div style="margin-top: 15px;">
+                        <h3 style="font-size: 1.1rem; font-weight: 800; margin-bottom: 15px;">Danh Sách Kịch Bản Hiện Tại</h3>
+                        <div style="overflow-x: auto;">
+                            <table class="history-table">
+                                <thead>
+                                    <tr>
+                                        <th>Icon</th>
+                                        <th>Tên Kịch Bản</th>
+                                        <th>Phân loại</th>
+                                        <th>Mô Tả Chi Tiết</th>
+                                        <th>Hành động</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="admin-scenarios-table-body">
+                                    <!-- Injected -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Add scenario form modal -->
+                    <div id="new-scenario-form-panel" class="hidden" style="margin-top: 25px; padding: 20px; border: 1.5px dashed var(--primary); border-radius: 16px; background: rgba(255,255,255,0.01);">
+                        <h3 style="margin-top: 0; font-size: 1.1rem; font-weight: 800; color: var(--text-primary); margin-bottom: 15px;">Tạo Kịch Bản Mới</h3>
+                        <div class="form-grid">
+                            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px;">
+                                <div class="form-group">
+                                    <label class="dossier-label">Icon (Emoji)</label>
+                                    <input type="text" id="scen-form-icon" placeholder="Ví dụ: 📞" style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid var(--border-color); background: rgba(255,255,255,0.02); color: var(--text-primary); font-family: inherit;">
+                                </div>
+                                <div class="form-group">
+                                    <label class="dossier-label">Tên Kịch Bản</label>
+                                    <input type="text" id="scen-form-title" placeholder="Ví dụ: Tiếp Cận Lạnh Đầu" style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid var(--border-color); background: rgba(255,255,255,0.02); color: var(--text-primary); font-family: inherit;">
+                                </div>
+                                <div class="form-group">
+                                    <label class="dossier-label">Phân Loại</label>
+                                    <select id="scen-form-category" style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid var(--border-color); background: rgba(255,255,255,0.02); color: var(--text-primary); font-family: inherit; cursor: pointer;">
+                                        <option value="external">External (Khách hàng ngoài)</option>
+                                        <option value="internal">Internal (Nội bộ doanh nghiệp)</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="dossier-label">Mô tả kịch bản (Scenario Description)</label>
+                                <textarea id="scen-form-desc" placeholder="Mô tả bối cảnh cuộc hội thoại, mục tiêu của người dùng cần đạt được..." style="width: 100%; height: 80px; padding: 10px; border-radius: 6px; border: 1px solid var(--border-color); background: rgba(255,255,255,0.02); color: var(--text-primary); font-family: inherit; resize: none;"></textarea>
+                            </div>
+                            <div style="text-align: right; display: flex; justify-content: flex-end; gap: 12px; margin-top: 10px;">
+                                <button class="btn btn-secondary" onclick="closeNewScenarioModal()">Hủy Bỏ</button>
+                                <button class="btn btn-primary" onclick="saveScenarioForm()">Lưu Kịch Bản</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </section>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container text-center">
+            <blockquote class="final-quote">
+                "Trong B2B, bạn không chỉ thuyết phục bằng sản phẩm. Bạn định vị bản thân bằng sự sắc bén của ngôn từ."
+            </blockquote>
+            <div class="author">
+                <p class="author-name">BD khó có Peter lo</p>
+            </div>
+        </div>
+        
+        <!-- High-Impact Founder Contact Section -->
+        <section class="peter-author-footer-card" style="margin: 40px auto 20px; max-width: 1150px; padding: 28px 36px; background: #12131c; border-left: 6px solid #f3a83b; border-radius: 20px; display: flex; align-items: center; justify-content: space-between; gap: 24px; flex-wrap: wrap; box-shadow: 0 12px 40px rgba(0,0,0,0.35);">
+            <div style="display: flex; align-items: center; gap: 20px; flex-wrap: wrap;">
+                <img src="peter_1.jpg" alt="Peter Vo (Tân Võ Phước)" style="width: 75px; height: 75px; border-radius: 50%; object-fit: cover; border: 3px solid #f3a83b; box-shadow: 0 4px 16px rgba(243, 168, 59, 0.35);">
+                <div>
+                    <div style="font-size: 0.8rem; font-weight: 800; color: #f3a83b; text-transform: uppercase; letter-spacing: 0.8px;">THÔNG TIN LIÊN HỆ</div>
+                    <h4 style="font-size: 1.3rem; font-weight: 900; color: #ffffff; margin: 3px 0;">Peter Vo (Tân Võ Phước) – BD Bình Dân Học Vụ</h4>
+                    <p style="font-size: 0.95rem; color: #e2e8f0; margin: 4px 0 0 0;">
+                        📞 SĐT / Zalo: <strong style="color: #6ee7b7; font-size: 1.05rem;">0931.100.569</strong> &nbsp;|&nbsp; ✉️ Email: <strong style="color: #ffffff;">vp.tan92@gmail.com</strong>
+                    </p>
+                    <p style="font-size: 0.82rem; color: #94a3b8; margin-top: 2px;">Chuyên gia Tư vấn B2B Business Development & Strategic Partnership</p>
+                </div>
+            </div>
+            <div style="display: flex; gap: 14px; flex-wrap: wrap; align-items: center;">
+                <a href="https://www.linkedin.com/in/vp-tan/" target="_blank" class="btn" style="font-size: 0.9rem; padding: 10px 22px; border-radius: 25px; display: inline-flex; align-items: center; gap: 8px; text-decoration: none; background: #0a66c2; color: #ffffff; font-weight: 700; box-shadow: 0 4px 14px rgba(10, 102, 194, 0.4);">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.75M6.88 8.56a1.68 1.68 0 0 0 1.68-1.68c0-.93-.75-1.69-1.68-1.69a1.69 1.69 0 0 0-1.69 1.69c0 .93.76 1.68 1.69 1.68m1.39 9.94v-8.37H5.5v8.37h2.77z"/></svg> LinkedIn Profile
+                </a>
+                <a href="https://zalo.me/0931100569" target="_blank" class="btn" style="font-size: 0.9rem; padding: 10px 22px; border-radius: 25px; display: inline-flex; align-items: center; gap: 8px; text-decoration: none; background: linear-gradient(135deg, #10b981, #059669); color: #ffffff; font-weight: 700; box-shadow: 0 4px 14px rgba(16, 185, 129, 0.4);">
+                    💬 Chat Zalo (0931100569)
+                </a>
+            </div>
+        </section>
+    </footer>
+
+    <script src="pitching.js?v=2.0.0"></script>
+</body>
+</html>
