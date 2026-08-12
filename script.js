@@ -3705,23 +3705,23 @@ const initB2BApp = () => {
         if (arcadeTimer) arcadeTimer.textContent = '--s';
         
         arcadePlayArea.innerHTML = `
-            <div style="background: rgba(15, 23, 42, 0.45); border: 1px solid var(--border-color); border-radius: 16px; padding: 25px; display: flex; flex-direction: column; gap: 18px; text-align: left; box-sizing: border-box; backdrop-filter: blur(8px);">
-                <div style="display: flex; align-items: center; gap: 10px; border-bottom: 1px solid var(--border-color); padding-bottom: 12px;">
+            <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 16px; padding: 25px; display: flex; flex-direction: column; gap: 18px; text-align: left; box-sizing: border-box; color: #334155;">
+                <div style="display: flex; align-items: center; gap: 10px; border-bottom: 1px solid #e2e8f0; padding-bottom: 12px;">
                     <span style="font-size: 1.8rem;">⚡</span>
                     <h4 style="margin: 0; font-weight: 800; color: var(--primary); font-size: 1.15rem; text-transform: uppercase;">
                         Luật chơi Cấp ${arcadeCurrentLevel}
                     </h4>
                 </div>
                 
-                <div style="font-size: 0.9rem; line-height: 1.5; color: var(--text-main);">
+                <div style="font-size: 0.9rem; line-height: 1.5; color: #334155;">
                     ${rulesHtml}
                 </div>
 
-                <div style="background: rgba(239, 68, 68, 0.05); border: 1px solid rgba(239, 68, 68, 0.15); border-radius: 8px; padding: 10px 12px; font-size: 0.8rem; color: #f43f5e; display: flex; align-items: center; gap: 8px; font-weight: 600;">
+                <div style="background: #fff5f5; border: 1px solid #fed7d7; border-radius: 8px; padding: 10px 12px; font-size: 0.8rem; color: #e53e3e; display: flex; align-items: center; gap: 8px; font-weight: 600;">
                     ⏳ Thử thách thời gian cực hạn! Phản xạ BD sắc bén để vượt ải thành công.
                 </div>
 
-                <button id="btn-start-arcade-play" class="btn btn-primary" style="padding: 12px; font-weight: bold; font-size: 0.95rem; width: 100%; border: none; cursor: pointer; border-radius: 8px; margin-top: 10px; box-shadow: 0 4px 15px rgba(239, 68, 68, 0.25);">
+                <button id="btn-start-arcade-play" class="btn btn-primary" style="padding: 12px; font-weight: bold; font-size: 0.95rem; width: 100%; border: none; cursor: pointer; border-radius: 8px; margin-top: 10px; box-shadow: 0 4px 15px rgba(239, 68, 68, 0.2);">
                     Tôi Đã Sẵn Sàng, Chơi Ngay! ➔
                 </button>
             </div>
@@ -3766,7 +3766,7 @@ const initB2BApp = () => {
             <div style="text-align: center; padding: 30px; display: flex; flex-direction: column; align-items: center; gap: 15px; box-sizing: border-box;">
                 <div style="font-size: 3.5rem;">⏰</div>
                 <h4 style="font-weight: 800; color: #ef4444; margin: 0; font-size: 1.25rem;">HẾT GIỜ! ⏰</h4>
-                <p style="font-size: 0.9rem; color: var(--text-light); line-height: 1.4; margin: 0;">
+                <p style="font-size: 0.9rem; color: #475569; line-height: 1.4; margin: 0;">
                     Bạn đã không kịp hoàn thành thử thách Cấp ${arcadeCurrentLevel} trong thời gian quy định. Đừng bỏ cuộc!
                 </p>
                 <button id="btn-retry-arcade" class="btn btn-primary" style="padding: 12px 24px; font-weight: bold; width: 100%; max-width: 220px; margin-top: 10px;">Thử Lại Vòng Này</button>
@@ -3807,10 +3807,10 @@ const initB2BApp = () => {
             <div style="text-align: center; padding: 30px; display: flex; flex-direction: column; align-items: center; gap: 15px; box-sizing: border-box;">
                 <div style="font-size: 3.5rem;">🏆</div>
                 <h4 style="font-weight: 800; color: #10b981; margin: 0; font-size: 1.25rem;">VƯỢT ẢI THÀNH CÔNG!</h4>
-                <p style="font-size: 0.9rem; color: var(--text-light); margin: 0; line-height: 1.4;">
+                <p style="font-size: 0.9rem; color: #475569; margin: 0; line-height: 1.4;">
                     Chúc mừng! Bạn đã hoàn thành <strong>Cấp ${arcadeCurrentLevel} / 12</strong>.
                 </p>
-                <div style="background: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 0.15); border-radius: 8px; padding: 12px; font-size: 0.85rem; color: #10b981; font-weight: bold; width: 100%; box-sizing: border-box;">
+                <div style="background: #ecfdf5; border: 1px solid #a7f3d0; border-radius: 8px; padding: 12px; font-size: 0.85rem; color: #047857; font-weight: bold; width: 100%; box-sizing: border-box;">
                     ⚡ Nhận: +${pointsToAdd} BD-Points!
                 </div>
                 <button id="btn-next-arcade-level" class="btn btn-primary" style="padding: 12px 24px; font-weight: bold; width: 100%; margin-top: 10px; box-shadow: 0 4px 10px rgba(16, 185, 129, 0.2);">Bước Vào Cấp ${nextLvl} ➔</button>
@@ -3830,8 +3830,8 @@ const initB2BApp = () => {
         arcadePlayArea.innerHTML = `
             <div style="text-align: center; padding: 30px; display: flex; flex-direction: column; align-items: center; gap: 15px; box-sizing: border-box;">
                 <div style="font-size: 4rem;">👑</div>
-                <h4 style="font-weight: 800; color: #f3a83b; margin: 0; font-size: 1.4rem;">HUYỀN THOẠI BD CHINH PHỤC!</h4>
-                <p style="font-size: 0.95rem; color: var(--text-light); line-height: 1.5; margin: 0; max-width: 360px;">
+                <h4 style="font-weight: 800; color: #b45309; margin: 0; font-size: 1.4rem;">HUYỀN THOẠI BD CHINH PHỤC!</h4>
+                <p style="font-size: 0.95rem; color: #475569; line-height: 1.5; margin: 0; max-width: 360px;">
                     Không thể tin nổi! Bạn đã xuất sắc vượt qua toàn bộ <strong>12 Cấp Độ</strong> tối thượng của trò chơi này. Bạn thực sự là Chiến Thần BD đích thực!
                 </p>
                 <button id="btn-victory-close" class="btn btn-primary" style="padding: 12px 24px; font-weight: bold; width: 100%; max-width: 200px; margin-top: 15px;">Đóng Đấu Trường</button>
@@ -3982,13 +3982,13 @@ const initB2BApp = () => {
         const gridData = generateZipGrid(size, steps);
         
         arcadePlayArea.innerHTML = `
-            <div style="text-align: center; margin-bottom: 12px; font-weight: bold; color: var(--primary); font-size: 0.9rem;">
+            <div style="text-align: center; margin-bottom: 12px; font-weight: bold; color: #0f172a; font-size: 0.9rem;">
                 Nối pipeline chuẩn: Click các ô theo đúng thứ tự logic bán hàng B2B
             </div>
             <div id="arcade-zip-grid" style="display: grid; grid-template-columns: repeat(${size}, 1fr); gap: 8px; margin: 0 auto; width: 100%; max-width: 380px;">
                 <!-- grid items -->
             </div>
-            <div style="margin-top: 15px; font-size: 0.8rem; background: rgba(255,255,255,0.03); padding: 10px; border-radius: 8px; text-align: left; line-height: 1.4; color: var(--text-light);">
+            <div style="margin-top: 15px; font-size: 0.8rem; background: #f1f5f9; border: 1px solid #cbd5e1; padding: 10px; border-radius: 8px; text-align: left; line-height: 1.4; color: #475569;">
                 <strong>Tiến độ:</strong> <span id="arcade-zip-progress" style="color: var(--primary); font-weight: bold;">Chưa bắt đầu (Click Lead đầu tiên)</span>
             </div>
         `;
@@ -4000,24 +4000,25 @@ const initB2BApp = () => {
             const btn = document.createElement('button');
             btn.className = 'btn';
             btn.style.width = '100%';
-            btn.style.height = size >= 5 ? '55px' : '70px';
+            btn.style.aspectRatio = '1';
+            btn.style.height = 'auto';
             btn.style.padding = '4px';
             btn.style.fontSize = size >= 5 ? '0.68rem' : '0.8rem';
             btn.style.fontWeight = 'bold';
-            btn.style.border = '1px solid var(--border-color)';
+            btn.style.border = '1px solid #cbd5e1';
             btn.style.borderRadius = '8px';
             btn.style.wordBreak = 'break-word';
             btn.style.lineHeight = '1.2';
             btn.style.transition = 'all 0.2s';
 
             if (cell.type === 'blocked') {
-                btn.style.background = 'rgba(239, 68, 68, 0.08)';
-                btn.style.color = '#f87171';
-                btn.style.borderColor = 'rgba(239, 68, 68, 0.2)';
-                btn.innerHTML = `🚫<br><span style="font-size:0.6rem; font-weight:normal;">Ghosted</span>`;
+                btn.style.background = '#fee2e2';
+                btn.style.color = '#ef4444';
+                btn.style.borderColor = '#fca5a5';
+                btn.innerHTML = `🚫<br><span style="font-size:0.6rem; font-weight:normal; color:#b91c1c;">Ghosted</span>`;
             } else {
-                btn.style.background = 'rgba(0,0,0,0.2)';
-                btn.style.color = 'var(--text-main)';
+                btn.style.background = '#f8fafc';
+                btn.style.color = '#334155';
                 btn.textContent = cell.label;
             }
 
@@ -4032,14 +4033,14 @@ const initB2BApp = () => {
                 if (cell.seq === 1 && currentSeq === 0) {
                     currentSeq = 1;
                     sfx.correct();
-                    btn.style.background = 'rgba(243, 168, 59, 0.2)';
+                    btn.style.background = '#fffbeb';
                     btn.style.borderColor = 'var(--primary)';
                     btn.style.color = 'var(--primary)';
                     document.getElementById('arcade-zip-progress').textContent = `Đã kết nối: ${cell.label}`;
                 } else if (cell.seq === currentSeq + 1) {
                     currentSeq = cell.seq;
                     sfx.correct();
-                    btn.style.background = 'rgba(243, 168, 59, 0.2)';
+                    btn.style.background = '#fffbeb';
                     btn.style.borderColor = 'var(--primary)';
                     btn.style.color = 'var(--primary)';
                     
@@ -4153,8 +4154,8 @@ const initB2BApp = () => {
         let foundWords = [];
 
         arcadePlayArea.innerHTML = `
-            <div style="text-align: center; margin-bottom: 12px; font-weight: bold; color: var(--primary); font-size: 0.9rem;">
-                Mục tiêu: Tìm các từ khóa: ${words.map(w => `<span id="arcade-word-${w}" style="padding: 2px 6px; background: rgba(255,255,255,0.05); border: 1px solid var(--border-color); border-radius: 4px; margin: 0 3px; font-family: monospace; display: inline-block;">${w}</span>`).join('')}
+            <div style="text-align: center; margin-bottom: 12px; font-weight: bold; color: #0f172a; font-size: 0.9rem;">
+                Mục tiêu: Tìm các từ khóa: ${words.map(w => `<span id="arcade-word-${w}" style="padding: 2px 6px; background: #f1f5f9; border: 1px solid #cbd5e1; border-radius: 4px; margin: 0 3px; font-family: monospace; display: inline-block; color: #334155;">${w}</span>`).join('')}
             </div>
             
             <div id="arcade-wend-grid" style="display: grid; grid-template-columns: repeat(${size}, 1fr); gap: 6px; margin: 0 auto; width: 100%; max-width: 360px;">
@@ -4162,8 +4163,8 @@ const initB2BApp = () => {
             </div>
             
             <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 15px; font-size: 0.85rem;">
-                <span style="color: var(--text-light);">Từ hiện tại: <strong id="arcade-current-word" style="color: var(--primary); font-family: monospace; font-size: 1.1rem; letter-spacing: 1px;">-</strong></span>
-                <button id="btn-arcade-check-word" class="btn btn-secondary" style="padding: 5px 15px; font-size: 0.8rem; font-weight: bold;">Xác Nhận Tìm Từ</button>
+                <span style="color: #475569;">Từ hiện tại: <strong id="arcade-current-word" style="color: var(--primary); font-family: monospace; font-size: 1.1rem; letter-spacing: 1px;">-</strong></span>
+                <button id="btn-arcade-check-word" class="btn btn-secondary" style="padding: 5px 15px; font-size: 0.8rem; font-weight: bold; border: 1px solid #cbd5e1; background: #f1f5f9; color: #334155;">Xác Nhận Tìm Từ</button>
             </div>
         `;
 
@@ -4176,14 +4177,15 @@ const initB2BApp = () => {
                 const btn = document.createElement('button');
                 btn.className = 'btn';
                 btn.style.width = '100%';
-                btn.style.height = size >= 7 ? '42px' : '55px';
+                btn.style.aspectRatio = '1';
+                btn.style.height = 'auto';
                 btn.style.padding = '0';
                 btn.style.fontSize = size >= 7 ? '1.1rem' : '1.3rem';
                 btn.style.fontFamily = 'monospace';
                 btn.style.fontWeight = 'bold';
-                btn.style.border = '1px solid var(--border-color)';
-                btn.style.background = 'rgba(0,0,0,0.2)';
-                btn.style.color = 'var(--text-main)';
+                btn.style.border = '1px solid #cbd5e1';
+                btn.style.background = '#f8fafc';
+                btn.style.color = '#0f172a';
                 btn.style.borderRadius = '6px';
                 btn.textContent = grid[r][c];
 
@@ -4193,12 +4195,12 @@ const initB2BApp = () => {
                     
                     if (idx !== -1) {
                         selectedCoords.splice(idx, 1);
-                        btn.style.background = 'rgba(0,0,0,0.2)';
-                        btn.style.borderColor = 'var(--border-color)';
-                        btn.style.color = 'var(--text-main)';
+                        btn.style.background = '#f8fafc';
+                        btn.style.borderColor = '#cbd5e1';
+                        btn.style.color = '#0f172a';
                     } else {
                         selectedCoords.push({ r, c, val: grid[r][c], str: coordStr });
-                        btn.style.background = 'rgba(243, 168, 59, 0.15)';
+                        btn.style.background = '#fffbeb';
                         btn.style.borderColor = 'var(--primary)';
                         btn.style.color = 'var(--primary)';
                     }
@@ -4231,17 +4233,17 @@ const initB2BApp = () => {
                     
                     const wordBadge = document.getElementById(`arcade-word-${matchedWord}`);
                     if (wordBadge) {
-                        wordBadge.style.background = 'rgba(16, 185, 129, 0.15)';
-                        wordBadge.style.borderColor = '#10b981';
-                        wordBadge.style.color = '#10b981';
+                        wordBadge.style.background = '#d1fae5';
+                        wordBadge.style.borderColor = '#34d399';
+                        wordBadge.style.color = '#065f46';
                         wordBadge.innerHTML = `✓ ${matchedWord}`;
                     }
 
                     selectedCoords.forEach(item => {
                         const btn = letterButtons[item.r][item.c];
-                        btn.style.background = 'rgba(16, 185, 129, 0.2)';
-                        btn.style.borderColor = '#10b981';
-                        btn.style.color = '#10b981';
+                        btn.style.background = '#d1fae5';
+                        btn.style.borderColor = '#34d399';
+                        btn.style.color = '#065f46';
                         btn.disabled = true;
                     });
 
@@ -4335,8 +4337,8 @@ const initB2BApp = () => {
         }
 
         arcadePlayArea.innerHTML = `
-            <div style="text-align: center; margin-bottom: 12px; font-weight: bold; color: var(--primary); font-size: 0.9rem;">
-                Điền 🤝 và ❌ thỏa mãn: Số 🤝 = ❌ mỗi cột/hàng, no 3 ô kề nhau trùng
+            <div style="text-align: center; margin-bottom: 12px; font-weight: bold; color: #0f172a; font-size: 0.9rem;">
+                Điền 🤝 và ❌ thỏa mãn: Số 🤝 = ❌ mỗi cột/hàng, không có 3 ô kề nhau trùng
             </div>
             <div id="arcade-tango-grid" style="display: grid; grid-template-columns: repeat(${size}, 1fr); gap: 6px; margin: 0 auto; width: 100%; max-width: 360px;">
                 <!-- grid -->
@@ -4352,11 +4354,12 @@ const initB2BApp = () => {
                 const btn = document.createElement('button');
                 btn.className = 'btn';
                 btn.style.width = '100%';
-                btn.style.height = size >= 6 ? '46px' : '65px';
+                btn.style.aspectRatio = '1';
+                btn.style.height = 'auto';
                 btn.style.fontSize = size >= 6 ? '1.2rem' : '1.5rem';
                 btn.style.padding = '0';
                 btn.style.fontWeight = 'bold';
-                btn.style.border = '1px solid var(--border-color)';
+                btn.style.border = '1px solid #cbd5e1';
                 btn.style.borderRadius = '8px';
                 btn.style.transition = 'all 0.15s';
 
@@ -4364,35 +4367,38 @@ const initB2BApp = () => {
                 
                 if (isLocked) {
                     btn.textContent = playerGrid[r][c] === 1 ? '🤝' : '❌';
-                    btn.style.background = 'rgba(255,255,255,0.06)';
-                    btn.style.color = 'var(--text-main)';
+                    btn.style.background = '#e2e8f0';
+                    btn.style.color = '#334155';
                     btn.style.opacity = '0.9';
                     btn.style.cursor = 'not-allowed';
                 } else {
                     btn.textContent = '';
-                    btn.style.background = 'rgba(0,0,0,0.35)';
-                    btn.style.borderColor = 'rgba(255,255,255,0.05)';
-                    btn.style.color = 'var(--primary)';
+                    btn.style.background = '#f8fafc';
+                    btn.style.borderColor = '#cbd5e1';
+                    btn.style.color = '#0f172a';
 
                     btn.addEventListener('click', () => {
                         let currentVal = playerGrid[r][c];
                         if (currentVal === null) {
                             playerGrid[r][c] = 1;
                             btn.textContent = '🤝';
-                            btn.style.background = 'rgba(243, 168, 59, 0.15)';
-                            btn.style.borderColor = 'var(--primary)';
+                            btn.style.background = '#d1fae5';
+                            btn.style.borderColor = '#34d399';
+                            btn.style.color = '#065f46';
                             sfx.correct();
                         } else if (currentVal === 1) {
                             playerGrid[r][c] = 0;
                             btn.textContent = '❌';
-                            btn.style.background = 'rgba(239, 68, 68, 0.12)';
-                            btn.style.borderColor = '#f87171';
+                            btn.style.background = '#fee2e2';
+                            btn.style.borderColor = '#fca5a5';
+                            btn.style.color = '#b91c1c';
                             sfx.correct();
                         } else {
                             playerGrid[r][c] = null;
                             btn.textContent = '';
-                            btn.style.background = 'rgba(0,0,0,0.35)';
-                            btn.style.borderColor = 'rgba(255,255,255,0.05)';
+                            btn.style.background = '#f8fafc';
+                            btn.style.borderColor = '#cbd5e1';
+                            btn.style.color = '#0f172a';
                         }
 
                         let filled = true;
@@ -4446,9 +4452,9 @@ const initB2BApp = () => {
         let board = Array(size).fill(null).map(() => Array(size).fill(false));
 
         arcadePlayArea.innerHTML = `
-            <div style="text-align: center; margin-bottom: 12px; font-weight: bold; color: var(--primary); font-size: 0.9rem; display: flex; justify-content: space-between; align-items: center;">
+            <div style="text-align: center; margin-bottom: 12px; font-weight: bold; color: #0f172a; font-size: 0.9rem; display: flex; justify-content: space-between; align-items: center; width: 100%;">
                 <span>Đặt ${queens} BD Manager 👑 không xung đột địa bàn</span>
-                <span id="arcade-queens-status" style="font-weight: 800; font-family: monospace;">Đã đặt: 0 / ${queens}</span>
+                <span id="arcade-queens-status" style="font-weight: 800; font-family: monospace; color: var(--primary);">Đã đặt: 0 / ${queens}</span>
             </div>
             
             <div id="arcade-queens-grid" style="display: grid; grid-template-columns: repeat(${size}, 1fr); gap: 5px; margin: 0 auto; width: 100%; max-width: 360px;">
@@ -4493,18 +4499,18 @@ const initB2BApp = () => {
                     if (isQueen) {
                         btn.textContent = '👑';
                         if (hasConflict) {
-                            btn.style.background = 'rgba(239, 68, 68, 0.35)';
+                            btn.style.background = '#fee2e2';
                             btn.style.borderColor = '#ef4444';
-                            btn.style.boxShadow = '0 0 10px rgba(239, 68, 68, 0.4)';
+                            btn.style.boxShadow = '0 0 10px rgba(239, 68, 68, 0.3)';
                         } else {
-                            btn.style.background = 'rgba(243, 168, 59, 0.25)';
+                            btn.style.background = '#fffbeb';
                             btn.style.borderColor = '#f3a83b';
-                            btn.style.boxShadow = '0 0 10px rgba(243, 168, 59, 0.4)';
+                            btn.style.boxShadow = '0 0 10px rgba(243, 168, 59, 0.3)';
                         }
                     } else {
                         btn.textContent = '';
-                        btn.style.background = 'rgba(0,0,0,0.3)';
-                        btn.style.borderColor = 'rgba(255,255,255,0.05)';
+                        btn.style.background = '#f8fafc';
+                        btn.style.borderColor = '#cbd5e1';
                         btn.style.boxShadow = 'none';
                     }
                 }
@@ -4536,14 +4542,15 @@ const initB2BApp = () => {
                 const btn = document.createElement('button');
                 btn.className = 'btn';
                 btn.style.width = '100%';
-                btn.style.height = size >= 8 ? '36px' : (size >= 6 ? '46px' : '65px');
+                btn.style.aspectRatio = '1';
+                btn.style.height = 'auto';
                 btn.style.fontSize = size >= 8 ? '1.1rem' : '1.3rem';
                 btn.style.padding = '0';
                 btn.style.fontWeight = 'bold';
-                btn.style.border = '1px solid var(--border-color)';
+                btn.style.border = '1px solid #cbd5e1';
                 btn.style.borderRadius = '8px';
                 btn.style.transition = 'all 0.15s';
-                btn.style.background = 'rgba(0,0,0,0.3)';
+                btn.style.background = '#f8fafc';
 
                 btn.addEventListener('click', () => {
                     board[r][c] = !board[r][c];
