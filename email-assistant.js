@@ -308,6 +308,10 @@ document.addEventListener('DOMContentLoaded', () => {
         const level = document.getElementById('gen-level').value;
         const dept = document.getElementById('gen-dept').value;
         const industry = document.getElementById('gen-industry').value;
+
+        if (window.trackUserBehavior) {
+            window.trackUserBehavior('email_generate', `Company: ${companyVal}, Level: ${level}, Dept: ${dept}`);
+        }
         const tone = document.getElementById('gen-tone').value;
         const lang = document.getElementById('gen-lang').value;
         const key = localStorage.getItem('gemini_api_key');
