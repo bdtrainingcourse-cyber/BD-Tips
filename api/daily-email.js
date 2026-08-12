@@ -1,4 +1,38 @@
 const https = require('https');
+const { readUsers } = require('./db-helper');
+
+/**
+ * =========================================================================
+ * B2B PORTAL - HƯỚNG DẪN CẤU HÌNH GỬI EMAIL SỐ LƯỢNG LỚN (ANTI-SPAM & REPUTATION)
+ * =========================================================================
+ * Khi số lượng người dùng đăng ký tăng lên hàng nghìn, việc gửi email đồng loạt 
+ * rất dễ bị hệ thống lọc thư rác (như Gmail, Outlook) đánh dấu là Spam/Spammer.
+ * 
+ * Để bảo vệ tên miền và đảm bảo tỷ lệ vào Inbox đạt 99%, cần tuân thủ các quy tắc sau:
+ * 
+ * 1. Cấu hình DNS Đầy Đủ (Domain Authentication):
+ *    - SPF (Sender Policy Framework): Khai báo các máy chủ được phép gửi email thay mặt tên miền.
+ *      Ví dụ: v=spf1 include:sendgrid.net ~all
+ *    - DKIM (DomainKeys Identified Mail): Ký chữ ký số mật mã vào tiêu đề email để chứng minh thư 
+ *      không bị thay đổi trên đường truyền.
+ *    - DMARC (Domain-based Message Authentication): Thiết lập quy tắc xử lý khi SPF hoặc DKIM thất bại.
+ *      Ví dụ: v=DMARC1; p=quarantine; pct=100; rua=mailto:dmarc-reports@yourdomain.com
+ * 
+ * 2. Sử dụng Máy chủ gửi Email Uy Tín (Email Service Provider - ESP):
+ *    - Không tự gửi email trực tiếp từ server Node.js thông qua SMTP mặc định.
+ *    - Hãy tích hợp các ESP chuyên dụng như SendGrid, Mailgun, Amazon SES hoặc Postmark.
+ *    - Khi bắt đầu, sử dụng dải IP "ấm" (Warm-up IP) tăng dần số lượng email gửi đi mỗi ngày.
+ * 
+ * 3. Kỹ Thuật Chia Mẻ và Giãn Cách Tần Suất Gửi (Batching & Throttling):
+ *    - Thay vì gửi hàng nghìn request đồng thời làm nghẽn API/Connection, ta chia danh sách 
+ *      người nhận thành các lô nhỏ (Ví dụ: 50 email mỗi đợt - BATCH_SIZE = 50).
+ *    - Giữa các đợt, chèn một khoảng trễ (Ví dụ: 2 giây - DELAY = 2000ms) để hệ thống giãn cách.
+ * 
+ * 4. Tối Ưu Nội Dung & Tương Tác:
+ *    - Thêm link "Hủy đăng ký" (Unsubscribe) rõ ràng ở chân trang.
+ *    - Cá nhân hóa nội dung: sử dụng đúng tên, nickname của từng học viên để tránh gửi 1 template giống hệt nhau.
+ * =========================================================================
+ */
 
 // Helper to wrap message in a premium bright warm-themed HTML template
 function getHtmlTemplate(message, buttonText, buttonUrl, mascotUrl) {
@@ -112,9 +146,9 @@ function getHtmlTemplate(message, buttonText, buttonUrl, mascotUrl) {
 const emailTemplates = [
   {
     subject: "Nắng 40 độ nhưng Pipeline của bạn vẫn đóng băng? ❄️",
-    message: "Chào Chiến thần B2B!<br><br>Hôm nay ngoài trời nắng nóng đỉnh điểm, dắt xe ra đường là mồ hôi đầm đìa. Nhưng nóng nhất lúc này chắc chắn là tin nhắn của sếp dí KPI hỏi: <i>\"Hôm nay tìm được bao nhiêu thông tin liên hệ (PIC) của đối tác rồi em?\"</i>.<br><br>Đừng để nhiệt độ văn phòng tăng thêm vì sếp gầm rú! Hãy bật điều hòa lên, uống một ngụm trà sữa mát lạnh và dùng ngay công cụ <b>B2B LinkedIn PIC Finder</b> của chúng tôi để quét ra email sếp tổng doanh nghiệp mục tiêu chỉ trong 5 giây. Có số báo cáo sếp ngay lập tức!<br><br>Quét xong, đừng quên click qua mục <b>B2B Challenge</b> giải trắc nghiệm thực chiến để duy trì chuỗi Streak rèn luyện nhé!",
-    buttonText: "🔍 Tìm PIC Doanh Nghiệp Ngay",
-    buttonUrl: "https://bd-tips.vercel.app/finder.html",
+    message: "Chào Chiến thần B2B!<br><br>Hôm nay ngoài trời nắng nóng đỉnh điểm, dắt xe ra đường là mồ hôi đầm đìa. Nhưng nóng nhất lúc này chắc chắn là tin nhắn của sếp dí hỏi: <i>\"Hôm nay đã chuẩn bị xong kịch bản Pitching giải pháp cho đối tác Enterprise chưa em?\"</i>.<br><br>Đừng để nhiệt độ văn phòng tăng thêm vì sếp gầm rú! Hãy bật điều hòa lên, uống một ngụm trà sữa mát lạnh và dùng ngay công cụ <b>Thuyết Trình & Pitching AI</b> của chúng tôi để tạo nhanh dàn ý và kịch bản pitching thuyết phục chỉ trong 5 giây. Đảm bảo sếp gật đầu cái rụp!<br><br>Chuẩn bị xong, đừng quên click qua mục <b>B2B Challenge</b> giải trắc nghiệm thực chiến để duy trì chuỗi Streak rèn luyện nhé!",
+    buttonText: "🎤 Pitching & Thuyết Trình AI Ngay",
+    buttonUrl: "https://bd-tips.vercel.app/pitching.html",
     mascot: "https://bd-tips.vercel.app/mascot_hot.jpg"
   },
   {
@@ -147,14 +181,14 @@ const emailTemplates = [
   },
   {
     subject: "Một ly trà sữa chiều hay một topic thảo luận BD chất lượng? 🧋",
-    message: "Chào Chiến thần B2B!<br><br>Tầm này chiều rồi, bụng cồn cào và não bộ đang phát đi tín hiệu khẩn cấp: <i>\"Cần gấp một ly trà sữa full topping để nạp năng lượng!\"</i>. Nhưng trong lúc chờ shipper giao tới, tại sao không nâng tầm tư duy chốt deal của mình?<br><br>Ghé ngay <b>Diễn đàn Cộng đồng B2B BD Tips</b> để kết nối, thảo luận các chủ đề nóng hổi về nghề BD, cách đàm phán hợp đồng hoặc chia sẻ câu chuyện dở khóc dở cười hàng ngày. Giao lưu học hỏi từ những người đi trước là lối tắt dẫn đến thành công!<br><br>Đồng thời, trọn bộ công cụ hỗ trợ như <b>AI Cold Email Assistant</b> và <b>B2B PIC Finder</b> vẫn luôn sẵn sàng phục vụ bạn!",
+    message: "Chào Chiến thần B2B!<br><br>Tầm này chiều rồi, bụng cồn cào và não bộ đang phát đi tín hiệu khẩn cấp: <i>\"Cần gấp một ly trà sữa full topping để nạp năng lượng!\"</i>. Nhưng trong lúc chờ shipper giao tới, tại sao không nâng tầm tư duy chốt deal của mình?<br><br>Ghé ngay <b>Diễn đàn Cộng đồng B2B BD Tips</b> để kết nối, thảo luận các chủ đề nóng hổi về nghề BD, cách đàm phán hợp đồng hoặc chia sẻ câu chuyện dở khóc dở cười hàng ngày. Giao lưu học hỏi từ những người đi trước là lối tắt dẫn đến thành công!<br><br>Đồng thời, trọn bộ công cụ hỗ trợ như <b>AI Cold Email Assistant</b> và <b>Pitching AI</b> vẫn luôn sẵn sàng phục vụ bạn!",
     buttonText: "💬 Tham Gia Thảo Luận Cộng Đồng",
     buttonUrl: "https://bd-tips.vercel.app/community.html",
     mascot: "https://bd-tips.vercel.app/mascot_milktea.jpg"
   },
   {
     subject: "Thời tiết giông bão, nhưng Pipeline phải luôn rực rỡ! ⛈️",
-    message: "Chào Chiến thần B2B!<br><br>Ngoài trời mây đen kéo lối, giông bão sắp đổ bộ. Nhưng giông bão thời tiết không đáng sợ bằng \"giông bão\" trong pipeline của bạn khi không có bất kỳ deal mới nào trong phễu.<br><br>Hãy biến ngày mưa bão thành ngày bùng nổ doanh số! Hệ sinh thái hỗ trợ BD của chúng tôi đã online đầy đủ: Tìm email sếp lớn bằng <b>B2B LinkedIn PIC Finder</b>, soạn email tự động bằng <b>AI Cold Email Assistant</b>, kiểm tra hợp đồng bằng <b>Luật Lao Động</b> và trau dồi bài học tại <b>Thư Viện</b>.<br><br>Hãy làm một thử thách game hôm nay để giữ chuỗi ngày Streak nhận buổi ăn trưa tri ân cùng anh Peter Vo nào!",
+    message: "Chào Chiến thần B2B!<br><br>Ngoài trời mây đen kéo lối, giông bão sắp đổ bộ. Nhưng giông bão thời tiết không đáng sợ bằng \"giông bão\" trong pipeline của bạn khi không có bất kỳ deal mới nào trong phễu.<br><br>Hãy biến ngày mưa bão thành ngày bùng nổ doanh số! Hệ sinh thái hỗ trợ BD của chúng tôi đã online đầy đủ: Luyện tập đối thoại thực chiến cùng <b>Pitching AI</b>, soạn email tự động bằng <b>AI Cold Email Assistant</b>, kiểm tra hợp đồng bằng <b>Luật Lao Động</b> và trau dồi bài học tại <b>Thư Viện</b>.<br><br>Hãy làm một thử thách game hôm nay để giữ chuỗi ngày Streak nhận buổi ăn trưa tri ân cùng anh Peter Vo nào!",
     buttonText: "🌐 Khám Phá Hệ Sinh Thái BD",
     buttonUrl: "https://bd-tips.vercel.app/quests.html",
     mascot: "https://bd-tips.vercel.app/mascot_storm.jpg"
@@ -232,16 +266,79 @@ module.exports = async (req, res) => {
   const subject = template.subject;
   const bodyText = getHtmlTemplate(template.message, template.buttonText, template.buttonUrl, template.mascot);
 
-  // In production, sync with Google Sheets CRM webhook and send out emails.
-  console.log(`[DAILY_EMAIL_CRON] Target: ${demoEmail}, Name: ${demoName}`);
+  // Load all registered users from the simulated local database
+  const users = readUsers();
+  let recipients = Object.values(users).filter(u => u.email && u.email.includes('@'));
+
+  // If no users found, fall back to the demo recipient
+  if (recipients.length === 0) {
+    recipients.push({ email: demoEmail, name: demoName });
+  }
+
+  // If we are overriding for testing via ?email=...
+  if (req.query.email) {
+    recipients = [{ email: req.query.email, name: req.query.name || 'Chiến thần B2B' }];
+  }
+
+  console.log(`[DAILY_EMAIL_CRON] Dispatching to ${recipients.length} recipients...`);
   console.log(`[DAILY_EMAIL_CRON] Subject: ${subject}`);
 
+  const BATCH_SIZE = 50;
+  const DELAY_BETWEEN_BATCHES = 2000; // 2 seconds delay to avoid email/API rate limit block
+  const dispatchLogs = [];
   let triggeredWebhook = false;
-  let webhookResponse = '';
 
-  if (process.env.GOOGLE_SHEET_LEADS_WEBHOOK) {
+  const webhookUrl = process.env.GOOGLE_SHEET_LEADS_WEBHOOK;
+
+  for (let i = 0; i < recipients.length; i += BATCH_SIZE) {
+    const currentBatch = recipients.slice(i, i + BATCH_SIZE);
+    console.log(`[DAILY_EMAIL_CRON] Sending Batch ${Math.floor(i / BATCH_SIZE) + 1} (${currentBatch.length} emails)...`);
+
+    const batchPromises = currentBatch.map(async (recipient) => {
+      // Personalize content slightly for each recipient
+      const personalizedBody = bodyText.replace(/Chiến thần B2B/g, recipient.name || 'Chiến thần B2B');
+      
+      if (webhookUrl) {
+        try {
+          const res = await fetch(webhookUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              action: 'sendSingleEmail',
+              to: recipient.email,
+              name: recipient.name,
+              subject: subject,
+              body: personalizedBody
+            })
+          });
+          const resText = await res.text();
+          triggeredWebhook = true;
+          return { email: recipient.email, success: true, detail: resText };
+        } catch (err) {
+          console.error(`[DAILY_EMAIL_CRON_ERROR] Failed for ${recipient.email}:`, err.message);
+          return { email: recipient.email, success: false, error: err.message };
+        }
+      } else {
+        // Mock send logs for dev environment
+        return { email: recipient.email, success: true, detail: 'Mock send successful (Dev mode)' };
+      }
+    });
+
+    const batchResults = await Promise.all(batchPromises);
+    dispatchLogs.push(...batchResults);
+
+    // Throttle delay before next batch, unless it's the last batch
+    if (i + BATCH_SIZE < recipients.length) {
+      console.log(`[DAILY_EMAIL_CRON] Throttling for ${DELAY_BETWEEN_BATCHES}ms before next batch...`);
+      await new Promise(resolve => setTimeout(resolve, DELAY_BETWEEN_BATCHES));
+    }
+  }
+
+  // Trigger fallback bulk send if no single emails succeeded but webhook is set (backward compatibility)
+  let fallbackResponse = '';
+  if (webhookUrl && !triggeredWebhook) {
     try {
-      const response = await fetch(process.env.GOOGLE_SHEET_LEADS_WEBHOOK, {
+      const response = await fetch(webhookUrl, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 
@@ -250,28 +347,19 @@ module.exports = async (req, res) => {
           body: bodyText 
         })
       });
-      webhookResponse = await response.text();
-      console.log(`[DAILY_EMAIL_CRON] Google Sheets webhook triggered. Response: ${webhookResponse}`);
+      fallbackResponse = await response.text();
       triggeredWebhook = true;
     } catch (err) {
-      console.error(`[DAILY_EMAIL_CRON_ERROR] Failed to trigger Google Sheets webhook:`, err);
-      webhookResponse = err.message;
+      console.error(`[DAILY_EMAIL_CRON_ERROR] Fallback webhook failed:`, err);
     }
-  } else {
-    console.warn(`[DAILY_EMAIL_CRON_WARN] GOOGLE_SHEET_LEADS_WEBHOOK is not configured.`);
-    webhookResponse = 'Webhook URL not configured in process.env';
   }
 
   return res.status(200).json({
     success: true,
-    message: "Daily emails processed successfully.",
+    message: `Daily emails processed. Dispatched ${dispatchLogs.length} messages.`,
     triggeredWebhook: triggeredWebhook,
-    webhookResponse: webhookResponse,
-    sampleSent: {
-      to: demoEmail,
-      name: demoName,
-      subject: subject,
-      body: bodyText
-    }
+    fallbackResponse: fallbackResponse,
+    dispatchLogs: dispatchLogs.slice(0, 10), // Limit returned logs preview
+    totalSent: dispatchLogs.length
   });
 };
