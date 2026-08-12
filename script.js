@@ -1543,41 +1543,45 @@ const initB2BApp = () => {
     function renderPuzzleZip() {
         const container = document.getElementById('options-container');
         container.innerHTML = `
-            <div style="text-align: center; margin-bottom: 15px; color: var(--text-light); font-size: 0.9rem;">
-                Click các ô theo đúng thứ tự quy trình bán hàng: <br>
-                <strong>Khởi đầu ➔ Tiếp cận ➔ Pitching ➔ Proposal ➔ Thương thảo ➔ Ký kết</strong>
+            <div style="background: rgba(255,255,255,0.03); border: 1px solid var(--border-color); border-radius: 12px; padding: 15px; margin-bottom: 20px; font-size: 0.85rem; line-height: 1.45; text-align: left; max-width: 480px; margin-left: auto; margin-right: auto;">
+                <h5 style="margin: 0 0 8px 0; font-weight: 800; color: var(--primary); font-size: 0.95rem;">⚡ QUY TẮC ĐƯỜNG ỐNG PIPELINE:</h5>
+                • Điểm xuất phát: <strong>Leads Generated</strong> (màu xanh lá).<br>
+                • Nhiệm vụ: Nối tiếp các bước bán hàng theo đúng thứ tự logic.<br>
+                • Quy tắc: Bạn **chỉ được phép** click chọn các ô đứng sát cạnh nhau (ngang, dọc, chéo) để duy trì đường truyền dẫn của pipeline.<br>
+                • Thứ tự nối: <strong>Leads Generated ➔ Cold Outreach ➔ Product Pitch ➔ Proposal Sent ➔ Contract Negotiated ➔ Deal Closed Won</strong>
             </div>
             <div id="zip-grid" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; max-width: 320px; margin: 0 auto; background: rgba(0,0,0,0.2); padding: 15px; border-radius: 16px; border: 1px solid var(--border-color);">
             </div>
             <div style="text-align: center; margin-top: 15px;">
-                <button id="btn-reset-zip" class="btn btn-secondary" style="padding: 6px 16px; font-size: 0.8rem;">Chơi Lại</button>
+                <button id="btn-reset-zip" class="btn btn-secondary" style="padding: 8px 20px; font-size: 0.85rem;">Chơi Lại</button>
             </div>
         `;
 
         const gridData = [
             { type: 'start', label: 'Leads Generated', seq: 1 },
             { type: 'step2', label: 'Cold Outreach', seq: 2 },
-            { type: 'blocked', label: 'Budget Frozen', seq: 0 },
-            { type: 'blocked', label: 'No Response', seq: 0 },
+            { type: 'blocked', label: 'Budget Frozen (Chặn)', seq: 0 },
+            { type: 'blocked', label: 'No Response (Chặn)', seq: 0 },
             
-            { type: 'blocked', label: 'Competitor Win', seq: 0 },
+            { type: 'blocked', label: 'Competitor Win (Chặn)', seq: 0 },
             { type: 'step3', label: 'Product Pitch', seq: 3 },
-            { type: 'blocked', label: 'Ghosted', seq: 0 },
-            { type: 'blocked', label: 'Price Shock', seq: 0 },
+            { type: 'blocked', label: 'Ghosted (Chặn)', seq: 0 },
+            { type: 'blocked', label: 'Price Shock (Chặn)', seq: 0 },
             
-            { type: 'blocked', label: 'No Decision', seq: 0 },
+            { type: 'blocked', label: 'No Decision (Chặn)', seq: 0 },
             { type: 'step4', label: 'Proposal Sent', seq: 4 },
             { type: 'step5', label: 'Contract Negotiated', seq: 5 },
-            { type: 'blocked', label: 'Legal Delay', seq: 0 },
+            { type: 'blocked', label: 'Legal Delay (Chặn)', seq: 0 },
             
-            { type: 'blocked', label: 'Wrong PIC', seq: 0 },
-            { type: 'blocked', label: 'Bad Timing', seq: 0 },
-            { type: 'blocked', label: 'Lost Lead', seq: 0 },
+            { type: 'blocked', label: 'Wrong PIC (Chặn)', seq: 0 },
+            { type: 'blocked', label: 'Bad Timing (Chặn)', seq: 0 },
+            { type: 'blocked', label: 'Lost Lead (Chặn)', seq: 0 },
             { type: 'end', label: 'Deal Closed Won', seq: 6 }
         ];
 
         const gridEl = document.getElementById('zip-grid');
         let currentStep = 1;
+        let lastClickedIdx = 0; // Starts at Leads Generated (index 0)
 
         gridData.forEach((cell, idx) => {
             const btn = document.createElement('button');
@@ -1605,7 +1609,7 @@ const initB2BApp = () => {
             } else if (cell.type === 'blocked') {
                 btn.style.background = 'rgba(255,255,255,0.02)';
                 btn.style.color = 'var(--text-light)';
-                btn.style.opacity = '0.3';
+                btn.style.opacity = '0.4';
             } else {
                 btn.style.background = 'rgba(255,255,255,0.05)';
                 btn.style.color = 'var(--text-main)';
@@ -1619,13 +1623,29 @@ const initB2BApp = () => {
             btn.addEventListener('click', () => {
                 if (cell.type === 'blocked') {
                     sfx.wrong();
+                    alert(`🚫 Ô bị chặn: "${cell.label}"!\nDự án B2B bị đóng băng tại đây. Hãy tìm đường vòng qua ô khác nhé!`);
                     return;
                 }
+                
+                // Enforce physical adjacency from last clicked cell
+                if (currentStep > 1) {
+                    const r1 = Math.floor(lastClickedIdx / 4);
+                    const c1 = lastClickedIdx % 4;
+                    const r2 = Math.floor(idx / 4);
+                    const c2 = idx % 4;
+                    if (Math.abs(r1 - r2) > 1 || Math.abs(c1 - c2) > 1) {
+                        sfx.wrong();
+                        alert("⚠️ Lỗi đứt quãng đường ống!\nBạn chỉ được chọn bước tiếp theo nằm sát cạnh (ngang, dọc, chéo) của bước vừa chọn trước đó.");
+                        return;
+                    }
+                }
+
                 if (cell.seq === currentStep) {
                     btn.style.background = 'linear-gradient(135deg, #f3a83b 0%, #d97706 100%)';
                     btn.style.color = '#fff';
                     btn.style.boxShadow = '0 0 15px rgba(243, 168, 59, 0.4)';
                     sfx.correct();
+                    lastClickedIdx = idx;
                     
                     if (currentStep === 6) {
                         setTimeout(() => handlePuzzleSolved(15), 500);
@@ -1634,6 +1654,7 @@ const initB2BApp = () => {
                     }
                 } else {
                     sfx.wrong();
+                    alert(`Sai trình tự quy trình bán hàng!\nBạn phải nối tiếp theo đúng trình tự logic (Bước tiếp theo cần tìm là bước số ${currentStep}).`);
                 }
             });
 
@@ -1646,13 +1667,16 @@ const initB2BApp = () => {
     function renderPuzzleWend() {
         const container = document.getElementById('options-container');
         container.innerHTML = `
-            <div style="text-align: center; margin-bottom: 12px; color: var(--text-light); font-size: 0.88rem;">
-                Tìm 3 từ khóa B2B ẩn giấu: <strong style="color: var(--primary);">LEAD</strong>, <strong style="color: var(--primary);">DEAL</strong>, <strong style="color: var(--primary);">SPIN</strong>
+            <div style="background: rgba(255,255,255,0.03); border: 1px solid var(--border-color); border-radius: 12px; padding: 15px; margin-bottom: 20px; font-size: 0.85rem; line-height: 1.45; text-align: left; max-width: 480px; margin-left: auto; margin-right: auto;">
+                <h5 style="margin: 0 0 8px 0; font-weight: 800; color: var(--primary); font-size: 0.95rem;">🔍 LUẬT CHƠI WORD SEARCH:</h5>
+                • Nhiệm vụ: Tìm 3 từ khóa B2B ẩn giấu: <strong style="color: var(--primary);">LEAD</strong>, <strong style="color: var(--primary);">DEAL</strong>, <strong style="color: var(--primary);">SPIN</strong>.<br>
+                • Quy tắc nối chữ: Các chữ cái được chọn **phải nằm sát nhau** (ngang hoặc dọc) để tạo thành từ có nghĩa.<br>
+                • Cách chọn: Click từng chữ cái kế tiếp nhau. Khi ghép đủ từ chính xác, hệ thống sẽ tự động chuyển màu xanh và ghi nhận.
             </div>
-            <div style="display: flex; justify-content: center; gap: 15px; margin-bottom: 12px; font-size: 0.8rem; font-weight: bold;">
-                <span id="word-lead" style="color: rgba(255,255,255,0.3);">[ ] LEAD</span>
-                <span id="word-deal" style="color: rgba(255,255,255,0.3);">[ ] DEAL</span>
-                <span id="word-spin" style="color: rgba(255,255,255,0.3);">[ ] SPIN</span>
+            <div style="display: flex; justify-content: center; gap: 15px; margin-bottom: 12px; font-size: 0.88rem; font-weight: bold;">
+                <span id="word-lead" style="color: rgba(255,255,255,0.3); background: rgba(255,255,255,0.05); padding: 4px 10px; border-radius: 6px;">[ ] LEAD</span>
+                <span id="word-deal" style="color: rgba(255,255,255,0.3); background: rgba(255,255,255,0.05); padding: 4px 10px; border-radius: 6px;">[ ] DEAL</span>
+                <span id="word-spin" style="color: rgba(255,255,255,0.3); background: rgba(255,255,255,0.05); padding: 4px 10px; border-radius: 6px;">[ ] SPIN</span>
             </div>
             <div id="selected-word" style="text-align: center; font-size: 1.1rem; font-weight: 800; min-height: 25px; color: var(--primary); margin-bottom: 10px;">
                 Đang chọn: -
@@ -1660,8 +1684,8 @@ const initB2BApp = () => {
             <div id="wend-grid" style="display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px; max-width: 280px; margin: 0 auto; background: rgba(0,0,0,0.25); padding: 12px; border-radius: 12px; border: 1px solid var(--border-color);">
             </div>
             <div style="text-align: center; margin-top: 12px; display: flex; justify-content: center; gap: 10px;">
-                <button id="btn-clear-wend" class="btn btn-secondary" style="padding: 6px 14px; font-size: 0.8rem;">Xóa Chọn</button>
-                <button id="btn-reset-wend" class="btn btn-secondary" style="padding: 6px 14px; font-size: 0.8rem;">Chơi Lại</button>
+                <button id="btn-clear-wend" class="btn btn-secondary" style="padding: 8px 16px; font-size: 0.85rem;">Xóa Chọn</button>
+                <button id="btn-reset-wend" class="btn btn-secondary" style="padding: 8px 16px; font-size: 0.85rem;">Chơi Lại</button>
             </div>
         `;
 
@@ -1698,6 +1722,19 @@ const initB2BApp = () => {
 
                 btn.addEventListener('click', () => {
                     if (selectedIndices.includes(cellId)) return;
+                    
+                    // Enforce adjacency to the previously selected cell
+                    if (selectedIndices.length > 0) {
+                        const prevCell = selectedIndices[selectedIndices.length - 1];
+                        const [prevR, prevC] = prevCell.split('-').map(Number);
+                        const rowDiff = Math.abs(rIdx - prevR);
+                        const colDiff = Math.abs(cIdx - prevC);
+                        if (rowDiff > 1 || colDiff > 1) {
+                            sfx.wrong();
+                            alert("⚠️ Lỗi nối chữ!\nChữ cái tiếp theo phải nằm ngay sát cạnh chữ cái trước đó để tạo thành chuỗi liên tục.");
+                            return;
+                        }
+                    }
                     
                     selectedIndices.push(cellId);
                     btn.style.background = 'var(--primary)';
@@ -1835,20 +1872,79 @@ const initB2BApp = () => {
         }
 
         document.getElementById('btn-verify-tango').addEventListener('click', () => {
-            let correct = true;
+            // Check if there are empty cells
+            let hasEmpty = false;
             for (let r = 0; r < 4; r++) {
                 for (let c = 0; c < 4; c++) {
-                    if (currentGrid[r][c] !== targetSolution[r][c]) {
-                        correct = false;
+                    if (currentGrid[r][c] === 0) hasEmpty = true;
+                }
+            }
+            if (hasEmpty) {
+                sfx.wrong();
+                alert("⚠️ Chưa hoàn thành!\nVui lòng điền kín tất cả các ô trên lưới trước khi nhấn xác nhận.");
+                return;
+            }
+
+            // Check row totals (each row must have exactly two 🤝 and two ❌, sum must be 0)
+            let rowErrors = [];
+            for (let r = 0; r < 4; r++) {
+                let sum = currentGrid[r].reduce((a, b) => a + b, 0);
+                if (sum !== 0) {
+                    rowErrors.push(r + 1);
+                }
+            }
+
+            // Check col totals (each col must have exactly two 🤝 and two ❌, sum must be 0)
+            let colErrors = [];
+            for (let c = 0; c < 4; c++) {
+                let sum = 0;
+                for (let r = 0; r < 4; r++) {
+                    sum += currentGrid[r][c];
+                }
+                if (sum !== 0) {
+                    colErrors.push(c + 1);
+                }
+            }
+
+            // Check consecutive triples in rows
+            let tripleErrors = [];
+            for (let r = 0; r < 4; r++) {
+                for (let c = 0; c < 2; c++) {
+                    if (currentGrid[r][c] !== 0 && 
+                        currentGrid[r][c] === currentGrid[r][c+1] && 
+                        currentGrid[r][c] === currentGrid[r][c+2]) {
+                        tripleErrors.push(`Hàng ${r+1}`);
                     }
                 }
             }
 
-            if (correct) {
+            // Check consecutive triples in cols
+            for (let c = 0; c < 4; c++) {
+                for (let r = 0; r < 2; r++) {
+                    if (currentGrid[r][c] !== 0 && 
+                        currentGrid[r][c] === currentGrid[r+1][c] && 
+                        currentGrid[r][c] === currentGrid[r+2][c]) {
+                        tripleErrors.push(`Cột ${c+1}`);
+                    }
+                }
+            }
+
+            if (rowErrors.length === 0 && colErrors.length === 0 && tripleErrors.length === 0) {
                 sfx.correct();
                 handlePuzzleSolved(20);
             } else {
                 sfx.wrong();
+                let errMsg = "❌ Sai rồi bác ơi! Hãy kiểm tra lại các lỗi sau:\n";
+                if (rowErrors.length > 0) {
+                    errMsg += `• Hàng ${rowErrors.join(', ')}: số lượng 🤝 và ❌ chưa bằng nhau (phải có đúng 2 chiếc mỗi loại).\n`;
+                }
+                if (colErrors.length > 0) {
+                    errMsg += `• Cột ${colErrors.join(', ')}: số lượng 🤝 và ❌ chưa bằng nhau (phải có đúng 2 chiếc mỗi loại).\n`;
+                }
+                if (tripleErrors.length > 0) {
+                    errMsg += `• Có 3 biểu tượng giống nhau đứng cạnh nhau tại: ${[...new Set(tripleErrors)].join(', ')}.\n`;
+                }
+                alert(errMsg + "\nHãy tư duy và sắp xếp lại nhé!");
             }
         });
 
@@ -1858,9 +1954,14 @@ const initB2BApp = () => {
     function renderPuzzleQueens() {
         const container = document.getElementById('options-container');
         container.innerHTML = `
-            <div style="text-align: center; margin-bottom: 12px; color: var(--text-light); font-size: 0.85rem; line-height: 1.4;">
-                Đặt đúng 4 vương miện (👑) đại diện cho 4 BD Star.<br>
-                Quy tắc: Không nằm chung hàng, cột hoặc đường chéo chéo nhau.
+            <div style="background: rgba(255,255,255,0.03); border: 1px solid var(--border-color); border-radius: 12px; padding: 15px; margin-bottom: 20px; font-size: 0.85rem; line-height: 1.45; text-align: left; max-width: 480px; margin-left: auto; margin-right: auto;">
+                <h5 style="margin: 0 0 8px 0; font-weight: 800; color: var(--primary); font-size: 0.95rem;">👑 QUY TẮC ĐỊA BÀN BD STAR (4 QUEENS):</h5>
+                • Nhiệm vụ: Đặt đúng **4 vương miện** (👑) lên lưới 4x4 đại diện cho địa bàn quản lý của 4 BD Star.<br>
+                • Quy tắc không trùng lặp: Không được có bất kỳ 2 vương miện nào nằm **chung một hàng ngang, hàng dọc, hoặc đường chéo chéo nhau** (để tránh xung đột thị trường).<br>
+                • Click vào ô để đặt hoặc hủy vương miện. Ô bị xung đột sẽ tự động đổi màu đỏ.
+            </div>
+            <div id="queens-status" style="text-align: center; font-size: 1rem; font-weight: 800; color: var(--primary); margin-bottom: 12px;">
+                Đã đặt: 0 / 4 Vương miện 👑
             </div>
             <div id="queens-grid" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; max-width: 240px; margin: 0 auto; background: rgba(0,0,0,0.25); padding: 15px; border-radius: 16px; border: 1px solid var(--border-color);">
             </div>
@@ -1949,6 +2050,20 @@ const initB2BApp = () => {
                         btn.style.borderColor = 'rgba(255,255,255,0.05)';
                         btn.style.boxShadow = 'none';
                     }
+                }
+            }
+
+            const statusEl = document.getElementById('queens-status');
+            if (statusEl) {
+                if (conflictCoords.size > 0) {
+                    statusEl.style.color = '#ef4444';
+                    statusEl.innerHTML = `Đã đặt: ${totalQueens} / 4 👑 <span style="font-size: 0.82rem; font-weight: normal; color: #ef4444; background: rgba(239, 68, 68, 0.1); padding: 2px 8px; border-radius: 4px; margin-left: 5px;">Xung đột địa bàn! ❌</span>`;
+                } else if (totalQueens === 4) {
+                    statusEl.style.color = '#10b981';
+                    statusEl.innerHTML = `Đã đặt: 4 / 4 👑 <span style="font-size: 0.82rem; font-weight: normal; color: #10b981; background: rgba(16, 185, 129, 0.1); padding: 2px 8px; border-radius: 4px; margin-left: 5px;">Thành công tối ưu! ✅</span>`;
+                } else {
+                    statusEl.style.color = 'var(--primary)';
+                    statusEl.textContent = `Đã đặt: ${totalQueens} / 4 Vương miện 👑`;
                 }
             }
 
@@ -2056,35 +2171,57 @@ const initB2BApp = () => {
         const allBtns = optionsContainer.querySelectorAll('.btn-option');
         allBtns.forEach(b => b.disabled = true);
         
-        const feedbackOwl = document.getElementById('feedback-owl');
         feedbackMsg.classList.remove('hidden');
         feedbackMsg.className = 'feedback-msg error';
+        feedbackMsg.style.background = 'rgba(185, 28, 28, 0.1)';
+        feedbackMsg.style.border = '1px solid #b91c1c';
+        feedbackMsg.style.color = '#991b1b';
         
         const activeGame = games[activeGameIndex];
-        const correctOpt = allOptionsData.find(o => o.isCorrect);
-        allBtns.forEach(b => {
-            if (correctOpt && b.textContent === correctOpt.text) {
-                b.classList.add('correct');
-            }
-        });
+        
+        if (activeGame.type === 'scenario_challenge') {
+            const correctOpt = allOptionsData.find(o => o.isCorrect);
+            allBtns.forEach(b => {
+                if (correctOpt && b.textContent === correctOpt.text) {
+                    b.classList.add('correct');
+                }
+            });
+        } else {
+            const bestOpt = allOptionsData.find(o => o.points === 2);
+            allBtns.forEach(b => {
+                if (bestOpt && b.textContent === bestOpt.text) {
+                    b.style.background = 'rgba(21, 128, 61, 0.15)';
+                    b.style.border = '2px solid #15803d';
+                    b.style.color = '#166534';
+                }
+            });
+        }
 
-        // Record empty timeout selection
         userAnswers.push({ text: "Không trả lời (Hết giờ)", isCorrect: false });
 
-        // Owl mascot timeout expression
+        const mascotImg = document.getElementById('mascot-img');
+        const feedbackTextEl = document.getElementById('feedback-text');
+        
+        if (mascotImg) mascotImg.src = 'mascot_rain.jpg?v=1.0.4';
+
         const picked = owlWrong[Math.floor(Math.random() * owlWrong.length)];
-        if (feedbackOwl) {
-            feedbackOwl.textContent = picked.emoji;
-            feedbackOwl.classList.remove('hidden');
+        let feedbackText = `<strong>HẾT GIỜ! Bạn đã chậm chân. Một chuyên gia cần phản ứng nhanh hơn.</strong><br><br><strong>🦉 BD Mascot: "${picked.quote}"</strong><br><br>`;
+        if (activeGame.type === 'scenario_challenge') {
+            const correctOpt = allOptionsData.find(o => o.isCorrect);
+            if (correctOpt) {
+                feedbackText += `<span style="color: #15803d; font-weight: bold;">🔑 Đáp án đúng: "${correctOpt.text}"</span><br>`;
+                feedbackText += `<span style="font-size: 0.85rem;">Lý do đúng: ${correctOpt.feedback || 'Chính xác!'}</span>`;
+            }
+        } else {
+            const bestOpt = allOptionsData.find(o => o.points === 2);
+            if (bestOpt) {
+                feedbackText += `<span style="color: #15803d; font-weight: bold;">🔑 Lựa chọn đột phá (+2đ): "${bestOpt.text}"</span><br>`;
+                feedbackText += `<span style="font-size: 0.85rem;">Lý do: ${bestOpt.feedback || 'Chính xác!'}</span>`;
+            }
         }
-        
-        let feedbackText = `<strong>HẾT GIỜ! Bạn đã chậm chân. Một chuyên gia cần phản ứng nhanh hơn.</strong><br><br><strong>${picked.quote}</strong><br><br>`;
-        if (correctOpt) {
-            feedbackText += `<span style="color: #166534; font-weight: bold;">🔑 Đáp án đúng: "${correctOpt.text}"</span><br>`;
-            feedbackText += `<span style="font-size: 0.85rem; color: #166534;">Lý do đúng: ${correctOpt.feedback || 'Chính xác!'}</span>`;
-        }
-        feedbackMsg.innerHTML = feedbackText;
-        
+        if (feedbackTextEl) feedbackTextEl.innerHTML = feedbackText;
+        else feedbackMsg.innerHTML = feedbackText;
+
         progressBar.style.width = `${((currentQIndex + 1) / activeGame.questions.length) * 100}%`;
         nextBtn.classList.remove('hidden');
     }
@@ -2095,7 +2232,6 @@ const initB2BApp = () => {
         allBtns.forEach(b => b.disabled = true);
 
         const activeGame = games[activeGameIndex];
-        const feedbackOwl = document.getElementById('feedback-owl');
         const mascotImg = document.getElementById('mascot-img');
         const feedbackTextEl = document.getElementById('feedback-text');
         feedbackMsg.classList.remove('hidden');
@@ -2103,61 +2239,115 @@ const initB2BApp = () => {
         // Record user selection
         userAnswers.push(selectedOpt);
 
+        let isBest = false;
+        let isNeutral = false;
+        let isPoor = false;
+
         if (activeGame.type === 'scenario_challenge') {
             if (selectedOpt.isCorrect) {
-                sfx.correct();
-                selectedBtn.classList.add('correct');
-                feedbackMsg.className = 'feedback-msg success';
+                isBest = true;
                 score++;
-
-                // Owl mascot correct expression
-                const picked = owlCorrect[Math.floor(Math.random() * owlCorrect.length)];
-                if (feedbackOwl) {
-                    feedbackOwl.textContent = picked.emoji;
-                    feedbackOwl.classList.remove('hidden');
-                }
-                if (mascotImg) mascotImg.src = 'mascot_correct.jpg?v=1.0.4';
-                const htmlVal = `<strong>${picked.quote}</strong><br><br>${selectedOpt.feedback || ''}`;
-                if (feedbackTextEl) feedbackTextEl.innerHTML = htmlVal;
-                else feedbackMsg.innerHTML = htmlVal;
             } else {
-                sfx.wrong();
-                selectedBtn.classList.add('wrong');
-                feedbackMsg.className = 'feedback-msg error';
-                
+                isPoor = true;
+            }
+        } else {
+            // suitability_scoring
+            const points = selectedOpt.points || 0;
+            score += points;
+            if (points === 2) {
+                isBest = true;
+            } else if (points === 1) {
+                isNeutral = true;
+            } else {
+                isPoor = true;
+            }
+        }
+
+        if (isBest) {
+            sfx.correct();
+            selectedBtn.classList.add('correct');
+            feedbackMsg.className = 'feedback-msg success';
+            feedbackMsg.style.background = 'rgba(21, 128, 61, 0.1)';
+            feedbackMsg.style.border = '1px solid #15803d';
+            feedbackMsg.style.color = '#166534';
+            
+            const bestMascots = ['mascot_correct.jpg', 'mascot_hot.jpg', 'mascot_challenge.jpg'];
+            const chosenMascot = bestMascots[Math.floor(Math.random() * bestMascots.length)];
+            if (mascotImg) mascotImg.src = chosenMascot + '?v=1.0.4';
+
+            const pickedQuote = owlCorrect[Math.floor(Math.random() * owlCorrect.length)].quote;
+            const htmlVal = `<strong>🦉 BD Mascot: "${pickedQuote}"</strong><br><br>${selectedOpt.feedback || 'Tuyệt vời! Lựa chọn vô cùng sắc sảo.'}`;
+            if (feedbackTextEl) feedbackTextEl.innerHTML = htmlVal;
+            else feedbackMsg.innerHTML = htmlVal;
+        } else if (isNeutral) {
+            sfx.correct();
+            selectedBtn.style.background = 'rgba(243, 168, 59, 0.2)';
+            selectedBtn.style.border = '2px solid #f3a83b';
+            selectedBtn.style.color = '#b45309';
+            selectedBtn.style.fontWeight = 'bold';
+            
+            feedbackMsg.className = 'feedback-msg warning';
+            feedbackMsg.style.background = 'rgba(243, 168, 59, 0.1)';
+            feedbackMsg.style.border = '1px solid #f3a83b';
+            feedbackMsg.style.color = '#b45309';
+
+            const neutralMascots = ['mascot_relax.jpg', 'mascot_milktea.jpg'];
+            const chosenMascot = neutralMascots[Math.floor(Math.random() * neutralMascots.length)];
+            if (mascotImg) mascotImg.src = chosenMascot + '?v=1.0.4';
+
+            const htmlVal = `<strong>🦉 BD Mascot: "Phương án này khá ổn, nhưng vẫn còn cách tối ưu hơn!"</strong><br><br>${selectedOpt.feedback || 'Lựa chọn tương đối hợp lý.'}`;
+            if (feedbackTextEl) feedbackTextEl.innerHTML = htmlVal;
+            else feedbackMsg.innerHTML = htmlVal;
+        } else {
+            sfx.wrong();
+            selectedBtn.classList.add('wrong');
+            feedbackMsg.className = 'feedback-msg error';
+            feedbackMsg.style.background = 'rgba(185, 28, 28, 0.1)';
+            feedbackMsg.style.border = '1px solid #b91c1c';
+            feedbackMsg.style.color = '#991b1b';
+
+            if (activeGame.type === 'scenario_challenge') {
                 const correctOpt = allOptionsData.find(o => o.isCorrect);
                 allBtns.forEach(b => {
                     if (correctOpt && b.textContent === correctOpt.text) {
                         b.classList.add('correct');
                     }
                 });
-
-                // Owl mascot wrong expression
-                const picked = owlWrong[Math.floor(Math.random() * owlWrong.length)];
-                if (feedbackOwl) {
-                    feedbackOwl.textContent = picked.emoji;
-                    feedbackOwl.classList.remove('hidden');
-                }
-                if (mascotImg) mascotImg.src = 'mascot_wrong.jpg?v=1.0.4';
-                
-                let feedbackText = `<strong>${picked.quote}</strong><br><br>`;
-                feedbackText += `<span style="color: #991b1b; font-weight: bold;">Bạn chọn: "${selectedOpt.text}"</span><br>`;
-                feedbackText += `<span style="font-size: 0.85rem; color: var(--text-light); font-style: italic;">${selectedOpt.feedback || ''}</span><br><br>`;
-                if (correctOpt) {
-                    feedbackText += `<span style="color: #166534; font-weight: bold;">🔑 Đáp án đúng: "${correctOpt.text}"</span><br>`;
-                    feedbackText += `<span style="font-size: 0.85rem; color: #166534;">Lý do đúng: ${correctOpt.feedback || 'Chính xác!'}</span>`;
-                }
-                if (feedbackTextEl) feedbackTextEl.innerHTML = feedbackText;
-                else feedbackMsg.innerHTML = feedbackText;
+            } else {
+                const bestOpt = allOptionsData.find(o => o.points === 2);
+                allBtns.forEach(b => {
+                    if (bestOpt && b.textContent === bestOpt.text) {
+                        b.style.background = 'rgba(21, 128, 61, 0.15)';
+                        b.style.border = '2px solid #15803d';
+                        b.style.color = '#166534';
+                    }
+                });
             }
-        } else {
-            sfx.correct();
-            selectedBtn.classList.add('correct');
-            feedbackMsg.className = 'feedback-msg success';
-            score += (selectedOpt.points || 0);
-            if (mascotImg) mascotImg.src = 'mascot_correct.jpg?v=1.0.4';
-            if (feedbackTextEl) feedbackTextEl.textContent = selectedOpt.feedback || 'Chính xác!';
-            else feedbackMsg.textContent = selectedOpt.feedback || 'Chính xác!';
+
+            const poorMascots = ['mascot_wrong.jpg', 'mascot_ghost.jpg', 'mascot_storm.jpg'];
+            const chosenMascot = poorMascots[Math.floor(Math.random() * poorMascots.length)];
+            if (mascotImg) mascotImg.src = chosenMascot + '?v=1.0.4';
+
+            const pickedQuote = owlWrong[Math.floor(Math.random() * owlWrong.length)].quote;
+            let feedbackText = `<strong>🦉 BD Mascot: "${pickedQuote}"</strong><br><br>`;
+            feedbackText += `<span style="color: #b91c1c; font-weight: bold;">Lựa chọn của bạn: "${selectedOpt.text}"</span><br>`;
+            feedbackText += `<span style="font-size: 0.85rem; font-style: italic;">${selectedOpt.feedback || ''}</span><br><br>`;
+            
+            if (activeGame.type === 'scenario_challenge') {
+                const correctOpt = allOptionsData.find(o => o.isCorrect);
+                if (correctOpt) {
+                    feedbackText += `<span style="color: #15803d; font-weight: bold;">🔑 Đáp án tối ưu nhất: "${correctOpt.text}"</span><br>`;
+                    feedbackText += `<span style="font-size: 0.85rem;">Lý do: ${correctOpt.feedback || 'Chính xác!'}</span>`;
+                }
+            } else {
+                const bestOpt = allOptionsData.find(o => o.points === 2);
+                if (bestOpt) {
+                    feedbackText += `<span style="color: #15803d; font-weight: bold;">🔑 Lựa chọn đột phá (+2đ): "${bestOpt.text}"</span><br>`;
+                    feedbackText += `<span style="font-size: 0.85rem;">Lý do: ${bestOpt.feedback || 'Chính xác!'}</span>`;
+                }
+            }
+            if (feedbackTextEl) feedbackTextEl.innerHTML = feedbackText;
+            else feedbackMsg.innerHTML = feedbackText;
         }
         
         progressBar.style.width = `${((currentQIndex + 1) / activeGame.questions.length) * 100}%`;
@@ -2236,6 +2426,7 @@ const initB2BApp = () => {
         const toggleBtn = document.getElementById('btn-toggle-review');
         const reviewPanel = document.getElementById('review-answers-panel');
         if (toggleBtn && reviewPanel) {
+            toggleBtn.classList.remove('hidden');
             reviewPanel.classList.add('hidden');
             reviewPanel.innerHTML = '';
             toggleBtn.textContent = '🔍 Xem Lại Đáp Án Chi Tiết';
