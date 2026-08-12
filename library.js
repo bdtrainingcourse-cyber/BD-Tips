@@ -39,6 +39,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let activeCategory = 'Ebooks';
     let activeGlossaryFilter = 'All';
     let searchQuery = '';
+    let searchTrackTimeout;
 
     // --- Daily Download Limit & Retention Helpers ---
     function getTodayKey() {
@@ -514,6 +515,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (window.registerUserAction) {
                     window.registerUserAction('library_read');
                 }
+                if (window.trackUserBehavior) {
+                    window.trackUserBehavior('article_read', article.title);
+                }
             });
             articlesContainer.appendChild(card);
         });
@@ -537,6 +541,14 @@ document.addEventListener('DOMContentLoaded', () => {
     searchInput.addEventListener('input', () => {
         searchQuery = searchInput.value.toLowerCase().trim();
         renderArticles();
+        
+        // Debounce search input tracking log to avoid flooding the API
+        clearTimeout(searchTrackTimeout);
+        searchTrackTimeout = setTimeout(() => {
+            if (searchQuery && window.trackUserBehavior) {
+                window.trackUserBehavior('search_query', searchQuery);
+            }
+        }, 1000);
     });
 
     // Modal close events
@@ -603,6 +615,10 @@ document.addEventListener('DOMContentLoaded', () => {
         // Trigger action-based streak increase
         if (window.registerUserAction) {
             window.registerUserAction('library_read');
+        }
+
+        if (window.trackUserBehavior) {
+            window.trackUserBehavior('ebook_download', ebook.title);
         }
 
         const link = document.createElement('a');
@@ -793,4 +809,95 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Initialize Page
     loadArticles();
+    loadPersonalizedSidebar();
+
+    // --- Personalization suggestions panel ---
+    async function loadPersonalizedSidebar() {
+        const email = localStorage.getItem('streak_email');
+        const url = `/api/get-personalized-content${email ? '?email=' + encodeURIComponent(email) : ''}`;
+        try {
+            const res = await fetch(url);
+            if (res.ok) {
+                const recs = await res.json();
+                renderPersonalizedBox(recs);
+            }
+        } catch (e) {
+            console.warn('Personalization load failed:', e);
+        }
+    }
+
+    function renderPersonalizedBox(recs) {
+        const sidebar = document.querySelector('.sidebar-column');
+        if (!sidebar) return;
+
+        // Remove existing personalized box if any
+        const existing = document.getElementById('personalized-sidebar-box');
+        if (existing) existing.remove();
+
+        const box = document.createElement('div');
+        box.id = 'personalized-sidebar-box';
+        box.className = 'glass-panel';
+        box.style.padding = '25px';
+        box.style.display = 'flex';
+        box.style.flexDirection = 'column';
+        box.style.gap = '15px';
+        box.style.width = '100%';
+        box.style.boxSizing = 'border-box';
+        box.style.border = '1px solid var(--primary-glow)';
+        box.style.background = 'linear-gradient(135deg, rgba(243, 168, 59, 0.06) 0%, rgba(30, 41, 59, 0.95) 100%)';
+        box.style.boxShadow = '0 10px 30px rgba(243, 168, 59, 0.1)';
+
+        const interestLabel = recs.interest === 'default' ? 'Đề xuất hôm nay' : 
+            recs.interest === 'compliance' ? '💡 Chuyên ngành: Pháp lý & Lương thưởng' :
+            recs.interest === 'pitching' ? '🎤 Chuyên ngành: Luyện pitching & Sales' :
+            recs.interest === 'outreach' ? '✍️ Chuyên ngành: Cold Outreach' : '🔍 Chuyên ngành: Tìm kiếm leads';
+
+        box.innerHTML = `
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <h3 class="sidebar-title" style="margin: 0; color: #f3a83b; font-size: 1.15rem; font-weight: 800;">🎯 Dành Riêng Cho Bạn</h3>
+                <span style="font-size: 0.72rem; background: rgba(243,168,59,0.15); color: #f3a83b; padding: 2px 8px; border-radius: 20px; font-weight: 700;">AI Suggest</span>
+            </div>
+            
+            <div style="font-size: 0.78rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">
+                ${interestLabel}
+            </div>
+
+            <!-- Ebook recommendation -->
+            <div id="rec-ebook-card" style="display: flex; gap: 12px; background: rgba(0,0,0,0.25); border: 1px solid rgba(255,255,255,0.05); padding: 12px; border-radius: 12px; cursor: pointer; transition: all 0.2s ease;">
+                <img src="${recs.ebook.coverImage || 'ebook-covers/cover-mindset-bd.png'}" style="width: 50px; height: 70px; object-fit: cover; border-radius: 6px; border: 1px solid rgba(255,255,255,0.1);" />
+                <div style="flex: 1;">
+                    <h4 style="margin: 0 0 4px 0; font-size: 0.85rem; font-weight: 800; color: var(--text-main); line-height: 1.3;">${recs.ebook.title}</h4>
+                    <p style="margin: 0; font-size: 0.74rem; color: var(--text-muted); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; line-height: 1.3;">${recs.ebook.desc}</p>
+                </div>
+            </div>
+
+            <!-- Tool recommendation -->
+            <a href="${recs.tool.link}" style="text-decoration: none; color: inherit; display: flex; align-items: center; justify-content: space-between; background: rgba(99, 102, 241, 0.08); border: 1px solid rgba(99, 102, 241, 0.2); padding: 12px; border-radius: 12px; transition: all 0.2s ease;" onmouseover="this.style.background='rgba(99, 102, 241, 0.15)'" onmouseout="this.style.background='rgba(99, 102, 241, 0.08)'">
+                <div>
+                    <span style="font-size: 0.7rem; font-weight: 700; color: #a5b4fc; text-transform: uppercase; display: block; margin-bottom: 2px;">⚡ TIỆN ÍCH KHUYÊN DÙNG:</span>
+                    <strong style="font-size: 0.88rem; color: #e0e7ff;">${recs.tool.name}</strong>
+                </div>
+                <span style="font-size: 1.2rem; color: #a5b4fc;">➔</span>
+            </a>
+
+            <!-- Article recommendation -->
+            <a href="${recs.article.link}" target="_blank" style="text-decoration: none; color: inherit; display: block; background: rgba(0,0,0,0.15); border: 1px solid rgba(255,255,255,0.03); padding: 12px; border-radius: 12px; transition: all 0.2s ease;" onmouseover="this.style.background='rgba(255,255,255,0.03)'" onmouseout="this.style.background='rgba(0,0,0,0.15)'">
+                <span style="font-size: 0.7rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; display: block; margin-bottom: 2px;">📖 BÀI VIẾT NÊN ĐỌC:</span>
+                <strong style="font-size: 0.85rem; color: var(--text-main); display: block; line-height: 1.3;">${recs.article.title}</strong>
+            </a>
+        `;
+
+        // Prepend to sidebar
+        sidebar.insertBefore(box, sidebar.firstChild);
+
+        // Bind ebook click to download flow
+        box.querySelector('#rec-ebook-card').addEventListener('click', () => {
+            if (ebooks && ebooks.length > 0) {
+                const ebookObj = ebooks.find(e => e.id === recs.ebook.id);
+                if (ebookObj) {
+                    handleEbookDownload(ebookObj);
+                }
+            }
+        });
+    }
 });
