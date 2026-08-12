@@ -3651,31 +3651,34 @@ const initB2BApp = () => {
         if (gameId === 'game-zip') {
             titleText = '🔗 B2B Zip (Sales Path Finder)';
             rulesHtml = `
-                <p>Nhiệm vụ của bạn là kết nối các mốc quy trình bán hàng B2B theo đúng thứ tự logic:</p>
+                <p><b>Thử thách Săn Lead & Quản lý Ngân sách CAC:</b></p>
                 <ol style="margin-left: 20px; margin-top: 5px;">
-                    <li>Nhấp vào ô <b>Bắt Đầu (Leads Generated)</b> đầu tiên.</li>
-                    <li>Lần lượt nhấp vào các ô quy trình tiếp theo theo đúng thứ tự (ICP, Cold Outreach, Pitch, Proposal, Negotiated, Closed Won).</li>
-                    <li>Tránh các ô bị chặn màu đỏ (Ghosted, Budget Frozen).</li>
+                    <li>Toàn bộ sơ đồ phễu đang bị ẩn (Sương mù chiến tranh - Fog of War). Chỉ có ô <b>Leads Generated (Bắt đầu)</b> hiển thị.</li>
+                    <li>Click vào các ô liền kề (trên, dưới, trái, phải) để dò đường và mở ô.</li>
+                    <li>Nhiệm vụ: Nối đúng thứ tự các bước phễu bán hàng B2B (Lead ➔ ICP ➔ Cold Outreach ➔ Pitch ➔ Proposal ➔ Negotiated ➔ Closed Won).</li>
+                    <li>Bắt đầu với <b>100% Ngân sách CAC</b>. Click trúng ô distractor bị trừ 15%, click trúng ô nguy hiểm (Ghosted, Competitor Win) bị trừ 35%. Nếu CAC về 0%, bạn thất bại!</li>
                 </ol>
             `;
         } else if (gameId === 'game-wend') {
-            titleText = '🔍 B2B Wend (Word Search)';
+            titleText = '🔍 B2B Wend (Word Search Decryption)';
             rulesHtml = `
-                <p>Tìm các từ khóa chiến lược B2B ẩn giấu trong lưới ký tự:</p>
-                <ul style="margin-left: 20px; margin-top: 5px;">
-                    <li>Nhấp chọn từng chữ cái của từ khóa mục tiêu hiển thị bên trên.</li>
-                    <li>Các chữ cái có thể được sắp xếp theo chiều ngang, dọc hoặc chéo (ở cấp độ khó).</li>
-                    <li>Tìm đủ tất cả các từ khóa trước khi thời gian đếm ngược kết thúc.</li>
-                </ul>
+                <p><b>Giải Mã Định Nghĩa Crossword B2B:</b></p>
+                <ol style="margin-left: 20px; margin-top: 5px;">
+                    <li>Bạn phải tự đoán từ khóa dựa trên **định nghĩa/câu đố B2B** hiển thị bên trên.</li>
+                    <li>Sau khi giải mã ra từ tiếng Anh (ví dụ: LEAD, SPIN, ICP, SALES), tìm và click chọn các chữ cái của từ đó trên lưới.</li>
+                    <li>Các ký tự có thể ẩn giấu theo chiều ngang, dọc hoặc chéo (ở cấp độ khó).</li>
+                    <li>Tìm đúng và đủ tất cả các thuật ngữ để qua màn trước khi hết giờ!</li>
+                </ol>
             `;
         } else if (gameId === 'game-tango') {
             titleText = '🤝 B2B Tango (Reasoning Grid)';
             rulesHtml = `
-                <p>Điền các trạng thái Deal 🤝 (Đồng ý) và ❌ (Từ chối) thỏa mãn các điều kiện phân phối sau:</p>
+                <p><b>Logic Phân Deal Sudoku Độc Bản (Lưới lớn từ 6x6 đến 10x10):</b></p>
                 <ol style="margin-left: 20px; margin-top: 5px;">
-                    <li>Mỗi hàng và mỗi cột phải chứa <b>số lượng 🤝 và ❌ bằng nhau</b>.</li>
-                    <li>Không được có quá 2 biểu tượng giống nhau nằm cạnh nhau (ngang hoặc dọc).</li>
-                    <li>Nhấp vào ô trống để chuyển đổi trạng thái: <code>Trống ➔ 🤝 ➔ ❌ ➔ Trống</code>.</li>
+                    <li>Điền 🤝 (Đồng ý) và ❌ (Từ chối) vào các ô trống.</li>
+                    <li>Mỗi hàng và mỗi cột phải có <b>số lượng 🤝 và ❌ bằng nhau</b>.</li>
+                    <li>Không được có 3 ô trùng nhau liên tiếp theo hàng ngang hoặc cột dọc.</li>
+                    <li><b>Quy tắc độc bản:</b> Không được phép có hai hàng bất kỳ giống hệt nhau hoặc hai cột bất kỳ giống hệt nhau.</li>
                 </ol>
             `;
         } else if (gameId === 'game-queens') {
@@ -3957,44 +3960,91 @@ const initB2BApp = () => {
     function renderArcadeZip(level) {
         let size = 3;
         let steps = ['Leads Generated', 'Cold Outreach', 'Product Pitch', 'Closed Won'];
-        let timer = 40;
+        let timer = 50;
         
         if (level <= 3) {
             size = 3;
             steps = ['Leads Generated', 'Cold Outreach', 'Product Pitch', 'Closed Won'];
-            timer = 45 - level * 10;
+            timer = 50 - level * 10;
         } else if (level <= 6) {
             size = 4;
             steps = ['Leads Generated', 'Cold Outreach', 'Product Pitch', 'Proposal Shared', 'Closed Won'];
-            timer = 40 - (level - 3) * 7;
+            timer = 45 - (level - 3) * 7;
         } else if (level <= 9) {
             size = 5;
             steps = ['Leads Generated', 'Cold Outreach', 'Product Pitch', 'Proposal Shared', 'Negotiated', 'Closed Won'];
-            timer = 35 - (level - 6) * 7;
+            timer = 40 - (level - 6) * 7;
         } else {
             size = 6;
             steps = ['Leads Generated', 'ICP Identified', 'Cold Outreach', 'Product Pitch', 'Proposal Shared', 'Negotiated', 'Closed Won'];
-            timer = 30 - (level - 9) * 6;
+            timer = 35 - (level - 9) * 6;
         }
 
         startArcadeTimer(timer, () => showArcadeTimeOutScreen(() => renderArcadeZip(level)));
 
         const gridData = generateZipGrid(size, steps);
         
+        let cacBudget = 100;
+        let currentSeq = 0;
+        let pathCoords = [];
+        let revealedIndexes = new Set();
+        let clickedIndexes = new Set();
+
+        const startIdx = gridData.findIndex(cell => cell.seq === 1);
+        revealedIndexes.add(startIdx);
+
         arcadePlayArea.innerHTML = `
-            <div style="text-align: center; margin-bottom: 12px; font-weight: bold; color: #0f172a; font-size: 0.9rem;">
-                Nối pipeline chuẩn: Click các ô theo đúng thứ tự logic bán hàng B2B
+            <div style="text-align: center; margin-bottom: 12px; font-weight: bold; color: #0f172a; font-size: 0.9rem; display: flex; justify-content: space-between; align-items: center; width: 100%;">
+                <span>Nối pipeline chuẩn (Mở sương mù 🌫️)</span>
+                <span id="arcade-zip-cac" style="color: #10b981; font-weight: bold; font-family: monospace;">Ngân sách CAC: 100%</span>
             </div>
             <div id="arcade-zip-grid" style="display: grid; grid-template-columns: repeat(${size}, 1fr); gap: 8px; margin: 0 auto; width: 100%; max-width: 380px;">
                 <!-- grid items -->
             </div>
             <div style="margin-top: 15px; font-size: 0.8rem; background: #f1f5f9; border: 1px solid #cbd5e1; padding: 10px; border-radius: 8px; text-align: left; line-height: 1.4; color: #475569;">
-                <strong>Tiến độ:</strong> <span id="arcade-zip-progress" style="color: var(--primary); font-weight: bold;">Chưa bắt đầu (Click Lead đầu tiên)</span>
+                <strong>Tiến độ:</strong> <span id="arcade-zip-progress" style="color: var(--primary); font-weight: bold;">Click ô Leads Generated màu vàng để bắt đầu</span>
             </div>
         `;
 
         const gridContainer = document.getElementById('arcade-zip-grid');
-        let currentSeq = 0;
+        const buttons = [];
+
+        const updateZipUI = () => {
+            gridData.forEach((cell, idx) => {
+                const btn = buttons[idx];
+                const r = Math.floor(idx / size);
+                const c = idx % size;
+                
+                const isRevealed = revealedIndexes.has(idx);
+                const isClicked = clickedIndexes.has(idx);
+
+                if (!isRevealed) {
+                    btn.textContent = '🌫️';
+                    btn.style.background = '#e2e8f0';
+                    btn.style.color = '#94a3b8';
+                    btn.style.borderColor = '#cbd5e1';
+                } else {
+                    if (cell.type === 'blocked') {
+                        btn.style.background = '#fee2e2';
+                        btn.style.color = '#ef4444';
+                        btn.style.borderColor = '#fca5a5';
+                        btn.innerHTML = `🚫<br><span style="font-size:0.6rem; font-weight:normal; color:#b91c1c;">Ghosted</span>`;
+                    } else {
+                        if (isClicked) {
+                            btn.style.background = '#fffbeb';
+                            btn.style.borderColor = 'var(--primary)';
+                            btn.style.color = 'var(--primary)';
+                            btn.textContent = cell.label;
+                        } else {
+                            btn.style.background = '#f8fafc';
+                            btn.style.color = '#475569';
+                            btn.style.borderColor = '#cbd5e1';
+                            btn.textContent = cell.label;
+                        }
+                    }
+                }
+            });
+        };
 
         gridData.forEach((cell, idx) => {
             const btn = document.createElement('button');
@@ -4010,60 +4060,148 @@ const initB2BApp = () => {
             btn.style.wordBreak = 'break-word';
             btn.style.lineHeight = '1.2';
             btn.style.transition = 'all 0.2s';
-
-            if (cell.type === 'blocked') {
-                btn.style.background = '#fee2e2';
-                btn.style.color = '#ef4444';
-                btn.style.borderColor = '#fca5a5';
-                btn.innerHTML = `🚫<br><span style="font-size:0.6rem; font-weight:normal; color:#b91c1c;">Ghosted</span>`;
-            } else {
-                btn.style.background = '#f8fafc';
-                btn.style.color = '#334155';
-                btn.textContent = cell.label;
-            }
+            
+            const r = Math.floor(idx / size);
+            const c = idx % size;
 
             btn.addEventListener('click', () => {
+                const isRevealed = revealedIndexes.has(idx);
+
+                if (!isRevealed) {
+                    let canReveal = false;
+                    if (currentSeq === 0) {
+                        canReveal = true;
+                    } else {
+                        const lastCoord = pathCoords[pathCoords.length - 1];
+                        const dist = Math.abs(r - lastCoord.r) + Math.abs(c - lastCoord.c);
+                        if (dist === 1) {
+                            canReveal = true;
+                        }
+                    }
+
+                    if (!canReveal) {
+                        sfx.wrong();
+                        btn.style.borderColor = '#fca5a5';
+                        setTimeout(() => btn.style.borderColor = '#cbd5e1', 300);
+                        return;
+                    }
+
+                    revealedIndexes.add(idx);
+                    sfx.correct();
+                    updateZipUI();
+                }
+
                 if (cell.type === 'blocked') {
                     sfx.wrong();
-                    btn.style.transform = 'scale(0.95)';
+                    cacBudget -= 35;
+                    updateCACDisplay();
+                    btn.style.transform = 'scale(0.9)';
                     setTimeout(() => btn.style.transform = 'scale(1)', 200);
+                    checkCACBudget();
                     return;
                 }
 
                 if (cell.seq === 1 && currentSeq === 0) {
                     currentSeq = 1;
                     sfx.correct();
-                    btn.style.background = '#fffbeb';
-                    btn.style.borderColor = 'var(--primary)';
-                    btn.style.color = 'var(--primary)';
+                    clickedIndexes.add(idx);
+                    pathCoords.push({ r, c });
+                    revealNeighbors(r, c);
                     document.getElementById('arcade-zip-progress').textContent = `Đã kết nối: ${cell.label}`;
+                    updateZipUI();
                 } else if (cell.seq === currentSeq + 1) {
+                    const lastCoord = pathCoords[pathCoords.length - 1];
+                    const dist = Math.abs(r - lastCoord.r) + Math.abs(c - lastCoord.c);
+                    if (dist !== 1) {
+                        sfx.wrong();
+                        btn.style.borderColor = '#ef4444';
+                        setTimeout(() => btn.style.borderColor = '#cbd5e1', 500);
+                        return;
+                    }
+
                     currentSeq = cell.seq;
                     sfx.correct();
-                    btn.style.background = '#fffbeb';
-                    btn.style.borderColor = 'var(--primary)';
-                    btn.style.color = 'var(--primary)';
-                    
+                    clickedIndexes.add(idx);
+                    pathCoords.push({ r, c });
+                    revealNeighbors(r, c);
+
                     const progressText = document.getElementById('arcade-zip-progress');
                     progressText.textContent = `Đã kết nối: ${cell.label}`;
+                    updateZipUI();
 
                     if (currentSeq === steps.length) {
-                        progressText.innerHTML = `<span style="color:#10b981;">🎉 HOÀN THÀNH PIPELINE TỐI ƯU!</span>`;
+                        progressText.innerHTML = `<span style="color:#10b981;">🎉 HOÀN THÀNH PIPELINE TỐI ƯU VỚI ${cacBudget}% CAC!</span>`;
                         setTimeout(() => {
                             handleArcadeSolved('game-zip', level * 10);
                         }, 600);
                     }
                 } else {
-                    sfx.wrong();
-                    btn.style.borderColor = '#ef4444';
-                    setTimeout(() => {
-                        btn.style.borderColor = 'var(--border-color)';
-                    }, 500);
+                    if (!clickedIndexes.has(idx)) {
+                        sfx.wrong();
+                        cacBudget -= 15;
+                        updateCACDisplay();
+                        btn.style.borderColor = '#ef4444';
+                        setTimeout(() => btn.style.borderColor = '#cbd5e1', 500);
+                        checkCACBudget();
+                    }
                 }
             });
 
             gridContainer.appendChild(btn);
+            buttons.push(btn);
         });
+
+        const revealNeighbors = (r, c) => {
+            const dirs = [[-1, 0], [1, 0], [0, -1], [0, 1]];
+            dirs.forEach(d => {
+                let nr = r + d[0];
+                let nc = c + d[1];
+                if (nr >= 0 && nr < size && nc >= 0 && nc < size) {
+                    const nIdx = nr * size + nc;
+                    revealedIndexes.add(nIdx);
+                }
+            });
+        };
+
+        const updateCACDisplay = () => {
+            const cacEl = document.getElementById('arcade-zip-cac');
+            if (cacEl) {
+                cacEl.textContent = `Ngân sách CAC: ${cacBudget}%`;
+                if (cacBudget <= 35) {
+                    cacEl.style.color = '#ef4444';
+                } else if (cacBudget <= 70) {
+                    cacEl.style.color = '#f59e0b';
+                } else {
+                    cacEl.style.color = '#10b981';
+                }
+            }
+        };
+
+        const checkCACBudget = () => {
+            if (cacBudget <= 0) {
+                clearInterval(arcadeTimerInterval);
+                sfx.wrong();
+                arcadePlayArea.innerHTML = `
+                    <div style="text-align: center; padding: 30px; display: flex; flex-direction: column; align-items: center; gap: 15px; box-sizing: border-box;">
+                        <div style="font-size: 3.5rem;">💸</div>
+                        <h4 style="font-weight: 800; color: #ef4444; margin: 0; font-size: 1.25rem;">CAC VƯỢT GIỚI HẠN! 💸</h4>
+                        <p style="font-size: 0.9rem; color: #475569; line-height: 1.4; margin: 0;">
+                            Chi phí tiếp cận khách hàng (CAC) đã vượt mức ngân sách 100%. Chiến dịch thất bại!
+                        </p>
+                        <button id="btn-retry-zip" class="btn btn-primary" style="padding: 12px 24px; font-weight: bold; width: 100%; max-width: 220px; margin-top: 10px;">Thử Lại Vòng Này</button>
+                    </div>
+                `;
+                const retryBtn = document.getElementById('btn-retry-zip');
+                if (retryBtn) {
+                    retryBtn.addEventListener('click', () => {
+                        sfx.correct();
+                        renderArcadeZip(level);
+                    });
+                }
+            }
+        };
+
+        updateZipUI();
     }
 
     function generateWendGrid(gridSize, words, allowDiagonal = false) {
@@ -4123,27 +4261,25 @@ const initB2BApp = () => {
     function renderArcadeWend(level) {
         let size = 5;
         let words = ['LEAD'];
-        let timer = 35;
+        let timer = 40;
         let diagonal = false;
 
-        if (level <= 3) {
-            size = 5;
-            words = ['LEAD'];
-            timer = 30 - level * 5;
-        } else if (level <= 6) {
+        if (level === 1) { size = 5; words = ['LEAD']; timer = 45; }
+        else if (level === 2) { size = 5; words = ['ICP']; timer = 40; }
+        else if (level === 3) { size = 5; words = ['KPI']; timer = 35; }
+        else if (level <= 6) {
             size = 6;
-            words = ['LEAD', 'DEAL'];
-            timer = 35 - (level - 3) * 6;
+            words = (level === 4) ? ['LEAD', 'DEAL'] : (level === 5 ? ['ICP', 'SPIN'] : ['SALES', 'PITCH']);
+            timer = 45 - (level - 3) * 6;
         } else if (level <= 9) {
             size = 7;
-            words = ['LEAD', 'DEAL', 'SPIN'];
-            timer = 40 - (level - 6) * 7;
+            words = (level === 7) ? ['LEAD', 'DEAL', 'KPI'] : (level === 8 ? ['SPIN', 'SALES', 'PITCH'] : ['ICP', 'FUNNEL', 'CHURN']);
+            timer = 50 - (level - 6) * 7;
             diagonal = true;
         } else {
             size = 8;
-            words = ['LEAD', 'DEAL', 'SPIN', 'SALES'];
-            if (level === 12) words.push('PITCH');
-            timer = 45 - (level - 9) * 8;
+            words = (level === 10) ? ['LEAD', 'DEAL', 'SPIN', 'SALES'] : (level === 11 ? ['ICP', 'KPI', 'FUNNEL', 'CHURN'] : ['SALES', 'PITCH', 'UPSELL', 'CHURN', 'FUNNEL']);
+            timer = 60 - (level - 9) * 8;
             diagonal = true;
         }
 
@@ -4153,9 +4289,28 @@ const initB2BApp = () => {
         let selectedCoords = [];
         let foundWords = [];
 
+        const riddles = {
+            'LEAD': 'Khách hàng tiềm năng ban đầu trong phễu',
+            'DEAL': 'Cơ hội bán hàng hoặc thỏa thuận thương lượng',
+            'SPIN': 'Phương pháp câu hỏi: Situation, Problem, Implication, Need-payoff',
+            'SALES': 'Bộ phận bán hàng & chốt hợp đồng trực tiếp',
+            'PITCH': 'Bài thuyết trình giới thiệu giải pháp cho đối tác',
+            'KPI': 'Chỉ số đánh giá hiệu quả công việc then chốt',
+            'ICP': 'Chân dung khách hàng mục tiêu lý tưởng nhất',
+            'FUNNEL': 'Phễu chuyển đổi từ Lead sang Closed Won',
+            'CHURN': 'Tỷ lệ khách hàng rời bỏ dịch vụ doanh nghiệp',
+            'UPSELL': 'Bán thêm sản phẩm giá trị cao hơn cho khách cũ'
+        };
+
         arcadePlayArea.innerHTML = `
-            <div style="text-align: center; margin-bottom: 12px; font-weight: bold; color: #0f172a; font-size: 0.9rem;">
-                Mục tiêu: Tìm các từ khóa: ${words.map(w => `<span id="arcade-word-${w}" style="padding: 2px 6px; background: #f1f5f9; border: 1px solid #cbd5e1; border-radius: 4px; margin: 0 3px; font-family: monospace; display: inline-block; color: #334155;">${w}</span>`).join('')}
+            <div style="text-align: left; margin-bottom: 12px; font-size: 0.82rem; background: #f8fafc; border: 1px solid #e2e8f0; padding: 12px; border-radius: 8px;">
+                <strong style="color: #0f172a; display: block; margin-bottom: 6px;">💡 Đọc câu đố & tìm từ khóa tương ứng:</strong>
+                ${words.map(w => `
+                    <div id="arcade-riddle-${w}" style="margin: 4px 0; color: #475569; display: flex; align-items: flex-start; gap: 6px; line-height: 1.3;">
+                        <span id="bullet-${w}" style="color: var(--primary); font-weight: bold;">[?]</span>
+                        <span>${riddles[w]}</span>
+                    </div>
+                `).join('')}
             </div>
             
             <div id="arcade-wend-grid" style="display: grid; grid-template-columns: repeat(${size}, 1fr); gap: 6px; margin: 0 auto; width: 100%; max-width: 360px;">
@@ -4231,12 +4386,13 @@ const initB2BApp = () => {
                     sfx.correct();
                     foundWords.push(matchedWord);
                     
-                    const wordBadge = document.getElementById(`arcade-word-${matchedWord}`);
-                    if (wordBadge) {
-                        wordBadge.style.background = '#d1fae5';
-                        wordBadge.style.borderColor = '#34d399';
-                        wordBadge.style.color = '#065f46';
-                        wordBadge.innerHTML = `✓ ${matchedWord}`;
+                    const riddleEl = document.getElementById(`arcade-riddle-${matchedWord}`);
+                    const bulletEl = document.getElementById(`bullet-${matchedWord}`);
+                    if (riddleEl && bulletEl) {
+                        bulletEl.textContent = '✓';
+                        bulletEl.style.color = '#10b981';
+                        riddleEl.style.color = '#10b981';
+                        riddleEl.style.textDecoration = 'line-through';
                     }
 
                     selectedCoords.forEach(item => {
@@ -4268,29 +4424,20 @@ const initB2BApp = () => {
             });
         }
     }
-
     function renderArcadeTango(level) {
-        let size = 4;
-        let timer = 45;
-        let emptyCount = 6;
+        let size = 6;
+        let timer = 80;
+        let emptyCount = 14;
         let baseGrid = [
-           [1, 0, 1, 0],
-           [0, 1, 0, 1],
-           [1, 1, 0, 0],
-           [0, 0, 1, 1]
+           [1, 0, 1, 0, 0, 1],
+           [0, 1, 0, 1, 1, 0],
+           [1, 1, 0, 0, 1, 0],
+           [0, 0, 1, 1, 0, 1],
+           [1, 0, 0, 1, 1, 0],
+           [0, 1, 1, 0, 0, 1]
         ];
 
         if (level <= 4) {
-            size = 4;
-            baseGrid = [
-               [1, 0, 1, 0],
-               [0, 1, 0, 1],
-               [1, 1, 0, 0],
-               [0, 0, 1, 1]
-            ];
-            emptyCount = 3 + level;
-            timer = 50 - level * 8;
-        } else if (level <= 8) {
             size = 6;
             baseGrid = [
                [1, 0, 1, 0, 0, 1],
@@ -4300,9 +4447,9 @@ const initB2BApp = () => {
                [1, 0, 0, 1, 1, 0],
                [0, 1, 1, 0, 0, 1]
             ];
-            emptyCount = 6 + (level - 4) * 2;
-            timer = 45 - (level - 4) * 6;
-        } else {
+            emptyCount = 10 + level;
+            timer = 80 - level * 5;
+        } else if (level <= 8) {
             size = 8;
             baseGrid = [
                [1, 0, 1, 0, 0, 1, 1, 0],
@@ -4314,8 +4461,24 @@ const initB2BApp = () => {
                [1, 1, 0, 0, 1, 1, 0, 0],
                [0, 0, 1, 1, 0, 0, 1, 1]
             ];
-            emptyCount = 14 + (level - 8) * 4;
-            timer = 40 - (level - 8) * 5;
+            emptyCount = 18 + (level - 4) * 2;
+            timer = 90 - (level - 4) * 6;
+        } else {
+            size = 10;
+            baseGrid = [
+               [1, 0, 1, 0, 0, 1, 1, 0, 0, 1],
+               [0, 1, 0, 1, 1, 0, 0, 1, 1, 0],
+               [1, 1, 0, 0, 1, 0, 1, 0, 1, 0],
+               [0, 0, 1, 1, 0, 1, 0, 1, 0, 1],
+               [1, 0, 0, 1, 1, 0, 1, 0, 1, 0],
+               [0, 1, 1, 0, 0, 1, 0, 1, 0, 1],
+               [1, 1, 0, 0, 1, 1, 0, 0, 1, 0],
+               [0, 0, 1, 1, 0, 0, 1, 1, 0, 1],
+               [1, 0, 1, 0, 1, 0, 1, 0, 0, 1],
+               [0, 1, 0, 1, 0, 1, 0, 1, 1, 0]
+            ];
+            emptyCount = 30 + (level - 8) * 4;
+            timer = 110 - (level - 8) * 7;
         }
 
         startArcadeTimer(timer, () => showArcadeTimeOutScreen(() => renderArcadeTango(level)));
@@ -4325,7 +4488,7 @@ const initB2BApp = () => {
 
         let count = 0;
         let attempts = 0;
-        while (count < emptyCount && attempts < 200) {
+        while (count < emptyCount && attempts < 500) {
             let r = Math.floor(Math.random() * size);
             let c = Math.floor(Math.random() * size);
             if (playerGrid[r][c] !== null) {
@@ -4338,7 +4501,7 @@ const initB2BApp = () => {
 
         arcadePlayArea.innerHTML = `
             <div style="text-align: center; margin-bottom: 12px; font-weight: bold; color: #0f172a; font-size: 0.9rem;">
-                Điền 🤝 và ❌ thỏa mãn: Số 🤝 = ❌ mỗi cột/hàng, không có 3 ô kề nhau trùng
+                Điền 🤝 và ❌ thỏa mãn: Số 🤝 = ❌ mỗi cột/hàng, không có 3 ô kề nhau trùng, các hàng/cột độc bản
             </div>
             <div id="arcade-tango-grid" style="display: grid; grid-template-columns: repeat(${size}, 1fr); gap: 6px; margin: 0 auto; width: 100%; max-width: 360px;">
                 <!-- grid -->
@@ -4356,7 +4519,7 @@ const initB2BApp = () => {
                 btn.style.width = '100%';
                 btn.style.aspectRatio = '1';
                 btn.style.height = 'auto';
-                btn.style.fontSize = size >= 6 ? '1.2rem' : '1.5rem';
+                btn.style.fontSize = size >= 8 ? '0.9rem' : (size >= 6 ? '1.1rem' : '1.3rem');
                 btn.style.padding = '0';
                 btn.style.fontWeight = 'bold';
                 btn.style.border = '1px solid #cbd5e1';
@@ -4402,23 +4565,66 @@ const initB2BApp = () => {
                         }
 
                         let filled = true;
-                        let correct = true;
                         for (let i = 0; i < size; i++) {
                             for (let j = 0; j < size; j++) {
                                 if (playerGrid[i][j] === null) {
                                     filled = false;
                                 }
-                                if (playerGrid[i][j] !== baseGrid[i][j]) {
-                                    correct = false;
-                                }
                             }
                         }
 
-                        if (filled && correct) {
-                            sfx.win();
-                            setTimeout(() => {
-                                handleArcadeSolved('game-tango', level * 20);
-                            }, 500);
+                        if (filled) {
+                            let correct = true;
+                            for (let i = 0; i < size; i++) {
+                                let rowOnes = 0;
+                                let rowZeros = 0;
+                                let colOnes = 0;
+                                let colZeros = 0;
+
+                                for (let j = 0; j < size; j++) {
+                                    if (playerGrid[i][j] === 1) rowOnes++;
+                                    else if (playerGrid[i][j] === 0) rowZeros++;
+
+                                    if (playerGrid[j][i] === 1) colOnes++;
+                                    else if (playerGrid[j][i] === 0) colZeros++;
+
+                                    if (j < size - 2) {
+                                        if (playerGrid[i][j] !== null && playerGrid[i][j] === playerGrid[i][j+1] && playerGrid[i][j] === playerGrid[i][j+2]) {
+                                            correct = false;
+                                        }
+                                        if (playerGrid[j][i] !== null && playerGrid[j][i] === playerGrid[j+1][i] && playerGrid[j][i] === playerGrid[j+2][i]) {
+                                            correct = false;
+                                        }
+                                    }
+                                }
+
+                                if (rowOnes !== size / 2 || rowZeros !== size / 2 || colOnes !== size / 2 || colZeros !== size / 2) {
+                                    correct = false;
+                                }
+                            }
+
+                            if (correct) {
+                                for (let i = 0; i < size; i++) {
+                                    for (let j = i + 1; j < size; j++) {
+                                        let rowMatch = true;
+                                        let colMatch = true;
+                                        for (let k = 0; k < size; k++) {
+                                            if (playerGrid[i][k] !== playerGrid[j][k]) rowMatch = false;
+                                            if (playerGrid[k][i] !== playerGrid[k][j]) colMatch = false;
+                                        }
+                                        if (rowMatch || colMatch) {
+                                            correct = false;
+                                        }
+                                    }
+                                }
+                            }
+
+                            if (correct) {
+                                sfx.win();
+                                setTimeout(() => {
+                                    handleArcadeSolved('game-tango', level * 20);
+                                }, 500);
+                            }
                         }
                     });
                 }
