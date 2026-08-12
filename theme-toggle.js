@@ -34,6 +34,81 @@ const initThemeToggle = () => {
             }
             updateToggleButton(themeToggleBtn);
         });
+
+        // Insert Global Share Button
+        let shareBtn = document.getElementById('nav-share-btn');
+        if (!shareBtn) {
+            shareBtn = document.createElement('button');
+            shareBtn.id = 'nav-share-btn';
+            shareBtn.className = 'nav-share-btn';
+            shareBtn.setAttribute('title', 'Chia sẻ tính năng/trang này');
+            shareBtn.innerHTML = '📤';
+            shareBtn.style.background = 'transparent';
+            shareBtn.style.border = '1px solid rgba(255,255,255,0.15)';
+            shareBtn.style.color = 'var(--text-main)';
+            shareBtn.style.fontSize = '1.1rem';
+            shareBtn.style.padding = '6px 10px';
+            shareBtn.style.borderRadius = '50%';
+            shareBtn.style.cursor = 'pointer';
+            shareBtn.style.marginLeft = '12px';
+            shareBtn.style.display = 'flex';
+            shareBtn.style.alignItems = 'center';
+            shareBtn.style.justifyContent = 'center';
+            shareBtn.style.transition = 'all 0.3s ease';
+            shareBtn.style.outline = 'none';
+
+            shareBtn.addEventListener('click', () => {
+                const title = document.title || 'BD Bình Dân Học Vụ';
+                const url = window.location.href;
+                window.openGlobalShareModal(title, url);
+            });
+            themeToggleBtn.parentNode.insertBefore(shareBtn, themeToggleBtn);
+        }
+    }
+
+    // Auto Device Sync from URL Parameters (?sync_email=...)
+    const urlParams = new URLSearchParams(window.location.search);
+    const syncEmail = urlParams.get('sync_email');
+    const syncName = urlParams.get('sync_name');
+    const syncPoints = urlParams.get('sync_points');
+    const syncAvatar = urlParams.get('sync_avatar');
+
+    if (syncEmail) {
+        localStorage.setItem('streak_active', 'true');
+        localStorage.setItem('streak_email', syncEmail);
+        if (syncName) localStorage.setItem('streak_name', syncName);
+        if (syncPoints) localStorage.setItem('b2b_points_balance', syncPoints);
+        if (syncAvatar) localStorage.setItem('b2b_custom_avatar', syncAvatar);
+        
+        // Clear query parameters
+        window.history.replaceState({}, document.title, window.location.pathname);
+        
+        setTimeout(() => {
+            window.showGlobalNotification(
+                '🔄 Đồng Bộ Thiết Bị Thành Công',
+                `Đã đồng bộ thành công tài khoản <strong>${syncName || syncEmail}</strong> và số điểm tích lũy ⚡ của bạn từ thiết bị khác!`
+            );
+            if (window.updateNavbarUserHUD) window.updateNavbarUserHUD();
+            window.trackUserBehavior('device_sync_url', 'Sync via URL params');
+        }, 800);
+    }
+
+    // IP-based Device Sync Auto-Detection
+    const currentRegEmail = localStorage.getItem('streak_email');
+    const syncDismissed = localStorage.getItem('bd_sync_dismissed');
+    if (!currentRegEmail && syncDismissed !== 'true') {
+        // Only run if not logged in and not dismissed before
+        setTimeout(async () => {
+            try {
+                const res = await fetch('/api/detect-ip-user');
+                const data = await res.json();
+                if (data.found && data.user) {
+                    window.showGlobalSyncPrompt(data.user);
+                }
+            } catch (e) {
+                console.warn('IP detect sync error:', e);
+            }
+        }, 1500);
     }
 
     // Mobile Hamburger Menu Toggle
@@ -147,7 +222,7 @@ const QUEST_CONFIG = {
     check_in: { points: 5, limit: 1, name: '☕ Cú Đêm Dậy Sớm Làm BD', period: 'daily' },
     game_complete: { points: 10, limit: 2, name: '🎮 Cãi Khách Hàng Để Chốt Deal', period: 'daily' },
     perfect_game: { points: 5, limit: 2, name: '⭐ Chốt Deal Xuất Sắc (Game 5/5)', period: 'daily' },
-    pic_search: { points: 3, limit: 3, name: '🔍 Thám Tử Tư Đi Săn Trùm Cuối', period: 'daily' },
+    pic_search: { points: 3, limit: 3, name: '🎤 Luyện Thuyết Trình & Pitching AI', period: 'daily' },
     ai_email: { points: 3, limit: 3, name: '✍️ Viết Thư Tình Cho Doanh Nghiệp', period: 'daily' },
     share_click: { points: 5, limit: 2, name: '📢 Rủ Đồng Bọn Cùng Xuống Hố', period: 'daily' },
 
@@ -163,7 +238,7 @@ const CAMPAIGNS_CONFIG = {
     campaign_outreach: {
         id: 'campaign_outreach',
         title: 'Tuyệt Kỹ "Mặt Dày" Inbox Khách Hàng Enterprise ✉️',
-        desc: 'Tích cực PIC search, soạn Cold Email và share để chinh phục Enterprise lead.',
+        desc: 'Tích cực tạo Pitching AI, soạn Cold Email và share để chinh phục Enterprise lead.',
         bonus: 50,
         requirements: {
             pic_search: 3,
@@ -644,25 +719,31 @@ function handleEmailReminderRegistration(nameInputId, emailInputId, submitBtnId,
             const checkData = await checkRes.json();
 
             if (checkData.exists && checkData.user) {
-                // Existing user: restore points and name
                 const user = checkData.user;
-                localStorage.setItem('streak_active', 'true');
-                localStorage.setItem('streak_name', user.name || name);
-                localStorage.setItem('streak_email', email);
-                localStorage.setItem('b2b_points_balance', (user.points || 0).toString());
+                
+                // Show notification modal preventing double logins
+                window.showGlobalNotification(
+                    '⚠️ Đã Đăng Ký Tài Khoản',
+                    `Email <strong>${email}</strong> này đã được đăng ký và hoạt động.<br><br>Để bảo vệ tính nhất quán dữ liệu và bảo mật, hệ thống B2B Portal đã tự động ghi nhận phiên đăng nhập của thiết bị này. <strong>Bạn không cần phải nhập email này để đăng nhập/đăng ký lại nữa!</strong>`
+                );
+                
+                // Under-the-hood sync if not already logged in
+                if (localStorage.getItem('streak_email') !== email) {
+                    localStorage.setItem('streak_active', 'true');
+                    localStorage.setItem('streak_name', user.name || name);
+                    localStorage.setItem('streak_email', email);
+                    localStorage.setItem('b2b_points_balance', (user.points || 0).toString());
+                    if (user.avatar) localStorage.setItem('b2b_custom_avatar', user.avatar);
+                    updateNavbarUserHUD();
+                }
                 
                 // Clear inputs
                 nameInput.value = '';
                 emailInput.value = '';
-
-                // Show HUD and success message
-                updateNavbarUserHUD();
-                if (successMsg) {
-                    successMsg.textContent = `🎉 Chào mừng quay trở lại, ${user.name || name}! Số điểm tích lũy ${user.points || 0}đ đã được khôi phục thành công.`;
-                    successMsg.classList.remove('hidden');
-                    successMsg.style.display = 'block';
-                }
-                showPointToast(0, `Đã khôi phục tài khoản: ${email}`);
+                
+                submitBtn.disabled = false;
+                submitBtn.textContent = originalText;
+                return;
             } else {
                 // New user: grant 25 points and register
                 const startPoints = 25;
@@ -738,7 +819,362 @@ function initEmailRegistrations() {
 
 // Bind to window load / DOMContentLoaded
 if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initEmailRegistrations);
+    document.addEventListener('DOMContentLoaded', () => {
+        initEmailRegistrations();
+        initGlobalComponents();
+    });
 } else {
     initEmailRegistrations();
+    initGlobalComponents();
 }
+
+// Global behaviors, UI modals injection, and tracking helpers definition
+function initGlobalComponents() {
+    // Inject Custom Share & Sync Modals Styles
+    const styleEl = document.createElement('style');
+    styleEl.innerHTML = `
+        .global-modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(15, 23, 42, 0.75);
+            backdrop-filter: blur(8px);
+            z-index: 99999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .global-modal-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        .global-modal-box {
+            background: rgba(30, 41, 59, 0.95);
+            border: 1.5px solid rgba(243, 168, 59, 0.25);
+            border-radius: 20px;
+            padding: 30px;
+            width: 90%;
+            max-width: 480px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            transform: scale(0.9) translateY(20px);
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            color: #f8fafc;
+            font-family: 'Be Vietnam Pro', sans-serif;
+        }
+        .global-modal-overlay.active .global-modal-box {
+            transform: scale(1) translateY(0);
+        }
+        .global-sync-banner {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: rgba(30, 41, 59, 0.95);
+            border: 1.5px solid #f3a83b;
+            border-radius: 16px;
+            padding: 20px;
+            width: 350px;
+            max-width: calc(100vw - 60px);
+            box-shadow: 0 20px 25px -5px rgba(0,0,0,0.5);
+            z-index: 9999;
+            transform: translateY(120px) scale(0.9);
+            opacity: 0;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            color: #f8fafc;
+            font-family: 'Be Vietnam Pro', sans-serif;
+        }
+        .global-sync-banner.active {
+            transform: translateY(0) scale(1);
+            opacity: 1;
+        }
+        .global-share-btn-item {
+            padding: 12px;
+            border-radius: 10px;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .global-share-btn-item:hover {
+            transform: translateY(-2px);
+            filter: brightness(1.1);
+        }
+    `;
+    document.head.appendChild(styleEl);
+
+    // Initial page view behavior log
+    const currentEmail = localStorage.getItem('streak_email');
+    if (currentEmail) {
+        window.trackUserBehavior('page_view', window.location.pathname);
+    }
+}
+
+// Global client behavior tracker
+window.trackUserBehavior = function(action, detail) {
+    const email = localStorage.getItem('streak_email');
+    if (!email) return; // Only track registered users
+    
+    // Check if on community page to match its categories or general categories
+    let category = 'general';
+    if (window.location.pathname.includes('labor-law')) category = 'labor-law';
+    else if (window.location.pathname.includes('salary')) category = 'salary';
+    else if (window.location.pathname.includes('pitching')) category = 'pitching';
+    else if (window.location.pathname.includes('email-assistant')) category = 'email-assistant';
+    else if (window.location.pathname.includes('library')) category = 'library';
+    else if (window.location.pathname.includes('community')) category = 'community';
+    else if (window.location.pathname.includes('kpi-estimation')) category = 'kpi-estimation';
+
+    fetch('/api/track-behavior', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            email,
+            action,
+            category,
+            detail: detail || ''
+        })
+    }).catch(err => console.warn('Behavior tracking failed:', err));
+};
+
+// Global notifications handler
+window.showGlobalNotification = function(title, message) {
+    let overlay = document.getElementById('global-notification-modal');
+    if (!overlay) {
+        overlay = document.createElement('div');
+        overlay.id = 'global-notification-modal';
+        overlay.className = 'global-modal-overlay';
+        overlay.innerHTML = `
+            <div class="global-modal-box">
+                <h3 id="global-noti-title" style="margin-top: 0; font-size: 1.25rem; font-weight: 800; color: #f59e0b; display: flex; align-items: center; gap: 8px;"></h3>
+                <p id="global-noti-msg" style="font-size: 0.92rem; line-height: 1.6; color: #cbd5e1; margin-bottom: 22px;"></p>
+                <div style="display: flex; justify-content: flex-end;">
+                    <button id="global-noti-close-btn" style="background: linear-gradient(135deg, #f3a83b 0%, #f59e0b 100%); border: none; color: #fff; padding: 8px 24px; border-radius: 8px; font-weight: 700; cursor: pointer; transition: transform 0.2s ease;">Đồng Ý & Đóng</button>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(overlay);
+        
+        overlay.querySelector('#global-noti-close-btn').addEventListener('click', () => {
+            overlay.classList.remove('active');
+        });
+        overlay.addEventListener('click', (e) => {
+            if (e.target === overlay) overlay.classList.remove('active');
+        });
+    }
+
+    overlay.querySelector('#global-noti-title').innerHTML = title;
+    overlay.querySelector('#global-noti-msg').innerHTML = message;
+    
+    // Animate active
+    overlay.offsetHeight; 
+    overlay.classList.add('active');
+};
+
+// Global Sync prompt (IP WiFi mapping)
+window.showGlobalSyncPrompt = function(user) {
+    let banner = document.getElementById('global-sync-banner');
+    if (!banner) {
+        banner = document.createElement('div');
+        banner.id = 'global-sync-banner';
+        banner.className = 'global-sync-banner';
+        banner.innerHTML = `
+            <div style="display: flex; gap: 12px; align-items: flex-start; margin-bottom: 15px;">
+                <span style="font-size: 1.8rem;">🦉</span>
+                <div>
+                    <h4 style="margin: 0 0 4px 0; font-weight: 800; color: #f59e0b;">Đồng bộ đa thiết bị?</h4>
+                    <p style="margin: 0; font-size: 0.8rem; color: #cbd5e1; line-height: 1.4;">
+                        Cú BeeDee phát hiện tài khoản <strong>${user.name}</strong> hoạt động gần đây cùng mạng Wi-Fi của bạn. Đồng bộ ngay?
+                    </p>
+                </div>
+            </div>
+            <div style="display: flex; justify-content: flex-end; gap: 10px;">
+                <button id="btn-sync-dismiss" style="background: transparent; border: 1px solid rgba(255,255,255,0.15); color: #cbd5e1; padding: 6px 14px; border-radius: 6px; font-size: 0.78rem; font-weight: 700; cursor: pointer;">Bỏ qua</button>
+                <button id="btn-sync-confirm" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); border: none; color: #fff; padding: 6px 16px; border-radius: 6px; font-size: 0.78rem; font-weight: 700; cursor: pointer; box-shadow: 0 4px 10px rgba(16,185,129,0.25);">Đồng ý</button>
+            </div>
+        `;
+        document.body.appendChild(banner);
+
+        banner.querySelector('#btn-sync-dismiss').addEventListener('click', () => {
+            banner.classList.remove('active');
+            localStorage.setItem('bd_sync_dismissed', 'true');
+        });
+
+        banner.querySelector('#btn-sync-confirm').addEventListener('click', () => {
+            localStorage.setItem('streak_active', 'true');
+            localStorage.setItem('streak_name', user.name);
+            localStorage.setItem('streak_email', user.email);
+            localStorage.setItem('b2b_points_balance', user.points.toString());
+            if (user.avatar) localStorage.setItem('b2b_custom_avatar', user.avatar);
+            
+            banner.classList.remove('active');
+            
+            window.showGlobalNotification(
+                '🔄 Đồng Bộ Thành Công',
+                `Đã tự động kết nối và đồng bộ tài khoản **${user.name}** thành công! Website sẽ tự động tải lại sau 1.5 giây.`
+            );
+            
+            window.trackUserBehavior('device_sync_ip', 'Sync via IP match');
+
+            setTimeout(() => {
+                window.location.reload();
+            }, 1800);
+        });
+    }
+
+    // Animate active
+    banner.offsetHeight;
+    banner.classList.add('active');
+};
+
+// Global Share Modal (LinkedIn, Facebook, Threads, TikTok copy & QR code)
+window.openGlobalShareModal = function(title, url) {
+    let overlay = document.getElementById('global-share-modal');
+    if (!overlay) {
+        overlay = document.createElement('div');
+        overlay.id = 'global-share-modal';
+        overlay.className = 'global-modal-overlay';
+        overlay.innerHTML = `
+            <div class="global-modal-box" style="max-width: 480px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 15px; margin-bottom: 20px;">
+                    <h3 style="font-size: 1.2rem; font-weight: 800; color: #f59e0b; margin: 0; display: flex; align-items: center; gap: 8px;">
+                        📢 Chia sẻ tính năng B2B BD
+                    </h3>
+                    <button id="global-share-close-btn" style="background: none; border: none; font-size: 1.5rem; color: #94a3b8; cursor: pointer; line-height: 1;">&times;</button>
+                </div>
+                
+                <p id="global-share-desc" style="font-size: 0.88rem; color: #cbd5e1; margin-bottom: 18px; line-height: 1.4;"></p>
+
+                <!-- Social Grid -->
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px;">
+                    <a id="share-global-linkedin" target="_blank" class="global-share-btn-item" style="background: #0a66c2; color: #fff;">
+                        💼 LinkedIn
+                    </a>
+                    <a id="share-global-facebook" target="_blank" class="global-share-btn-item" style="background: #1877f2; color: #fff;">
+                        📘 Facebook
+                    </a>
+                    <a id="share-global-threads" target="_blank" class="global-share-btn-item" style="background: #000; color: #fff; border: 1px solid #334155;">
+                        🧵 Threads
+                    </a>
+                    <button id="share-global-tiktok" class="global-share-btn-item" style="background: linear-gradient(135deg, #00f2fe 0%, #4facfe 100%); color: #0f172a;">
+                        🎵 TikTok
+                    </button>
+                </div>
+
+                <!-- Copy Input Area -->
+                <div style="background: rgba(15,23,42,0.4); border: 1px solid rgba(255,255,255,0.06); border-radius: 10px; padding: 12px; margin-bottom: 20px;">
+                    <div style="font-size: 0.72rem; font-weight: 700; color: #94a3b8; text-transform: uppercase; margin-bottom: 6px;">Sao chép liên kết:</div>
+                    <div style="display: flex; gap: 8px;">
+                        <input id="share-global-url-input" readonly type="text" style="flex: 1; padding: 8px 12px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.1); background: #0f172a; color: #cbd5e1; font-size: 0.8rem; outline: none;" />
+                        <button id="share-global-copy-btn" style="background: linear-gradient(135deg, #f3a83b 0%, #f59e0b 100%); border: none; color: #fff; padding: 8px 16px; border-radius: 6px; font-weight: 700; font-size: 0.8rem; cursor: pointer;">Chép</button>
+                    </div>
+                </div>
+
+                <!-- QR Sync Sync Area -->
+                <div style="display: flex; gap: 15px; align-items: center; background: rgba(243, 168, 59, 0.04); padding: 15px; border-radius: 12px; border: 1px dashed rgba(243, 168, 59, 0.3);">
+                    <img id="share-global-qrcode" src="" style="width: 100px; height: 100px; background: #fff; padding: 6px; border-radius: 8px;" alt="QR Code" />
+                    <div>
+                        <div style="font-size: 0.82rem; font-weight: 700; color: #f59e0b; margin-bottom: 4px;">Đồng bộ di động cực nhanh 📱</div>
+                        <p style="margin: 0; font-size: 0.72rem; color: #cbd5e1; line-height: 1.45;">
+                            Quét mã QR bằng Điện thoại để đồng bộ nhanh tài khoản & điểm tích lũy ⚡ sang Mobile Browser của bạn!
+                        </p>
+                    </div>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(overlay);
+
+        overlay.querySelector('#global-share-close-btn').addEventListener('click', () => overlay.classList.remove('active'));
+        overlay.addEventListener('click', (e) => {
+            if (e.target === overlay) overlay.classList.remove('active');
+        });
+    }
+
+    const shareTitle = `Cẩm nang BD B2B thực chiến: ${title}`;
+    const shareDescText = `Tôi vừa tìm được tính năng **"${title}"** cực kỳ hữu ích và thực tế cho dân Business Development B2B.`;
+    const shareUrl = url;
+
+    overlay.querySelector('#global-share-desc').innerHTML = `Chia sẻ tính năng <strong>${title}</strong> này trên mạng xã hội hoặc quét QR để đồng bộ sang điện thoại:`;
+    overlay.querySelector('#share-global-url-input').value = shareUrl;
+    
+    // Encode url for params
+    const encodedUrl = encodeURIComponent(shareUrl);
+    const encodedText = encodeURIComponent(`${shareTitle} - Tra cứu & tự động hóa ngay tại đây: `);
+
+    // Share endpoints
+    overlay.querySelector('#share-global-linkedin').href = `https://www.linkedin.com/sharing/share-offsite/?url=${encodedUrl}`;
+    overlay.querySelector('#share-global-facebook').href = `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}`;
+    overlay.querySelector('#share-global-threads').href = `https://threads.net/intent/post?text=${encodeURIComponent(shareTitle + ' ' + shareUrl)}`;
+
+    // TikTok custom sharing copy
+    const tiktokBtn = overlay.querySelector('#share-global-tiktok');
+    const newTiktokBtn = tiktokBtn.cloneNode(true);
+    tiktokBtn.parentNode.replaceChild(newTiktokBtn, tiktokBtn);
+    newTiktokBtn.addEventListener('click', () => {
+        const textToCopy = `Thực chiến B2B BD: ${title}!\nTrải nghiệm bộ công cụ tại: ${shareUrl}`;
+        navigator.clipboard.writeText(textToCopy);
+        
+        // Award points
+        if (window.registerUserAction) {
+            window.registerUserAction('share_click');
+        }
+        
+        alert('🎵 Đã sao chép nội dung và link chia sẻ TikTok vào Clipboard! Đang mở TikTok...');
+        setTimeout(() => {
+            window.open('https://www.tiktok.com', '_blank');
+        }, 1000);
+    });
+
+    // Copy action
+    const copyBtn = overlay.querySelector('#share-global-copy-btn');
+    const newCopyBtn = copyBtn.cloneNode(true);
+    copyBtn.parentNode.replaceChild(newCopyBtn, copyBtn);
+    newCopyBtn.addEventListener('click', () => {
+        navigator.clipboard.writeText(shareUrl);
+        newCopyBtn.textContent = 'Chép Xong';
+        newCopyBtn.style.background = '#10b981';
+        
+        // Award points
+        if (window.registerUserAction) {
+            window.registerUserAction('share_click');
+        }
+
+        setTimeout(() => {
+            newCopyBtn.textContent = 'Chép';
+            newCopyBtn.style.background = '';
+        }, 2000);
+    });
+
+    // QR Code generation (Free API)
+    // To sync, we add the current user's profile metadata to the QR url parameters so they sync automatically when scanned!
+    const syncParamEmail = localStorage.getItem('streak_email') || '';
+    const syncParamName = localStorage.getItem('streak_name') || '';
+    const syncParamPoints = localStorage.getItem('b2b_points_balance') || '25';
+    const syncParamAvatar = localStorage.getItem('b2b_custom_avatar') || '';
+    
+    let qrSyncUrl = shareUrl;
+    if (syncParamEmail) {
+        const urlObj = new URL(shareUrl);
+        urlObj.searchParams.set('sync_email', syncParamEmail);
+        urlObj.searchParams.set('sync_name', syncParamName);
+        urlObj.searchParams.set('sync_points', syncParamPoints);
+        if (syncParamAvatar) urlObj.searchParams.set('sync_avatar', syncParamAvatar);
+        qrSyncUrl = urlObj.toString();
+    }
+    
+    overlay.querySelector('#share-global-qrcode').src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(qrSyncUrl)}`;
+
+    // Track share click behavior
+    window.trackUserBehavior('share_open', title);
+
+    overlay.classList.add('active');
+};
