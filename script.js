@@ -133,6 +133,23 @@ const initB2BApp = () => {
     const games = [
         // LEVEL 1: Dưới 1 Năm (Tân Binh)
         {
+            id: "game-zip",
+            title: "Thử Thách: B2B Zip (Sales Path)",
+            description: "Kết nối đường ống bán hàng từ Leads đến Closed Won theo đúng thứ tự logic.",
+            type: "puzzle_zip",
+            icon: "🔗",
+            level: 1,
+            questions: [
+                {
+                    context: "Kết nối đường dẫn từ điểm khởi đầu (Leads Generated) đến điểm kết thúc (Deal Closed Won) theo đúng trình tự.",
+                    options: []
+                }
+            ],
+            getResult: (score) => {
+                return { sfx: 'win', title: "Khai Thông Đường Ống! 🔗", color: "var(--primary)", text: "Tuyệt vời! Bạn đã kết nối thành công quy trình bán hàng chuẩn xác không một vết gợn." };
+            }
+        },
+        {
             id: "game-suitability",
             title: "Thử Thách 1.1: Nhảy qua làm BD có dễ ko ta?",
             description: "Đánh giá mức độ phù hợp về tố chất bản thân (chịu áp lực, khả năng research, chủ động) với nghề BD.",
@@ -387,6 +404,40 @@ const initB2BApp = () => {
         },
 
         // LEVEL 2: Từ 1 - 3 Năm (Chiến Binh)
+        {
+            id: "game-wend",
+            title: "Thử Thách: B2B Wend (Word Search)",
+            description: "Tìm kiếm các từ khóa B2B cốt lõi ẩn giấu trong mê cung ký tự.",
+            type: "puzzle_wend",
+            icon: "🔍",
+            level: 2,
+            questions: [
+                {
+                    context: "Tìm đủ 3 từ khóa B2B trong bảng chữ cái: LEAD, DEAL, SPIN.",
+                    options: []
+                }
+            ],
+            getResult: (score) => {
+                return { sfx: 'win', title: "Tinh Mắt Chiến Thần! 🔍", color: "var(--primary)", text: "Xuất sắc! Bạn đã tìm ra toàn bộ các thuật ngữ B2B cốt lõi trong mê cung chữ cái." };
+            }
+        },
+        {
+            id: "game-tango",
+            title: "Thử Thách: B2B Tango (Reasoning Grid)",
+            description: "Điền các trạng thái 🤝 (Closed) và ❌ (Lost) vào lưới thỏa mãn các quy tắc logic B2B.",
+            type: "puzzle_tango",
+            icon: "🤝",
+            level: 2,
+            questions: [
+                {
+                    context: "Điền lưới sao cho mỗi hàng & cột có đúng hai 🤝 và hai ❌, không có 3 biểu tượng giống nhau đứng cạnh nhau.",
+                    options: []
+                }
+            ],
+            getResult: (score) => {
+                return { sfx: 'win', title: "Trí Tuệ B2B Tango! 🤝", color: "var(--primary)", text: "Chính xác! Bạn đã hoàn thành sơ đồ phân bổ trạng thái deal hoàn hảo." };
+            }
+        },
         {
             id: "game-expert",
             title: "Thử Thách 2.1: Bạn là Tân Binh hay Chuyên Gia?",
@@ -715,6 +766,23 @@ const initB2BApp = () => {
         },
 
         // LEVEL 3: Trên 3 Năm (Chuyên Gia)
+        {
+            id: "game-queens",
+            title: "Thử Thách: B2B Queens (Team Alignment)",
+            description: "Xếp 4 BD Star (👑) vào lưới sao cho họ không cạnh tranh, không chồng chéo địa bàn.",
+            type: "puzzle_queens",
+            icon: "👑",
+            level: 3,
+            questions: [
+                {
+                    context: "Đặt 4 vương miện (👑) sao cho không có hai vương miện nào nằm trên cùng một hàng, một cột hoặc đường chéo.",
+                    options: []
+                }
+            ],
+            getResult: (score) => {
+                return { sfx: 'win', title: "Quy Hoạch Lãnh Thổ Hoàn Hảo! 👑", color: "var(--primary)", text: "Đỉnh cao! Bạn đã phân chia địa bàn hoạt động cho các Key Account Managers cực kỳ khoa học." };
+            }
+        },
         {
             id: "game-system",
             title: "Thử Thách 3.1: BD kiểu 'thủ công' hay 'hệ thống'?",
@@ -1116,48 +1184,39 @@ const initB2BApp = () => {
         
         const completedGames = JSON.parse(localStorage.getItem('completed_games') || '[]');
         const levelGames = games.filter(g => g.level === parseInt(level, 10));
-        const unplayedGames = levelGames.filter(g => !completedGames.includes(g.id));
         
         // Update level tab button text dynamically
         updateTabCounts();
-        
-        if (unplayedGames.length === 0) {
-            track.innerHTML = `
-                <div class="all-cleared-card glass-panel" style="padding: 30px; text-align: center; border-radius: 12px; border: 1px solid var(--primary); background: rgba(239, 68, 68, 0.05); width: 100%; max-width: 450px; margin: 0 auto; display: flex; flex-direction: column; align-items: center; gap: 15px; box-sizing: border-box;">
-                    <div style="font-size: 3rem;">🏆</div>
-                    <h4 style="font-weight: 800; color: var(--text-main); margin: 0;">BẠN ĐẠT MAX STREAK! 🏆</h4>
-                    <p style="font-size: 0.85rem; color: var(--text-light); margin: 0;">Tất cả thử thách cấp độ này đã được hoàn thành xuất sắc.</p>
-                    <button class="btn btn-primary" id="btn-reset-level" data-level="${level}" style="padding: 10px 20px; font-weight: bold; width: 100%;">Chơi Lại Từ Đầu</button>
-                </div>
-            `;
-            if (prevBtn) prevBtn.style.display = 'none';
-            if (nextBtn) nextBtn.style.display = 'none';
-            if (indicator) indicator.textContent = 'Hoàn thành 100%';
-            
-            const resetBtn = document.getElementById('btn-reset-level');
-            if (resetBtn) {
-                resetBtn.addEventListener('click', () => {
-                    const lvl = parseInt(resetBtn.getAttribute('data-level'), 10);
-                    resetLevelProgress(lvl);
-                });
-            }
-            return;
-        }
 
         // Show navigation buttons
         if (prevBtn) prevBtn.style.display = 'flex';
         if (nextBtn) nextBtn.style.display = 'flex';
-        if (indicator) indicator.textContent = `Thử thách 1 / ${unplayedGames.length}`;
         
-        track.innerHTML = unplayedGames.map(game => {
+        const completedCount = levelGames.filter(g => completedGames.includes(g.id)).length;
+        if (indicator) {
+            indicator.textContent = `Đã hoàn thành: ${completedCount} / ${levelGames.length}`;
+        }
+        
+        track.innerHTML = levelGames.map(game => {
             const globalIndex = games.findIndex(g => g.id === game.id);
+            const isCompleted = completedGames.includes(game.id);
             const icon = game.icon || "🧠";
+            
+            const badgeHtml = isCompleted 
+                ? `<span style="font-size: 0.72rem; font-weight: bold; background: rgba(16, 185, 129, 0.15); color: #10b981; border: 1.5px solid #10b981; padding: 2px 8px; border-radius: 20px;">✓ Đã Hoàn Thành</span>`
+                : `<span style="font-size: 0.72rem; font-weight: bold; background: rgba(243, 168, 59, 0.15); color: #f3a83b; border: 1.5px solid #f3a83b; padding: 2px 8px; border-radius: 20px;">Chưa Chơi</span>`;
+
             return `
-                <div class="game-card glass-panel" style="padding: 20px; display: flex; flex-direction: column; gap: 10px; cursor: pointer; border: 1px solid var(--border-color); border-radius: 12px; background: rgba(255, 255, 255, 0.6);" data-game-index="${globalIndex}">
-                    <div style="font-size: 1.8rem; margin-bottom: 5px;">${icon}</div>
+                <div class="game-card glass-panel" style="padding: 20px; display: flex; flex-direction: column; gap: 10px; cursor: pointer; border: 1px solid var(--border-color); border-radius: 12px; background: rgba(255, 255, 255, 0.6); position: relative; width: 230px;" data-game-index="${globalIndex}">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
+                        <span style="font-size: 1.8rem;">${icon}</span>
+                        ${badgeHtml}
+                    </div>
                     <h4 style="font-size: 1.1rem; font-weight: 700; margin: 0; color: var(--text-main);">${game.title}</h4>
-                    <p style="font-size: 0.85rem; color: var(--text-light); flex: 1; margin: 5px 0 0 0;">${game.description}</p>
-                    <button class="btn btn-primary" style="padding: 8px 12px; font-size: 0.85rem; margin-top: 15px; width: 100%;">Chơi Ngay</button>
+                    <p style="font-size: 0.85rem; color: var(--text-light); flex: 1; margin: 5px 0 0 0; line-height: 1.35;">${game.description}</p>
+                    <button class="btn ${isCompleted ? 'btn-secondary' : 'btn-primary'}" style="padding: 8px 12px; font-size: 0.85rem; margin-top: 15px; width: 100%;">
+                        ${isCompleted ? 'Chơi Lại' : 'Chơi Ngay'}
+                    </button>
                 </div>
             `;
         }).join('');
@@ -1281,6 +1340,37 @@ const initB2BApp = () => {
     updateTabCounts();
     renderGamesForLevel(1);
 
+    // Auto-select game from query parameter if present
+    const urlParams = new URLSearchParams(window.location.search);
+    const gameId = urlParams.get('game');
+    if (gameId) {
+        const gameIdx = games.findIndex(g => g.id === 'game-' + gameId || g.id === gameId);
+        if (gameIdx !== -1) {
+            setTimeout(() => {
+                const targetGame = games[gameIdx];
+                const tab = document.querySelector(`.level-tab-btn[data-level="${targetGame.level}"]`);
+                if (tab) {
+                    // Trigger level tab change visually
+                    const levelTabs = document.querySelectorAll('.level-tab-btn');
+                    levelTabs.forEach(t => {
+                        t.classList.remove('active');
+                        t.style.background = 'rgba(255,255,255,0.05)';
+                        t.style.borderColor = 'var(--border-color)';
+                        t.style.color = 'var(--text-main)';
+                        t.style.boxShadow = 'none';
+                    });
+                    tab.classList.add('active');
+                    tab.style.background = 'var(--primary)';
+                    tab.style.borderColor = 'var(--primary)';
+                    tab.style.color = '#fff';
+                    tab.style.boxShadow = '0 0 15px var(--primary-glow)';
+                    renderGamesForLevel(targetGame.level);
+                }
+                selectGame(gameIdx);
+            }, 300);
+        }
+    }
+
     // B2B Challenge Slider Navigation Arrow click triggers
     const sliderPrevBtn = document.getElementById('slider-prev-btn');
     const sliderNextBtn = document.getElementById('slider-next-btn');
@@ -1402,8 +1492,501 @@ const initB2BApp = () => {
         }
     }
 
+    function handlePuzzleSolved(pointsToAdd) {
+        clearInterval(timerInterval);
+        const activeGame = games[activeGameIndex];
+        
+        let completedGames = JSON.parse(localStorage.getItem('completed_games') || '[]');
+        if (!completedGames.includes(activeGame.id)) {
+            completedGames.push(activeGame.id);
+            localStorage.setItem('completed_games', JSON.stringify(completedGames));
+        }
+
+        const currentPoints = parseInt(localStorage.getItem('b2b_points_balance') || '0', 10);
+        localStorage.setItem('b2b_points_balance', (currentPoints + pointsToAdd).toString());
+        if (window.updateNavbarUserHUD) window.updateNavbarUserHUD();
+        if (window.showPointToast) window.showPointToast(pointsToAdd, `Giải đố thành công!`);
+
+        gamePlay.classList.add('hidden');
+        gameResult.classList.remove('hidden');
+
+        const result = activeGame.getResult(1);
+        const resultTitle = document.getElementById('result-title');
+        const resultText = document.getElementById('result-text');
+        const statsBox = document.getElementById('result-stats-box');
+        
+        if (resultTitle) {
+            resultTitle.textContent = result.title;
+            resultTitle.style.color = result.color;
+        }
+        if (resultText) {
+            resultText.innerHTML = `${result.text}<br><br>🏆 Bạn nhận được <strong>+${pointsToAdd} BD-Points</strong> thưởng học tập!`;
+        }
+
+        if (statsBox) {
+            statsBox.innerHTML = `
+                <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
+                    <span>Thử thách:</span>
+                    <strong>${activeGame.title}</strong>
+                </div>
+                <div style="display: flex; justify-content: space-between;">
+                    <span>Phần thưởng:</span>
+                    <strong style="color: #6ee7b7;">+${pointsToAdd} BD-Points</strong>
+                </div>
+            `;
+        }
+
+        const reviewBtn = document.getElementById('btn-toggle-review');
+        if (reviewBtn) reviewBtn.classList.add('hidden');
+    }
+
+    function renderPuzzleZip() {
+        const container = document.getElementById('options-container');
+        container.innerHTML = `
+            <div style="text-align: center; margin-bottom: 15px; color: var(--text-light); font-size: 0.9rem;">
+                Click các ô theo đúng thứ tự quy trình bán hàng: <br>
+                <strong>Khởi đầu ➔ Tiếp cận ➔ Pitching ➔ Proposal ➔ Thương thảo ➔ Ký kết</strong>
+            </div>
+            <div id="zip-grid" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; max-width: 320px; margin: 0 auto; background: rgba(0,0,0,0.2); padding: 15px; border-radius: 16px; border: 1px solid var(--border-color);">
+            </div>
+            <div style="text-align: center; margin-top: 15px;">
+                <button id="btn-reset-zip" class="btn btn-secondary" style="padding: 6px 16px; font-size: 0.8rem;">Chơi Lại</button>
+            </div>
+        `;
+
+        const gridData = [
+            { type: 'start', label: 'Leads Generated', seq: 1 },
+            { type: 'step2', label: 'Cold Outreach', seq: 2 },
+            { type: 'blocked', label: 'Budget Frozen', seq: 0 },
+            { type: 'blocked', label: 'No Response', seq: 0 },
+            
+            { type: 'blocked', label: 'Competitor Win', seq: 0 },
+            { type: 'step3', label: 'Product Pitch', seq: 3 },
+            { type: 'blocked', label: 'Ghosted', seq: 0 },
+            { type: 'blocked', label: 'Price Shock', seq: 0 },
+            
+            { type: 'blocked', label: 'No Decision', seq: 0 },
+            { type: 'step4', label: 'Proposal Sent', seq: 4 },
+            { type: 'step5', label: 'Contract Negotiated', seq: 5 },
+            { type: 'blocked', label: 'Legal Delay', seq: 0 },
+            
+            { type: 'blocked', label: 'Wrong PIC', seq: 0 },
+            { type: 'blocked', label: 'Bad Timing', seq: 0 },
+            { type: 'blocked', label: 'Lost Lead', seq: 0 },
+            { type: 'end', label: 'Deal Closed Won', seq: 6 }
+        ];
+
+        const gridEl = document.getElementById('zip-grid');
+        let currentStep = 1;
+
+        gridData.forEach((cell, idx) => {
+            const btn = document.createElement('button');
+            btn.style.aspectRatio = '1/1';
+            btn.style.borderRadius = '10px';
+            btn.style.border = '1px solid rgba(255,255,255,0.05)';
+            btn.style.fontFamily = 'inherit';
+            btn.style.fontSize = '0.72rem';
+            btn.style.fontWeight = 'bold';
+            btn.style.cursor = cell.type === 'blocked' ? 'not-allowed' : 'pointer';
+            btn.style.padding = '5px';
+            btn.style.transition = 'all 0.2s';
+            btn.style.display = 'flex';
+            btn.style.flexDirection = 'column';
+            btn.style.alignItems = 'center';
+            btn.style.justifyContent = 'center';
+            btn.style.gap = '4px';
+
+            if (cell.type === 'start') {
+                btn.style.background = 'linear-gradient(135deg, #10b981 0%, #047857 100%)';
+                btn.style.color = '#fff';
+            } else if (cell.type === 'end') {
+                btn.style.background = 'linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)';
+                btn.style.color = '#fff';
+            } else if (cell.type === 'blocked') {
+                btn.style.background = 'rgba(255,255,255,0.02)';
+                btn.style.color = 'var(--text-light)';
+                btn.style.opacity = '0.3';
+            } else {
+                btn.style.background = 'rgba(255,255,255,0.05)';
+                btn.style.color = 'var(--text-main)';
+            }
+
+            btn.innerHTML = `
+                <span style="font-size: 1.1rem;">${cell.type === 'start' ? '🦉' : cell.type === 'end' ? '🤝' : cell.type === 'blocked' ? '❌' : '⚡'}</span>
+                <span style="font-size: 0.6rem; text-align: center; line-height: 1.2;">${cell.label}</span>
+            `;
+
+            btn.addEventListener('click', () => {
+                if (cell.type === 'blocked') {
+                    sfx.wrong();
+                    return;
+                }
+                if (cell.seq === currentStep) {
+                    btn.style.background = 'linear-gradient(135deg, #f3a83b 0%, #d97706 100%)';
+                    btn.style.color = '#fff';
+                    btn.style.boxShadow = '0 0 15px rgba(243, 168, 59, 0.4)';
+                    sfx.correct();
+                    
+                    if (currentStep === 6) {
+                        setTimeout(() => handlePuzzleSolved(15), 500);
+                    } else {
+                        currentStep++;
+                    }
+                } else {
+                    sfx.wrong();
+                }
+            });
+
+            gridEl.appendChild(btn);
+        });
+
+        document.getElementById('btn-reset-zip').addEventListener('click', renderPuzzleZip);
+    }
+
+    function renderPuzzleWend() {
+        const container = document.getElementById('options-container');
+        container.innerHTML = `
+            <div style="text-align: center; margin-bottom: 12px; color: var(--text-light); font-size: 0.88rem;">
+                Tìm 3 từ khóa B2B ẩn giấu: <strong style="color: var(--primary);">LEAD</strong>, <strong style="color: var(--primary);">DEAL</strong>, <strong style="color: var(--primary);">SPIN</strong>
+            </div>
+            <div style="display: flex; justify-content: center; gap: 15px; margin-bottom: 12px; font-size: 0.8rem; font-weight: bold;">
+                <span id="word-lead" style="color: rgba(255,255,255,0.3);">[ ] LEAD</span>
+                <span id="word-deal" style="color: rgba(255,255,255,0.3);">[ ] DEAL</span>
+                <span id="word-spin" style="color: rgba(255,255,255,0.3);">[ ] SPIN</span>
+            </div>
+            <div id="selected-word" style="text-align: center; font-size: 1.1rem; font-weight: 800; min-height: 25px; color: var(--primary); margin-bottom: 10px;">
+                Đang chọn: -
+            </div>
+            <div id="wend-grid" style="display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px; max-width: 280px; margin: 0 auto; background: rgba(0,0,0,0.25); padding: 12px; border-radius: 12px; border: 1px solid var(--border-color);">
+            </div>
+            <div style="text-align: center; margin-top: 12px; display: flex; justify-content: center; gap: 10px;">
+                <button id="btn-clear-wend" class="btn btn-secondary" style="padding: 6px 14px; font-size: 0.8rem;">Xóa Chọn</button>
+                <button id="btn-reset-wend" class="btn btn-secondary" style="padding: 6px 14px; font-size: 0.8rem;">Chơi Lại</button>
+            </div>
+        `;
+
+        const gridLetters = [
+            ['L', 'E', 'A', 'D', 'X', 'P'],
+            ['K', 'S', 'P', 'I', 'N', 'D'],
+            ['Q', 'W', 'D', 'E', 'A', 'L'],
+            ['A', 'O', 'Z', 'M', 'N', 'K'],
+            ['P', 'I', 'P', 'E', 'L', 'I'],
+            ['S', 'A', 'L', 'E', 'S', 'T']
+        ];
+
+        const gridEl = document.getElementById('wend-grid');
+        let selectedIndices = [];
+        let currentSelectedWord = '';
+        const foundWords = { LEAD: false, DEAL: false, SPIN: false };
+
+        gridLetters.forEach((row, rIdx) => {
+            row.forEach((letter, cIdx) => {
+                const btn = document.createElement('button');
+                btn.textContent = letter;
+                btn.style.aspectRatio = '1/1';
+                btn.style.borderRadius = '8px';
+                btn.style.background = 'rgba(255,255,255,0.04)';
+                btn.style.color = 'var(--text-main)';
+                btn.style.border = '1px solid rgba(255,255,255,0.02)';
+                btn.style.fontWeight = '800';
+                btn.style.fontSize = '1rem';
+                btn.style.cursor = 'pointer';
+                btn.style.transition = 'all 0.15s';
+                
+                const cellId = `${rIdx}-${cIdx}`;
+                btn.id = `cell-${cellId}`;
+
+                btn.addEventListener('click', () => {
+                    if (selectedIndices.includes(cellId)) return;
+                    
+                    selectedIndices.push(cellId);
+                    btn.style.background = 'var(--primary)';
+                    btn.style.color = '#fff';
+                    btn.style.boxShadow = '0 0 10px var(--primary-glow)';
+
+                    currentSelectedWord += letter;
+                    document.getElementById('selected-word').textContent = `Đang chọn: ${currentSelectedWord}`;
+
+                    if (foundWords[currentSelectedWord] === false) {
+                        foundWords[currentSelectedWord] = true;
+                        sfx.correct();
+                        
+                        const label = document.getElementById(`word-${currentSelectedWord.toLowerCase()}`);
+                        if (label) {
+                            label.style.color = '#10b981';
+                            label.innerHTML = `✓ ${currentSelectedWord}`;
+                        }
+
+                        selectedIndices.forEach(id => {
+                            const el = document.getElementById(`cell-${id}`);
+                            if (el) {
+                                el.style.background = '#047857';
+                                el.style.color = '#fff';
+                                el.style.boxShadow = 'none';
+                                el.disabled = true;
+                            }
+                        });
+
+                        selectedIndices = [];
+                        currentSelectedWord = '';
+                        document.getElementById('selected-word').textContent = `Đang chọn: -`;
+
+                        if (Object.values(foundWords).every(v => v === true)) {
+                            setTimeout(() => handlePuzzleSolved(20), 600);
+                        }
+                    }
+                });
+
+                gridEl.appendChild(btn);
+            });
+        });
+
+        document.getElementById('btn-clear-wend').addEventListener('click', () => {
+            selectedIndices.forEach(id => {
+                const el = document.getElementById(`cell-${id}`);
+                if (el && !el.disabled) {
+                    el.style.background = 'rgba(255,255,255,0.04)';
+                    el.style.color = 'var(--text-main)';
+                    el.style.boxShadow = 'none';
+                }
+            });
+            selectedIndices = [];
+            currentSelectedWord = '';
+            document.getElementById('selected-word').textContent = `Đang chọn: -`;
+        });
+
+        document.getElementById('btn-reset-wend').addEventListener('click', renderPuzzleWend);
+    }
+
+    function renderPuzzleTango() {
+        const container = document.getElementById('options-container');
+        container.innerHTML = `
+            <div style="text-align: center; margin-bottom: 12px; color: var(--text-light); font-size: 0.85rem; line-height: 1.4;">
+                Mỗi hàng & cột có đúng hai 🤝 và hai ❌.<br>
+                Không được có 3 biểu tượng giống nhau đứng cạnh nhau. Click để đổi ô.
+            </div>
+            <div id="tango-grid" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; max-width: 240px; margin: 0 auto; background: rgba(0,0,0,0.2); padding: 15px; border-radius: 16px; border: 1px solid var(--border-color);">
+            </div>
+            <div style="text-align: center; margin-top: 15px; display: flex; justify-content: center; gap: 10px;">
+                <button id="btn-verify-tango" class="btn btn-primary" style="padding: 8px 20px; font-size: 0.85rem;">Xác Nhận</button>
+                <button id="btn-reset-tango" class="btn btn-secondary" style="padding: 8px 16px; font-size: 0.85rem;">Chơi Lại</button>
+            </div>
+        `;
+
+        const initialGrid = [
+            [1, 0, 0, -1],
+            [0, 1, 0, 0],
+            [0, 0, -1, 0],
+            [-1, 0, 0, 1]
+        ];
+
+        const targetSolution = [
+            [1, -1, 1, -1],
+            [-1, 1, -1, 1],
+            [1, -1, -1, 1],
+            [-1, 1, 1, -1]
+        ];
+
+        const currentGrid = JSON.parse(JSON.stringify(initialGrid));
+        const gridEl = document.getElementById('tango-grid');
+
+        for (let r = 0; r < 4; r++) {
+            for (let c = 0; c < 4; c++) {
+                const btn = document.createElement('button');
+                btn.style.aspectRatio = '1/1';
+                btn.style.borderRadius = '10px';
+                btn.style.fontSize = '1.5rem';
+                btn.style.fontWeight = 'bold';
+                btn.style.border = '1px solid rgba(255,255,255,0.05)';
+                btn.style.transition = 'all 0.15s';
+                
+                const val = initialGrid[r][c];
+                if (val !== 0) {
+                    btn.textContent = val === 1 ? '🤝' : '❌';
+                    btn.style.background = 'rgba(255,255,255,0.08)';
+                    btn.style.cursor = 'not-allowed';
+                    btn.disabled = true;
+                } else {
+                    btn.textContent = '';
+                    btn.style.background = 'rgba(0,0,0,0.3)';
+                    btn.style.cursor = 'pointer';
+                    
+                    btn.addEventListener('click', () => {
+                        if (currentGrid[r][c] === 0) {
+                            currentGrid[r][c] = 1;
+                            btn.textContent = '🤝';
+                            btn.style.background = 'rgba(16, 185, 129, 0.15)';
+                            btn.style.borderColor = '#10b981';
+                        } else if (currentGrid[r][c] === 1) {
+                            currentGrid[r][c] = -1;
+                            btn.textContent = '❌';
+                            btn.style.background = 'rgba(239, 68, 68, 0.15)';
+                            btn.style.borderColor = '#ef4444';
+                        } else {
+                            currentGrid[r][c] = 0;
+                            btn.textContent = '';
+                            btn.style.background = 'rgba(0,0,0,0.3)';
+                            btn.style.borderColor = 'rgba(255,255,255,0.05)';
+                        }
+                    });
+                }
+                gridEl.appendChild(btn);
+            }
+        }
+
+        document.getElementById('btn-verify-tango').addEventListener('click', () => {
+            let correct = true;
+            for (let r = 0; r < 4; r++) {
+                for (let c = 0; c < 4; c++) {
+                    if (currentGrid[r][c] !== targetSolution[r][c]) {
+                        correct = false;
+                    }
+                }
+            }
+
+            if (correct) {
+                sfx.correct();
+                handlePuzzleSolved(20);
+            } else {
+                sfx.wrong();
+            }
+        });
+
+        document.getElementById('btn-reset-tango').addEventListener('click', renderPuzzleTango);
+    }
+
+    function renderPuzzleQueens() {
+        const container = document.getElementById('options-container');
+        container.innerHTML = `
+            <div style="text-align: center; margin-bottom: 12px; color: var(--text-light); font-size: 0.85rem; line-height: 1.4;">
+                Đặt đúng 4 vương miện (👑) đại diện cho 4 BD Star.<br>
+                Quy tắc: Không nằm chung hàng, cột hoặc đường chéo chéo nhau.
+            </div>
+            <div id="queens-grid" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; max-width: 240px; margin: 0 auto; background: rgba(0,0,0,0.25); padding: 15px; border-radius: 16px; border: 1px solid var(--border-color);">
+            </div>
+            <div style="text-align: center; margin-top: 15px;">
+                <button id="btn-reset-queens" class="btn btn-secondary" style="padding: 8px 16px; font-size: 0.85rem;">Chơi Lại</button>
+            </div>
+        `;
+
+        const board = Array(4).fill(0).map(() => Array(4).fill(false));
+        const gridEl = document.getElementById('queens-grid');
+        const buttons = [];
+
+        for (let r = 0; r < 4; r++) {
+            buttons[r] = [];
+            for (let c = 0; c < 4; c++) {
+                const btn = document.createElement('button');
+                btn.style.aspectRatio = '1/1';
+                btn.style.borderRadius = '10px';
+                btn.style.fontSize = '1.8rem';
+                btn.style.border = '1px solid rgba(255,255,255,0.05)';
+                btn.style.background = 'rgba(0,0,0,0.3)';
+                btn.style.cursor = 'pointer';
+                btn.style.transition = 'all 0.15s';
+                
+                btn.addEventListener('click', () => {
+                    board[r][c] = !board[r][c];
+                    sfx.tick();
+                    updateQueensBoard();
+                });
+                
+                gridEl.appendChild(btn);
+                buttons[r][c] = btn;
+            }
+        }
+
+        function updateQueensBoard() {
+            let queenCoords = [];
+            let conflictCoords = new Set();
+            let totalQueens = 0;
+
+            for (let r = 0; r < 4; r++) {
+                for (let c = 0; c < 4; c++) {
+                    if (board[r][c]) {
+                        queenCoords.push({ r, c });
+                        totalQueens++;
+                    }
+                }
+            }
+
+            for (let i = 0; i < queenCoords.length; i++) {
+                for (let j = i + 1; j < queenCoords.length; j++) {
+                    const q1 = queenCoords[i];
+                    const q2 = queenCoords[j];
+                    
+                    const sameRow = q1.r === q2.r;
+                    const sameCol = q1.c === q2.c;
+                    const sameDiag = Math.abs(q1.r - q2.r) === Math.abs(q1.c - q2.c);
+
+                    if (sameRow || sameCol || sameDiag) {
+                        conflictCoords.add(`${q1.r}-${q1.c}`);
+                        conflictCoords.add(`${q2.r}-${q2.c}`);
+                    }
+                }
+            }
+
+            for (let r = 0; r < 4; r++) {
+                for (let c = 0; c < 4; c++) {
+                    const btn = buttons[r][c];
+                    const isQueen = board[r][c];
+                    const hasConflict = conflictCoords.has(`${r}-${c}`);
+
+                    if (isQueen) {
+                        btn.textContent = '👑';
+                        if (hasConflict) {
+                            btn.style.background = 'rgba(239, 68, 68, 0.25)';
+                            btn.style.borderColor = '#ef4444';
+                            btn.style.boxShadow = '0 0 10px rgba(239, 68, 68, 0.4)';
+                        } else {
+                            btn.style.background = 'rgba(243, 168, 59, 0.2)';
+                            btn.style.borderColor = '#f3a83b';
+                            btn.style.boxShadow = '0 0 10px rgba(243, 168, 59, 0.4)';
+                        }
+                    } else {
+                        btn.textContent = '';
+                        btn.style.background = 'rgba(0,0,0,0.3)';
+                        btn.style.borderColor = 'rgba(255,255,255,0.05)';
+                        btn.style.boxShadow = 'none';
+                    }
+                }
+            }
+
+            if (totalQueens === 4 && conflictCoords.size === 0) {
+                sfx.correct();
+                setTimeout(() => handlePuzzleSolved(25), 600);
+            }
+        }
+
+        document.getElementById('btn-reset-queens').addEventListener('click', renderPuzzleQueens);
+    }
+
     function loadQuestion() {
         console.log('loadQuestion() called, currentQIndex =', currentQIndex);
+        
+        const activeGame = games[activeGameIndex];
+        console.log('activeGame =', activeGame ? activeGame.id : 'none');
+
+        // Check if game is a custom interactive puzzle type
+        if (activeGame.type && activeGame.type.startsWith('puzzle_')) {
+            clearInterval(timerInterval);
+            if (timerDisplay) timerDisplay.classList.add('hidden');
+            questionText.textContent = activeGame.title;
+            progressBar.style.width = '100%';
+            optionsContainer.innerHTML = '';
+            
+            if (activeGame.type === 'puzzle_zip') {
+                renderPuzzleZip();
+            } else if (activeGame.type === 'puzzle_wend') {
+                renderPuzzleWend();
+            } else if (activeGame.type === 'puzzle_tango') {
+                renderPuzzleTango();
+            } else if (activeGame.type === 'puzzle_queens') {
+                renderPuzzleQueens();
+            }
+            return;
+        }
+
         nextBtn.classList.add('hidden');
         feedbackMsg.classList.add('hidden');
         
@@ -1413,8 +1996,7 @@ const initB2BApp = () => {
         optionsContainer.innerHTML = '';
         clearInterval(timerInterval);
         
-        const activeGame = games[activeGameIndex];
-        console.log('activeGame =', activeGame ? activeGame.id : 'none');
+        // activeGame is already declared above
         const q = (activeGame.shuffledQuestions && activeGame.shuffledQuestions[currentQIndex]) || activeGame.questions[currentQIndex];
         console.log('q =', q ? q.context : 'none');
         questionText.textContent = `Câu ${currentQIndex + 1}/${activeGame.questions.length}: ${q.context}`;
@@ -2468,6 +3050,39 @@ if (document.readyState === 'loading') {
             btnActivateStreak.textContent = 'Đang kích hoạt...';
 
             try {
+                // Step 1: Check if email already exists
+                const checkUrl = `/api/log-email?action=checkEmail&email=${encodeURIComponent(email)}`;
+                const checkRes = await fetch(checkUrl);
+                const checkData = await checkRes.json();
+
+                if (checkData.exists && checkData.user) {
+                    window.showGlobalNotification(
+                        '⚠️ Đã Đăng Ký Tài Khoản',
+                        `Email <strong>${email}</strong> này đã được đăng ký và hoạt động.<br><br>Để bảo vệ tính nhất quán dữ liệu và bảo mật, hệ thống B2B Portal đã tự động ghi nhận phiên đăng nhập của thiết bị này. <strong>Bạn không cần phải nhập email này để đăng nhập/đăng ký lại nữa!</strong>`
+                    );
+                    
+                    // Under-the-hood sync if not already logged in
+                    if (localStorage.getItem('streak_email') !== email) {
+                        localStorage.setItem('streak_active', 'true');
+                        localStorage.setItem('streak_name', checkData.user.name || name);
+                        localStorage.setItem('streak_email', email);
+                        localStorage.setItem('b2b_points_balance', (checkData.user.points || 0).toString());
+                        if (checkData.user.avatar) localStorage.setItem('b2b_custom_avatar', checkData.user.avatar);
+                    }
+                    
+                    nameInput.value = '';
+                    emailInput.value = '';
+                    btnActivateStreak.disabled = false;
+                    btnActivateStreak.textContent = 'Kích Hoạt Ngay';
+                    
+                    const regBox = document.getElementById('streak-registration-box');
+                    const questBox = document.getElementById('quests-dashboard-box');
+                    if (regBox) regBox.classList.add('hidden');
+                    if (questBox) questBox.classList.remove('hidden');
+                    if (window.updateNavbarUserHUD) window.updateNavbarUserHUD();
+                    return;
+                }
+
                 // Call serverless log-email function
                 const response = await fetch('/api/log-email', {
                     method: 'POST',
@@ -2889,8 +3504,8 @@ if (document.readyState === 'loading') {
                         <h2>Tối Ưu 80% Vận Hành</h2>
                         <p style="font-size: 0.8rem; color: var(--text-light); line-height: 1.4; margin: 8px 0 0 0;">Trải nghiệm các tính năng miễn phí giúp bạn chốt hợp đồng nhanh hơn:</p>
                         <div class="exit-tools-list">
-                            <div class="exit-tool-item" data-url="finder.html">
-                                <strong>🔍 PIC Finder:</strong> Tìm email sếp tổng & check SMTP/DNS trong 5s.
+                            <div class="exit-tool-item" data-url="pitching.html">
+                                <strong>🎤 Pitching AI:</strong> Tạo kịch bản & slide thuyết trình dự án bằng AI.
                             </div>
                             <div class="exit-tool-item" data-url="email-assistant.html">
                                 <strong>✉️ AI Email:</strong> Viết cold email cá nhân hóa chuẩn chuyên gia.
@@ -3156,7 +3771,7 @@ if (document.readyState === 'loading') {
     }
 
     const CAMPAIGN_NAMES = {
-        pic_search: '🔍 Săn đầu mối PIC',
+        pic_search: '🎙️ Luyện Pitching AI',
         ai_email: '✍️ Soạn Cold Email AI',
         share_click: '📢 Chia sẻ template',
         labor_read: '⚖️ Nghiên cứu Luật',
@@ -3228,7 +3843,7 @@ if (document.readyState === 'loading') {
                 check_in: '#personalized-welcome-banner',
                 game_complete: '#minigame-section',
                 perfect_game: '#minigame-section',
-                pic_search: 'finder.html',
+                pic_search: 'pitching.html',
                 ai_email: 'email-assistant.html',
                 share_click: 'email-assistant.html',
                 labor_read: 'labor-law.html',
@@ -3280,7 +3895,7 @@ if (document.readyState === 'loading') {
                 check_in: '#personalized-welcome-banner',
                 game_complete: '#minigame-section',
                 perfect_game: '#minigame-section',
-                pic_search: 'finder.html',
+                pic_search: 'pitching.html',
                 ai_email: 'email-assistant.html',
                 share_click: 'email-assistant.html',
                 labor_read: 'labor-law.html',
@@ -3390,7 +4005,7 @@ if (document.readyState === 'loading') {
             check_in: 'quests.html#personalized-welcome-banner',
             game_complete: 'index.html#minigame-section',
             perfect_game: 'index.html#minigame-section',
-            pic_search: 'finder.html',
+            pic_search: 'pitching.html',
             ai_email: 'email-assistant.html',
             share_click: 'email-assistant.html',
             labor_read: 'labor-law.html',
