@@ -332,8 +332,45 @@
     </div>
 
     <!-- 👾 B2B ARCADE Section -->
+    <style>
+        .arcade-game-card {
+            transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1), box-shadow 0.3s ease, border-color 0.3s ease !important;
+        }
+        .arcade-game-card:hover {
+            transform: translateY(-6px) scale(1.015);
+        }
+        #arcade-card-zip {
+            border: 1px solid rgba(162, 10, 10, 0.15) !important;
+        }
+        #arcade-card-zip:hover {
+            border-color: var(--primary) !important;
+            box-shadow: 0 12px 30px rgba(162, 10, 10, 0.12) !important;
+        }
+        #arcade-card-wend {
+            border: 1px solid rgba(59, 130, 246, 0.2) !important;
+        }
+        #arcade-card-wend:hover {
+            border-color: #3b82f6 !important;
+            box-shadow: 0 12px 30px rgba(59, 130, 246, 0.12) !important;
+        }
+        #arcade-card-tango {
+            border: 1px solid rgba(16, 185, 129, 0.2) !important;
+        }
+        #arcade-card-tango:hover {
+            border-color: #10b981 !important;
+            box-shadow: 0 12px 30px rgba(16, 185, 129, 0.12) !important;
+        }
+        #arcade-card-queens {
+            border: 1px solid rgba(139, 92, 246, 0.2) !important;
+        }
+        #arcade-card-queens:hover {
+            border-color: #8b5cf6 !important;
+            box-shadow: 0 12px 30px rgba(139, 92, 246, 0.12) !important;
+        }
+    </style>
+
     <section class="arcade-section container" id="arcade-section" style="margin-top: 40px; margin-bottom: 40px; clear: both;">
-        <div class="glass-panel" style="padding: 30px; border-radius: 20px; border: 1px solid var(--border-color); background: rgba(30, 41, 59, 0.4); backdrop-filter: blur(10px);">
+        <div class="glass-effect" style="padding: 35px 30px; border-radius: 20px; text-align: left; max-width: 100%; box-sizing: border-box;">
             <div style="text-align: center; margin-bottom: 30px;">
                 <span style="font-size: 2.5rem; display: block; margin-bottom: 10px;">👾</span>
                 <h2 style="font-size: 1.8rem; font-weight: 800; margin: 0; color: var(--text-main); text-transform: uppercase; letter-spacing: 1px;">
@@ -346,7 +383,7 @@
             
             <div class="arcade-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px;">
                 <!-- Card 1: B2B Zip -->
-                <div class="game-card glass-card" id="arcade-card-zip" data-game="game-zip" style="display: flex; flex-direction: column; justify-content: space-between; padding: 20px; border-radius: 16px; border: 1px solid var(--border-color); background: var(--card-bg); cursor: pointer; transition: all 0.3s ease; position: relative; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+                <div class="game-card glass-card arcade-game-card" id="arcade-card-zip" data-game="game-zip" style="display: flex; flex-direction: column; justify-content: space-between; padding: 20px; border-radius: 16px; border: 1px solid var(--border-color); background: var(--card-bg); cursor: pointer; transition: all 0.3s ease; position: relative; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
                     <div style="position: absolute; top: 0; left: 0; width: 4px; height: 100%; background: var(--primary);"></div>
                     <div>
                         <div style="font-size: 2rem; margin-bottom: 12px;">🔗</div>
@@ -364,7 +401,7 @@
                 </div>
                 
                 <!-- Card 2: B2B Wend -->
-                <div class="game-card glass-card" id="arcade-card-wend" data-game="game-wend" style="display: flex; flex-direction: column; justify-content: space-between; padding: 20px; border-radius: 16px; border: 1px solid var(--border-color); background: var(--card-bg); cursor: pointer; transition: all 0.3s ease; position: relative; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+                <div class="game-card glass-card arcade-game-card" id="arcade-card-wend" data-game="game-wend" style="display: flex; flex-direction: column; justify-content: space-between; padding: 20px; border-radius: 16px; border: 1px solid var(--border-color); background: var(--card-bg); cursor: pointer; transition: all 0.3s ease; position: relative; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
                     <div style="position: absolute; top: 0; left: 0; width: 4px; height: 100%; background: #3b82f6;"></div>
                     <div>
                         <div style="font-size: 2rem; margin-bottom: 12px;">🔍</div>
@@ -382,7 +419,7 @@
                 </div>
                 
                 <!-- Card 3: B2B Tango -->
-                <div class="game-card glass-card" id="arcade-card-tango" data-game="game-tango" style="display: flex; flex-direction: column; justify-content: space-between; padding: 20px; border-radius: 16px; border: 1px solid var(--border-color); background: var(--card-bg); cursor: pointer; transition: all 0.3s ease; position: relative; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+                <div class="game-card glass-card arcade-game-card" id="arcade-card-tango" data-game="game-tango" style="display: flex; flex-direction: column; justify-content: space-between; padding: 20px; border-radius: 16px; border: 1px solid var(--border-color); background: var(--card-bg); cursor: pointer; transition: all 0.3s ease; position: relative; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
                     <div style="position: absolute; top: 0; left: 0; width: 4px; height: 100%; background: #10b981;"></div>
                     <div>
                         <div style="font-size: 2rem; margin-bottom: 12px;">🤝</div>
@@ -400,7 +437,7 @@
                 </div>
                 
                 <!-- Card 4: B2B Queens -->
-                <div class="game-card glass-card" id="arcade-card-queens" data-game="game-queens" style="display: flex; flex-direction: column; justify-content: space-between; padding: 20px; border-radius: 16px; border: 1px solid var(--border-color); background: var(--card-bg); cursor: pointer; transition: all 0.3s ease; position: relative; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+                <div class="game-card glass-card arcade-game-card" id="arcade-card-queens" data-game="game-queens" style="display: flex; flex-direction: column; justify-content: space-between; padding: 20px; border-radius: 16px; border: 1px solid var(--border-color); background: var(--card-bg); cursor: pointer; transition: all 0.3s ease; position: relative; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
                     <div style="position: absolute; top: 0; left: 0; width: 4px; height: 100%; background: #8b5cf6;"></div>
                     <div>
                         <div style="font-size: 2rem; margin-bottom: 12px;">👑</div>
