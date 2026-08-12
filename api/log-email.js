@@ -1,4 +1,6 @@
 // Serverless function to save user lead email to Google Sheets webhook and handle sync actions
+const { readUsers, writeUsers } = require('./db-helper');
+
 const disposableDomains = [
   'yopmail.com', 'mailinator.com', 'tempmail.com', '10minutemail.com', 
   'guerrillamail.com', 'dispostable.com', 'getairmail.com', 'sharklasers.com', 
@@ -18,18 +20,19 @@ function isSpamEmail(email) {
 module.exports = async (req, res) => {
   // Set CORS headers
   res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Methods', 'POST, GET, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
   if (req.method === 'OPTIONS') {
     return res.status(200).end();
   }
 
-  if (req.method !== 'POST') {
+  if (req.method !== 'POST' && req.method !== 'GET') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  const { action, email, tool, name, phone, company, experience, ebookTitle, downloadLink, points } = req.body;
+  const params = req.method === 'GET' ? req.query : req.body;
+  const { action, email, tool, name, phone, company, experience, ebookTitle, downloadLink, points } = params;
   
   if (!email || !email.includes('@')) {
     return res.status(400).json({ error: 'Invalid email address' });
@@ -41,6 +44,65 @@ module.exports = async (req, res) => {
   }
 
   const timestamp = new Date().toISOString();
+  const cleanEmail = email.toLowerCase().trim();
+  const clientIp = req.headers['x-forwarded-for'] || req.socket.remoteAddress || '';
+
+  // --- Simulated Database Persistence Logic ---
+  const users = readUsers();
+  
+  // Track/update user profile locally for any incoming lead or sync request
+  if (action === 'syncUser') {
+    users[cleanEmail] = {
+      email: cleanEmail,
+      name: name || (users[cleanEmail] ? users[cleanEmail].name : 'Học viên'),
+      points: points !== undefined ? points : (users[cleanEmail] ? users[cleanEmail].points : 25),
+      lastIp: clientIp,
+      lastActive: timestamp
+    };
+    writeUsers(users);
+  } else if (action === 'updatePoints') {
+    if (users[cleanEmail]) {
+      users[cleanEmail].points = points;
+      users[cleanEmail].lastActive = timestamp;
+      users[cleanEmail].lastIp = clientIp;
+      writeUsers(users);
+    }
+  } else if (action === 'checkEmail') {
+    // If the user exists in our local simulated database, return it immediately to avoid sheets delay/failures!
+    if (users[cleanEmail]) {
+      users[cleanEmail].lastIp = clientIp;
+      users[cleanEmail].lastActive = timestamp;
+      writeUsers(users);
+      return res.status(200).json({
+        success: true,
+        exists: true,
+        user: {
+          email: users[cleanEmail].email,
+          name: users[cleanEmail].name,
+          points: users[cleanEmail].points,
+          avatar: users[cleanEmail].avatar || ''
+        }
+      });
+    }
+  } else {
+    // General lead tracking (ebook downloads, minigame registrations, etc.)
+    if (!users[cleanEmail]) {
+      users[cleanEmail] = {
+        email: cleanEmail,
+        name: name || 'Học viên',
+        points: points !== undefined ? points : 25,
+        lastIp: clientIp,
+        lastActive: timestamp
+      };
+    } else {
+      if (name && name !== 'Học viên') users[cleanEmail].name = name;
+      if (points !== undefined) users[cleanEmail].points = points;
+      users[cleanEmail].lastIp = clientIp;
+      users[cleanEmail].lastActive = timestamp;
+    }
+    writeUsers(users);
+  }
+
   const webhookUrl = tool === 'course-registration' 
     ? process.env.GOOGLE_SHEET_COURSE_WEBHOOK 
     : process.env.GOOGLE_SHEET_LEADS_WEBHOOK;
@@ -49,6 +111,10 @@ module.exports = async (req, res) => {
 
   if (!webhookUrl) {
     console.warn(`[SHEETS_SYNC_WARN] Webhook URL not set.`);
+    // If checkEmail is requested and didn't find local user, return false
+    if (action === 'checkEmail') {
+      return res.status(200).json({ success: true, exists: false });
+    }
     return res.status(200).json({ 
       success: true, 
       warning: 'Webhook URL not configured, but local save completed.' 
@@ -93,6 +159,11 @@ module.exports = async (req, res) => {
     if (action === 'checkEmail' || action === 'syncUser') {
       try {
         const result = JSON.parse(resText);
+        // Enrich sheets result with local data if available
+        if (result.exists && result.user && users[cleanEmail]) {
+          result.user.points = users[cleanEmail].points;
+          result.user.avatar = users[cleanEmail].avatar || '';
+        }
         return res.status(200).json(result);
       } catch (jsonErr) {
         // Fallback if Apps Script returned text
@@ -106,6 +177,10 @@ module.exports = async (req, res) => {
     return res.status(200).json({ success: true, sheetResponse: resText });
   } catch (err) {
     console.error(`[SHEETS_SYNC_ERROR] Failed to send to Google Sheets Webhook:`, err);
+    // Fallback response for local work
+    if (action === 'checkEmail') {
+      return res.status(200).json({ success: true, exists: false });
+    }
     return res.status(500).json({ error: 'Failed to communicate with Google Sheets', details: err.message });
   }
 };
