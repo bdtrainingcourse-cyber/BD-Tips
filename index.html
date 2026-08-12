@@ -308,23 +308,28 @@
             </div>
         </div>
 
-        <!-- Đăng ký nhận email funny trigger (engage new users) -->
-        <div class="funny-trigger-box glass-panel" id="challenge-funny-trigger-box" style="margin-top: 35px; padding: 25px; border-radius: 16px; border: 1.5px dashed var(--primary); background: linear-gradient(135deg, rgba(243, 168, 59, 0.05) 0%, rgba(243, 168, 59, 0.01) 100%); text-align: center; max-width: 680px; margin-left: auto; margin-right: auto; box-sizing: border-box; clear: both;">
-            <div style="font-size: 2.2rem; margin-bottom: 8px;">🦉</div>
-            <h4 style="margin: 0; font-size: 1.15rem; font-weight: 800; color: var(--text-main); text-transform: uppercase; letter-spacing: 0.5px;">Bật Nhắc Nhở Vui Nhộn Từ Cú BeeDee</h4>
-            <p style="margin: 6px 0 20px 0; font-size: 0.85rem; color: var(--text-light); line-height: 1.5; max-width: 520px; margin-left: auto; margin-right: auto;">
-                Nhận email mẹo thực chiến hài hước mỗi sáng lúc <b>8h45</b> (Thứ 2 - Thứ 6) & email xả stress chiều thứ 6 (18h00) để nạp năng lượng săn lead, không lo bị ghost!
-            </p>
-            <div id="challenge-trigger-form" style="display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; width: 100%; max-width: 580px; margin: 0 auto;">
-                <input type="text" id="challenge-trigger-name" placeholder="Tên của bạn" style="flex: 1; min-width: 140px; padding: 10px 14px; border-radius: 8px; border: 1px solid var(--border-color); background: rgba(255,255,255,0.02); color: var(--text-main); font-family: inherit; font-size: 0.9rem;" required>
-                <input type="email" id="challenge-trigger-email" placeholder="Email của bạn" style="flex: 1; min-width: 180px; padding: 10px 14px; border-radius: 8px; border: 1px solid var(--border-color); background: rgba(255,255,255,0.02); color: var(--text-main); font-family: inherit; font-size: 0.9rem;" required>
-                <button id="btn-challenge-trigger-submit" class="btn btn-primary" style="padding: 10px 24px; font-weight: bold; border-radius: 8px; font-size: 0.9rem; white-space: nowrap;">Bật Nhắc Nhở & Nhận 25đ ⚡</button>
+    </section>
+
+    <!-- 🦉 Simplified Funny Reminder Section -->
+    <div class="funny-reminder-container container" style="margin: 25px auto; max-width: 1200px; clear: both; padding: 0 15px; box-sizing: border-box;">
+        <div id="challenge-funny-trigger-box" class="glass-panel" style="padding: 15px 20px; border-radius: 12px; border: 1px solid var(--border-color); background: rgba(255,255,255,0.02); display: flex; align-items: center; justify-content: space-between; gap: 15px; flex-wrap: wrap;">
+            <div style="display: flex; align-items: center; gap: 12px; flex: 1; min-width: 280px;">
+                <span style="font-size: 1.8rem; line-height: 1;">🦉</span>
+                <div>
+                    <h4 style="margin: 0; font-size: 0.9rem; font-weight: 800; color: var(--text-main); text-transform: uppercase;">BẬT NHẮC NHỞ HÀI HƯỚC TỪ CÚ BEEDEE</h4>
+                    <p style="margin: 2px 0 0 0; font-size: 0.78rem; color: var(--text-light); line-height: 1.3;">Mẹo thực chiến hài hước mỗi sáng lúc 8h45 từ Peter Vo & Nhận ngay 25đ ⚡</p>
+                </div>
             </div>
-            <div id="challenge-trigger-success-msg" class="hidden" style="margin-top: 12px; font-size: 0.85rem; color: #10b981; font-weight: bold;">
+            <div id="challenge-trigger-form" style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center; justify-content: flex-end; min-width: 280px;">
+                <input type="text" id="challenge-trigger-name" placeholder="Tên" style="width: 100px; max-width: 100%; padding: 8px 12px; border-radius: 6px; border: 1px solid var(--border-color); background: rgba(255,255,255,0.01); color: var(--text-main); font-family: inherit; font-size: 0.85rem;" required>
+                <input type="email" id="challenge-trigger-email" placeholder="Email" style="width: 160px; max-width: 100%; padding: 8px 12px; border-radius: 6px; border: 1px solid var(--border-color); background: rgba(255,255,255,0.01); color: var(--text-main); font-family: inherit; font-size: 0.85rem;" required>
+                <button id="btn-challenge-trigger-submit" class="btn btn-primary" style="padding: 8px 16px; font-weight: bold; border-radius: 6px; font-size: 0.85rem; border: none; cursor: pointer; white-space: nowrap;">Bật Nhắc Nhở & Nhận 25đ ⚡</button>
+            </div>
+            <div id="challenge-trigger-success-msg" class="hidden" style="width: 100%; font-size: 0.8rem; color: #10b981; font-weight: bold; margin-top: 5px; text-align: left;">
                 🎉 Đăng ký thành công! Cú BeeDee đã mở tài khoản tích lũy 25 BD-Points cho bạn.
             </div>
         </div>
-    </section>
+    </div>
 
     <!-- 👾 B2B ARCADE Section -->
     <section class="arcade-section container" id="arcade-section" style="margin-top: 40px; margin-bottom: 40px; clear: both;">
@@ -577,25 +582,25 @@
 
 </footer>
 
-    <!-- 👾 B2B ARCADE Fullscreen Overlay Modal -->
-    <div id="arcade-modal" class="hidden" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(15, 23, 42, 0.96); z-index: 10000; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(15px); padding: 15px; box-sizing: border-box; overflow-y: auto;">
-        <div id="arcade-game-container" class="glass-panel" style="width: 100%; max-width: 600px; padding: 25px; border-radius: 20px; border: 1px solid var(--border-color); background: rgba(30, 41, 59, 0.85); box-shadow: 0 10px 40px rgba(0,0,0,0.6); position: relative; display: flex; flex-direction: column; gap: 15px; box-sizing: border-box;">
-            <button id="close-arcade-btn" style="position: absolute; top: 15px; right: 15px; background: none; border: none; font-size: 2rem; color: var(--text-light); cursor: pointer; line-height: 1; transition: color 0.3s; z-index: 20000;">&times;</button>
+    <!-- 👾 B2B ARCADE Fullscreen Overlay Modal (Light Theme) -->
+    <div id="arcade-modal" class="hidden" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(241, 245, 249, 0.97); z-index: 10000; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(20px); padding: 15px; box-sizing: border-box; overflow-y: auto;">
+        <div id="arcade-game-container" style="width: 100%; max-width: 580px; padding: 25px; border-radius: 20px; border: 1px solid #e2e8f0; background: #ffffff; color: #0f172a; box-shadow: 0 20px 45px rgba(0,0,0,0.12); position: relative; display: flex; flex-direction: column; gap: 15px; box-sizing: border-box; overflow: hidden;">
+            <button id="close-arcade-btn" style="position: absolute; top: 15px; right: 15px; background: none; border: none; font-size: 2rem; color: #475569; cursor: pointer; line-height: 1; transition: color 0.3s; z-index: 20000;">&times;</button>
             
             <!-- Title and Header Status -->
-            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 12px; margin-right: 30px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e2e8f0; padding-bottom: 12px; margin-right: 30px;">
                 <div>
-                    <h3 id="arcade-title" style="margin: 0; font-size: 1.3rem; font-weight: 800; color: var(--text-main); display: flex; align-items: center; gap: 8px;">🔗 Sales Path Finder</h3>
+                    <h3 id="arcade-title" style="margin: 0; font-size: 1.3rem; font-weight: 800; color: #0f172a; display: flex; align-items: center; gap: 8px;">🔗 Sales Path Finder</h3>
                     <span id="arcade-level-badge" style="font-size: 0.8rem; background: var(--primary); color: white; padding: 3px 12px; border-radius: 20px; font-weight: bold; margin-top: 5px; display: inline-block;">Cấp 1 / 12</span>
                 </div>
                 <div style="text-align: right; display: flex; flex-direction: column; align-items: flex-end;">
-                    <div id="arcade-timer" style="font-size: 1.5rem; font-weight: 800; color: var(--text-main); font-family: monospace;">40s</div>
+                    <div id="arcade-timer" style="font-size: 1.5rem; font-weight: 800; color: #0f172a; font-family: monospace;">40s</div>
                     <div id="arcade-points-reward" style="font-size: 0.8rem; color: var(--primary); font-weight: bold;">+10đ ⚡</div>
                 </div>
             </div>
             
             <!-- Dynamic Playing Area -->
-            <div id="arcade-play-area" style="min-height: 280px; display: flex; flex-direction: column; justify-content: center; position: relative;">
+            <div id="arcade-play-area" style="min-height: 280px; display: flex; flex-direction: column; justify-content: center; position: relative; color: #334155;">
                 <!-- Content will be injected dynamically -->
             </div>
         </div>
