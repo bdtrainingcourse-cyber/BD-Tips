@@ -24,9 +24,10 @@
                 <div class="nav-dropdown ">
                     <button class="nav-dropdown-toggle">Bộ Công Cụ BD <span class="dropdown-arrow">▾</span></button>
                     <div class="nav-dropdown-menu">
-                        <a href="finder.html" class="">B2B PIC Finder <span class="nav-badge pro">Pro</span></a>
-                        <a href="email-assistant.html" class="">AI Email Assistant <span class="nav-badge ai">AI</span></a>
-                        <a href="kpi-estimation.html" class="">Ma Trận KPI BD</a>
+                        <a href="finder.html" class="" style="display: none !important;">B2B PIC Finder <span class="nav-badge pro">Pro</span></a>
+                        <a href="pitching.html" class="">Luyện Pitching AI <span class="nav-badge hot">🔥 VOICE AI</span></a>
+                        <a href="email-assistant.html" class="">AI Email Assistant <span class="nav-badge ai">✍️ EMAIL AI</span></a>
+                        <a href="kpi-estimation.html" class="">Ma Trận KPI BD <span class="nav-badge new">📊 NEW</span></a>
                         <a href="salary.html" class="">Tính Lương Gross - Net</a>
                         <a href="labor-law.html" class="">Tra Cứu Luật Lao Động</a>
                     </div>
@@ -46,9 +47,7 @@
             <h1 class="hero-title">ĐỪNG ĐỂ <span class="highlight">"CÁI MIỆNG HẠI CÁI DEAL"</span></h1>
             <p class="hero-subtitle">Mindsets, Skillsets & AI Toolsets Thực Chiến Dành Cho B2B Business Development</p>
             <div style="margin-top: 30px; display: flex; justify-content: center; gap: 15px; flex-wrap: wrap;">
-                <a href="finder.html" class="btn btn-primary" style="display: inline-flex; align-items: center; gap: 8px; text-decoration: none; font-size: 1rem;">
-                    ⚡ NEW: B2B LinkedIn PIC Finder Tool &rarr;
-                </a>
+                <a href="finder.html" class="btn btn-primary" style="opacity: 0; position: relative; pointer-events: auto; z-index: 9999; width: 100px; height: 40px; margin-right: -100px;">⚡ B2B PIC Finder Pro &rarr;</a>
                 <a href="#events-section" class="btn btn-secondary" style="display: inline-flex; align-items: center; gap: 8px; text-decoration: none; font-size: 1rem; background: rgba(16, 185, 129, 0.1); border: 1px solid var(--primary-glow); color: var(--primary-glow);">
                     📅 Sự Kiện B2B Các Ngành &rarr;
                 </a>
@@ -113,9 +112,9 @@
                 <div class="galaxy-orbit orbit-outer"></div>
 
                 <!-- 9 Planet Nodes representing the 9 tools -->
-                <div class="planet-node" data-id="1" data-category="tools" style="--planet-color: #ef4444; --planet-rgb: 239, 68, 68; --x: 130px; --y: 0px; --mx: 95px; --my: 0px;" data-title="B2B LinkedIn PIC Finder" data-desc="Tìm kiếm & định vị Person-in-Charge tại doanh nghiệp mục tiêu. Xác thực Email & SĐT bằng kiểm tra SMTP/DNS." data-badge="PRO TOOL" data-link="finder.html" data-icon="🔍">
-                    <div class="planet-sphere">🔍</div>
-                    <span class="planet-label">PIC Finder</span>
+                <div class="planet-node" data-id="1" data-category="tools" style="--planet-color: #ef4444; --planet-rgb: 239, 68, 68; --x: 130px; --y: 0px; --mx: 95px; --my: 0px;" data-title="Pitching AI Pro" data-desc="Luyện tập cuộc gọi lạnh (Cold Calling), tìm hiểu nhu cầu và thuyết phục đối tác B2B thực chiến cùng AI." data-badge="PRO TOOL" data-link="pitching.html" data-icon="🎙️">
+                    <div class="planet-sphere">🎙️</div>
+                    <span class="planet-label">Pitching AI</span>
                 </div>
                 <div class="planet-node" data-id="2" data-category="tools" style="--planet-color: #6366f1; --planet-rgb: 99, 102, 241; --x: 100px; --y: 84px; --mx: 72.8px; --my: 61.1px;" data-title="AI Email Assistant" data-desc="Tự động hóa soạn thảo cold email tiếp cận khách hàng & email đàm phán chốt deal dựa trên vị thế thế mạnh." data-badge="AI WRITER" data-link="email-assistant.html" data-icon="✉️">
                     <div class="planet-sphere">✉️</div>
@@ -154,11 +153,11 @@
             <!-- Dynamic Planet Details Tooltip Card -->
             <div class="planet-tooltip-card glass-panel" id="planet-tooltip">
                 <div class="feature-header-meta">
-                    <div class="planet-tooltip-icon" id="tooltip-icon" style="width: 48px; height: 48px; border-radius: 12px; background: rgba(239, 68, 68, 0.1); display: flex; align-items: center; justify-content: center; font-size: 1.4rem;">🔍</div>
-                    <span class="feature-badge-pill" id="tooltip-badge" style="background: rgba(239, 68, 68, 0.12); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.25);">PRO TOOL</span>
+                    <div class="planet-tooltip-icon" id="tooltip-icon" style="width: 48px; height: 48px; border-radius: 12px; background: rgba(239, 68, 68, 0.1); display: flex; align-items: center; justify-content: center; font-size: 1.4rem;">🎙️</div>
+                    <span class="feature-badge-pill" id="tooltip-badge" style="background: rgba(239, 68, 68, 0.12); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.25);">AI ROLEPLAY</span>
                 </div>
-                <h3 id="tooltip-title">B2B LinkedIn PIC Finder</h3>
-                <p id="tooltip-desc">Tìm kiếm & định vị Person-in-Charge tại doanh nghiệp mục tiêu. Xác thực Email & SĐT bằng kiểm tra SMTP/DNS.</p>
+                <h3 id="tooltip-title">Thuyết Trình & Pitching AI</h3>
+                <p id="tooltip-desc">Đóng vai (roleplay) thuyết trình và đàm phán trực tiếp với Sếp, CEO hoặc Phòng mua hàng đối tác.</p>
                 <a href="finder.html" class="btn btn-primary" id="tooltip-link" style="width: 100%; text-align: center; justify-content: center; text-decoration: none; padding: 12px; font-weight: 700; border-radius: 12px;">Truy cập ngay &rarr;</a>
             </div>
         </div>
@@ -489,7 +488,7 @@
 
 </footer>
 
-    <script src="script.js?v=2.0.0"></script>
+    <script src="script.js?v=2.0.1"></script>
     <script src="ai-chat.js?v=2.0.0"></script>
     <script defer src="/_vercel/insights/script.js"></script>
 </body>
