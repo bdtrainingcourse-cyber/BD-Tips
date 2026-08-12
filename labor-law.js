@@ -352,7 +352,12 @@ document.addEventListener('DOMContentLoaded', () => {
                     <span class="resolve-badge">💡 Xem hướng dẫn giải quyết &rarr;</span>
                 </div>
             `;
-            card.addEventListener('click', () => openCaseModal(cs));
+            card.addEventListener('click', () => {
+                openCaseModal(cs);
+                if (window.trackUserBehavior) {
+                    window.trackUserBehavior('labor_case_view', cs.title);
+                }
+            });
             casesContainer.appendChild(card);
         });
     }
@@ -378,9 +383,17 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // Search bar input
+    let searchTrackTimeout;
     searchInput.addEventListener('input', () => {
         searchQuery = searchInput.value.toLowerCase().trim();
         renderDashboard();
+        
+        clearTimeout(searchTrackTimeout);
+        searchTrackTimeout = setTimeout(() => {
+            if (searchQuery && window.trackUserBehavior) {
+                window.trackUserBehavior('labor_search', searchQuery);
+            }
+        }, 1000);
     });
 
     // Modal close events
