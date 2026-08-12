@@ -42,7 +42,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     <div class="suggestion-chip" data-question="Cách tính lương Net từ Gross?">Cách tính lương Net từ Gross?</div>
                     <div class="suggestion-chip" data-question="Tra cứu Công thức ARR, MRR, CAC, LTV?">Công thức ARR, MRR, CAC, LTV?</div>
                     <div class="suggestion-chip" data-question="Hết thử việc công ty im lặng thì sao?">Hết thử việc im lặng?</div>
-                    <div class="suggestion-chip" data-question="Làm sao tìm email PIC doanh nghiệp?">Tìm email PIC như thế nào?</div>
+                    <div class="suggestion-chip" data-question="Làm thế nào để Pitching dự án hiệu quả bằng AI?">Pitching dự án hiệu quả?</div>
                     <div class="suggestion-chip" data-question="Liên hệ trực tiếp Founder Peter Vo?">Liên hệ Founder Peter Vo?</div>
                 </div>
             </div>
@@ -102,10 +102,10 @@ document.addEventListener('DOMContentLoaded', () => {
             navLabel: "⚖️ Mở Cổng Luật Lao Động"
         },
         {
-            keywords: [/tìm email/, /finder/, /email/, /linkedin/, /sđt/, /pic/i],
-            reply: "Công cụ **LinkedIn PIC Finder** giúp bạn tìm kiếm thông tin liên hệ (Email, Chức danh) của Người chịu trách nhiệm chính (PIC) thuộc các doanh nghiệp mục tiêu bằng cách quét các bộ lọc nâng cao.\n\n*Mẹo nhỏ:* Sau khi tìm được email PIC, bạn có thể dùng **Email Assistant** để soạn một bức Cold Email chuẩn chỉ để tiếp cận nhé!",
-            navTarget: "finder",
-            navLabel: "🔍 Mở Trình Tìm Kiếm PIC"
+            keywords: [/pitching/, /thuyết trình/, /pitch/, /slide/, /kịch bản/, /finder/i],
+            reply: "Công cụ **Thuyết Trình & Pitching AI** giúp bạn tự động thiết kế dàn ý slide và kịch bản pitching thuyết phục dựa trên tệp khách hàng mục tiêu và giá trị cốt lõi của bạn.\n\n*Gợi ý thêm:* Bạn có muốn tôi hướng dẫn cách soạn kịch bản Pitching 1 phút (Elevator Pitch) không?",
+            navTarget: "pitching",
+            navLabel: "🎤 Thử Pitching AI Ngay"
         },
         {
             keywords: [/ebook/, /thư viện/, /bài viết/, /sách/i],
@@ -261,7 +261,7 @@ document.addEventListener('DOMContentLoaded', () => {
         let aiNavTarget = navTarget;
         let aiNavLabel = navLabel;
 
-        const navMatch = cleanedText.match(/\[NAV:(salary|labor-law|finder|library)\]/);
+        const navMatch = cleanedText.match(/\[NAV:(salary|labor-law|pitching|library)\]/);
         if (navMatch) {
             aiNavTarget = navMatch[1];
             cleanedText = cleanedText.replace(navMatch[0], '').trim();
@@ -269,7 +269,7 @@ document.addEventListener('DOMContentLoaded', () => {
             // Map label based on target
             if (aiNavTarget === 'salary') aiNavLabel = '⚡ Tính Lương Ngay';
             else if (aiNavTarget === 'labor-law') aiNavLabel = '⚖️ Xem Luật Lao Động';
-            else if (aiNavTarget === 'finder') aiNavLabel = '🔍 Mở PIC Finder';
+            else if (aiNavTarget === 'pitching') aiNavLabel = '🎤 Thử Pitching AI Ngay';
             else if (aiNavTarget === 'library') aiNavLabel = '📰 Đọc Bài Viết BD';
         }
 
@@ -286,7 +286,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const linkMap = {
                 'salary': 'salary.html',
                 'labor-law': 'labor-law.html',
-                'finder': 'finder.html',
+                'pitching': 'pitching.html',
                 'library': 'library.html'
             };
             bubbleHtml += `<a href="${linkMap[aiNavTarget]}" class="chat-router-btn" ${aiNavTarget === 'library' ? '' : ''}>${aiNavLabel} &rarr;</a>`;
