@@ -326,6 +326,95 @@
         </div>
     </section>
 
+    <!-- 👾 B2B ARCADE Section -->
+    <section class="arcade-section container" id="arcade-section" style="margin-top: 40px; margin-bottom: 40px; clear: both;">
+        <div class="glass-panel" style="padding: 30px; border-radius: 20px; border: 1px solid var(--border-color); background: rgba(30, 41, 59, 0.4); backdrop-filter: blur(10px);">
+            <div style="text-align: center; margin-bottom: 30px;">
+                <span style="font-size: 2.5rem; display: block; margin-bottom: 10px;">👾</span>
+                <h2 style="font-size: 1.8rem; font-weight: 800; margin: 0; color: var(--text-main); text-transform: uppercase; letter-spacing: 1px;">
+                    ⚔️ B2B ARCADE: ĐẤU TRƯỜNG BD THỰC CHIẾN
+                </h2>
+                <p style="font-size: 0.95rem; color: var(--text-light); max-width: 600px; margin: 8px auto 0 auto; line-height: 1.5;">
+                    Trải nghiệm 4 trò chơi tương tác thực tế với **12 cấp độ thử thách tăng dần**. Vượt mỗi ải để tích lũy BD-Points ⚡ lũy tiến và chinh phục danh hiệu Huyền Thoại BD!
+                </p>
+            </div>
+            
+            <div class="arcade-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px;">
+                <!-- Card 1: B2B Zip -->
+                <div class="game-card glass-card" id="arcade-card-zip" data-game="game-zip" style="display: flex; flex-direction: column; justify-content: space-between; padding: 20px; border-radius: 16px; border: 1px solid var(--border-color); background: var(--card-bg); cursor: pointer; transition: all 0.3s ease; position: relative; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+                    <div style="position: absolute; top: 0; left: 0; width: 4px; height: 100%; background: var(--primary);"></div>
+                    <div>
+                        <div style="font-size: 2rem; margin-bottom: 12px;">🔗</div>
+                        <h4 style="font-size: 1.1rem; font-weight: 800; color: var(--text-main); margin: 0 0 6px 0;">B2B Zip (Sales Path Finder)</h4>
+                        <p style="font-size: 0.8rem; color: var(--text-light); line-height: 1.4; margin: 0 0 15px 0;">
+                            Nối đường ống bán hàng từ Lead đến Closed Won. Nhận diện các điểm nghẽn và tối ưu phễu.
+                        </p>
+                    </div>
+                    <div>
+                        <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border-color); padding-top: 12px; margin-top: 10px;">
+                            <span class="arcade-level-text" style="font-size: 0.8rem; font-weight: bold; color: var(--primary);" id="level-text-zip">Cấp 1 / 12</span>
+                            <span class="arcade-points-text" style="font-size: 0.75rem; background: rgba(239, 68, 68, 0.1); color: var(--primary); padding: 2px 8px; border-radius: 12px; font-weight: bold;">+10đ ⚡</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Card 2: B2B Wend -->
+                <div class="game-card glass-card" id="arcade-card-wend" data-game="game-wend" style="display: flex; flex-direction: column; justify-content: space-between; padding: 20px; border-radius: 16px; border: 1px solid var(--border-color); background: var(--card-bg); cursor: pointer; transition: all 0.3s ease; position: relative; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+                    <div style="position: absolute; top: 0; left: 0; width: 4px; height: 100%; background: #3b82f6;"></div>
+                    <div>
+                        <div style="font-size: 2rem; margin-bottom: 12px;">🔍</div>
+                        <h4 style="font-size: 1.1rem; font-weight: 800; color: var(--text-main); margin: 0 0 6px 0;">B2B Wend (Word Search)</h4>
+                        <p style="font-size: 0.8rem; color: var(--text-light); line-height: 1.4; margin: 0 0 15px 0;">
+                            Tìm kiếm thuật ngữ B2B cốt lõi bị ẩn giấu trong ma trận chữ cái.
+                        </p>
+                    </div>
+                    <div>
+                        <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border-color); padding-top: 12px; margin-top: 10px;">
+                            <span class="arcade-level-text" style="font-size: 0.8rem; font-weight: bold; color: #3b82f6;" id="level-text-wend">Cấp 1 / 12</span>
+                            <span class="arcade-points-text" style="font-size: 0.75rem; background: rgba(59, 130, 246, 0.1); color: #3b82f6; padding: 2px 8px; border-radius: 12px; font-weight: bold;">+10đ ⚡</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Card 3: B2B Tango -->
+                <div class="game-card glass-card" id="arcade-card-tango" data-game="game-tango" style="display: flex; flex-direction: column; justify-content: space-between; padding: 20px; border-radius: 16px; border: 1px solid var(--border-color); background: var(--card-bg); cursor: pointer; transition: all 0.3s ease; position: relative; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+                    <div style="position: absolute; top: 0; left: 0; width: 4px; height: 100%; background: #10b981;"></div>
+                    <div>
+                        <div style="font-size: 2rem; margin-bottom: 12px;">🤝</div>
+                        <h4 style="font-size: 1.1rem; font-weight: 800; color: var(--text-main); margin: 0 0 6px 0;">B2B Tango (Reasoning Grid)</h4>
+                        <p style="font-size: 0.8rem; color: var(--text-light); line-height: 1.4; margin: 0 0 15px 0;">
+                            Phân bổ deal (🤝 hoặc ❌) thỏa mãn điều kiện logic phân phối của doanh nghiệp.
+                        </p>
+                    </div>
+                    <div>
+                        <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border-color); padding-top: 12px; margin-top: 10px;">
+                            <span class="arcade-level-text" style="font-size: 0.8rem; font-weight: bold; color: #10b981;" id="level-text-tango">Cấp 1 / 12</span>
+                            <span class="arcade-points-text" style="font-size: 0.75rem; background: rgba(16, 185, 129, 0.1); color: #10b981; padding: 2px 8px; border-radius: 12px; font-weight: bold;">+10đ ⚡</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Card 4: B2B Queens -->
+                <div class="game-card glass-card" id="arcade-card-queens" data-game="game-queens" style="display: flex; flex-direction: column; justify-content: space-between; padding: 20px; border-radius: 16px; border: 1px solid var(--border-color); background: var(--card-bg); cursor: pointer; transition: all 0.3s ease; position: relative; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+                    <div style="position: absolute; top: 0; left: 0; width: 4px; height: 100%; background: #8b5cf6;"></div>
+                    <div>
+                        <div style="font-size: 2rem; margin-bottom: 12px;">👑</div>
+                        <h4 style="font-size: 1.1rem; font-weight: 800; color: var(--text-main); margin: 0 0 6px 0;">B2B Queens (BD Team Alignment)</h4>
+                        <p style="font-size: 0.8rem; color: var(--text-light); line-height: 1.4; margin: 0 0 15px 0;">
+                            Sắp xếp các BD Manager vào sơ đồ vùng địa bàn không trùng lặp quyền lợi.
+                        </p>
+                    </div>
+                    <div>
+                        <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border-color); padding-top: 12px; margin-top: 10px;">
+                            <span class="arcade-level-text" style="font-size: 0.8rem; font-weight: bold; color: #8b5cf6;" id="level-text-queens">Cấp 1 / 12</span>
+                            <span class="arcade-points-text" style="font-size: 0.75rem; background: rgba(139, 92, 246, 0.1); color: #8b5cf6; padding: 2px 8px; border-radius: 12px; font-weight: bold;">+10đ ⚡</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <section class="summary container">
         <h2 class="section-title">Ma Trận Tư Duy B2B BD</h2>
         <div class="table-responsive">
@@ -487,6 +576,30 @@
 
 
 </footer>
+
+    <!-- 👾 B2B ARCADE Fullscreen Overlay Modal -->
+    <div id="arcade-modal" class="hidden" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(15, 23, 42, 0.96); z-index: 10000; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(15px); padding: 15px; box-sizing: border-box; overflow-y: auto;">
+        <div id="arcade-game-container" class="glass-panel" style="width: 100%; max-width: 600px; padding: 25px; border-radius: 20px; border: 1px solid var(--border-color); background: rgba(30, 41, 59, 0.85); box-shadow: 0 10px 40px rgba(0,0,0,0.6); position: relative; display: flex; flex-direction: column; gap: 15px; box-sizing: border-box;">
+            <button id="close-arcade-btn" style="position: absolute; top: 15px; right: 15px; background: none; border: none; font-size: 2rem; color: var(--text-light); cursor: pointer; line-height: 1; transition: color 0.3s; z-index: 20000;">&times;</button>
+            
+            <!-- Title and Header Status -->
+            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 12px; margin-right: 30px;">
+                <div>
+                    <h3 id="arcade-title" style="margin: 0; font-size: 1.3rem; font-weight: 800; color: var(--text-main); display: flex; align-items: center; gap: 8px;">🔗 Sales Path Finder</h3>
+                    <span id="arcade-level-badge" style="font-size: 0.8rem; background: var(--primary); color: white; padding: 3px 12px; border-radius: 20px; font-weight: bold; margin-top: 5px; display: inline-block;">Cấp 1 / 12</span>
+                </div>
+                <div style="text-align: right; display: flex; flex-direction: column; align-items: flex-end;">
+                    <div id="arcade-timer" style="font-size: 1.5rem; font-weight: 800; color: var(--text-main); font-family: monospace;">40s</div>
+                    <div id="arcade-points-reward" style="font-size: 0.8rem; color: var(--primary); font-weight: bold;">+10đ ⚡</div>
+                </div>
+            </div>
+            
+            <!-- Dynamic Playing Area -->
+            <div id="arcade-play-area" style="min-height: 280px; display: flex; flex-direction: column; justify-content: center; position: relative;">
+                <!-- Content will be injected dynamically -->
+            </div>
+        </div>
+    </div>
 
     <script src="script.js?v=2.0.1"></script>
     <script src="ai-chat.js?v=2.0.0"></script>
