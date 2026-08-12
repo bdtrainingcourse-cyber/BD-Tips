@@ -6,10 +6,16 @@
     --border-color: rgba(0, 0, 0, 0.08);
     --text-primary: #2b2d42;
     --text-muted: #6c757d;
+    --primary-color: #a20a0a;
+    --accent-color: #f3a83b;
+    --warning-color: #f59e0b;
+    --danger-color: #ef4444;
     --primary-glow: rgba(162, 10, 10, 0.15);
     --accent-glow: rgba(243, 168, 59, 0.15);
     --warning-glow: rgba(245, 158, 11, 0.15);
     --danger-glow: rgba(239, 68, 68, 0.15);
+    --input-bg: #ffffff;
+    --pill-bg: #ffffff;
 }
 
 body {
@@ -26,10 +32,16 @@ body.dark-theme {
     --border-color: rgba(255, 255, 255, 0.08);
     --text-primary: #f8fafc;
     --text-muted: #94a3b8;
+    --primary-color: #a20a0a;
+    --accent-color: #f3a83b;
+    --warning-color: #f59e0b;
+    --danger-color: #ef4444;
     --primary-glow: #a20a0a;
     --accent-glow: #f3a83b;
     --warning-glow: #f59e0b;
     --danger-glow: #ef4444;
+    --input-bg: rgba(255, 255, 255, 0.05);
+    --pill-bg: rgba(255, 255, 255, 0.04);
 }
 
 .labor-main {
@@ -72,6 +84,25 @@ body.dark-theme {
 .search-box input {
     width: 100%;
     box-sizing: border-box;
+    background: var(--input-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 12px 16px;
+    color: var(--text-primary);
+    font-size: 0.95rem;
+    font-family: inherit;
+    transition: all 0.3s ease;
+}
+
+.search-box input:focus {
+    outline: none;
+    border-color: var(--primary-glow);
+    box-shadow: 0 0 10px rgba(16, 185, 129, 0.15);
+}
+
+.search-box input::placeholder {
+    color: var(--text-muted);
+    opacity: 0.6;
 }
 
 .filter-pill-grid {
@@ -81,7 +112,7 @@ body.dark-theme {
 }
 
 .filter-pill {
-    background: rgba(255, 255, 255, 0.04);
+    background: var(--pill-bg);
     border: 1px solid var(--border-color);
     color: var(--text-muted);
     padding: 6px 14px;
@@ -125,7 +156,7 @@ body.dark-theme {
 }
 
 .law-card {
-    border-left: 4px solid var(--accent-glow);
+    border-left: 4px solid var(--accent-color);
     padding: 20px !important;
 }
 
@@ -182,7 +213,7 @@ body.dark-theme {
 }
 
 .case-card {
-    border-left: 4px solid var(--warning-glow);
+    border-left: 4px solid var(--warning-color);
     padding: 20px !important;
     cursor: pointer;
     transition: transform 0.2s, box-shadow 0.2s;
@@ -191,7 +222,7 @@ body.dark-theme {
 .case-card:hover {
     transform: translateX(4px);
     box-shadow: 0 10px 20px rgba(245, 158, 11, 0.1);
-    border-color: var(--warning-glow);
+    border-color: var(--warning-color);
 }
 
 .case-header {
@@ -222,7 +253,7 @@ body.dark-theme {
 }
 
 .resolve-badge {
-    color: var(--warning-glow);
+    color: var(--warning-color);
     font-weight: 600;
     display: flex;
     align-items: center;
@@ -251,7 +282,7 @@ body.dark-theme {
 }
 
 .scenario-box {
-    border-left: 3px solid var(--danger-glow);
+    border-left: 3px solid var(--danger-color);
 }
 
 .scenario-box h4 {
@@ -259,7 +290,7 @@ body.dark-theme {
 }
 
 .analysis-box {
-    border-left: 3px solid var(--accent-glow);
+    border-left: 3px solid var(--accent-color);
 }
 
 .analysis-box h4 {
@@ -267,7 +298,7 @@ body.dark-theme {
 }
 
 .resolution-box {
-    border-left: 3px solid var(--primary-glow);
+    border-left: 3px solid var(--primary-color);
 }
 
 .resolution-box h4 {
@@ -334,11 +365,11 @@ body.dark-theme {
 }
 
 .modal-section-card.regulation-card {
-    border-top: 4px solid var(--accent-glow);
+    border-top: 4px solid var(--accent-color);
 }
 
 .modal-section-card.situation-card {
-    border-top: 4px solid var(--warning-glow);
+    border-top: 4px solid var(--warning-color);
 }
 
 .modal-section-card .section-title {
@@ -413,16 +444,16 @@ body.dark-theme {
     margin-bottom: 8px;
     text-transform: uppercase;
     letter-spacing: 0.8px;
-    border-left: 2px solid var(--warning-glow);
+    border-left: 2px solid var(--warning-color);
     padding-left: 8px;
 }
 
 .scenario-text strong {
-    border-left-color: var(--danger-glow);
+    border-left-color: var(--danger-color);
 }
 
 .resolution-steps strong {
-    border-left-color: var(--primary-glow);
+    border-left-color: var(--primary-color);
 }
 
 .resolution-steps {
