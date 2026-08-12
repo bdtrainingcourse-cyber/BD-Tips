@@ -4,10 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cộng Đồng BD - B2B Business Development Portal | BD Bình Dân Học Vụ</title>
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
     
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css?v=2.0.0">
-    <link rel="stylesheet" href="community.css?v=2.0.0">
+    <link rel="stylesheet" href="community.css?v=2.0.4">
     
     <script src="theme-toggle.js?v=2.0.0"></script>
 </head>
@@ -26,15 +29,30 @@
                 <div class="nav-dropdown ">
                     <button class="nav-dropdown-toggle">Bộ Công Cụ BD <span class="dropdown-arrow">▾</span></button>
                     <div class="nav-dropdown-menu">
-                        <a href="finder.html" class="">B2B PIC Finder <span class="nav-badge pro">Pro</span></a>
-                        <a href="email-assistant.html" class="">AI Email Assistant <span class="nav-badge ai">AI</span></a>
-                        <a href="kpi-estimation.html" class="">Ma Trận KPI BD</a>
+                        <a href="finder.html" class="" style="display: none !important;">B2B PIC Finder <span class="nav-badge pro">Pro</span></a>
+                        <a href="pitching.html" class="">Luyện Pitching AI <span class="nav-badge hot">🔥 VOICE AI</span></a>
+                        <a href="email-assistant.html" class="">AI Email Assistant <span class="nav-badge ai">✍️ EMAIL AI</span></a>
+                        <a href="kpi-estimation.html" class="">Ma Trận KPI BD <span class="nav-badge new">📊 NEW</span></a>
                         <a href="salary.html" class="">Tính Lương Gross - Net</a>
                         <a href="labor-law.html" class="">Tra Cứu Luật Lao Động</a>
                     </div>
                 </div>
                 <a href="index.html#minigame-section">B2B Challenge <span class="nav-badge new">New</span></a>
                 <a href="community.html" class="active">Cộng Đồng</a>
+                <div class="nav-notification-bell" id="notification-bell-container" style="position: relative; display: inline-flex; align-items: center; margin-right: 15px;">
+                    <button id="btn-noti-bell" class="theme-toggle-btn" aria-label="Notifications" style="font-size: 1.15rem; position: relative; background: none; border: none; cursor: pointer; padding: 4px 8px;">
+                        🔔<span id="noti-badge" class="noti-badge hidden">0</span>
+                    </button>
+                    <div class="noti-dropdown hidden" id="noti-dropdown">
+                        <div class="noti-dropdown-header">
+                            <span>Thông báo</span>
+                            <button id="btn-clear-noti" style="background: none; border: none; color: var(--primary); font-size: 0.75rem; cursor: pointer; font-weight: 700;">Đã đọc tất cả</button>
+                        </div>
+                        <div class="noti-dropdown-list" id="noti-list">
+                            <div class="noti-empty">Không có thông báo mới.</div>
+                        </div>
+                    </div>
+                </div>
                 <button id="theme-toggle" class="theme-toggle-btn" aria-label="Toggle theme">🌓</button>
             </nav>
             <button class="mobile-menu-toggle" id="mobile-menu-toggle" aria-label="Open Mobile Menu">
@@ -59,21 +77,16 @@
                 <button class="category-tab" data-category="pic">🔍 Yêu cầu kết nối PIC</button>
                 <button class="category-tab" data-category="story">🧗 Câu chuyện BD</button>
                 
-                <!-- Nhắc nhở email Cú BeeDee -->
-                <div class="funny-trigger-box glass-panel" id="sidebar-funny-trigger-box" style="margin-top: 25px; padding: 18px; border-radius: 12px; border: 1.5px dashed var(--primary); background: linear-gradient(135deg, rgba(243, 168, 59, 0.05) 0%, rgba(243, 168, 59, 0.01) 100%); text-align: center;">
-                    <div style="font-size: 1.8rem; margin-bottom: 6px;">🦉</div>
-                    <h5 style="margin: 0; font-size: 0.9rem; font-weight: 800; color: var(--text-main); text-transform: uppercase;">Mẹo Săn Deal Cú BeeDee</h5>
-                    <p style="margin: 6px 0 15px 0; font-size: 0.78rem; color: var(--text-light); line-height: 1.4;">
-                        Mỗi sáng <b>8h45</b>, Cú BeeDee sẽ gửi mail nhắc nhở vui vẻ để bạn không bao giờ bị ghost!
-                    </p>
-                    <div id="sidebar-trigger-form" style="display: flex; flex-direction: column; gap: 8px;">
-                        <input type="text" id="sidebar-trigger-name" placeholder="Tên của bạn" style="padding: 8px 10px; border-radius: 6px; border: 1px solid var(--border-color); background: rgba(255,255,255,0.02); color: var(--text-main); font-family: inherit; font-size: 0.8rem;" required>
-                        <input type="email" id="sidebar-trigger-email" placeholder="Email của bạn" style="padding: 8px 10px; border-radius: 6px; border: 1px solid var(--border-color); background: rgba(255,255,255,0.02); color: var(--text-main); font-family: inherit; font-size: 0.8rem;" required>
-                        <button id="btn-sidebar-trigger-submit" class="btn btn-primary" style="padding: 8px 12px; font-weight: bold; border-radius: 6px; font-size: 0.8rem; width: 100%;">Bật Nhắc Nhở & Nhận 25đ ⚡</button>
+                <!-- B2B Profile Card -->
+                <div class="profile-card glass-panel" id="b2b-profile-card" style="margin-top: 20px; padding: 20px; border-radius: 12px; border: 1px solid var(--border-color); background: var(--card-bg); text-align: center; display: flex; flex-direction: column; align-items: center; gap: 12px;">
+                    <div style="position: relative;">
+                        <img id="profile-card-avatar" src="bd_mascot.png" alt="Avatar" style="width: 70px; height: 70px; border-radius: 50%; object-fit: cover; border: 2.5px solid var(--primary); background: rgba(243, 168, 59, 0.1);">
                     </div>
-                    <div id="sidebar-trigger-success-msg" class="hidden" style="margin-top: 10px; font-size: 0.78rem; color: #10b981; font-weight: bold;">
-                        🎉 Đăng ký thành công! Nhận 25đ.
+                    <div>
+                        <h4 id="profile-card-name" style="margin: 0; font-size: 0.95rem; font-weight: 800; color: var(--text-main);"></h4>
+                        <span id="profile-card-status" style="font-size: 0.72rem; font-weight: 700; padding: 2px 8px; border-radius: 12px; display: inline-block; margin-top: 4px;"></span>
                     </div>
+                    <button id="btn-edit-profile" class="btn" style="width: 100%; padding: 8px; font-size: 0.8rem; font-weight: 700; border-radius: 6px; border: 1px solid var(--border-color); background: rgba(255,255,255,0.03); color: var(--text-main); cursor: pointer; transition: all 0.2s;">⚙️ Thiết lập Profile</button>
                 </div>
             </aside>
 
@@ -142,50 +155,134 @@
 
     <!-- Create Post Modal Dialog -->
     <div class="modal-overlay" id="create-post-modal">
-        <div class="modal-box" style="max-width: 550px; text-align: left;">
-            <h3 style="font-size: 1.5rem; font-weight: 800; margin-bottom: 15px; color: var(--text-main); text-align: center; border-bottom: 2px solid var(--primary); padding-bottom: 10px;">
-                ✏️ TẠO THẢO LUẬN MỚI
-            </h3>
-            
-            <form id="createPostForm">
-                <div class="form-group">
-                    <label for="postCat">Chuyên mục *</label>
-                    <select id="postCat" required>
-                        <option value="qna">Hỏi đáp nghiệp vụ</option>
-                        <option value="pic">Yêu cầu kết nối PIC công ty</option>
-                        <option value="story">Câu chuyện BD thực chiến</option>
+        <div class="modal-box" style="max-width: 580px; text-align: left; padding: 24px; border-radius: 16px; background: var(--card-bg);">
+            <!-- Modal Header -->
+            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 15px; margin-bottom: 20px;">
+                <h3 style="font-size: 1.35rem; font-weight: 800; color: var(--text-main); margin: 0; display: flex; align-items: center; gap: 8px;">
+                    ✍️ Tạo Bài Viết Mới
+                </h3>
+                <button type="button" onclick="closeModal()" style="background: none; border: none; font-size: 1.5rem; color: var(--text-light); cursor: pointer; line-height: 1;">&times;</button>
+            </div>
+
+            <!-- Mascot Header -->
+            <div class="modal-mascot-header" style="display: flex; align-items: center; gap: 12px; margin-bottom: 18px; background: rgba(243, 168, 59, 0.06); padding: 10px 14px; border-radius: 8px; border-left: 4px solid var(--primary);">
+                <span class="beedee-owl-mascot" style="font-size: 1.8rem; filter: drop-shadow(0 2px 5px rgba(243, 168, 59, 0.3)); display: inline-block;">🦉</span>
+                <p style="margin: 0; font-size: 0.82rem; color: var(--text-main); line-height: 1.4; text-align: left;">
+                    <strong>Cú BeeDee:</strong> Đăng bài chia sẻ nghiệp vụ, kinh nghiệm BD hoặc kết nối PIC mua hàng. Treo thêm Bounty Point ⚡ để được phản hồi siêu tốc!
+                </p>
+            </div>
+
+            <form id="socialComposerForm" style="display: flex; flex-direction: column; gap: 15px;">
+                <!-- Profile / Author Row & Category Selector -->
+                <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; background: rgba(255,255,255,0.02); padding: 10px 14px; border-radius: 10px; border: 1px solid var(--border-color);">
+                    <!-- Author info / inputs -->
+                    <div style="display: flex; align-items: center; gap: 10px; flex: 1; min-width: 200px;">
+                        <div class="beedee-owl-mascot" style="font-size: 1.8rem; background: rgba(243, 168, 59, 0.1); width: 42px; height: 42px; display: flex; align-items: center; justify-content: center; border-radius: 50%; border: 1.5px solid var(--primary);">🦉</div>
+                        <div style="display: flex; flex-direction: column; gap: 3px; flex: 1;">
+                            <!-- For registered users, we show text. For unregistered, we show default text -->
+                            <div id="composer-author-display" style="font-weight: 700; color: var(--text-main); font-size: 0.95rem;"></div>
+                        </div>
+                    </div>
+
+                    <!-- Category Selector Dropdown -->
+                    <div>
+                        <select id="composerCategory" style="padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border-color); background: var(--card-bg); color: var(--text-main); font-weight: 600; font-size: 0.85rem; cursor: pointer; outline: none;" required>
+                            <option value="qna">🧠 Hỏi đáp nghiệp vụ</option>
+                            <option value="pic">🔍 Yêu cầu kết nối PIC</option>
+                            <option value="story">🧗 Câu chuyện BD</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Textarea Editor -->
+                <div style="position: relative;">
+                    <textarea id="composerContent" rows="6" placeholder="Bạn muốn chia sẻ điều gì hoặc cần hỗ trợ kết nối PIC mua hàng của doanh nghiệp nào?..." required style="width: 100%; border: none; background: transparent; padding: 10px 5px; color: var(--text-main); font-family: inherit; font-size: 1.05rem; line-height: 1.5; resize: vertical; outline: none; border-bottom: 1px solid var(--border-color);"></textarea>
+                </div>
+
+                <!-- Bounty Selection Area (Hidden by default, shown when category is PIC) -->
+                <div id="composerBountyGroup" class="hidden" style="display: flex; align-items: center; gap: 10px; background: rgba(243, 168, 59, 0.08); padding: 12px; border-radius: 8px; border: 1px dashed var(--primary);">
+                    <span style="font-size: 1.2rem;">🎯</span>
+                    <label for="composerBounty" style="font-size: 0.85rem; font-weight: 700; color: var(--text-main); flex: 1;">Treo thưởng Bounty Point ⚡ để nhận hỗ trợ nhanh hơn:</label>
+                    <select id="composerBounty" style="padding: 6px 12px; border-radius: 6px; border: 1px solid var(--border-color); background: var(--card-bg); color: var(--text-main); font-weight: bold; font-size: 0.85rem; cursor: pointer;">
+                        <option value="0">Không thưởng (0đ)</option>
+                        <option value="10">Thưởng 10đ ⚡</option>
+                        <option value="20">Thưởng 20đ ⚡</option>
+                        <option value="50">Thưởng 50đ ⚡</option>
                     </select>
                 </div>
-                
-                <div class="form-group">
-                    <label for="postTitle">Tiêu đề thảo luận *</label>
-                    <input type="text" id="postTitle" placeholder="Tóm tắt ngắn gọn câu hỏi hoặc yêu cầu (ví dụ: Xin contact PIC bên Techcombank)" required style="padding: 12px; border-radius: 8px; border: 1px solid var(--border-color); background: var(--bg); color: var(--text-main); font-family: inherit;">
+
+                <!-- Media Preview Container (Displays selected image or video) -->
+                <div id="composerMediaPreview" class="hidden" style="position: relative; border-radius: 12px; overflow: hidden; background: #000; max-height: 250px; display: flex; align-items: center; justify-content: center; border: 1px solid var(--border-color);">
+                    <!-- dynamic preview inserted here -->
+                    <button type="button" id="btnRemoveMedia" style="position: absolute; top: 10px; right: 10px; background: rgba(0,0,0,0.6); color: white; border: none; border-radius: 50%; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; cursor: pointer; transition: all 0.2s; font-weight: bold; z-index: 10;">&times;</button>
                 </div>
 
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 10px;">
-                    <div class="form-group">
-                        <label for="postAuthor">Biệt danh / Họ tên *</label>
-                        <input type="text" id="postAuthor" placeholder="BD_SaaS, Peter..." required style="padding: 12px; border-radius: 8px; border: 1px solid var(--border-color); background: var(--bg); color: var(--text-main); font-family: inherit;">
+                <!-- Hidden file inputs -->
+                <input type="file" id="mediaPhotoInput" accept="image/*" style="display: none;">
+                <input type="file" id="mediaVideoInput" accept="video/*" style="display: none;">
+
+                <!-- Bottom Toolbar & Submit Button -->
+                <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 15px; margin-top: 10px; border-top: 1px solid var(--border-color); padding-top: 15px;">
+                    <!-- Media selection buttons -->
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <button type="button" id="btnAttachPhoto" class="btn" style="background: rgba(255,255,255,0.03); border: 1px solid var(--border-color); padding: 8px 14px; border-radius: 8px; display: flex; align-items: center; gap: 6px; font-size: 0.85rem; font-weight: 600; color: var(--text-main); cursor: pointer; transition: all 0.2s;">
+                            🖼️ Ảnh
+                        </button>
+                        <button type="button" id="btnAttachVideo" class="btn" style="background: rgba(255,255,255,0.03); border: 1px solid var(--border-color); padding: 8px 14px; border-radius: 8px; display: flex; align-items: center; gap: 6px; font-size: 0.85rem; font-weight: 600; color: var(--text-main); cursor: pointer; transition: all 0.2s;">
+                            🎥 Video
+                        </button>
                     </div>
-                    <div class="form-group">
-                        <label for="postEmail">Email B2B (để nhận Verified Badge)</label>
-                        <input type="email" id="postEmail" placeholder="name@company.com" style="padding: 12px; border-radius: 8px; border: 1px solid var(--border-color); background: var(--bg); color: var(--text-main); font-family: inherit;">
+
+                    <!-- Actions -->
+                    <div style="display: flex; gap: 12px; align-items: center;">
+                        <button type="button" onclick="closeModal()" class="btn btn-secondary" style="margin: 0; padding: 10px 20px; font-size: 0.9rem;">Hủy bỏ</button>
+                        <button type="submit" id="btnSubmitPost" class="btn btn-primary" style="padding: 10px 30px; font-size: 0.9rem; font-weight: bold; border-radius: 8px; border: none; cursor: pointer; box-shadow: 0 4px 10px rgba(162, 10, 10, 0.2);">Đăng bài</button>
                     </div>
-                </div>
-
-                <div class="form-group">
-                    <label for="postContent">Nội dung chi tiết *</label>
-                    <textarea id="postContent" rows="6" placeholder="Mô tả chi tiết câu hỏi, bối cảnh, hoặc câu chuyện thực chiến của bạn..." required></textarea>
-                </div>
-
-                <div style="display: flex; gap: 15px; justify-content: flex-end; margin-top: 25px;">
-                    <button type="button" onclick="closeModal()" class="btn btn-secondary" style="margin: 0; padding: 12px 24px;">Hủy bỏ</button>
-                    <button type="submit" class="btn btn-primary" style="padding: 12px 30px; border: none; font-weight: bold;">Đăng Thảo Luận</button>
                 </div>
             </form>
         </div>
     </div>
 
-    <script src="community.js?v=2.0.0"></script>
+    <!-- Edit Profile Modal Dialog -->
+    <div class="modal-overlay" id="edit-profile-modal">
+        <div class="modal-box" style="max-width: 460px; text-align: left; padding: 24px; border-radius: 16px; background: var(--card-bg);">
+            <!-- Modal Header -->
+            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 15px; margin-bottom: 20px;">
+                <h3 style="font-size: 1.25rem; font-weight: 800; color: var(--text-main); margin: 0; display: flex; align-items: center; gap: 8px;">
+                    ⚙️ Thiết Lập Hồ Sơ BD
+                </h3>
+                <button type="button" onclick="closeProfileModal()" style="background: none; border: none; font-size: 1.5rem; color: var(--text-light); cursor: pointer; line-height: 1;">&times;</button>
+            </div>
+
+            <form id="profileEditForm" style="display: flex; flex-direction: column; gap: 15px;">
+                <!-- Avatar Upload Section -->
+                <div style="display: flex; flex-direction: column; align-items: center; gap: 10px; background: rgba(255,255,255,0.02); padding: 15px; border-radius: 10px; border: 1px solid var(--border-color);">
+                    <img id="profileModalAvatarPreview" src="bd_mascot.png" alt="Preview Avatar" style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover; border: 3px solid var(--primary); background: rgba(243, 168, 59, 0.1);">
+                    <button type="button" id="btnUploadAvatar" class="btn" style="padding: 6px 14px; font-size: 0.8rem; font-weight: 600; border-radius: 6px; border: 1px solid var(--border-color); background: var(--bg); color: var(--text-main); cursor: pointer;">🖼️ Đổi ảnh đại diện</button>
+                    <input type="file" id="profileAvatarInput" accept="image/*" style="display: none;">
+                </div>
+
+                <!-- Input name and email -->
+                <div style="display: flex; flex-direction: column; gap: 6px;">
+                    <label for="profileNameInput" style="font-size: 0.85rem; font-weight: 700; color: var(--text-main);">Nickname của bạn:</label>
+                    <input type="text" id="profileNameInput" placeholder="Ví dụ: Chiến thần Săn lead" required style="padding: 10px; border-radius: 8px; border: 1px solid var(--border-color); background: var(--bg); color: var(--text-main); font-family: inherit; font-size: 0.9rem;">
+                </div>
+
+                <div style="display: flex; flex-direction: column; gap: 6px;">
+                    <label for="profileEmailInput" style="font-size: 0.85rem; font-weight: 700; color: var(--text-main);">Email B2B (Dùng để xác thực & đổi tên/ảnh):</label>
+                    <input type="email" id="profileEmailInput" placeholder="nhap.email@b2b.com" style="padding: 10px; border-radius: 8px; border: 1px solid var(--border-color); background: var(--bg); color: var(--text-main); font-family: inherit; font-size: 0.9rem;">
+                    <p style="margin: 0; font-size: 0.72rem; color: var(--text-light); line-height: 1.4;">* Lưu ý: Bạn cần điền email hợp lệ để kích hoạt khả năng tùy chỉnh tên và ảnh đại diện mong muốn.</p>
+                </div>
+
+                <!-- Actions -->
+                <div style="display: flex; justify-content: flex-end; gap: 12px; margin-top: 10px; border-top: 1px solid var(--border-color); padding-top: 15px;">
+                    <button type="button" onclick="closeProfileModal()" class="btn btn-secondary" style="margin: 0; padding: 10px 20px; font-size: 0.9rem;">Hủy bỏ</button>
+                    <button type="submit" class="btn btn-primary" style="padding: 10px 24px; font-size: 0.9rem; font-weight: bold; border-radius: 8px; border: none; cursor: pointer;">Lưu thay đổi</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="community.js?v=2.0.4"></script>
 </body>
 </html>
