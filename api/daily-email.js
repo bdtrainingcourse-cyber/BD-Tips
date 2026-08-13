@@ -1,33 +1,61 @@
 const https = require('https');
 const { readUsers } = require('./db-helper');
 
-// Native HTTPS GET helper that mimics fetch response structure
+// Native HTTPS GET helper that mimics fetch response structure with 3s timeout
 function httpGet(url) {
-  return new Promise((resolve, reject) => {
-    https.get(url, (getRes) => {
-      let data = '';
-      getRes.on('data', (chunk) => data += chunk);
-      getRes.on('end', () => {
-        resolve({
-          ok: getRes.statusCode >= 200 && getRes.statusCode < 300,
-          status: getRes.statusCode,
-          text: () => Promise.resolve(data),
-          json: () => {
-            try {
-              return Promise.resolve(JSON.parse(data));
-            } catch (e) {
-              return Promise.reject(e);
+  return new Promise((resolve) => {
+    try {
+      const req = https.get(url, (getRes) => {
+        let data = '';
+        getRes.on('data', (chunk) => data += chunk);
+        getRes.on('end', () => {
+          resolve({
+            ok: getRes.statusCode >= 200 && getRes.statusCode < 300,
+            status: getRes.statusCode,
+            text: () => Promise.resolve(data),
+            json: () => {
+              try {
+                return Promise.resolve(JSON.parse(data));
+              } catch (e) {
+                return Promise.reject(e);
+              }
             }
-          }
+          });
         });
       });
-    }).on('error', reject);
+      
+      req.setTimeout(3000, () => {
+        req.destroy();
+        resolve({
+          ok: false,
+          status: 408,
+          text: () => Promise.resolve('Timeout'),
+          json: () => Promise.resolve({})
+        });
+      });
+
+      req.on('error', (err) => {
+        resolve({
+          ok: false,
+          status: 500,
+          text: () => Promise.resolve(err.message),
+          json: () => Promise.resolve({})
+        });
+      });
+    } catch (e) {
+      resolve({
+        ok: false,
+        status: 500,
+        text: () => Promise.resolve(e.message),
+        json: () => Promise.resolve({})
+      });
+    }
   });
 }
 
-// Native HTTPS POST helper that mimics fetch response structure
+// Native HTTPS POST helper that mimics fetch response structure with 3s timeout
 function httpPost(url, body) {
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve) => {
     try {
       const urlObj = new URL(url);
       const postData = typeof body === 'string' ? body : JSON.stringify(body);
@@ -60,11 +88,34 @@ function httpPost(url, body) {
         });
       });
       
-      req.on('error', reject);
+      req.setTimeout(3000, () => {
+        req.destroy();
+        resolve({
+          ok: false,
+          status: 408,
+          text: () => Promise.resolve('Timeout'),
+          json: () => Promise.resolve({})
+        });
+      });
+
+      req.on('error', (err) => {
+        resolve({
+          ok: false,
+          status: 500,
+          text: () => Promise.resolve(err.message),
+          json: () => Promise.resolve({})
+        });
+      });
+
       req.write(postData);
       req.end();
     } catch (e) {
-      reject(e);
+      resolve({
+        ok: false,
+        status: 500,
+        text: () => Promise.resolve(e.message),
+        json: () => Promise.resolve({})
+      });
     }
   });
 }
