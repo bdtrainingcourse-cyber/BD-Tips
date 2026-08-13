@@ -192,6 +192,11 @@ const initThemeToggle = () => {
             });
         }
     }
+    
+    // Initialize global notification bell icon in header navbar
+    if (typeof initGlobalNotificationBell === 'function') {
+        initGlobalNotificationBell();
+    }
 };
 
 if (document.readyState === 'loading') {
@@ -1190,3 +1195,125 @@ window.openGlobalShareModal = function(title, url) {
 
     overlay.classList.add('active');
 };
+
+function initGlobalNotificationBell() {
+    // If the bell container is already present statically, do not duplicate it
+    if (document.getElementById('notification-bell-container')) return;
+
+    const themeToggleBtn = document.getElementById('theme-toggle');
+    if (!themeToggleBtn) return;
+
+    // Create bell container structure
+    const bellContainer = document.createElement('div');
+    bellContainer.className = 'nav-notification-bell';
+    bellContainer.id = 'notification-bell-container';
+    bellContainer.style.cssText = 'position: relative; display: inline-flex; align-items: center; margin-right: 15px;';
+    bellContainer.innerHTML = `
+        <button id="btn-noti-bell" class="theme-toggle-btn" aria-label="Notifications" style="font-size: 1.15rem; position: relative; background: none; border: none; cursor: pointer; padding: 4px 8px; margin-left: 0;">
+            🔔<span id="noti-badge" class="noti-badge hidden">0</span>
+        </button>
+        <div class="noti-dropdown hidden" id="noti-dropdown">
+            <div class="noti-dropdown-header">
+                <span>Thông báo</span>
+                <button id="btn-clear-noti" style="background: none; border: none; color: var(--primary); font-size: 0.75rem; cursor: pointer; font-weight: 700;">Đã đọc tất cả</button>
+            </div>
+            <div class="noti-dropdown-list" id="noti-list">
+                <div class="noti-empty">Không có thông báo mới.</div>
+            </div>
+        </div>
+    `;
+
+    // Insert before theme toggle button
+    themeToggleBtn.parentNode.insertBefore(bellContainer, themeToggleBtn);
+
+    // Setup global listeners
+    const btnNotiBell = document.getElementById('btn-noti-bell');
+    const notiDropdown = document.getElementById('noti-dropdown');
+    const notiBadge = document.getElementById('noti-badge');
+    const notiList = document.getElementById('noti-list');
+    const btnClearNoti = document.getElementById('btn-clear-noti');
+
+    if (btnNotiBell && notiDropdown) {
+        btnNotiBell.addEventListener('click', (e) => {
+            e.stopPropagation();
+            notiDropdown.classList.toggle('hidden');
+            renderGlobalNotifications();
+        });
+        document.addEventListener('click', () => {
+            notiDropdown.classList.add('hidden');
+        });
+        notiDropdown.addEventListener('click', (e) => {
+            e.stopPropagation();
+        });
+    }
+
+    if (btnClearNoti) {
+        btnClearNoti.addEventListener('click', () => {
+            const notis = getGlobalNotifications();
+            notis.forEach(n => n.unread = false);
+            saveGlobalNotifications(notis);
+            updateGlobalNotiBadge();
+            renderGlobalNotifications();
+        });
+    }
+
+    function getGlobalNotifications() {
+        const notis = localStorage.getItem('bd_notifications');
+        return notis ? JSON.parse(notis) : [];
+    }
+
+    function saveGlobalNotifications(notis) {
+        localStorage.setItem('bd_notifications', JSON.stringify(notis));
+    }
+
+    function updateGlobalNotiBadge() {
+        if (!notiBadge) return;
+        const notis = getGlobalNotifications();
+        const unreadCount = notis.filter(n => n.unread).length;
+        if (unreadCount > 0) {
+            notiBadge.textContent = unreadCount;
+            notiBadge.classList.remove('hidden');
+        } else {
+            notiBadge.classList.add('hidden');
+        }
+    }
+
+    function renderGlobalNotifications() {
+        if (!notiList) return;
+        const notis = getGlobalNotifications();
+        if (notis.length === 0) {
+            notiList.innerHTML = '<div class="noti-empty">Không có thông báo mới.</div>';
+            return;
+        }
+        notiList.innerHTML = notis.map(n => `
+            <div class="noti-item ${n.unread ? 'unread' : ''}" data-post-id="${n.postId}" data-noti-id="${n.id}">
+                <div class="noti-item-text">${n.text}</div>
+                <div class="noti-item-time">${n.time}</div>
+            </div>
+        `).join('');
+
+        notiList.querySelectorAll('.noti-item').forEach(item => {
+            item.addEventListener('click', () => {
+                const postId = item.getAttribute('data-post-id');
+                const notiId = item.getAttribute('data-noti-id');
+                
+                // Mark as read
+                const allNotis = getGlobalNotifications();
+                const current = allNotis.find(n => n.id === notiId);
+                if (current) current.unread = false;
+                saveGlobalNotifications(allNotis);
+                updateGlobalNotiBadge();
+
+                // Open post details
+                notiDropdown.classList.add('hidden');
+                
+                // Redirect/open details page
+                window.location.href = `community.html?post=${postId}`;
+            });
+        });
+    }
+
+    // Initial badge update
+    updateGlobalNotiBadge();
+}
+
