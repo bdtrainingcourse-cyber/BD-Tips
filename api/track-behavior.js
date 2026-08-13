@@ -1,4 +1,4 @@
-const { readLogs, writeLogs, readUsers, writeUsers } = require('./db-helper');
+const { readLogs, writeLogs, readUsers, writeUsers } = require('./_db-helper');
 
 module.exports = async (req, res) => {
   // Set CORS headers
