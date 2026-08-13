@@ -5448,6 +5448,8 @@ if (document.readyState === 'loading') {
 
             if (reqVal === 350) {
                 // Ebook unlock: Local activation
+                const currentCredits = parseInt(localStorage.getItem('b2b_unlocked_ebook_credits') || '0', 10);
+                localStorage.setItem('b2b_unlocked_ebook_credits', (currentCredits + 1).toString());
                 localStorage.setItem('b2b_streak_unlocked_ebook', 'true');
                 btn.style.background = 'rgba(255,255,255,0.05)';
                 btn.style.borderColor = 'var(--border-color)';
@@ -5464,7 +5466,7 @@ if (document.readyState === 'loading') {
                     });
                 } catch(e) {}
 
-                alert(`🎉 Chúc mừng! Bạn đã mở khóa đặc quyền "Tải Ebook Mới" thành công (-350 BD-Points). Từ bây giờ bạn có thể tự do tải các tài liệu thực chiến trên Thư viện mà không bị giới hạn 1 cuốn/ngày!`);
+                alert(`🎉 Chúc mừng! Bạn đã đổi thành công quyền tải 01 Ebook BD Hiệu Quả (-350 BD-Points). Bạn có thể tải ngay 01 cuốn tài liệu thực chiến trên Thư viện!`);
                 if (typeof updateUIElements === 'function') updateUIElements();
                 return;
             }
