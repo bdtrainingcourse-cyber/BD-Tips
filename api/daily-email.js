@@ -1,6 +1,74 @@
 const https = require('https');
 const { readUsers } = require('./db-helper');
 
+// Native HTTPS GET helper that mimics fetch response structure
+function httpGet(url) {
+  return new Promise((resolve, reject) => {
+    https.get(url, (res) => {
+      let data = '';
+      res.on('data', (chunk) => data += chunk);
+      res.on('end', () => {
+        resolve({
+          ok: res.statusCode >= 200 && res.statusCode < 300,
+          status: res.statusCode,
+          text: () => Promise.resolve(data),
+          json: () => {
+            try {
+              return Promise.resolve(JSON.parse(data));
+            } catch (e) {
+              return Promise.reject(e);
+            }
+          }
+        });
+      });
+    }).on('error', reject);
+  });
+}
+
+// Native HTTPS POST helper that mimics fetch response structure
+function httpPost(url, body) {
+  return new Promise((resolve, reject) => {
+    try {
+      const urlObj = new URL(url);
+      const postData = typeof body === 'string' ? body : JSON.stringify(body);
+      const options = {
+        hostname: urlObj.hostname,
+        path: urlObj.pathname + urlObj.search,
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Content-Length': Buffer.byteLength(postData)
+        }
+      };
+      
+      const req = https.request(options, (res) => {
+        let data = '';
+        res.on('data', (chunk) => data += chunk);
+        res.on('end', () => {
+          resolve({
+            ok: res.statusCode >= 200 && res.statusCode < 300,
+            status: res.statusCode,
+            text: () => Promise.resolve(data),
+            json: () => {
+              try {
+                return Promise.resolve(JSON.parse(data));
+              } catch (e) {
+                return Promise.reject(e);
+              }
+            }
+          });
+        });
+      });
+      
+      req.on('error', reject);
+      req.write(postData);
+      req.end();
+    } catch (e) {
+      reject(e);
+    }
+  });
+}
+
 // Helper to wrap message in a premium bright warm-themed HTML template
 function getHtmlTemplate(message, buttonText, buttonUrl, mascotUrl) {
   const finalMascotUrl = mascotUrl || 'https://bd-tips.vercel.app/bd_mascot.png';
@@ -145,12 +213,12 @@ module.exports = async (req, res) => {
   const days = ["Chủ Nhật", "Thứ Hai", "Thứ Ba", "Thứ Tư", "Thứ Năm", "Thứ Sáu", "Thứ Bảy"];
   const dayName = days[dayOfWeek];
 
-  // 1. Fetch weather in Vietnam (default HCMC)
+  // 1. Fetch weather in Vietnam (default HCMC) using local httpGet helper
   let temp = 28;
   let weatherDesc = "Trời dịu mát";
   let weatherCode = 0;
   try {
-    const weatherRes = await fetch("https://api.open-meteo.com/v1/forecast?latitude=10.823&longitude=106.63&current_weather=true");
+    const weatherRes = await httpGet("https://api.open-meteo.com/v1/forecast?latitude=10.823&longitude=106.63&current_weather=true");
     if (weatherRes.ok) {
       const data = await weatherRes.json();
       if (data.current_weather) {
@@ -170,7 +238,7 @@ module.exports = async (req, res) => {
   // 2. Fetch latest economic news from VnExpress Business RSS Feed
   let newsTitle = "Thị trường kinh doanh sôi động";
   try {
-    const rssRes = await fetch("https://vnexpress.net/rss/kinh-doanh.rss");
+    const rssRes = await httpGet("https://vnexpress.net/rss/kinh-doanh.rss");
     if (rssRes.ok) {
       const xml = await rssRes.text();
       const titleMatch = xml.match(/<item>[\s\S]*?<title><!\[CDATA\[([\s\S]*?)\]\]><\/title>/);
@@ -256,12 +324,8 @@ YÊU CẦU:
   "buttonUrl": "Đường dẫn tuyệt đối tương ứng với công cụ được chọn"
 }`;
 
-      const geminiRes = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          contents: [{ parts: [{ text: systemPrompt }] }]
-        })
+      const geminiRes = await httpPost(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`, {
+        contents: [{ parts: [{ text: systemPrompt }] }]
       });
 
       if (geminiRes.ok) {
@@ -347,16 +411,12 @@ YÊU CẦU:
       
       if (webhookUrl) {
         try {
-          const res = await fetch(webhookUrl, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              action: 'sendSingleEmail',
-              to: recipient.email,
-              name: recipient.name,
-              subject: subject,
-              body: personalizedBody
-            })
+          const res = await httpPost(webhookUrl, {
+            action: 'sendSingleEmail',
+            to: recipient.email,
+            name: recipient.name,
+            subject: subject,
+            body: personalizedBody
           });
           const resText = await res.text();
           triggeredWebhook = true;
@@ -382,14 +442,10 @@ YÊU CẦU:
   let fallbackResponse = '';
   if (webhookUrl && !triggeredWebhook) {
     try {
-      const response = await fetch(webhookUrl, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
-          action: 'sendDailyEmails', 
-          subject: subject, 
-          body: bodyText 
-        })
+      const response = await httpPost(webhookUrl, { 
+        action: 'sendDailyEmails', 
+        subject: subject, 
+        body: bodyText 
       });
       fallbackResponse = await response.text();
       triggeredWebhook = true;
