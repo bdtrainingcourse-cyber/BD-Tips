@@ -1,22 +1,28 @@
 // Global Theme Toggle Handler to prevent flashing on load
 (function() {
     const savedTheme = localStorage.getItem('theme');
-    if (savedTheme === 'light') {
-        document.documentElement.classList.remove('dark-theme');
-    } else {
-        // Default is dark theme
+    if (savedTheme === 'dark') {
         document.documentElement.classList.add('dark-theme');
+        const interval = setInterval(() => {
+            if (document.body) {
+                document.body.classList.add('dark-theme');
+                clearInterval(interval);
+            }
+        }, 1);
+    } else {
+        // Default is light theme
+        document.documentElement.classList.remove('dark-theme');
     }
 })();
 
 const initThemeToggle = () => {
     const savedTheme = localStorage.getItem('theme');
     
-    if (savedTheme === 'light') {
-        document.body.classList.remove('dark-theme');
-    } else {
-        // Default is dark theme
+    if (savedTheme === 'dark') {
         document.body.classList.add('dark-theme');
+    } else {
+        // Default is light theme
+        document.body.classList.remove('dark-theme');
     }
 
     const themeToggleBtn = document.getElementById('theme-toggle');
