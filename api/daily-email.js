@@ -4,13 +4,13 @@ const { readUsers } = require('./db-helper');
 // Native HTTPS GET helper that mimics fetch response structure
 function httpGet(url) {
   return new Promise((resolve, reject) => {
-    https.get(url, (res) => {
+    https.get(url, (getRes) => {
       let data = '';
-      res.on('data', (chunk) => data += chunk);
-      res.on('end', () => {
+      getRes.on('data', (chunk) => data += chunk);
+      getRes.on('end', () => {
         resolve({
-          ok: res.statusCode >= 200 && res.statusCode < 300,
-          status: res.statusCode,
+          ok: getRes.statusCode >= 200 && getRes.statusCode < 300,
+          status: getRes.statusCode,
           text: () => Promise.resolve(data),
           json: () => {
             try {
@@ -41,13 +41,13 @@ function httpPost(url, body) {
         }
       };
       
-      const req = https.request(options, (res) => {
+      const req = https.request(options, (postRes) => {
         let data = '';
-        res.on('data', (chunk) => data += chunk);
-        res.on('end', () => {
+        postRes.on('data', (chunk) => data += chunk);
+        postRes.on('end', () => {
           resolve({
-            ok: res.statusCode >= 200 && res.statusCode < 300,
-            status: res.statusCode,
+            ok: postRes.statusCode >= 200 && postRes.statusCode < 300,
+            status: postRes.statusCode,
             text: () => Promise.resolve(data),
             json: () => {
               try {
@@ -411,14 +411,14 @@ YÊU CẦU:
       
       if (webhookUrl) {
         try {
-          const res = await httpPost(webhookUrl, {
+          const emailRes = await httpPost(webhookUrl, {
             action: 'sendSingleEmail',
             to: recipient.email,
             name: recipient.name,
             subject: subject,
             body: personalizedBody
           });
-          const resText = await res.text();
+          const resText = await emailRes.text();
           triggeredWebhook = true;
           return { email: recipient.email, success: true, detail: resText };
         } catch (err) {
