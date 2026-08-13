@@ -1,5 +1,5 @@
 const https = require('https');
-const { readUsers } = require('./db-helper');
+const { readUsers } = require('./_db-helper');
 
 // Native HTTPS GET helper that mimics fetch response structure with 3s timeout
 function httpGet(url) {
