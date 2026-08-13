@@ -3792,7 +3792,19 @@ const initB2BApp = () => {
         const nextLvl = arcadeCurrentLevel + 1;
         localStorage.setItem(`b2b_arcade_level_${key}`, nextLvl.toString());
 
-        // Save total points
+        // Trigger gamification daily/weekly quests
+        if (arcadeCurrentLevel >= 6) {
+            if (window.registerUserAction) {
+                window.registerUserAction('arcade_level_clear');
+            }
+        }
+        if (arcadeCurrentLevel === 12) {
+            if (window.registerUserAction) {
+                window.registerUserAction('arcade_perfect_clear');
+            }
+        }
+
+        // Save total points (direct level award)
         const currentPoints = parseInt(localStorage.getItem('b2b_points_balance') || '0', 10);
         localStorage.setItem('b2b_points_balance', (currentPoints + pointsToAdd).toString());
         
@@ -5434,7 +5446,7 @@ if (document.readyState === 'loading') {
             const newBalance = points - reqVal;
             localStorage.setItem('b2b_points_balance', newBalance.toString());
 
-            if (reqVal === 200) {
+            if (reqVal === 350) {
                 // Ebook unlock: Local activation
                 localStorage.setItem('b2b_streak_unlocked_ebook', 'true');
                 btn.style.background = 'rgba(255,255,255,0.05)';
@@ -5452,7 +5464,7 @@ if (document.readyState === 'loading') {
                     });
                 } catch(e) {}
 
-                alert(`🎉 Chúc mừng! Bạn đã mở khóa đặc quyền "Tải Ebook Mới" thành công (-200 BD-Points). Từ bây giờ bạn có thể tự do tải các tài liệu thực chiến trên Thư viện mà không bị giới hạn 1 cuốn/ngày!`);
+                alert(`🎉 Chúc mừng! Bạn đã mở khóa đặc quyền "Tải Ebook Mới" thành công (-350 BD-Points). Từ bây giờ bạn có thể tự do tải các tài liệu thực chiến trên Thư viện mà không bị giới hạn 1 cuốn/ngày!`);
                 if (typeof updateUIElements === 'function') updateUIElements();
                 return;
             }
@@ -5861,8 +5873,8 @@ if (document.readyState === 'loading') {
         }
 
         if (hudNextGiftLbl && hudNextGiftBar) {
-            const rewards = [200, 600, 1200, 1800, 3000];
-            let nextThreshold = 200;
+            const rewards = [350, 500, 950, 2200, 3800, 6500];
+            let nextThreshold = 350;
             let prevThreshold = 0;
             for (let r of rewards) {
                 if (points < r) {
@@ -5870,10 +5882,10 @@ if (document.readyState === 'loading') {
                     break;
                 }
                 prevThreshold = r;
-                nextThreshold = 3000;
+                nextThreshold = 6500;
             }
 
-            if (points >= 3000) {
+            if (points >= 6500) {
                 hudNextGiftLbl.textContent = 'Đã đạt mốc tối đa! 🎉';
                 hudNextGiftBar.style.width = '100%';
             } else {
@@ -5891,10 +5903,10 @@ if (document.readyState === 'loading') {
     function updateRewardShopUI(points) {
         const claimBtns = document.querySelectorAll('.btn-claim');
         claimBtns.forEach(btn => {
-            const reqVal = parseInt(btn.getAttribute('data-requirement') || '200', 10);
+            const reqVal = parseInt(btn.getAttribute('data-requirement') || '350', 10);
             const reward = btn.getAttribute('data-reward');
 
-            if (reqVal === 200 && localStorage.getItem('b2b_streak_unlocked_ebook') === 'true') {
+            if (reqVal === 350 && localStorage.getItem('b2b_streak_unlocked_ebook') === 'true') {
                 btn.style.background = 'rgba(255,255,255,0.05)';
                 btn.style.borderColor = 'var(--border-color)';
                 btn.style.color = '#34d399';
