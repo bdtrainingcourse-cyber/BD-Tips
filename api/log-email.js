@@ -239,6 +239,7 @@ module.exports = async (req, res) => {
       users[cleanEmail].lastIp = clientIp;
       writeUsers(users);
     }
+    return res.status(200).json({ success: true, message: 'Points updated locally' });
   } else if (action === 'checkEmail') {
     // If the user exists in our local simulated database, return it immediately to avoid sheets delay/failures!
     if (users[cleanEmail]) {
