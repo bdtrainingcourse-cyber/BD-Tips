@@ -855,15 +855,58 @@ function initEmailRegistrations() {
     );
 }
 
+async function checkEmailVerification() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const verifyEmail = urlParams.get('verify_email');
+    if (verifyEmail) {
+        try {
+            const res = await fetch(`/api/log-email?action=verifyUser&email=${encodeURIComponent(verifyEmail)}`);
+            const data = await res.json();
+            if (data.success) {
+                // Update local storage
+                localStorage.setItem('streak_active', 'true');
+                localStorage.setItem('streak_email', verifyEmail);
+                localStorage.setItem('b2b_points_balance', data.points.toString());
+                
+                // Show notification modal
+                window.showGlobalNotification(
+                    '🎉 Xác Thực Thành Công!',
+                    `Cảm ơn bạn đã xác nhận tham gia! Email <strong>${verifyEmail}</strong> của bạn đã được kích hoạt chính thức.<br><br>Cú BeeDee vừa cộng thêm <strong>15đ ⚡</strong> vào tài khoản tích lũy của bạn.`
+                );
+                
+                // Trigger points toast
+                if (window.showPointToast) {
+                    window.showPointToast(15, "Xác thực Email thành công!");
+                }
+                
+                // Update HUD
+                if (window.updateNavbarUserHUD) {
+                    window.updateNavbarUserHUD();
+                }
+            }
+        } catch (e) {
+            console.error('Lỗi xác thực email:', e);
+        } finally {
+            // Remove verify_email query param from URL without reloading
+            urlParams.delete('verify_email');
+            const newQuery = urlParams.toString();
+            const newUrl = window.location.pathname + (newQuery ? '?' + newQuery : '') + window.location.hash;
+            window.history.replaceState(null, null, newUrl);
+        }
+    }
+}
+
 // Bind to window load / DOMContentLoaded
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', () => {
         initEmailRegistrations();
         initGlobalComponents();
+        checkEmailVerification();
     });
 } else {
     initEmailRegistrations();
     initGlobalComponents();
+    checkEmailVerification();
 }
 
 // Global behaviors, UI modals injection, and tracking helpers definition
