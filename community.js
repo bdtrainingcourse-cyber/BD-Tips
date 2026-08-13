@@ -1079,4 +1079,14 @@ document.addEventListener('DOMContentLoaded', () => {
     checkNewPostsNotifications();
     updateNotiBadge();
     renderPosts();
+
+    // Auto-open post detail if post query parameter is present in URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const postParam = urlParams.get('post');
+    if (postParam) {
+        // Wait a small delay to make sure the posts list is rendered in the DOM
+        setTimeout(() => {
+            showPostDetails(postParam);
+        }, 150);
+    }
 });
