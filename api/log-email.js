@@ -181,7 +181,47 @@ module.exports = async (req, res) => {
   const users = readUsers();
   
   // Track/update user profile locally for any incoming lead or sync request
-  if (action === 'syncUser') {
+  if (action === 'verifyUser') {
+    if (users[cleanEmail]) {
+      if (!users[cleanEmail].verified) {
+        users[cleanEmail].verified = true;
+        users[cleanEmail].points = (users[cleanEmail].points || 0) + 15;
+      }
+      users[cleanEmail].lastActive = timestamp;
+      users[cleanEmail].lastIp = clientIp;
+      writeUsers(users);
+    } else {
+      users[cleanEmail] = {
+        email: cleanEmail,
+        name: name || 'Học viên',
+        points: 40, // 25 register + 15 verify
+        verified: true,
+        lastIp: clientIp,
+        lastActive: timestamp
+      };
+      writeUsers(users);
+    }
+
+    // Forward verification to Google Sheets webhook
+    const webhookUrl = process.env.GOOGLE_SHEET_LEADS_WEBHOOK;
+    if (webhookUrl) {
+      try {
+        await httpPost(webhookUrl, {
+          action: 'verifyUser',
+          email: cleanEmail,
+          points: users[cleanEmail].points
+        });
+      } catch (err) {
+        console.error(`[SHEETS_SYNC_ERROR] Verify user forward failed:`, err.message);
+      }
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: 'Email verified successfully',
+      points: users[cleanEmail].points
+    });
+  } else if (action === 'syncUser') {
     users[cleanEmail] = {
       email: cleanEmail,
       name: name || (users[cleanEmail] ? users[cleanEmail].name : 'Học viên'),
