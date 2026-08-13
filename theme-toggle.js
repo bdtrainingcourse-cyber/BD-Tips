@@ -222,16 +222,18 @@ const QUEST_CONFIG = {
     check_in: { points: 5, limit: 1, name: '☕ Cú Đêm Dậy Sớm Làm BD', period: 'daily' },
     game_complete: { points: 10, limit: 2, name: '🎮 Cãi Khách Hàng Để Chốt Deal', period: 'daily' },
     perfect_game: { points: 5, limit: 2, name: '⭐ Chốt Deal Xuất Sắc (Game 5/5)', period: 'daily' },
-    pic_search: { points: 3, limit: 3, name: '🎤 Luyện Thuyết Trình & Pitching AI', period: 'daily' },
-    ai_email: { points: 3, limit: 3, name: '✍️ Viết Thư Tình Cho Doanh Nghiệp', period: 'daily' },
+    pic_search: { points: 5, limit: 3, name: '🎤 Luyện Thuyết Trình & Pitching AI', period: 'daily' },
+    ai_email: { points: 5, limit: 3, name: '✍️ Viết Thư Tình Cho Doanh Nghiệp', period: 'daily' },
     share_click: { points: 5, limit: 2, name: '📢 Rủ Đồng Bọn Cùng Xuống Hố', period: 'daily' },
+    arcade_level_clear: { points: 15, limit: 2, name: '⚔️ Vượt Ải B2B Arcade Cấp 6+', period: 'daily' },
 
     // Weekly Quests
     labor_read: { points: 15, limit: 2, name: '⚖️ Đọc Luật Tránh Bị Bóc Lột', period: 'weekly' },
     salary_calc: { points: 15, limit: 2, name: '💸 Định Giá Bản Thân - Đòi Hoa Hồng', period: 'weekly' },
     library_read: { points: 15, limit: 3, name: '📖 Mọt Sách Thực Chiến Quyết Chí Giàu Sang', period: 'weekly' },
     forum_post: { points: 20, limit: 1, name: '💬 Đóng Góp Bí Kíp Tán Khách Hàng', period: 'weekly' },
-    forum_comment: { points: 10, limit: 3, name: '💬 Chém Gió Có Khoa Học', period: 'weekly' }
+    forum_comment: { points: 10, limit: 3, name: '💬 Chém Gió Có Khoa Học', period: 'weekly' },
+    arcade_perfect_clear: { points: 25, limit: 1, name: '👑 Phá Đảo Cấp 12 B2B Arcade', period: 'weekly' }
 };
 
 const CAMPAIGNS_CONFIG = {
@@ -264,6 +266,16 @@ const CAMPAIGNS_CONFIG = {
         requirements: {
             library_read: 3,
             forum_post: 1
+        }
+    },
+    campaign_arcade_master: {
+        id: 'campaign_arcade_master',
+        title: 'Chiến Binh B2B Arcade Vô Song ⚔️',
+        desc: 'Vượt qua các ải sương mù, ô chữ B2B và phân deal Sudoku để tích lũy points.',
+        bonus: 60,
+        requirements: {
+            arcade_level_clear: 5,
+            perfect_game: 2
         }
     }
 };
