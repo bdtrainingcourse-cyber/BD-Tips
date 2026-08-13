@@ -1,4 +1,6 @@
 // Serverless function to save user lead email to Google Sheets webhook and handle sync actions
+const https = require('https');
+const dns = require('dns').promises;
 const { readUsers, writeUsers } = require('./db-helper');
 
 const disposableDomains = [
@@ -8,13 +10,140 @@ const disposableDomains = [
   'mailnesia.com', 'mailcatch.com', 'yopmail.fr', 'yopmail.net', 
   'cool.fr.nf', 'jetable.fr.nf', 'nospam.ze.tc', 'nomail.xl.cx', 
   'mega.zik.dj', 'speed.1s.fr', 'courriel.fr.nf', 'moncourrier.fr.nf', 
-  'monemail.fr.nf', 'monmail.fr.nf'
+  'monemail.fr.nf', 'monmail.fr.nf', 'tempmail.net', 'tempmail.live',
+  'generator.email', 'discard.email', 'tuta.io', 'tutamail.com'
 ];
 
-function isSpamEmail(email) {
-  if (!email || !email.includes('@')) return true;
-  const domain = email.split('@')[1].toLowerCase().trim();
-  return disposableDomains.includes(domain);
+const TYPO_MAP = {
+  'gamil.com': 'gmail.com',
+  'gmial.com': 'gmail.com',
+  'gamel.com': 'gmail.com',
+  'gml.com': 'gmail.com',
+  'yaho.com': 'yahoo.com',
+  'yahu.com': 'yahoo.com',
+  'hotamil.com': 'hotmail.com',
+  'hotmial.com': 'hotmail.com',
+  'outlok.com': 'outlook.com',
+  'outloock.com': 'outlook.com',
+  'iclod.com': 'icloud.com'
+};
+
+async function validateEmail(email) {
+  if (!email || !email.includes('@')) {
+    return { valid: false, error: 'Email không hợp lệ!' };
+  }
+  
+  const cleanEmail = email.toLowerCase().trim();
+  const parts = cleanEmail.split('@');
+  if (parts.length !== 2) {
+    return { valid: false, error: 'Email không hợp lệ!' };
+  }
+  
+  const domain = parts[1];
+  
+  // 1. Typo suggestion
+  if (TYPO_MAP[domain]) {
+    return { 
+      valid: false, 
+      error: `Hình như bạn gõ nhầm email? Có phải ý bạn là: ${parts[0]}@${TYPO_MAP[domain]}?` 
+    };
+  }
+  
+  // 2. Disposable check
+  if (disposableDomains.includes(domain)) {
+    return { 
+      valid: false, 
+      error: 'Vui lòng sử dụng email cá nhân hoặc công việc thật (tránh dùng email rác/tạm thời như yopmail, mailinator...) để Cú BeeDee gửi nhắc nhở nhé!' 
+    };
+  }
+  
+  // 3. MX Record check for non-common domains
+  const commonDomains = ['gmail.com', 'yahoo.com', 'hotmail.com', 'outlook.com', 'icloud.com', 'aol.com', 'zoho.com', 'protonmail.com', 'mail.com'];
+  if (!commonDomains.includes(domain)) {
+    try {
+      const mxRecords = await dns.resolveMx(domain);
+      if (!mxRecords || mxRecords.length === 0) {
+        return { 
+          valid: false, 
+          error: 'Tên miền email này không tồn tại hoặc không thể nhận thư. Vui lòng nhập email thật!' 
+        };
+      }
+    } catch (e) {
+      return { 
+        valid: false, 
+        error: 'Tên miền email này không tồn tại hoặc không thể nhận thư. Vui lòng nhập email thật!' 
+      };
+    }
+  }
+  
+  return { valid: true };
+}
+
+// Native HTTPS POST helper with 3s timeout
+function httpPost(url, body) {
+  return new Promise((resolve) => {
+    try {
+      const urlObj = new URL(url);
+      const postData = typeof body === 'string' ? body : JSON.stringify(body);
+      const options = {
+        hostname: urlObj.hostname,
+        path: urlObj.pathname + urlObj.search,
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Content-Length': Buffer.byteLength(postData)
+        }
+      };
+      
+      const req = https.request(options, (postRes) => {
+        let data = '';
+        postRes.on('data', (chunk) => data += chunk);
+        postRes.on('end', () => {
+          resolve({
+            ok: postRes.statusCode >= 200 && postRes.statusCode < 300,
+            status: postRes.statusCode,
+            text: () => Promise.resolve(data),
+            json: () => {
+              try {
+                return Promise.resolve(JSON.parse(data));
+              } catch (e) {
+                return Promise.reject(e);
+              }
+            }
+          });
+        });
+      });
+      
+      req.setTimeout(3000, () => {
+        req.destroy();
+        resolve({
+          ok: false,
+          status: 408,
+          text: () => Promise.resolve('Timeout'),
+          json: () => Promise.resolve({})
+        });
+      });
+
+      req.on('error', (err) => {
+        resolve({
+          ok: false,
+          status: 500,
+          text: () => Promise.resolve(err.message),
+          json: () => Promise.resolve({})
+        });
+      });
+
+      req.write(postData);
+      req.end();
+    } catch (e) {
+      resolve({
+        ok: false,
+        status: 500,
+        text: () => Promise.resolve(e.message),
+        json: () => Promise.resolve({})
+      });
+    }
+  });
 }
 
 module.exports = async (req, res) => {
@@ -35,12 +164,13 @@ module.exports = async (req, res) => {
   const { action, email, tool, name, phone, company, experience, ebookTitle, downloadLink, points } = params;
   
   if (!email || !email.includes('@')) {
-    return res.status(400).json({ error: 'Invalid email address' });
+    return res.status(400).json({ error: 'Email không hợp lệ!' });
   }
 
-  // Prevent spam emails
-  if (isSpamEmail(email)) {
-    return res.status(400).json({ error: 'We do not accept disposable or spam emails. Please provide a valid email.' });
+  // Verify email authenticity & block spammers
+  const validation = await validateEmail(email);
+  if (!validation.valid) {
+    return res.status(400).json({ error: validation.error });
   }
 
   const timestamp = new Date().toISOString();
@@ -145,11 +275,7 @@ module.exports = async (req, res) => {
           };
     }
 
-    const response = await fetch(webhookUrl, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload)
-    });
+    const response = await httpPost(webhookUrl, payload);
     
     // Parse Google Sheets webhook response
     const resText = await response.text();
