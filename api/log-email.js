@@ -208,8 +208,11 @@ module.exports = async (req, res) => {
       try {
         await httpPost(webhookUrl, {
           action: 'verifyUser',
+          name: users[cleanEmail].name || 'Học viên',
           email: cleanEmail,
-          points: users[cleanEmail].points
+          tool: 'email-verification',
+          points: users[cleanEmail].points,
+          date: timestamp
         });
       } catch (err) {
         console.error(`[SHEETS_SYNC_ERROR] Verify user forward failed:`, err.message);
@@ -294,8 +297,17 @@ module.exports = async (req, res) => {
   try {
     // Forward to Google Sheets Webhook
     let payload = {};
-    if (action === 'checkEmail' || action === 'syncUser') {
+    if (action === 'checkEmail') {
       payload = { action, email };
+    } else if (action === 'syncUser') {
+      payload = {
+        action: 'syncUser',
+        name: name || (users[cleanEmail] ? users[cleanEmail].name : 'Học viên'),
+        email,
+        tool: 'daily-reminder',
+        points: points !== undefined ? points : 25,
+        date: timestamp
+      };
     } else if (action === 'updatePoints') {
       payload = { action, email, points };
     } else {
