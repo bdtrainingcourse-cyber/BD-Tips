@@ -741,6 +741,13 @@ function handleEmailReminderRegistration(nameInputId, emailInputId, submitBtnId,
             const checkRes = await fetch(checkUrl);
             const checkData = await checkRes.json();
 
+            if (checkRes.status === 400 || checkData.error) {
+                alert(checkData.error || 'Email không hợp lệ!');
+                submitBtn.disabled = false;
+                submitBtn.textContent = originalText;
+                return;
+            }
+
             if (checkData.exists && checkData.user) {
                 const user = checkData.user;
                 
@@ -768,14 +775,7 @@ function handleEmailReminderRegistration(nameInputId, emailInputId, submitBtnId,
                 submitBtn.textContent = originalText;
                 return;
             } else {
-                // New user: grant 25 points and register
-                const startPoints = 25;
-                localStorage.setItem('streak_active', 'true');
-                localStorage.setItem('streak_name', name);
-                localStorage.setItem('streak_email', email);
-                localStorage.setItem('b2b_points_balance', startPoints.toString());
-                
-                // Sync user to sheets
+                // Sync user to sheets first to ensure it's not a spam request
                 const syncRes = await fetch('/api/log-email', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -783,10 +783,25 @@ function handleEmailReminderRegistration(nameInputId, emailInputId, submitBtnId,
                         action: 'syncUser',
                         name: name,
                         email: email,
-                        points: startPoints
+                        points: 25
                     })
                 });
 
+                const syncData = await syncRes.json();
+                if (syncRes.status === 400 || syncData.error) {
+                    alert(syncData.error || 'Đăng ký thất bại!');
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = originalText;
+                    return;
+                }
+
+                // New user: grant 25 points and register locally after successful backend verification
+                const startPoints = 25;
+                localStorage.setItem('streak_active', 'true');
+                localStorage.setItem('streak_name', name);
+                localStorage.setItem('streak_email', email);
+                localStorage.setItem('b2b_points_balance', startPoints.toString());
+                
                 // Clear inputs
                 nameInput.value = '';
                 emailInput.value = '';
