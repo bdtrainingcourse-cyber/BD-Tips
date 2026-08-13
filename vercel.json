@@ -10,6 +10,5 @@
       "path": "/api/daily-email",
       "schedule": "0 11 * * 5"
     }
-  ],
-  "updated_at": "2026-08-13T15:02:00Z"
+  ]
 }
