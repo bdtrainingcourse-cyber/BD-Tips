@@ -1,6 +1,11 @@
 {
   "version": 2,
   "cleanUrls": true,
+  "build": {
+    "env": {
+      "PUPPETEER_SKIP_CHROMIUM_DOWNLOAD": "true"
+    }
+  },
   "crons": [
     {
       "path": "/api/daily-email",
