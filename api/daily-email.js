@@ -1,39 +1,6 @@
 const https = require('https');
 const { readUsers } = require('./db-helper');
 
-/**
- * =========================================================================
- * B2B PORTAL - HƯỚNG DẪN CẤU HÌNH GỬI EMAIL SỐ LƯỢNG LỚN (ANTI-SPAM & REPUTATION)
- * =========================================================================
- * Khi số lượng người dùng đăng ký tăng lên hàng nghìn, việc gửi email đồng loạt 
- * rất dễ bị hệ thống lọc thư rác (như Gmail, Outlook) đánh dấu là Spam/Spammer.
- * 
- * Để bảo vệ tên miền và đảm bảo tỷ lệ vào Inbox đạt 99%, cần tuân thủ các quy tắc sau:
- * 
- * 1. Cấu hình DNS Đầy Đủ (Domain Authentication):
- *    - SPF (Sender Policy Framework): Khai báo các máy chủ được phép gửi email thay mặt tên miền.
- *      Ví dụ: v=spf1 include:sendgrid.net ~all
- *    - DKIM (DomainKeys Identified Mail): Ký chữ ký số mật mã vào tiêu đề email để chứng minh thư 
- *      không bị thay đổi trên đường truyền.
- *    - DMARC (Domain-based Message Authentication): Thiết lập quy tắc xử lý khi SPF hoặc DKIM thất bại.
- *      Ví dụ: v=DMARC1; p=quarantine; pct=100; rua=mailto:dmarc-reports@yourdomain.com
- * 
- * 2. Sử dụng Máy chủ gửi Email Uy Tín (Email Service Provider - ESP):
- *    - Không tự gửi email trực tiếp từ server Node.js thông qua SMTP mặc định.
- *    - Hãy tích hợp các ESP chuyên dụng như SendGrid, Mailgun, Amazon SES hoặc Postmark.
- *    - Khi bắt đầu, sử dụng dải IP "ấm" (Warm-up IP) tăng dần số lượng email gửi đi mỗi ngày.
- * 
- * 3. Kỹ Thuật Chia Mẻ và Giãn Cách Tần Suất Gửi (Batching & Throttling):
- *    - Thay vì gửi hàng nghìn request đồng thời làm nghẽn API/Connection, ta chia danh sách 
- *      người nhận thành các lô nhỏ (Ví dụ: 50 email mỗi đợt - BATCH_SIZE = 50).
- *    - Giữa các đợt, chèn một khoảng trễ (Ví dụ: 2 giây - DELAY = 2000ms) để hệ thống giãn cách.
- * 
- * 4. Tối Ưu Nội Dung & Tương Tác:
- *    - Thêm link "Hủy đăng ký" (Unsubscribe) rõ ràng ở chân trang.
- *    - Cá nhân hóa nội dung: sử dụng đúng tên, nickname của từng học viên để tránh gửi 1 template giống hệt nhau.
- * =========================================================================
- */
-
 // Helper to wrap message in a premium bright warm-themed HTML template
 function getHtmlTemplate(message, buttonText, buttonUrl, mascotUrl) {
   const finalMascotUrl = mascotUrl || 'https://bd-tips.vercel.app/bd_mascot.png';
@@ -141,76 +108,6 @@ function getHtmlTemplate(message, buttonText, buttonUrl, mascotUrl) {
 </html>`;
 }
 
-// Customized templates with real-time contexts (weather, BD struggles, hot trends)
-// and mapping to specific website features.
-const emailTemplates = [
-  {
-    subject: "Nắng 40 độ nhưng Pipeline của bạn vẫn đóng băng? ❄️",
-    message: "Chào Chiến thần B2B!<br><br>Hôm nay ngoài trời nắng nóng đỉnh điểm, dắt xe ra đường là mồ hôi đầm đìa. Nhưng nóng nhất lúc này chắc chắn là tin nhắn của sếp dí hỏi: <i>\"Hôm nay đã chuẩn bị xong kịch bản Pitching giải pháp cho đối tác Enterprise chưa em?\"</i>.<br><br>Đừng để nhiệt độ văn phòng tăng thêm vì sếp gầm rú! Hãy bật điều hòa lên, uống một ngụm trà sữa mát lạnh và dùng ngay công cụ <b>Thuyết Trình & Pitching AI</b> của chúng tôi để tạo nhanh dàn ý và kịch bản pitching thuyết phục chỉ trong 5 giây. Đảm bảo sếp gật đầu cái rụp!<br><br>Chuẩn bị xong, đừng quên click qua mục <b>B2B Challenge</b> giải trắc nghiệm thực chiến để duy trì chuỗi Streak rèn luyện nhé!",
-    buttonText: "🎤 Pitching & Thuyết Trình AI Ngay",
-    buttonUrl: "https://bd-tips.vercel.app/pitching.html",
-    mascot: "https://bd-tips.vercel.app/mascot_hot.jpg"
-  },
-  {
-    subject: "Mưa rơi ướt áo, đừng để cold email bị ghost! 🌧️",
-    message: "Chào Chiến thần B2B!<br><br>Trời đang đổ mưa giông ngoài cửa sổ, ngồi ngắm mưa ngẫm sự đời thì lãng mạn đấy, nhưng ngắm hòm thư gửi đi trống trơn không một lời hồi âm từ khách hàng thì chỉ thấy lòng giông bão. Sao email chào hàng Enterprise gửi đi cứ như muối bỏ bể vậy ta?<br><br>Thay vì ngồi \"suy\" một mình, hãy để trợ lý trí tuệ nhân tạo <b>AI Cold Email Assistant</b> viết hộ bạn những bản nháp email chào hàng cực sắc bén, đánh trúng trực tiếp nỗi đau của đối tác Enterprise. Soạn nhanh gấp 10 lần, nâng tỷ lệ mở thư và phản hồi vượt trội!<br><br>Soạn xong email, hãy click qua mục <b>Tính Lương & Hoa Hồng</b> để quy đổi thu nhập tháng này xem chốt deal xong có được tăng thưởng không nhé!",
-    buttonText: "✍️ Soạn Cold Email Bằng AI",
-    buttonUrl: "https://bd-tips.vercel.app/email-assistant.html",
-    mascot: "https://bd-tips.vercel.app/mascot_rain.jpg"
-  },
-  {
-    subject: "Sếp đang 'flex' KPI, bạn đã sẵn sàng 'chữa lành' chưa? 🦉",
-    message: "Chào Chiến thần B2B!<br><br>Trong khi mạng xã hội rầm rộ trào lưu \"flexing\" thành tựu, sếp bạn cũng vừa nhẹ nhàng flex bảng KPI đỏ lòm của tháng này kèm lời nhắn nhủ đầy áp lực. Bạn định lên kế hoạch đi Đà Lạt để \"chữa lành\" tâm hồn sao? Không đâu, thứ duy nhất chữa lành ví tiền lúc này là kỹ năng chốt deal thực chiến!<br><br>Hãy vào ngay <b>B2B Challenge (Minigame)</b> để rèn luyện 3 phút với các tình huống xử lý từ chối hóc búa nhất. Vừa chơi game giải trí, vừa tích điểm đổi quà, lại có thêm kịch bản sắc bén để đối phó với khách hàng.<br><br>Rèn luyện xong, hãy ghé qua <b>Thư viện BD</b> để hấp thụ các chia sẻ thực tế từ anh Peter Vo nhé!",
-    buttonText: "🎮 Chơi Game Thực Chiến Ngay",
-    buttonUrl: "https://bd-tips.vercel.app/#minigame-section",
-    mascot: "https://bd-tips.vercel.app/mascot_challenge.jpg"
-  },
-  {
-    subject: "Thợ săn tiền thưởng quyết không để 'quỵt' hoa hồng! 💸",
-    message: "Chào Chiến thần B2B!<br><br>Làm BD vất vả ngày đêm, đi tiếp khách uống cạn ly, đàm phán trầy da tróc vảy chốt hợp đồng. Nhưng đến cuối tháng bảng tính lương gửi về lại mập mờ, hoa hồng bị tính hụt làm bạn muốn hướng nội luôn?<br><br>Đừng im lặng chịu thiệt! Hãy sử dụng ngay công cụ <b>Tính Lương Gross-Net & Tra Cứu Luật Lao Động</b> để quy đổi chuẩn xác và tra cứu nhanh 15 tình huống tranh chấp thực tế (như nợ commission, ép doanh số thử việc...). Ngôn từ sắc bén của luật sẽ bảo vệ thành quả lao động của bạn!<br><br>Sau khi tính toán xong, hãy ghé qua <b>Diễn đàn Cộng đồng</b> để cùng thảo luận chia sẻ kinh nghiệm nhé!",
-    buttonText: "🧮 Tính Lương & Tra Luật Ngay",
-    buttonUrl: "https://bd-tips.vercel.app/salary.html",
-    mascot: "https://bd-tips.vercel.app/mascot_law.jpg"
-  },
-  {
-    subject: "Khi khách hàng bỗng hóa thành 'hư vô'... 👻",
-    message: "Chào Chiến thần B2B!<br><br>Khách hàng hứa hẹn \"thứ Hai anh ký hợp đồng\", nhưng giờ đã là thứ Sáu và họ bỗng hóa thành \"hư vô\", nhắn tin không rep, gọi điện thuê bao. Cảm giác này còn đau đớn hơn cả bị người yêu cũ block đúng không?<br><br>Đừng nản lòng! Hãy truy cập mục <b>Thư Viện BD B2B</b> để xem các bài viết hướng dẫn độc quyền từ anh Peter Vo về cách \"kéo xác\" các lead đã nguội lạnh, cách bám đuổi (follow-up) khách hàng tinh tế mà hiệu quả.<br><br>Tìm hiểu xong, hãy rèn luyện nhanh một câu hỏi trong <b>B2B Challenge</b> để giữ vững chuỗi Streak nhận trà sữa miễn phí mốc 7 ngày của bạn nào!",
-    buttonText: "📚 Đọc Case-Study Thực Chiến",
-    buttonUrl: "https://bd-tips.vercel.app/library.html",
-    mascot: "https://bd-tips.vercel.app/mascot_ghost.jpg"
-  },
-  {
-    subject: "Một ly trà sữa chiều hay một topic thảo luận BD chất lượng? 🧋",
-    message: "Chào Chiến thần B2B!<br><br>Tầm này chiều rồi, bụng cồn cào và não bộ đang phát đi tín hiệu khẩn cấp: <i>\"Cần gấp một ly trà sữa full topping để nạp năng lượng!\"</i>. Nhưng trong lúc chờ shipper giao tới, tại sao không nâng tầm tư duy chốt deal của mình?<br><br>Ghé ngay <b>Diễn đàn Cộng đồng B2B BD Tips</b> để kết nối, thảo luận các chủ đề nóng hổi về nghề BD, cách đàm phán hợp đồng hoặc chia sẻ câu chuyện dở khóc dở cười hàng ngày. Giao lưu học hỏi từ những người đi trước là lối tắt dẫn đến thành công!<br><br>Đồng thời, trọn bộ công cụ hỗ trợ như <b>AI Cold Email Assistant</b> và <b>Pitching AI</b> vẫn luôn sẵn sàng phục vụ bạn!",
-    buttonText: "💬 Tham Gia Thảo Luận Cộng Đồng",
-    buttonUrl: "https://bd-tips.vercel.app/community.html",
-    mascot: "https://bd-tips.vercel.app/mascot_milktea.jpg"
-  },
-  {
-    subject: "Thời tiết giông bão, nhưng Pipeline phải luôn rực rỡ! ⛈️",
-    message: "Chào Chiến thần B2B!<br><br>Ngoài trời mây đen kéo lối, giông bão sắp đổ bộ. Nhưng giông bão thời tiết không đáng sợ bằng \"giông bão\" trong pipeline của bạn khi không có bất kỳ deal mới nào trong phễu.<br><br>Hãy biến ngày mưa bão thành ngày bùng nổ doanh số! Hệ sinh thái hỗ trợ BD của chúng tôi đã online đầy đủ: Luyện tập đối thoại thực chiến cùng <b>Pitching AI</b>, soạn email tự động bằng <b>AI Cold Email Assistant</b>, kiểm tra hợp đồng bằng <b>Luật Lao Động</b> và trau dồi bài học tại <b>Thư Viện</b>.<br><br>Hãy làm một thử thách game hôm nay để giữ chuỗi ngày Streak nhận buổi ăn trưa tri ân cùng anh Peter Vo nào!",
-    buttonText: "🌐 Khám Phá Hệ Sinh Thái BD",
-    buttonUrl: "https://bd-tips.vercel.app/quests.html",
-    mascot: "https://bd-tips.vercel.app/mascot_storm.jpg"
-  }
-];
-
-const fridayMorningTemplate = {
-  subject: "Thứ 6 rồi! Cùng share chuyện vui lên cộng đồng nào! 🧋✨",
-  message: "Chào Chiến thần B2B!<br><br>Cuối cùng thì ngày thứ 6 mong đợi cũng đã tới! Một tuần làm việc bận rộn sắp qua đi. Hãy bắt đầu ngày làm việc cuối tuần bằng một nguồn năng lượng tích cực nhất nhé.<br><br>Hôm nay, sếp có dí KPI hay khách hàng có ghost thì cũng đừng lo! Hãy ghé ngay <b>Diễn đàn Cộng đồng</b> để chia sẻ những mẫu chuyện vui, những tình huống hài hước hoặc những meme thú vị mà bạn gặp phải trong tuần qua. Chia sẻ niềm vui sẽ nhân đôi niềm vui!<br><br>Đặc biệt, chiều nay lúc 6h00 sẽ có một món quà email cực kỳ hài hước để bạn giải tỏa mọi stress trước khi nghỉ cuối tuần đấy. Hóng nhé!",
-  buttonText: "💬 Chia Sẻ Chuyện Vui Ngay",
-  buttonUrl: "https://bd-tips.vercel.app/community.html",
-  mascot: "https://bd-tips.vercel.app/mascot_milktea.jpg"
-};
-
-const fridayEveningTemplate = {
-  subject: "Cuối tuần rồi! Xả stress cực mạnh cùng Cú BeeDee thôi! 🦉🎉",
-  message: "Chào Chiến thần B2B!<br><br>Keng keng keng! 6h00 chiều thứ Sáu đã điểm, giờ G đã tới! Hãy đóng laptop lại, cất hết deadline sang một bên và chuẩn bị tận hưởng kỳ nghỉ cuối tuần trọn vẹn nào.<br><br>Để giúp bạn xả stress cực mạnh sau một tuần 'săn lead' mệt mỏi, Cú BeeDee đã chuẩn bị sẵn một câu chuyện cười thực chiến BD cực kỳ 'mặn mòi' tại <b>Thư viện BD</b>. Hãy đọc để giải trí và nạp lại năng lượng nhé!<br><br>Chúc bạn có hai ngày cuối tuần ngập tràn niềm vui, không deadline, không check mail và sẵn sàng bung xõa!",
-  buttonText: "🤪 Đọc Chuyện Cười BD & Relax",
-  buttonUrl: "https://bd-tips.vercel.app/library.html",
-  mascot: "https://bd-tips.vercel.app/mascot_relax.jpg"
-};
-
 module.exports = async (req, res) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
@@ -235,10 +132,7 @@ module.exports = async (req, res) => {
   const oneDay = 1000 * 60 * 60 * 24;
   const dayOfYear = Math.floor(diff / oneDay);
   
-  // Decide which template to use based on day of week and hour
-  let template;
-  let isWeekend = (dayOfWeek === 0 || dayOfWeek === 6);
-
+  const isWeekend = (dayOfWeek === 0 || dayOfWeek === 6);
   if (isWeekend && !req.query.force) {
     return res.status(200).json({
       success: true,
@@ -247,17 +141,171 @@ module.exports = async (req, res) => {
   }
 
   const hour = now.getUTCHours();    // 0 to 23
-  if (dayOfWeek === 5) {
-    // Friday
+  const isFriday = (dayOfWeek === 5);
+  const days = ["Chủ Nhật", "Thứ Hai", "Thứ Ba", "Thứ Tư", "Thứ Năm", "Thứ Sáu", "Thứ Bảy"];
+  const dayName = days[dayOfWeek];
+
+  // 1. Fetch weather in Vietnam (default HCMC)
+  let temp = 28;
+  let weatherDesc = "Trời dịu mát";
+  let weatherCode = 0;
+  try {
+    const weatherRes = await fetch("https://api.open-meteo.com/v1/forecast?latitude=10.823&longitude=106.63&current_weather=true");
+    if (weatherRes.ok) {
+      const data = await weatherRes.json();
+      if (data.current_weather) {
+        temp = Math.round(data.current_weather.temperature);
+        weatherCode = data.current_weather.weathercode;
+        if (weatherCode === 0) weatherDesc = "Trời quang nắng ráo";
+        else if ([1, 2, 3].includes(weatherCode)) weatherDesc = "Trời dịu mát nhiều mây";
+        else if ([45, 48].includes(weatherCode)) weatherDesc = "Có sương mù";
+        else if ([51, 53, 55, 61, 63, 65, 80, 81, 82].includes(weatherCode)) weatherDesc = "Trời mưa ẩm ướt";
+        else if ([95, 96, 99].includes(weatherCode)) weatherDesc = "Có giông bão sấm sét";
+      }
+    }
+  } catch (e) {
+    console.error("Failed to fetch weather:", e.message);
+  }
+
+  // 2. Fetch latest economic news from VnExpress Business RSS Feed
+  let newsTitle = "Thị trường kinh doanh sôi động";
+  try {
+    const rssRes = await fetch("https://vnexpress.net/rss/kinh-doanh.rss");
+    if (rssRes.ok) {
+      const xml = await rssRes.text();
+      const titleMatch = xml.match(/<item>[\s\S]*?<title><!\[CDATA\[([\s\S]*?)\]\]><\/title>/);
+      if (titleMatch && titleMatch[1]) {
+        newsTitle = titleMatch[1].trim();
+      }
+    }
+  } catch (e) {
+    console.error("Failed to fetch news RSS:", e.message);
+  }
+
+  // 3. Match Mascot based on context
+  let selectedMascot = "https://bd-tips.vercel.app/mascot_mascot.jpg";
+  if ([51, 53, 55, 61, 63, 65, 80, 81, 82].includes(weatherCode)) {
+    selectedMascot = "https://bd-tips.vercel.app/mascot_rain.jpg";
+  } else if ([95, 96, 99].includes(weatherCode)) {
+    selectedMascot = "https://bd-tips.vercel.app/mascot_storm.jpg";
+  } else if (temp >= 33) {
+    selectedMascot = "https://bd-tips.vercel.app/mascot_hot.jpg";
+  } else if (isFriday) {
+    selectedMascot = "https://bd-tips.vercel.app/mascot_relax.jpg";
+  } else if (dayOfWeek === 1) {
+    selectedMascot = "https://bd-tips.vercel.app/mascot_challenge.jpg";
+  }
+
+  // 4. Fallback Static Ultra-Short Templates
+  const fallbackTemplates = [
+    {
+      subject: `Pipeline của bạn có lạnh như thời tiết ${temp}°C? ❄️`,
+      message: `Chào Chiến thần B2B!<br><br>Hôm nay ${dayName} thời tiết khá dịu mát (${temp}°C), thích hợp để ngồi sưởi ấm pipeline bằng vài deal mới. Tin tức hôm nay: "${newsTitle}". Hãy dùng trợ lý <b>Cold Email AI</b> để bứt phá tỉ lệ mở thư nhé!`,
+      buttonText: "✍️ Soạn Cold Email Ngay",
+      buttonUrl: "https://bd-tips.vercel.app/email-assistant.html"
+    },
+    {
+      subject: `Nắng nóng ${temp}°C làm deal bốc hơi? ☀️`,
+      message: `Chào Chiến thần B2B!<br><br>Trời hôm nay đang nắng nóng gay gắt (${temp}°C) dễ làm tụt năng lượng. Tin nóng: "${newsTitle}". Đừng để deal bị bốc hơi, hãy cày ngay kịch bản pitching thuyết phục cùng <b>Pitching AI</b>!`,
+      buttonText: "🎤 Pitching AI Ngay",
+      buttonUrl: "https://bd-tips.vercel.app/pitching.html"
+    },
+    {
+      subject: `Trời mưa rả rích, làm sao để lead không ghost? 🌧️`,
+      message: `Chào Chiến thần B2B!<br><br>Thời tiết mưa ẩm dễ làm tinh thần đi xuống. Đọc ngay tin tiêu điểm: "${newsTitle}" và vào <b>Thư viện BD</b> xem mẹo rã đông lead từ anh Peter Vo!`,
+      buttonText: "📚 Đọc Case-Study Ngay",
+      buttonUrl: "https://bd-tips.vercel.app/library.html"
+    },
+    {
+      subject: `Luyện phản xạ thực chiến ngày ${dayName}! 🦉`,
+      message: `Chào Chiến thần B2B!<br><br>Bản tin kinh tế: "${newsTitle}". Hãy dành 2 phút giải trí và rèn luyện phản xạ xử lý từ chối cùng <b>Minigame B2B Challenge</b> để tích lũy điểm đổi quà nhé!`,
+      buttonText: "🎮 Chơi Game Thực Chiến",
+      buttonUrl: "https://bd-tips.vercel.app/#minigame-section"
+    }
+  ];
+
+  let template = fallbackTemplates[dayOfYear % fallbackTemplates.length];
+  template.mascot = selectedMascot;
+
+  // 5. Try generating personalized context email using Gemini 2.5 Flash
+  const apiKey = process.env.GEMINI_API_KEY;
+  if (apiKey) {
+    try {
+      const systemPrompt = `Bạn là trợ lý Cú BeeDee của B2B BD Tips Portal.
+Nhiệm vụ của bạn là viết một email ngắn gọn nhắc nhở học viên BD rèn luyện mỗi ngày.
+
+YÊU CẦU:
+1. Nội dung phải cực kỳ NGẮN GỌN (tối đa 2 đến 3 câu ngắn), phong cách thân thiện, thực chiến, pha chút hài hước của dân Sales B2B (lead, deal, PIC, pipeline, cold email...).
+2. Phải lồng ghép thông tin ngữ cảnh thời gian/thời tiết thực tế sau đây:
+   - Ngày trong tuần: ${dayName}
+   - Thời tiết: ${weatherDesc}
+   - Nhiệt độ: ${temp}°C
+   - Tin tức kinh tế nóng trong ngày: "${newsTitle}"
+3. Phải điều hướng người dùng click nút CTA để trải nghiệm 1 trong các công cụ thực chiến trên web:
+   - Pitching & Thuyết Trình AI (https://bd-tips.vercel.app/pitching.html)
+   - AI Cold Email Assistant (https://bd-tips.vercel.app/email-assistant.html)
+   - Minigame B2B Challenge (https://bd-tips.vercel.app/#minigame-section)
+   - Công cụ Tính Lương & Tra Luật Lao Động (https://bd-tips.vercel.app/salary.html)
+   - Thư Viện Ebook BD (https://bd-tips.vercel.app/library.html)
+
+ĐỊNG DẠNG ĐẦU RA: Trả về duy nhất một chuỗi JSON (không bọc trong tag code markdown) có cấu trúc như sau:
+{
+  "subject": "Tiêu đề email ngắn gọn, thu hút kèm emoji phù hợp",
+  "message": "Nội dung email viết bằng HTML ngắn gọn (2-3 câu, dùng <br> để xuống dòng, không dùng ký tự markdown như ** hay #)",
+  "buttonText": "Tên nút kêu gọi hành động (CTA)",
+  "buttonUrl": "Đường dẫn tuyệt đối tương ứng với công cụ được chọn"
+}`;
+
+      const geminiRes = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          contents: [{ parts: [{ text: systemPrompt }] }]
+        })
+      });
+
+      if (geminiRes.ok) {
+        const json = await geminiRes.json();
+        if (json.candidates && json.candidates[0] && json.candidates[0].content && json.candidates[0].content.parts[0]) {
+          const rawText = json.candidates[0].content.parts[0].text.trim();
+          const cleanedJson = rawText.replace(/^```json\s*/i, '').replace(/```$/, '').trim();
+          const parsed = JSON.parse(cleanedJson);
+          if (parsed.subject && parsed.message && parsed.buttonText && parsed.buttonUrl) {
+            template = {
+              subject: parsed.subject,
+              message: parsed.message,
+              buttonText: parsed.buttonText,
+              buttonUrl: parsed.buttonUrl,
+              mascot: selectedMascot
+            };
+          }
+        }
+      }
+    } catch (err) {
+      console.error("Gemini generation failed for daily email, using fallback:", err.message);
+    }
+  }
+
+  // Override specific templates for Friday evening/morning fallback if not AI generated
+  if (!apiKey && isFriday) {
     const isEvening = req.query.time ? (req.query.time === 'evening') : (hour >= 12);
     if (isEvening) {
-      template = fridayEveningTemplate;
+      template = {
+        subject: "Cuối tuần rồi! Xả stress cực mạnh thôi! 🦉🎉",
+        message: "Chào Chiến thần B2B!<br><br>6h00 chiều thứ Sáu đã điểm! Hãy gấp laptop lại, xả stress cực mạnh bằng câu chuyện cười BD giòn giã tại <b>Thư viện BD</b> và tận hưởng kỳ nghỉ cuối tuần trọn vẹn nhé!",
+        buttonText: "🤪 Đọc Truyện Cười BD",
+        buttonUrl: "https://bd-tips.vercel.app/library.html",
+        mascot: "https://bd-tips.vercel.app/mascot_relax.jpg"
+      };
     } else {
-      template = fridayMorningTemplate;
+      template = {
+        subject: "Thứ 6 rồi! Cùng share chuyện vui lên cộng đồng nào! 🧋✨",
+        message: "Chào Chiến thần B2B!<br><br>Cuối cùng thì ngày thứ 6 mong đợi cũng đã tới! Hãy ghé ngay <b>Diễn đàn Cộng đồng</b> chia sẻ những câu chuyện vui hoặc kỷ niệm đi làm đáng nhớ trong tuần qua nhé!",
+        buttonText: "💬 Chia Sẻ Chuyện Vui Ngay",
+        buttonUrl: "https://bd-tips.vercel.app/community.html",
+        mascot: "https://bd-tips.vercel.app/mascot_milktea.jpg"
+      };
     }
-  } else {
-    // Monday - Thursday (or forced weekend tests)
-    template = emailTemplates[dayOfYear % emailTemplates.length];
   }
 
   const demoEmail = req.query.email || 'hocvien@gmail.com';
@@ -284,7 +332,7 @@ module.exports = async (req, res) => {
   console.log(`[DAILY_EMAIL_CRON] Subject: ${subject}`);
 
   const BATCH_SIZE = 50;
-  const DELAY_BETWEEN_BATCHES = 2000; // 2 seconds delay to avoid email/API rate limit block
+  const DELAY_BETWEEN_BATCHES = 2000;
   const dispatchLogs = [];
   let triggeredWebhook = false;
 
@@ -295,7 +343,6 @@ module.exports = async (req, res) => {
     console.log(`[DAILY_EMAIL_CRON] Sending Batch ${Math.floor(i / BATCH_SIZE) + 1} (${currentBatch.length} emails)...`);
 
     const batchPromises = currentBatch.map(async (recipient) => {
-      // Personalize content slightly for each recipient
       const personalizedBody = bodyText.replace(/Chiến thần B2B/g, recipient.name || 'Chiến thần B2B');
       
       if (webhookUrl) {
@@ -319,7 +366,6 @@ module.exports = async (req, res) => {
           return { email: recipient.email, success: false, error: err.message };
         }
       } else {
-        // Mock send logs for dev environment
         return { email: recipient.email, success: true, detail: 'Mock send successful (Dev mode)' };
       }
     });
@@ -327,14 +373,12 @@ module.exports = async (req, res) => {
     const batchResults = await Promise.all(batchPromises);
     dispatchLogs.push(...batchResults);
 
-    // Throttle delay before next batch, unless it's the last batch
     if (i + BATCH_SIZE < recipients.length) {
       console.log(`[DAILY_EMAIL_CRON] Throttling for ${DELAY_BETWEEN_BATCHES}ms before next batch...`);
       await new Promise(resolve => setTimeout(resolve, DELAY_BETWEEN_BATCHES));
     }
   }
 
-  // Trigger fallback bulk send if no single emails succeeded but webhook is set (backward compatibility)
   let fallbackResponse = '';
   if (webhookUrl && !triggeredWebhook) {
     try {
@@ -359,7 +403,13 @@ module.exports = async (req, res) => {
     message: `Daily emails processed. Dispatched ${dispatchLogs.length} messages.`,
     triggeredWebhook: triggeredWebhook,
     fallbackResponse: fallbackResponse,
-    dispatchLogs: dispatchLogs.slice(0, 10), // Limit returned logs preview
-    totalSent: dispatchLogs.length
+    dispatchLogs: dispatchLogs.slice(0, 10),
+    totalSent: dispatchLogs.length,
+    context: {
+      temp,
+      weatherDesc,
+      newsTitle,
+      mascot: template.mascot
+    }
   });
 };
