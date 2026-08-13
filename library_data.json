@@ -182,6 +182,19 @@
       "badge": "Lead Verification",
       "icon": "🔍",
       "downloads": 146
+    },
+    {
+      "id": "ebook-scale-up",
+      "title": "Ebook Scale Up Yourself - Bứt Phá Năng Lực BD B2B",
+      "description": "Lộ trình phát triển bản thân vượt bậc cho Business Developer, từ nâng cao kỹ năng đàm phán đến tối ưu hiệu suất công việc cá nhân.",
+      "author": "Peter Vo",
+      "date": "2026-08-13",
+      "fileUrl": "ebooks/Scale Up Yourself.pdf",
+      "coverImage": "ebook-covers/cover-scale-up.png",
+      "fileSize": "4.6 MB",
+      "badge": "New Release",
+      "icon": "🚀",
+      "downloads": 128
     }
   ],
   "glossary": [
