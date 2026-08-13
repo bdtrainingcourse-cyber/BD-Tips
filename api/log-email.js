@@ -1,7 +1,7 @@
 // Serverless function to save user lead email to Google Sheets webhook and handle sync actions
 const https = require('https');
 const dns = require('dns').promises;
-const { readUsers, writeUsers } = require('./db-helper');
+const { readUsers, writeUsers } = require('./_db-helper');
 
 const disposableDomains = [
   'yopmail.com', 'mailinator.com', 'tempmail.com', '10minutemail.com', 
