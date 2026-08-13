@@ -564,7 +564,8 @@ document.addEventListener('DOMContentLoaded', () => {
         currentSelectedEbook = ebook;
         
         // If they unlocked the 7-day streak reward, they are exempt from all limits!
-        const streakUnlocked = localStorage.getItem('b2b_streak_unlocked_ebook') === 'true';
+        const ebookCredits = parseInt(localStorage.getItem('b2b_unlocked_ebook_credits') || '0', 10);
+        const streakUnlocked = ebookCredits > 0 || localStorage.getItem('b2b_streak_unlocked_ebook') === 'true';
         
         if (!streakUnlocked) {
             // Check Daily Download Limit (1 per day default + bonus credits)
@@ -605,6 +606,16 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function triggerDownload(ebook) {
+        // Consuming ebook credit if they have any
+        const ebookCredits = parseInt(localStorage.getItem('b2b_unlocked_ebook_credits') || '0', 10);
+        if (ebookCredits > 0) {
+            const newCredits = ebookCredits - 1;
+            localStorage.setItem('b2b_unlocked_ebook_credits', newCredits.toString());
+            if (newCredits <= 0) {
+                localStorage.removeItem('b2b_streak_unlocked_ebook');
+            }
+        }
+
         // Record download count
         incrementTodayDownloads();
         incrementEbookDownloadCount(ebook.id);
