@@ -207,7 +207,6 @@ module.exports = async (req, res) => {
     if (webhookUrl) {
       try {
         await httpPost(webhookUrl, {
-          action: 'verifyUser',
           name: users[cleanEmail].name || 'Học viên',
           email: cleanEmail,
           tool: 'email-verification',
@@ -257,6 +256,7 @@ module.exports = async (req, res) => {
         }
       });
     }
+    return res.status(200).json({ success: true, exists: false });
   } else {
     // General lead tracking (ebook downloads, minigame registrations, etc.)
     if (!users[cleanEmail]) {
@@ -297,11 +297,8 @@ module.exports = async (req, res) => {
   try {
     // Forward to Google Sheets Webhook
     let payload = {};
-    if (action === 'checkEmail') {
-      payload = { action, email };
-    } else if (action === 'syncUser') {
+    if (action === 'syncUser') {
       payload = {
-        action: 'syncUser',
         name: name || (users[cleanEmail] ? users[cleanEmail].name : 'Học viên'),
         email,
         tool: 'daily-reminder',
