@@ -253,7 +253,8 @@ module.exports = async (req, res) => {
           email: users[cleanEmail].email,
           name: users[cleanEmail].name,
           points: users[cleanEmail].points,
-          avatar: users[cleanEmail].avatar || ''
+          avatar: users[cleanEmail].avatar || '',
+          verified: !!users[cleanEmail].verified
         }
       });
     }
