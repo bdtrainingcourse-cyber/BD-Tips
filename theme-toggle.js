@@ -998,20 +998,11 @@ function handleEmailReminderRegistration(nameInputId, emailInputId, submitBtnId,
                     return;
                 }
                 
-                // Show notification modal preventing double logins
+                // Show notification modal preventing double logins and pointing to the Menu bar Login button
                 window.showGlobalNotification(
-                    '⚠️ Đã Đăng Ký Tài Khoản',
-                    `Email <strong>${email}</strong> này đã được đăng ký và hoạt động.<br><br>Hệ thống B2B Portal đã tự động đồng bộ tài khoản và số điểm tích lũy của bạn lên thiết bị này!`
+                    '⚠️ Email Đã Được Đăng Ký',
+                    `Email <strong>${email}</strong> này đã được đăng ký và xác thực thành công trước đó.<br><br>Để tránh trùng lặp dữ liệu và lạm dụng điểm thưởng, bạn không thể sử dụng lại email này để đăng ký nhận thêm 25đ ⚡.<br><br>Vui lòng click vào nút <strong>Đăng Nhập</strong> ở góc phải thanh menu để kết nối tài khoản của bạn.`
                 );
-                
-                // Under-the-hood sync
-                localStorage.setItem('streak_active', 'true');
-                localStorage.setItem('streak_name', user.name || name);
-                localStorage.setItem('streak_email', email);
-                localStorage.setItem('b2b_points_balance', (user.points || 0).toString());
-                localStorage.setItem('b2b_user_verified', 'true');
-                if (user.avatar) localStorage.setItem('b2b_custom_avatar', user.avatar);
-                updateNavbarUserHUD();
                 
                 // Clear inputs
                 nameInput.value = '';
