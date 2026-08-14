@@ -1359,6 +1359,7 @@ async function sendSimulatorMessageFromText(messageText) {
                 size: currentConfig.size,
                 difficulty: currentConfig.difficulty,
                 personality: currentConfig.personality,
+                voiceGender: currentConfig.voiceGender,
                 product: currentProduct,
                 liveCoach: document.getElementById('coach-toggle-checkbox').checked,
                 language: currentConfig.language || 'vi'
@@ -1461,9 +1462,13 @@ async function speakStakeholderResponse(text) {
         }
 
         if (lang === 'vi') {
-            const ttsUrl = `/api/tts?lang=vi&text=${encodeURIComponent(cleanText)}`;
+            const voices = window.speechSynthesis ? window.speechSynthesis.getVoices() : [];
+            const hasViVoice = voices.some(v => v.lang.toLowerCase().includes('vi'));
             
-            if (window.sharedAIAudio) {
+            if (hasViVoice) {
+                speakViaWebSpeechAPI(cleanText, 'vi');
+            } else if (window.sharedAIAudio) {
+                const ttsUrl = `/api/tts?lang=vi&text=${encodeURIComponent(cleanText)}`;
                 window.sharedAIAudio.src = ttsUrl;
                 window.sharedAIAudio.load();
                 
@@ -1488,23 +1493,13 @@ async function speakStakeholderResponse(text) {
                 window.sharedAIAudio.onerror = (e) => {
                     console.error('Shared Audio TTS playback error:', e);
                     setSpeakerActive('ai', false);
-                    // Only fallback to Web Speech if client is completely offline
-                    if (!navigator.onLine) {
-                        speakViaWebSpeechAPI(cleanText, 'vi');
-                    } else {
-                        startInactivityTimer();
-                    }
+                    speakViaWebSpeechAPI(cleanText, 'vi');
                 };
 
                 window.sharedAIAudio.play().catch(err => {
                     if (err.name === 'AbortError') return; // Ignore normal interrupt/src change aborts
                     console.warn('Shared Audio play failed:', err);
-                    // Only fallback to Web Speech if client is completely offline
-                    if (!navigator.onLine) {
-                        speakViaWebSpeechAPI(cleanText, 'vi');
-                    } else {
-                        startInactivityTimer();
-                    }
+                    speakViaWebSpeechAPI(cleanText, 'vi');
                 });
             } else {
                 speakViaWebSpeechAPI(cleanText, 'vi');
