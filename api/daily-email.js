@@ -120,21 +120,25 @@ function httpPost(url, body) {
   });
 }
 
-// Helper to wrap message in a premium bright warm-themed HTML template
 function getHtmlTemplate(message, buttonText, buttonUrl, mascotUrl) {
-  const finalMascotUrl = mascotUrl || 'https://bd-tips.vercel.app/bd_mascot.png';
+  const finalMascotUrl = mascotUrl || 'https://bd-tips.vercel.app/mascot_mascot.jpg';
   return `<!DOCTYPE html>
 <html>
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>B2B BD Tips Daily Reminder</title>
+  <title>BD Bình Dân Học Vụ - Lời khuyên hàng ngày</title>
   <style>
+    @import url('https://fonts.googleapis.com/css2?family=Lexend:wght@400;700;800&family=Plus+Jakarta+Sans:wght@400;700;800&display=swap');
+    
+    /* Force font family matching on all elements to prevent Vietnamese accent rendering issues */
+    body, table, td, div, p, a, span {
+      font-family: 'Plus Jakarta Sans', 'Lexend', Arial, Helvetica, sans-serif !important;
+    }
     body {
       margin: 0;
       padding: 0;
       background-color: #fcf9f4;
-      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
       color: #334155;
     }
     .email-container {
@@ -155,10 +159,11 @@ function getHtmlTemplate(message, buttonText, buttonUrl, mascotUrl) {
       border-radius: 50%;
     }
     .mascot-img {
-      width: 85px;
-      height: 85px;
+      width: 90px;
+      height: 90px;
       object-fit: contain;
       display: block;
+      border-radius: 50%;
     }
     .headline {
       font-size: 1.35rem;
@@ -211,7 +216,7 @@ function getHtmlTemplate(message, buttonText, buttonUrl, mascotUrl) {
     <div class="mascot-container">
       <img src="${finalMascotUrl}" class="mascot-img" alt="Cú BeeDee">
     </div>
-    <div class="headline">Chào ngày mới đầy năng lượng cùng Cú BeeDee! 🦉☀️</div>
+    <div class="headline">Chào ngày mới cùng Cú BeeDee! 🦉☀️</div>
     <div class="content-text">
       ${message}
     </div>
@@ -220,7 +225,7 @@ function getHtmlTemplate(message, buttonText, buttonUrl, mascotUrl) {
     </div>
     <div class="footer-text">
       Bạn nhận được email này vì đã kích hoạt chế độ tự động nhắc nhở rèn luyện hàng ngày tại <a href="https://bd-tips.vercel.app" class="accent-link">BD Bình Dân Học Vụ</a>.<br>
-      © 2026 B2B BD Tips Portal. All rights reserved.
+      © 2026 BD Bình Dân Học Vụ. All rights reserved.
     </div>
   </div>
 </body>
@@ -351,23 +356,37 @@ module.exports = async (req, res) => {
   if (apiKey) {
     try {
       const systemPrompt = `Bạn là trợ lý Cú BeeDee của cổng thông tin học tập "BD Bình Dân Học Vụ" (https://bd-tips.vercel.app).
-Nhiệm vụ của bạn là viết một email ngắn gọn vào buổi sáng gửi học viên BD để bắt đầu ngày mới tràn đầy năng lượng.
+Nhiệm vụ của bạn là viết một email ngắn gọn, thông minh gửi học viên BD vào đầu giờ sáng.
 
-YÊU CẦU:
-1. Nội dung phải cực kỳ NGẮN GỌN (tối đa 2 đến 3 câu ngắn), phong cách vui vẻ, tích cực, thực chiến và hài hước của dân Sales/BD (lead, deal, PIC, pipeline, cold email, KPIs...).
-2. Phải kết hợp giới thiệu một tính năng hoặc công cụ hay, nổi bật trên website của "BD Bình Dân Học Vụ" (như tập luyện phản xạ Minigame B2B, thử thách Cold Email AI, tập thuyết trình Pitching AI, hay tính lương Gross-Net...) để thu hút người học click trải nghiệm.
-3. Phải lồng ghép khéo léo thông tin ngữ cảnh thời tiết và kinh tế thực tế sau đây để tăng tính chân thật và cập nhật:
-   - Ngày trong tuần: ${dayName}
-   - Thời tiết: ${weatherDesc} (${temp}°C)
-   - Tin tức kinh tế nổi bật: "${newsTitle}"
-4. Tuyệt đối không viết lan man. Giọng văn hài hước, hóm hỉnh và truyền động lực đầu ngày.
+BỐI CẢNH THỰC TẾ TRONG NGÀY:
+- Ngày trong tuần: ${dayName}
+- Tình hình thời tiết Việt Nam: ${weatherDesc} (${temp}°C)
+- Tin tức kinh tế tiêu điểm: "${newsTitle}"
 
-ĐỊNH DẠNG ĐẦU RA: Trả về duy nhất một chuỗi JSON (không bọc trong tag code markdown) có cấu trúc như sau:
+DANH SÁCH TÍNH NĂNG/CÔNG CỤ CỦA WEBSITE ĐỂ ĐIỀU HƯỚNG:
+1. Cộng Đồng B2B (https://bd-tips.vercel.app/community.html) -> Nơi chia sẻ bài viết, kết nối chiến thần B2B và thảo luận sôi nổi.
+2. Challenge Game (https://bd-tips.vercel.app/#minigame-section) -> Chơi game xử lý từ chối B2B thực chiến để tích lũy BD-Points đổi quà.
+3. Pitching AI (https://bd-tips.vercel.app/pitching.html) -> Luyện tập phản xạ thuyết trình và pitching B2B với AI.
+4. AI Email Assistant (https://bd-tips.vercel.app/email-assistant.html) -> Viết Cold Email B2B bứt phá tỷ lệ chuyển đổi.
+5. Lương Gross-Net (https://bd-tips.vercel.app/salary.html) -> Công cụ tính lương Gross/Net chi tiết.
+6. Luật Lao Động (https://bd-tips.vercel.app/salary.html#law-section) -> Tra cứu nhanh luật lao động mới nhất.
+7. KPI & Phễu (https://bd-tips.vercel.app/kpi.html) -> Lập kế hoạch B2B và tính toán tỷ lệ chuyển đổi phễu.
+8. Sự Kiện B2B (https://bd-tips.vercel.app/events.html) -> Lịch sự kiện giao lưu thực chiến.
+9. Thư Viện BD (https://bd-tips.vercel.app/library.html) -> Các case study và bài viết chiều sâu từ anh Peter Vo.
+
+YÊU CẦU NỘI DUNG:
+1. Độ dài: Cực kỳ NGẮN GỌN (tối đa 2 đến 3 câu ngắn), phong cách vui vẻ, tích cực, thực chiến và hóm hỉnh của dân Sales/BD (ví dụ: cày KPI, chốt deal, pipeline, PIC, lead...).
+2. Nội dung đa dạng: Không lặp đi lặp lại. Phải lồng ghép khéo léo tin tức kinh tế nóng trong ngày hoặc tình hình thời tiết vào câu chuyện B2B (ví dụ: Tin tức kinh tế "${newsTitle}" có tác động gì đến doanh nghiệp hay deal của bạn không? Hoặc thời tiết hôm nay gợi ý cho bạn cách tiếp cận khách hàng thế nào?).
+3. Tập trung quảng bá: Hãy luân phiên giới thiệu các công cụ khác nhau. Đặc biệt khuyến khích và kêu gọi học viên vào "Cộng Đồng B2B" chia sẻ bài viết hoặc chơi "Challenge Game" để rèn luyện phản xạ và tích điểm (BD-Points) đổi quà trà sữa...
+4. Chọn Mascot thích hợp: Chọn 1 sắc thái mascot phản ánh đúng tâm trạng hoặc nội dung của email đó.
+
+ĐỊNH DẠNG ĐẦU RA: Trả về duy nhất một chuỗi JSON hợp lệ (không bọc trong tag code markdown) có cấu trúc như sau:
 {
-  "subject": "Tiêu đề email ngắn gọn, kích thích tò mò kèm emoji phù hợp",
+  "subject": "Tiêu đề email ngắn gọn, thu hút, đánh trúng tâm lý dân sales/BD kèm emoji",
   "message": "Nội dung email viết bằng HTML ngắn gọn (2-3 câu, dùng <br> để xuống dòng, không dùng ký tự markdown như ** hay #)",
-  "buttonText": "Tên nút kêu gọi hành động (CTA) thật cuốn hút",
-  "buttonUrl": "Đường dẫn tuyệt đối tương ứng với công cụ được giới thiệu"
+  "buttonText": "Tên nút kêu gọi hành động (CTA) thật cuốn hút và tích cực",
+  "buttonUrl": "Đường dẫn tuyệt đối tương ứng với công cụ được chọn giới thiệu",
+  "mascotType": "chọn 1 trong các chuỗi sau: challenge (khi khuyên học/chơi game), correct (mẹo chuẩn), wrong (khi nói về thất bại/từ chối), ghost (khi nói về email/khách hàng ghost), law (khi nói về lương/luật), milktea (khi nói về đổi quà/điểm thưởng), relax (thư giãn/cuối tuần), hot (nắng nóng/áp lực KPI), rain (mưa lạnh/lead nguội), storm (bão/khủng hoảng), default (tiêu chuẩn)"
 }`;
 
       const geminiRes = await httpPost(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`, {
@@ -381,12 +400,26 @@ YÊU CẦU:
           const cleanedJson = rawText.replace(/^```json\s*/i, '').replace(/```$/, '').trim();
           const parsed = JSON.parse(cleanedJson);
           if (parsed.subject && parsed.message && parsed.buttonText && parsed.buttonUrl) {
+            const mascotMap = {
+              challenge: "https://bd-tips.vercel.app/mascot_challenge.jpg",
+              correct: "https://bd-tips.vercel.app/mascot_correct.jpg",
+              wrong: "https://bd-tips.vercel.app/mascot_wrong.jpg",
+              ghost: "https://bd-tips.vercel.app/mascot_ghost.jpg",
+              law: "https://bd-tips.vercel.app/mascot_law.jpg",
+              milktea: "https://bd-tips.vercel.app/mascot_milktea.jpg",
+              relax: "https://bd-tips.vercel.app/mascot_relax.jpg",
+              hot: "https://bd-tips.vercel.app/mascot_hot.jpg",
+              rain: "https://bd-tips.vercel.app/mascot_rain.jpg",
+              storm: "https://bd-tips.vercel.app/mascot_storm.jpg",
+              default: "https://bd-tips.vercel.app/mascot_mascot.jpg"
+            };
+            const finalMascot = mascotMap[parsed.mascotType] || mascotMap.default;
             template = {
               subject: parsed.subject,
               message: parsed.message,
               buttonText: parsed.buttonText,
               buttonUrl: parsed.buttonUrl,
-              mascot: selectedMascot
+              mascot: finalMascot
             };
           }
         }
