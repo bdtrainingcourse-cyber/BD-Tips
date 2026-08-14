@@ -751,21 +751,39 @@ function handleEmailReminderRegistration(nameInputId, emailInputId, submitBtnId,
             if (checkData.exists && checkData.user) {
                 const user = checkData.user;
                 
+                if (!user.verified) {
+                    window.showGlobalNotification(
+                        '✉️ Tài Khoản Chưa Xác Thực',
+                        `Tài khoản với email <strong>${email}</strong> đã đăng ký nhưng <strong>chưa được xác thực email</strong>.<br><br>Vui lòng mở hộp thư email của bạn (kiểm tra cả mục Thư rác/Spam) và click vào liên kết xác thực để kích hoạt tài khoản.`
+                    );
+                    
+                    // Clear local storage if there was a stale unverified login session
+                    localStorage.removeItem('streak_active');
+                    localStorage.removeItem('streak_email');
+                    localStorage.removeItem('streak_name');
+                    localStorage.removeItem('b2b_points_balance');
+                    localStorage.removeItem('b2b_user_verified');
+                    updateNavbarUserHUD();
+                    
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = originalText;
+                    return;
+                }
+                
                 // Show notification modal preventing double logins
                 window.showGlobalNotification(
                     '⚠️ Đã Đăng Ký Tài Khoản',
-                    `Email <strong>${email}</strong> này đã được đăng ký và hoạt động.<br><br>Để bảo vệ tính nhất quán dữ liệu và bảo mật, hệ thống B2B Portal đã tự động ghi nhận phiên đăng nhập của thiết bị này. <strong>Bạn không cần phải nhập email này để đăng nhập/đăng ký lại nữa!</strong>`
+                    `Email <strong>${email}</strong> này đã được đăng ký và hoạt động.<br><br>Hệ thống B2B Portal đã tự động đồng bộ tài khoản và số điểm tích lũy của bạn lên thiết bị này!`
                 );
                 
-                // Under-the-hood sync if not already logged in
-                if (localStorage.getItem('streak_email') !== email) {
-                    localStorage.setItem('streak_active', 'true');
-                    localStorage.setItem('streak_name', user.name || name);
-                    localStorage.setItem('streak_email', email);
-                    localStorage.setItem('b2b_points_balance', (user.points || 0).toString());
-                    if (user.avatar) localStorage.setItem('b2b_custom_avatar', user.avatar);
-                    updateNavbarUserHUD();
-                }
+                // Under-the-hood sync
+                localStorage.setItem('streak_active', 'true');
+                localStorage.setItem('streak_name', user.name || name);
+                localStorage.setItem('streak_email', email);
+                localStorage.setItem('b2b_points_balance', (user.points || 0).toString());
+                localStorage.setItem('b2b_user_verified', 'true');
+                if (user.avatar) localStorage.setItem('b2b_custom_avatar', user.avatar);
+                updateNavbarUserHUD();
                 
                 // Clear inputs
                 nameInput.value = '';
@@ -867,6 +885,7 @@ async function checkEmailVerification() {
                 localStorage.setItem('streak_active', 'true');
                 localStorage.setItem('streak_email', verifyEmail);
                 localStorage.setItem('b2b_points_balance', data.points.toString());
+                localStorage.setItem('b2b_user_verified', 'true');
                 
                 // Show notification modal
                 window.showGlobalNotification(
@@ -993,10 +1012,35 @@ function initGlobalComponents() {
     `;
     document.head.appendChild(styleEl);
 
-    // Initial page view behavior log
+    // Initial page view behavior log and email verification check on load
     const currentEmail = localStorage.getItem('streak_email');
     if (currentEmail) {
         window.trackUserBehavior('page_view', window.location.pathname);
+
+        // Verification validation check on load
+        const isVerifiedLocal = localStorage.getItem('b2b_user_verified') === 'true';
+        if (!isVerifiedLocal) {
+            setTimeout(async () => {
+                try {
+                    const checkUrl = `/api/log-email?action=checkEmail&email=${encodeURIComponent(currentEmail)}`;
+                    const res = await fetch(checkUrl);
+                    const data = await res.json();
+                    if (data.exists && data.user) {
+                        if (data.user.verified) {
+                            localStorage.setItem('b2b_user_verified', 'true');
+                        } else {
+                            // Show verification reminder popup modal
+                            window.showGlobalNotification(
+                                '✉️ Xác Thực Tài Khoản',
+                                `Tài khoản với email <strong>${currentEmail}</strong> của bạn chưa được xác thực.<br><br>Vui lòng kiểm tra hộp thư email (hoặc mục Thư rác/Spam) và click vào liên kết xác thực để kích hoạt tài khoản và tích lũy điểm thưởng.`
+                            );
+                        }
+                    }
+                } catch (e) {
+                    console.warn('Verification check failed:', e);
+                }
+            }, 2500); // 2.5 seconds delay on load
+        }
     }
 }
 
