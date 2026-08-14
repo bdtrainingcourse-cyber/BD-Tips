@@ -350,29 +350,24 @@ module.exports = async (req, res) => {
   const apiKey = process.env.GEMINI_API_KEY;
   if (apiKey) {
     try {
-      const systemPrompt = `Bạn là trợ lý Cú BeeDee của B2B BD Tips Portal.
-Nhiệm vụ của bạn là viết một email ngắn gọn nhắc nhở học viên BD rèn luyện mỗi ngày.
+      const systemPrompt = `Bạn là trợ lý Cú BeeDee của cổng thông tin học tập "BD Bình Dân Học Vụ" (https://bd-tips.vercel.app).
+Nhiệm vụ của bạn là viết một email ngắn gọn vào buổi sáng gửi học viên BD để bắt đầu ngày mới tràn đầy năng lượng.
 
 YÊU CẦU:
-1. Nội dung phải cực kỳ NGẮN GỌN (tối đa 2 đến 3 câu ngắn), phong cách thân thiện, thực chiến, pha chút hài hước của dân Sales B2B (lead, deal, PIC, pipeline, cold email...).
-2. Phải lồng ghép thông tin ngữ cảnh thời gian/thời tiết thực tế sau đây:
+1. Nội dung phải cực kỳ NGẮN GỌN (tối đa 2 đến 3 câu ngắn), phong cách vui vẻ, tích cực, thực chiến và hài hước của dân Sales/BD (lead, deal, PIC, pipeline, cold email, KPIs...).
+2. Phải kết hợp giới thiệu một tính năng hoặc công cụ hay, nổi bật trên website của "BD Bình Dân Học Vụ" (như tập luyện phản xạ Minigame B2B, thử thách Cold Email AI, tập thuyết trình Pitching AI, hay tính lương Gross-Net...) để thu hút người học click trải nghiệm.
+3. Phải lồng ghép khéo léo thông tin ngữ cảnh thời tiết và kinh tế thực tế sau đây để tăng tính chân thật và cập nhật:
    - Ngày trong tuần: ${dayName}
-   - Thời tiết: ${weatherDesc}
-   - Nhiệt độ: ${temp}°C
-   - Tin tức kinh tế nóng trong ngày: "${newsTitle}"
-3. Phải điều hướng người dùng click nút CTA để trải nghiệm 1 trong các công cụ thực chiến trên web:
-   - Pitching & Thuyết Trình AI (https://bd-tips.vercel.app/pitching.html)
-   - AI Cold Email Assistant (https://bd-tips.vercel.app/email-assistant.html)
-   - Minigame B2B Challenge (https://bd-tips.vercel.app/#minigame-section)
-   - Công cụ Tính Lương & Tra Luật Lao Động (https://bd-tips.vercel.app/salary.html)
-   - Thư Viện Ebook BD (https://bd-tips.vercel.app/library.html)
+   - Thời tiết: ${weatherDesc} (${temp}°C)
+   - Tin tức kinh tế nổi bật: "${newsTitle}"
+4. Tuyệt đối không viết lan man. Giọng văn hài hước, hóm hỉnh và truyền động lực đầu ngày.
 
-ĐỊNG DẠNG ĐẦU RA: Trả về duy nhất một chuỗi JSON (không bọc trong tag code markdown) có cấu trúc như sau:
+ĐỊNH DẠNG ĐẦU RA: Trả về duy nhất một chuỗi JSON (không bọc trong tag code markdown) có cấu trúc như sau:
 {
-  "subject": "Tiêu đề email ngắn gọn, thu hút kèm emoji phù hợp",
+  "subject": "Tiêu đề email ngắn gọn, kích thích tò mò kèm emoji phù hợp",
   "message": "Nội dung email viết bằng HTML ngắn gọn (2-3 câu, dùng <br> để xuống dòng, không dùng ký tự markdown như ** hay #)",
-  "buttonText": "Tên nút kêu gọi hành động (CTA)",
-  "buttonUrl": "Đường dẫn tuyệt đối tương ứng với công cụ được chọn"
+  "buttonText": "Tên nút kêu gọi hành động (CTA) thật cuốn hút",
+  "buttonUrl": "Đường dẫn tuyệt đối tương ứng với công cụ được giới thiệu"
 }`;
 
       const geminiRes = await httpPost(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`, {
