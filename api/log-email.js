@@ -181,6 +181,13 @@ module.exports = async (req, res) => {
   const users = readUsers();
   
   // Track/update user profile locally for any incoming lead or sync request
+  const isVerified = users[cleanEmail] && users[cleanEmail].verified;
+  if (isVerified && (action === 'syncUser' || !action)) {
+    return res.status(400).json({
+      error: 'Email này đã được đăng ký và xác thực. Vui lòng sử dụng tính năng Đăng Nhập ở góc phải Menu bar để đồng bộ tài khoản!'
+    });
+  }
+
   if (action === 'verifyUser') {
     if (users[cleanEmail]) {
       if (!users[cleanEmail].verified) {
