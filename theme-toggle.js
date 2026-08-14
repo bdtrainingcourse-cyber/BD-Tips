@@ -998,11 +998,21 @@ function handleEmailReminderRegistration(nameInputId, emailInputId, submitBtnId,
                     return;
                 }
                 
-                // Show notification modal preventing double logins and pointing to the Menu bar Login button
+                // Welcome back user and automatically sync their local session with their existing points
                 window.showGlobalNotification(
-                    '⚠️ Email Đã Được Đăng Ký',
-                    `Email <strong>${email}</strong> này đã được đăng ký và xác thực thành công trước đó.<br><br>Để tránh trùng lặp dữ liệu và lạm dụng điểm thưởng, bạn không thể sử dụng lại email này để đăng ký nhận thêm 25đ ⚡.<br><br>Vui lòng click vào nút <strong>Đăng Nhập</strong> ở góc phải thanh menu để kết nối tài khoản của bạn.`
+                    '👋 Chào Mừng Quay Trở Lại!',
+                    `Chào mừng <strong>${user.name || name}</strong> quay trở lại với BD Bình Dân Học Vụ!<br><br>Hệ thống nhận diện tài khoản đã được đăng ký trước đó và tự động đồng bộ số điểm tích lũy <strong>${user.points}đ ⚡</strong> của bạn.`
                 );
+                
+                localStorage.setItem('streak_active', 'true');
+                localStorage.setItem('streak_name', user.name || name);
+                localStorage.setItem('streak_email', email);
+                localStorage.setItem('b2b_points_balance', (user.points || 0).toString());
+                localStorage.setItem('b2b_user_verified', 'true');
+                if (user.avatar) localStorage.setItem('b2b_custom_avatar', user.avatar);
+                
+                updateNavbarUserHUD();
+                updateUIElements();
                 
                 // Clear inputs
                 nameInput.value = '';
