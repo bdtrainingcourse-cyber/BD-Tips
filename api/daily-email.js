@@ -326,30 +326,35 @@ module.exports = async (req, res) => {
       subject: `Pipeline của bạn có lạnh như thời tiết ${temp}°C? ❄️`,
       message: `Chào Chiến thần B2B!<br><br>Hôm nay ${dayName} thời tiết khá dịu mát (${temp}°C), thích hợp để ngồi sưởi ấm pipeline bằng vài deal mới. Tin tức hôm nay: "${newsTitle}". Hãy dùng trợ lý <b>Cold Email AI</b> để bứt phá tỉ lệ mở thư nhé!`,
       buttonText: "✍️ Soạn Cold Email Ngay",
-      buttonUrl: "https://bd-tips.vercel.app/email-assistant.html"
+      buttonUrl: "https://bd-tips.vercel.app/email-assistant.html",
+      mascot: "https://bd-tips.vercel.app/mascot_ghost.jpg"
     },
     {
       subject: `Nắng nóng ${temp}°C làm deal bốc hơi? ☀️`,
       message: `Chào Chiến thần B2B!<br><br>Trời hôm nay đang nắng nóng gay gắt (${temp}°C) dễ làm tụt năng lượng. Tin nóng: "${newsTitle}". Đừng để deal bị bốc hơi, hãy cày ngay kịch bản pitching thuyết phục cùng <b>Pitching AI</b>!`,
       buttonText: "🎤 Pitching AI Ngay",
-      buttonUrl: "https://bd-tips.vercel.app/pitching.html"
+      buttonUrl: "https://bd-tips.vercel.app/pitching.html",
+      mascot: "https://bd-tips.vercel.app/mascot_hot.jpg"
     },
     {
       subject: `Trời mưa rả rích, làm sao để lead không ghost? 🌧️`,
       message: `Chào Chiến thần B2B!<br><br>Thời tiết mưa ẩm dễ làm tinh thần đi xuống. Đọc ngay tin tiêu điểm: "${newsTitle}" và vào <b>Thư viện BD</b> xem mẹo rã đông lead từ anh Peter Vo!`,
       buttonText: "📚 Đọc Case-Study Ngay",
-      buttonUrl: "https://bd-tips.vercel.app/library.html"
+      buttonUrl: "https://bd-tips.vercel.app/library.html",
+      mascot: "https://bd-tips.vercel.app/mascot_rain.jpg"
     },
     {
       subject: `Luyện phản xạ thực chiến ngày ${dayName}! 🦉`,
       message: `Chào Chiến thần B2B!<br><br>Bản tin kinh tế: "${newsTitle}". Hãy dành 2 phút giải trí và rèn luyện phản xạ xử lý từ chối cùng <b>Minigame B2B Challenge</b> để tích lũy điểm đổi quà nhé!`,
       buttonText: "🎮 Chơi Game Thực Chiến",
-      buttonUrl: "https://bd-tips.vercel.app/#minigame-section"
+      buttonUrl: "https://bd-tips.vercel.app/#minigame-section",
+      mascot: "https://bd-tips.vercel.app/mascot_challenge.jpg"
     }
   ];
 
-  let template = fallbackTemplates[dayOfYear % fallbackTemplates.length];
-  template.mascot = selectedMascot;
+  // Dynamic indexing based on dayOfWeek to ensure diversity even if Gemini API is rate-limited
+  const templateIndex = (dayOfYear + dayOfWeek) % fallbackTemplates.length;
+  let template = fallbackTemplates[templateIndex];
 
   // 5. Try generating personalized context email using Gemini 2.5 Flash
   const apiKey = process.env.GEMINI_API_KEY;
