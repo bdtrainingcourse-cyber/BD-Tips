@@ -180,7 +180,33 @@ module.exports = async (req, res) => {
   // --- Simulated Database Persistence Logic ---
   const users = readUsers();
   
-  // Track/update user profile locally for any incoming lead or sync request
+  // If user profile is missing from Vercel's ephemeral memory, rehydrate it from Google Sheets
+  const webhookUrl = tool === 'course-registration' 
+    ? process.env.GOOGLE_SHEET_COURSE_WEBHOOK 
+    : process.env.GOOGLE_SHEET_LEADS_WEBHOOK;
+
+  if (!users[cleanEmail] && webhookUrl && action !== 'verifyUser') {
+    try {
+      const response = await httpPost(webhookUrl, { action: 'checkEmail', email: cleanEmail });
+      const resText = await response.text();
+      const result = JSON.parse(resText);
+      if (result.exists && result.user) {
+        users[cleanEmail] = {
+          email: cleanEmail,
+          name: result.user.name,
+          points: result.user.points,
+          verified: result.user.verified,
+          lastIp: clientIp,
+          lastActive: timestamp
+        };
+        writeUsers(users);
+      }
+    } catch (e) {
+      console.warn('[SHEETS_REHYDRATE_WARN] Failed to rehydrate user from sheets:', e.message);
+    }
+  }
+
+  // Guard against duplicate registrations or leads from verified users
   const isVerified = users[cleanEmail] && users[cleanEmail].verified;
   if (isVerified && (action === 'syncUser' || !action)) {
     return res.status(400).json({
@@ -285,9 +311,7 @@ module.exports = async (req, res) => {
     writeUsers(users);
   }
 
-  const webhookUrl = tool === 'course-registration' 
-    ? process.env.GOOGLE_SHEET_COURSE_WEBHOOK 
-    : process.env.GOOGLE_SHEET_LEADS_WEBHOOK;
+  // webhookUrl is already declared at the top of the handler
 
   console.log(`[USER_LEAD] Email: ${email}, Name: ${name || 'N/A'}, Action: ${action || 'log'}, Tool: ${tool}, Date: ${timestamp}`);
 
