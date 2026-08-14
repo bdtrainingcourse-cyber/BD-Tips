@@ -26,7 +26,7 @@ module.exports = async (req, res) => {
           latestUser = users[email];
         }
       }
-      if (latestUser && (Date.now() - latestTime < 10 * 60 * 1000)) { // 10 minutes limit for local mockup testing
+      if (latestUser && latestUser.verified && (Date.now() - latestTime < 10 * 60 * 1000)) { // 10 minutes limit for local mockup testing
         return res.status(200).json({ found: true, user: {
           email: latestUser.email,
           name: latestUser.name,
@@ -44,7 +44,7 @@ module.exports = async (req, res) => {
 
   for (const email of Object.keys(users)) {
     const user = users[email];
-    if (user.lastIp === clientIp) {
+    if (user.lastIp === clientIp && user.verified) {
       const activeTime = new Date(user.lastActive || 0).getTime();
       if (now - activeTime < 24 * 60 * 60 * 1000) { // 24h window
         matchedUser = {
