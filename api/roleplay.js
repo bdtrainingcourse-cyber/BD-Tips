@@ -220,7 +220,7 @@ module.exports = async (req, res) => {
     return res.status(405).json({ error: 'Method Not Allowed' });
   }
 
-  const { action, scenario, industry, size, difficulty, personality, product, history, context, message, liveCoach, language } = req.body;
+  const { action, scenario, industry, size, difficulty, personality, product, history, context, message, liveCoach, language, voiceGender } = req.body;
   const apiKey = process.env.GEMINI_API_KEY;
 
   if (action === 'generateContext') {
@@ -321,6 +321,12 @@ Respond ONLY with a valid JSON object matching the following structure. Do not w
       // Build roleplay system instructions
       const historyPrompt = history.map(h => `${h.role === 'user' ? 'BD Representative (User)' : 'Client Stakeholder (AI)'}: "${h.content}"`).join('\n');
       
+      const isMale = (voiceGender === 'male');
+      const pronoun = isMale ? 'anh' : 'chị';
+      const pronounCap = isMale ? 'Anh' : 'Chị';
+      const forbiddenPronoun = isMale ? 'chị' : 'anh';
+      const stakeholderTitle = isMale ? 'nam Stakeholder' : 'nữ Stakeholder';
+
       let scenarioInjection = '';
       const scTitle = (scenario || '').toLowerCase();
       if (scTitle.includes('cold') || scTitle.includes('lạnh')) {
@@ -328,8 +334,8 @@ Respond ONLY with a valid JSON object matching the following structure. Do not w
 - Vai trò: buyer_role (Thư ký Gatekeeper hoặc Giám đốc bận rộn).
 - Bối cảnh: Đang trong giờ làm việc, đột ngột nhận cuộc gọi từ số lạ.
 - Phản ứng mẫu:
-  + "Chị đang bận họp, em gửi thông tin qua email đi."
-  + "Bên chị có đối tác làm rồi, không có nhu cầu nhé."
+  + "${pronounCap} đang bận họp, em gửi thông tin qua email đi."
+  + "Bên ${pronoun} có đối tác làm rồi, không có nhu cầu nhé."
   + "Bên em là công ty nào? Làm sao có số điện thoại này?"`;
       } else if (scTitle.includes('discovery') || scTitle.includes('nhu cầu')) {
         scenarioInjection = `=== TÌNH HUỐNG 2: DISCOVERY MEETING ===
@@ -337,48 +343,48 @@ Respond ONLY with a valid JSON object matching the following structure. Do not w
 - Bối cảnh: Buổi họp tìm hiểu nhu cầu. Quy trình hiện tại đang gặp trục trặc nhưng ngại thay đổi.
 - Phản ứng mẫu:
   + "Quy trình hiện tại tuy hơi chậm nhưng nhân viên dùng quen rồi, đổi mới phức tạp lắm."
-  + "Sếp chị chỉ quan tâm đến ROI và thời gian hòa vốn, bên em cam kết thế nào?"`;
+  + "Sếp ${pronoun} chỉ quan tâm đến ROI và thời gian hòa vốn, bên em cam kết thế nào?"`;
       } else if (scTitle.includes('demo') || scTitle.includes('trình diễn')) {
         scenarioInjection = `=== TÌNH HUỐNG 3: PRODUCT DEMO ===
 - Vai trò: buyer_role (End-user Lead & Manager).
 - Bối cảnh: Đang xem BD demo giao diện/tính năng giải pháp.
 - Phản ứng mẫu:
-  + "Tính năng này phức tạp quá, nhân viên bên chị không thạo công nghệ có dùng được không?"
+  + "Tính năng này phức tạp quá, nhân viên bên ${pronoun} không thạo công nghệ có dùng được không?"
   + "Demo thì mượt đấy, nhưng khi nạp data lớn vào thì hệ thống có bị lag không?"`;
       } else if (scTitle.includes('proposal') || scTitle.includes('đề xuất')) {
         scenarioInjection = `=== TÌNH HUỐNG 4: PROPOSAL PRESENTATION ===
 - Vai trò: buyer_role (CFO / Business Unit Director).
 - Bối cảnh: Đánh giá bản đề xuất chi tiết và báo giá.
 - Phản ứng mẫu:
-  + "Báo giá này cao hơn 40% so với ngân sách dự kiến của bên chị."
-  + "Có nhiều hạng mục trong proposal này chị thấy không cần thiết, bỏ ra để giảm giá được không?"`;
+  + "Báo giá này cao hơn 40% so với ngân sách dự kiến của bên ${pronoun}."
+  + "Có nhiều hạng mục trong proposal này ${pronoun} thấy không cần thiết, bỏ ra để giảm giá được không?"`;
       } else if (scTitle.includes('negotiation') || scTitle.includes('đàm phán')) {
         scenarioInjection = `=== TÌNH HUỐNG 5: CONTRACT NEGOTIATION ===
 - Vai trò: buyer_role (Procurement Head / Giám đốc mua hàng).
 - Bối cảnh: Đàm phán các điều khoản thương mại cuối cùng.
 - Phản ứng mẫu:
-  + "Chiết khấu thêm 15% và kéo dài thời hạn thanh toán thành 60 ngày thì chị mới ký."
+  + "Chiết khấu thêm 15% và kéo dài thời hạn thanh toán thành 60 ngày thì ${pronoun} mới ký."
   + "Bên em phải cam kết phạt 20% giá trị hợp đồng nếu trễ tiến độ bàn giao."`;
       } else if (scTitle.includes('competitor') || scTitle.includes('đối thủ')) {
         scenarioInjection = `=== TÌNH HUỐNG 6: COMPETITOR CHALLENGE ===
 - Vai trò: buyer_role (Decision Maker đang dùng giải pháp của đối thủ lớn).
 - Bối cảnh: BD đang cố gắng thuyết phục chuyển đổi sang giải pháp mới.
 - Phản ứng mẫu:
-  + "Bên chị đang dùng của bên X 3 năm nay rất ổn định. Vì sao chị phải mạo hiểm đổi sang em?"
+  + "Bên ${pronoun} đang dùng của bên X 3 năm nay rất ổn định. Vì sao ${pronoun} phải mạo hiểm đổi sang em?"
   + "Bên X hỗ trợ 24/7 và có thương hiệu lớn, công ty em còn mới quá."`;
       } else if (scTitle.includes('technical') || scTitle.includes('kỹ thuật') || scTitle.includes('bảo mật')) {
         scenarioInjection = `=== TÌNH HUỐNG 7: TECHNICAL & SECURITY REVIEW ===
 - Vai trò: buyer_role (CTO / IT Lead).
 - Bối cảnh: Đánh giá khả năng tích hợp, hạ tầng và bảo mật.
 - Phản ứng mẫu:
-  + "Data của bên chị lưu ở đâu? Hệ thống có đạt chuẩn ISO 27001 hay SOC2 không?"
+  + "Data của bên ${pronoun} lưu ở đâu? Hệ thống có đạt chuẩn ISO 27001 hay SOC2 không?"
   + "API bên em là RESTful hay SOAP? Khả năng chịu tải đồng thời (Concurrent Users) là bao nhiêu?"`;
       } else {
         scenarioInjection = `=== TÌNH HUỐNG 8: CLOSING DEAL CALL ===
 - Vai trò: buyer_role (CEO / General Manager).
 - Bối cảnh: Cuộc gọi chốt đơn hàng cuối cùng nhưng khách hàng do dự.
 - Phản ứng mẫu:
-  + "Thôi để sang quý sau chị cân nhắc lại nhé, dạo này ngân sách đang siết chặt."
+  + "Thôi để sang quý sau ${pronoun} cân nhắc lại nhé, dạo này ngân sách đang siết chặt."
   + "Nếu triển khai không đạt KPIs như cam kết thì bên em đền bù thế nào?"`;
       }
 
@@ -386,7 +392,12 @@ Respond ONLY with a valid JSON object matching the following structure. Do not w
 # ROLE & PERSONALITY
 Bạn là một Khách hàng Doanh nghiệp B2B (B2B Buyer) có tính cách thực tế, bận rộn và khắt khe. 
 Nhiệm vụ của bạn là nhập vai (Role-play) thành nhân vật khách hàng theo đúng ngữ cảnh được chọn để giúp nhân viên BD/Sales rèn luyện kỹ năng pitching thực tế.
-Bạn đóng vai một nữ Stakeholder (luôn xưng hô "chị" / "mình" và gọi BD là "em" / "bên em" - TUYỆT ĐỐI không dùng "anh", "bạn" hoặc "tôi" trong giao tiếp Việt Nam).
+Bạn đóng vai một ${stakeholderTitle} (luôn xưng hô "${pronoun}" / "mình" và gọi BD là "em" / "bên em" - TUYỆT ĐỐI không dùng "${forbiddenPronoun}", "bạn" hoặc "tôi" trong giao tiếp Việt Nam).
+
+# PROFESSIONAL ROLE-PLAY FOCUS
+- Nếu vị trí khách hàng (buyer_role) là "CEO" hoặc "Quản lý": Tập trung vào bài toán ROI (tỷ suất sinh lời), tác động chiến lược lên doanh thu, thời gian hòa vốn và sự tin cậy.
+- Nếu vị trí khách hàng là "CTO", "CIO" hoặc "Kỹ thuật" hoặc "Tech Lead": Tập trung hỏi sâu về bảo mật dữ liệu, tích hợp hệ thống qua API, khả năng mở rộng (scalability) và thời gian bảo trì.
+- Nếu vị trí khách hàng là "Mua hàng", "CFO" hoặc "Tài chính": Liên tục ép giá, yêu cầu chính sách chiết khấu, đàm phán kéo dài thời hạn thanh toán (ví dụ: công nợ 45-60 ngày) và phạt vi phạm tiến độ.
 
 # CONTEXT VARIABLES (Nhận từ hệ thống Antigravity)
 - Kịch bản được chọn (selected_scenario): ${scenario}
@@ -420,7 +431,7 @@ Nếu liveCoach là enabled (${liveCoach ? 'true' : 'false'}), cung cấp một 
 
 Respond ONLY with a valid JSON object matching the following structure. Do not wrap in markdown or backticks:
 {
-  "reply": "Your response as the client stakeholder (xưng chị - em)",
+  "reply": "Your response as the client stakeholder (xưng hô ${pronoun} - em)",
   "coachHint": "Brief sales tip for the coach panel, or null",
   "endSession": true or false
 }`;
