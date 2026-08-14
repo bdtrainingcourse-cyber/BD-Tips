@@ -99,17 +99,46 @@ const initThemeToggle = () => {
         }, 800);
     }
 
-    // IP-based Device Sync Auto-Detection
+    // Auto Welcome Back and IP detection on load
     const currentRegEmail = localStorage.getItem('streak_email');
-    const syncDismissed = localStorage.getItem('bd_sync_dismissed');
-    if (!currentRegEmail && syncDismissed !== 'true') {
-        // Only run if not logged in and not dismissed before
+    const welcomed = sessionStorage.getItem('bd_session_welcomed') === 'true';
+    
+    if (currentRegEmail) {
+        if (!welcomed) {
+            sessionStorage.setItem('bd_session_welcomed', 'true');
+            const name = localStorage.getItem('streak_name') || 'Chiến thần';
+            const points = localStorage.getItem('b2b_points_balance') || '0';
+            setTimeout(() => {
+                window.showGlobalNotification(
+                    '🦉 Chào Mừng Quay Trở Lại!',
+                    `Chào mừng <strong>${name}</strong> quay trở lại với BD Bình Dân Học Vụ!<br><br>Số điểm tích lũy hiện tại của bạn: <strong>${points}đ ⚡</strong>.`
+                );
+            }, 1000);
+        }
+    } else {
+        // IP-based Device Sync Auto-Detection
         setTimeout(async () => {
             try {
                 const res = await fetch('/api/detect-ip-user');
                 const data = await res.json();
                 if (data.found && data.user) {
-                    window.showGlobalSyncPrompt(data.user);
+                    // Auto login and sync under the hood
+                    localStorage.setItem('streak_active', 'true');
+                    localStorage.setItem('streak_name', data.user.name);
+                    localStorage.setItem('streak_email', data.user.email);
+                    localStorage.setItem('b2b_points_balance', data.user.points.toString());
+                    localStorage.setItem('b2b_user_verified', 'true');
+                    if (data.user.avatar) localStorage.setItem('b2b_custom_avatar', data.user.avatar);
+                    
+                    sessionStorage.setItem('bd_session_welcomed', 'true');
+                    updateNavbarUserHUD();
+                    updateUIElements();
+                    
+                    window.showGlobalNotification(
+                        '🔄 Chào Mừng Quay Trở Lại!',
+                        `Chào mừng <strong>${data.user.name}</strong> quay trở lại B2B BD!<br><br>Hệ thống nhận diện Wi-Fi đã tự động đồng bộ tài khoản <strong>${data.user.email}</strong> và số điểm tích lũy <strong>${data.user.points}đ ⚡</strong> của bạn.`
+                    );
+                    window.trackUserBehavior('device_sync_ip_auto', 'Auto-Sync via IP');
                 }
             } catch (e) {
                 console.warn('IP detect sync error:', e);
@@ -512,6 +541,184 @@ function injectNavbarUserHUD() {
     updateNavbarUserHUD();
 }
 
+function injectNavbarUserHUD() {
+    const navMenu = document.getElementById('nav-menu');
+    if (!navMenu) return;
+    
+    // Check if HUD already injected
+    if (document.getElementById('navbar-user-hud')) return;
+    
+    const hud = document.createElement('div');
+    hud.id = 'navbar-user-hud';
+    hud.className = 'nav-user-hud';
+    
+    const themeToggle = document.getElementById('theme-toggle');
+    if (themeToggle) {
+        navMenu.insertBefore(hud, themeToggle);
+    } else {
+        navMenu.appendChild(hud);
+    }
+    
+    // Add global click to close dropdown when clicking outside
+    document.addEventListener('click', () => {
+        const dropdown = document.getElementById('navbar-profile-dropdown');
+        if (dropdown) dropdown.classList.add('hidden');
+    });
+
+    updateNavbarUserHUD();
+}
+
+function renderProfileDropdownContent(dropdownEl) {
+    const email = localStorage.getItem('streak_email') || '';
+    const name = localStorage.getItem('streak_name') || 'Chiến thần';
+    const points = localStorage.getItem('b2b_points_balance') || '0';
+    const verified = localStorage.getItem('b2b_user_verified') === 'true';
+    
+    let history = [];
+    try {
+        history = JSON.parse(localStorage.getItem('b2b_points_history') || '[]');
+    } catch(e) {}
+    
+    let historyHtml = '';
+    if (history.length === 0) {
+        historyHtml = '<div style="text-align: center; color: var(--text-muted); font-size: 0.7rem; padding: 10px;">Chưa có lịch sử tương tác.</div>';
+    } else {
+        historyHtml = history.slice(0, 5).map(h => `
+            <div class="history-item-compact">
+                <span style="max-width: 170px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 500;" title="${h.action}">${h.action}</span>
+                <strong style="color: ${h.change >= 0 ? '#10b981' : '#ef4444'}; font-size: 0.75rem;">${h.change >= 0 ? '+' : ''}${h.change}đ</strong>
+            </div>
+        `).join('');
+    }
+    
+    dropdownEl.innerHTML = `
+        <div style="border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 10px;">
+            <div style="font-weight: 800; font-size: 0.9rem; color: #f59e0b; display: flex; align-items: center; justify-content: space-between; gap: 8px;">
+                <span style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 150px;">${name}</span>
+                <span class="${verified ? 'badge-verified' : 'badge-unverified'}">${verified ? 'Đã xác thực' : 'Chưa xác thực'}</span>
+            </div>
+            <div style="font-size: 0.72rem; color: #cbd5e1; margin-top: 4px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${email}">${email}</div>
+        </div>
+        <div>
+            <div style="font-size: 0.7rem; color: #94a3b8; font-weight: 700; text-transform: uppercase; margin-bottom: 4px;">Số dư tài khoản:</div>
+            <div style="font-size: 1.1rem; font-weight: 800; color: #f3a83b; display: flex; align-items: center; gap: 4px;">⚡ ${points} BD-Points</div>
+        </div>
+        <div>
+            <div style="font-size: 0.7rem; color: #94a3b8; font-weight: 700; text-transform: uppercase; margin-bottom: 6px;">Lịch sử hoạt động gần đây:</div>
+            <div class="history-list-compact">${historyHtml}</div>
+        </div>
+        <div style="display: flex; gap: 8px; justify-content: flex-end; margin-top: 4px; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 10px;">
+            <button id="btn-profile-logout" style="background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.3); color: #f87171; padding: 5px 12px; border-radius: 6px; font-size: 0.72rem; font-weight: 700; cursor: pointer; transition: all 0.2s ease;">Đăng Xuất</button>
+        </div>
+    `;
+    
+    dropdownEl.querySelector('#btn-profile-logout').addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (confirm('Bạn có chắc chắn muốn đăng xuất tài khoản?')) {
+            localStorage.removeItem('streak_active');
+            localStorage.removeItem('streak_email');
+            localStorage.removeItem('streak_name');
+            localStorage.removeItem('b2b_points_balance');
+            localStorage.removeItem('b2b_user_verified');
+            localStorage.removeItem('b2b_points_history');
+            window.location.reload();
+        }
+    });
+}
+
+window.showGlobalLoginModal = function() {
+    let overlay = document.getElementById('global-login-modal');
+    if (!overlay) {
+        overlay = document.createElement('div');
+        overlay.id = 'global-login-modal';
+        overlay.className = 'global-modal-overlay';
+        overlay.innerHTML = `
+            <div class="global-modal-box" style="max-width: 400px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 15px; margin-bottom: 20px;">
+                    <h3 style="font-size: 1.25rem; font-weight: 800; color: #f59e0b; margin: 0; display: flex; align-items: center; gap: 8px;">
+                        🔑 ĐĂNG NHẬP B2B BD
+                    </h3>
+                    <button id="global-login-close-btn" style="background: none; border: none; font-size: 1.5rem; color: #94a3b8; cursor: pointer; line-height: 1;">&times;</button>
+                </div>
+                <p style="font-size: 0.88rem; color: #cbd5e1; margin-bottom: 18px; line-height: 1.5;">
+                    Nhập email đã đăng ký của bạn để đồng bộ điểm tích lũy ⚡ và xem lịch sử tương tác.
+                </p>
+                <div style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 22px;">
+                    <input id="login-email-input" type="email" placeholder="Nhập email của bạn..." style="padding: 10px 14px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.15); background: #0f172a; color: #cbd5e1; font-size: 0.88rem; outline: none; transition: border-color 0.2s;" />
+                </div>
+                <div style="display: flex; justify-content: flex-end; gap: 10px;">
+                    <button id="btn-login-submit" style="background: linear-gradient(135deg, #f3a83b 0%, #f59e0b 100%); border: none; color: #fff; padding: 8px 24px; border-radius: 8px; font-weight: 700; cursor: pointer; transition: transform 0.2s ease;">Đăng Nhập</button>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(overlay);
+
+        overlay.querySelector('#global-login-close-btn').addEventListener('click', () => overlay.classList.remove('active'));
+        overlay.addEventListener('click', (e) => {
+            if (e.target === overlay) overlay.classList.remove('active');
+        });
+
+        overlay.querySelector('#btn-login-submit').addEventListener('click', async () => {
+            const emailInput = overlay.querySelector('#login-email-input');
+            const email = emailInput.value.trim();
+            if (!email || !email.includes('@')) {
+                alert('Vui lòng nhập email hợp lệ!');
+                return;
+            }
+
+            const submitBtn = overlay.querySelector('#btn-login-submit');
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Đang kiểm tra... ⏳';
+
+            try {
+                const checkUrl = `/api/log-email?action=checkEmail&email=${encodeURIComponent(email)}`;
+                const res = await fetch(checkUrl);
+                const data = await res.json();
+
+                if (data.exists && data.user) {
+                    const user = data.user;
+                    if (!user.verified) {
+                        window.showGlobalNotification(
+                            '✉️ Tài Khoản Chưa Xác Thực',
+                            `Tài khoản <strong>${email}</strong> đã đăng ký nhưng <strong>chưa được xác thực email</strong>.<br><br>Vui lòng kiểm tra hộp thư (mục Thư rác/Spam) và click vào liên kết xác thực để kích hoạt tài khoản.`
+                        );
+                        overlay.classList.remove('active');
+                        return;
+                    }
+
+                    // Successful login sync
+                    localStorage.setItem('streak_active', 'true');
+                    localStorage.setItem('streak_name', user.name);
+                    localStorage.setItem('streak_email', email);
+                    localStorage.setItem('b2b_points_balance', user.points.toString());
+                    localStorage.setItem('b2b_user_verified', 'true');
+                    if (user.avatar) localStorage.setItem('b2b_custom_avatar', user.avatar);
+                    
+                    overlay.classList.remove('active');
+                    updateNavbarUserHUD();
+                    updateUIElements();
+
+                    window.showGlobalNotification(
+                        '🔑 Đăng Nhập Thành Công!',
+                        `Chào mừng <strong>${user.name}</strong>! Đồng bộ tài khoản và số điểm tích lũy <strong>${user.points}đ ⚡</strong> thành công.`
+                    );
+                } else {
+                    alert('Email này chưa đăng ký tài khoản! Vui lòng đăng ký tham gia B2B Challenge ở trang chủ để mở tài khoản mới.');
+                }
+            } catch (err) {
+                console.error(err);
+                alert('Có lỗi kết nối mạng xảy ra.');
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Đăng Nhập';
+            }
+        });
+    }
+
+    overlay.querySelector('#login-email-input').value = '';
+    overlay.classList.add('active');
+};
+
 function updateNavbarUserHUD() {
     const hud = document.getElementById('navbar-user-hud');
     if (!hud) {
@@ -526,13 +733,34 @@ function updateNavbarUserHUD() {
         const name = localStorage.getItem('streak_name') || 'Chiến thần';
         const points = localStorage.getItem('b2b_points_balance') || '0';
         
-        const nameEl = document.getElementById('navbar-user-name');
-        const pointsEl = document.getElementById('navbar-user-points');
-        if (nameEl) nameEl.textContent = name;
-        if (pointsEl) pointsEl.textContent = points;
+        hud.innerHTML = `
+            <span style="font-size: 1rem; line-height: 1;">🦉</span>
+            <span id="navbar-user-name" style="max-width: 90px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${name}</span>: 
+            <span id="navbar-user-points" style="color: var(--primary); margin-left: 2px;">${points}</span>đ
+            <div id="navbar-profile-dropdown" class="profile-dropdown-card hidden"></div>
+        `;
+        
+        hud.onclick = (e) => {
+            const dropdown = document.getElementById('navbar-profile-dropdown');
+            if (dropdown) {
+                if (e.target.closest('.profile-dropdown-card')) return;
+                e.stopPropagation();
+                const isHidden = dropdown.classList.toggle('hidden');
+                if (!isHidden) {
+                    renderProfileDropdownContent(dropdown);
+                }
+            }
+        };
     } else {
-        hud.classList.add('hidden');
-        hud.style.display = 'none';
+        hud.classList.remove('hidden');
+        hud.style.display = 'flex';
+        hud.innerHTML = `
+            <button class="nav-login-btn">🔑 Đăng Nhập</button>
+        `;
+        hud.onclick = (e) => {
+            e.stopPropagation();
+            window.showGlobalLoginModal();
+        };
     }
 }
 
@@ -1008,6 +1236,94 @@ function initGlobalComponents() {
         .global-share-btn-item:hover {
             transform: translateY(-2px);
             filter: brightness(1.1);
+        }
+        .nav-user-hud {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 14px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.82rem;
+            font-weight: 600;
+            transition: all 0.2s ease;
+            user-select: none;
+            position: relative;
+        }
+        .nav-user-hud:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: #f3a83b;
+        }
+        .nav-login-btn {
+            background: linear-gradient(135deg, #f3a83b 0%, #f59e0b 100%);
+            color: #fff;
+            border: none;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-weight: 700;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: transform 0.2s ease;
+        }
+        .nav-login-btn:hover {
+            transform: scale(1.03);
+        }
+        .profile-dropdown-card {
+            position: absolute;
+            top: 45px;
+            right: 0;
+            width: 320px;
+            background: #1e293b;
+            border: 1.5px solid rgba(243, 168, 59, 0.25);
+            border-radius: 16px;
+            padding: 16px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            z-index: 10000;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            text-align: left;
+            color: #f8fafc;
+            cursor: default;
+            animation: fadeInUp 0.2s ease-out;
+        }
+        .profile-dropdown-card.hidden {
+            display: none !important;
+        }
+        .history-list-compact {
+            max-height: 140px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            padding-right: 4px;
+        }
+        .history-item-compact {
+            background: rgba(15, 23, 42, 0.3);
+            padding: 6px 8px;
+            border-radius: 6px;
+            font-size: 0.72rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .badge-verified {
+            background: rgba(16, 185, 129, 0.15);
+            color: #10b981;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.65rem;
+            font-weight: 700;
+        }
+        .badge-unverified {
+            background: rgba(245, 158, 11, 0.15);
+            color: #f59e0b;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.65rem;
+            font-weight: 700;
         }
     `;
     document.head.appendChild(styleEl);
