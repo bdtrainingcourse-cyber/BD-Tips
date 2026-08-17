@@ -456,100 +456,68 @@ YÊU CẦU NỘI DUNG:
     }
   }
 
-  const demoEmail = req.query.email || 'hocvien@gmail.com';
-  const demoName = req.query.name || 'Chiến thần B2B';
-
   const subject = template.subject;
   const bodyText = getHtmlTemplate(template.message, template.buttonText, template.buttonUrl, template.mascot);
 
-  // Load all registered users from the simulated local database
-  const users = readUsers();
-  let recipients = Object.values(users).filter(u => u.email && u.email.includes('@'));
-
-  // If no users found, fall back to the demo recipient
-  if (recipients.length === 0) {
-    recipients.push({ email: demoEmail, name: demoName });
-  }
-
-  // If we are overriding for testing via ?email=...
-  if (req.query.email) {
-    recipients = [{ email: req.query.email, name: req.query.name || 'Chiến thần B2B' }];
-  }
-
-  console.log(`[DAILY_EMAIL_CRON] Dispatching to ${recipients.length} recipients...`);
-  console.log(`[DAILY_EMAIL_CRON] Subject: ${subject}`);
-
-  const BATCH_SIZE = 50;
-  const DELAY_BETWEEN_BATCHES = 2000;
-  const dispatchLogs = [];
-  let triggeredWebhook = false;
-
   const webhookUrl = process.env.GOOGLE_SHEET_LEADS_WEBHOOK;
 
-  for (let i = 0; i < recipients.length; i += BATCH_SIZE) {
-    const currentBatch = recipients.slice(i, i + BATCH_SIZE);
-    console.log(`[DAILY_EMAIL_CRON] Sending Batch ${Math.floor(i / BATCH_SIZE) + 1} (${currentBatch.length} emails)...`);
-
-    const batchPromises = currentBatch.map(async (recipient) => {
-      const personalizedBody = bodyText.replace(/Chiến thần B2B/g, recipient.name || 'Chiến thần B2B');
-      
-      if (webhookUrl) {
-        try {
-          const emailRes = await httpPost(webhookUrl, {
-            action: 'sendSingleEmail',
-            to: recipient.email,
-            name: recipient.name,
-            subject: subject,
-            body: personalizedBody
-          });
-          const resText = await emailRes.text();
-          triggeredWebhook = true;
-          return { email: recipient.email, success: true, detail: resText };
-        } catch (err) {
-          console.error(`[DAILY_EMAIL_CRON_ERROR] Failed for ${recipient.email}:`, err.message);
-          return { email: recipient.email, success: false, error: err.message };
-        }
-      } else {
-        return { email: recipient.email, success: true, detail: 'Mock send successful (Dev mode)' };
+  // If overriding for testing via ?email=...
+  if (req.query.email) {
+    console.log(`[DAILY_EMAIL_CRON] Test mode. Sending single email to ${req.query.email}...`);
+    if (webhookUrl) {
+      try {
+        const emailRes = await httpPost(webhookUrl, {
+          action: 'sendSingleEmail',
+          to: req.query.email,
+          name: req.query.name || 'Chiến thần B2B',
+          subject: subject,
+          body: bodyText
+        });
+        const resText = await emailRes.text();
+        return res.status(200).json({
+          success: true,
+          message: `Test email sent to ${req.query.email}`,
+          sheetResponse: resText,
+          context: { temp, weatherDesc, newsTitle, mascot: template.mascot }
+        });
+      } catch (err) {
+        console.error(`[DAILY_EMAIL_CRON_ERROR] Test email failed:`, err);
+        return res.status(500).json({ error: err.message });
       }
-    });
-
-    const batchResults = await Promise.all(batchPromises);
-    dispatchLogs.push(...batchResults);
-
-    if (i + BATCH_SIZE < recipients.length) {
-      console.log(`[DAILY_EMAIL_CRON] Throttling for ${DELAY_BETWEEN_BATCHES}ms before next batch...`);
-      await new Promise(resolve => setTimeout(resolve, DELAY_BETWEEN_BATCHES));
+    } else {
+      return res.status(200).json({
+        success: true,
+        message: 'Mock send successful (Dev mode - no webhook URL)',
+        context: { temp, weatherDesc, newsTitle, mascot: template.mascot }
+      });
     }
   }
 
-  let fallbackResponse = '';
-  if (webhookUrl && !triggeredWebhook) {
+  // Otherwise, it's the automated daily cron run! Trigger Sheet to email all registered users!
+  console.log(`[DAILY_EMAIL_CRON] Cron mode. Triggering sheet daily dispatch...`);
+  if (webhookUrl) {
     try {
-      const response = await httpPost(webhookUrl, { 
-        action: 'sendDailyEmails', 
-        subject: subject, 
-        body: bodyText 
+      const response = await httpPost(webhookUrl, {
+        action: 'sendDailyEmails',
+        subject: subject,
+        body: bodyText
       });
-      fallbackResponse = await response.text();
-      triggeredWebhook = true;
+      const resText = await response.text();
+      return res.status(200).json({
+        success: true,
+        message: 'Daily cron dispatch sent to Google Sheets Webhook',
+        sheetResponse: resText,
+        context: { temp, weatherDesc, newsTitle, mascot: template.mascot }
+      });
     } catch (err) {
-      console.error(`[DAILY_EMAIL_CRON_ERROR] Fallback webhook failed:`, err);
+      console.error(`[DAILY_EMAIL_CRON_ERROR] Cron dispatch failed:`, err);
+      return res.status(500).json({ error: err.message });
     }
   }
 
   return res.status(200).json({
     success: true,
-    message: `Daily emails processed. Dispatched ${dispatchLogs.length} messages.`,
-    triggeredWebhook: triggeredWebhook,
-    fallbackResponse: fallbackResponse,
-    dispatchLogs: dispatchLogs.slice(0, 10),
-    totalSent: dispatchLogs.length,
-    context: {
-      temp,
-      weatherDesc,
-      newsTitle,
-      mascot: template.mascot
-    }
+    message: 'Mock cron run completed (Dev mode - no webhook URL)',
+    context: { temp, weatherDesc, newsTitle, mascot: template.mascot }
   });
 };
