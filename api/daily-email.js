@@ -457,8 +457,6 @@ YÊU CẦU NỘI DUNG:
   }
 
   const subject = template.subject;
-  const bodyText = getHtmlTemplate(template.message, template.buttonText, template.buttonUrl, template.mascot);
-
   const webhookUrl = process.env.GOOGLE_SHEET_LEADS_WEBHOOK;
 
   // If overriding for testing via ?email=...
@@ -471,7 +469,10 @@ YÊU CẦU NỘI DUNG:
           to: req.query.email,
           name: req.query.name || 'Chiến thần B2B',
           subject: subject,
-          body: bodyText
+          message: template.message,
+          buttonText: template.buttonText,
+          buttonUrl: template.buttonUrl,
+          mascot: template.mascot
         });
         const resText = await emailRes.text();
         return res.status(200).json({
@@ -485,9 +486,11 @@ YÊU CẦU NỘI DUNG:
         return res.status(500).json({ error: err.message });
       }
     } else {
+      const bodyText = getHtmlTemplate(template.message, template.buttonText, template.buttonUrl, template.mascot);
       return res.status(200).json({
         success: true,
         message: 'Mock send successful (Dev mode - no webhook URL)',
+        bodyHtml: bodyText,
         context: { temp, weatherDesc, newsTitle, mascot: template.mascot }
       });
     }
@@ -500,7 +503,10 @@ YÊU CẦU NỘI DUNG:
       const response = await httpPost(webhookUrl, {
         action: 'sendDailyEmails',
         subject: subject,
-        body: bodyText
+        message: template.message,
+        buttonText: template.buttonText,
+        buttonUrl: template.buttonUrl,
+        mascot: template.mascot
       });
       const resText = await response.text();
       return res.status(200).json({
