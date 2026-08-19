@@ -381,6 +381,65 @@ module.exports = async (req, res) => {
       });
     }
     return res.status(200).json({ success: true, exists: false });
+  } else if (action === 'forgotPassword') {
+    if (localUser) {
+      const resetToken = Math.random().toString(36).substr(2, 9).toUpperCase();
+      const resetExpires = Date.now() + 3600000;
+      
+      localUser.resetToken = resetToken;
+      localUser.resetExpires = resetExpires;
+      localUser.lastActive = timestamp;
+      localUser.lastIp = clientIp;
+      writeUsers(users);
+      
+      if (webhookUrl) {
+        try {
+          await httpPost(webhookUrl, {
+            action: 'sendForgotPasswordEmail',
+            email: cleanEmail,
+            name: localUser.name || 'Học viên',
+            resetToken: resetToken
+          });
+        } catch (err) {
+          console.error('[FORGOT_PASSWORD_ERROR] Failed to send reset email:', err.message);
+        }
+      }
+      
+      return res.status(200).json({ success: true, message: 'Reset token generated and email sent.' });
+    }
+    return res.status(400).json({ error: 'Email này chưa được đăng ký trên hệ thống!' });
+  } else if (action === 'resetPassword') {
+    if (localUser) {
+      const { reset_token } = params;
+      if (!localUser.resetToken || localUser.resetToken !== reset_token || Date.now() > localUser.resetExpires) {
+        return res.status(400).json({ error: 'Mã khôi phục mật khẩu không hợp lệ hoặc đã hết hạn!' });
+      }
+      
+      localUser.password = crypto.createHash('sha256').update(password).digest('hex');
+      localUser.resetToken = null;
+      localUser.resetExpires = null;
+      localUser.lastActive = timestamp;
+      localUser.lastIp = clientIp;
+      writeUsers(users);
+      
+      if (webhookUrl) {
+        try {
+          await httpPost(webhookUrl, {
+            action: 'syncUser',
+            email: cleanEmail,
+            userId: localUser.id,
+            password: localUser.password,
+            name: localUser.name,
+            points: localUser.points
+          });
+        } catch (err) {
+          console.warn('[SHEETS_SYNC_WARN] Failed to sync reset password to sheets:', err.message);
+        }
+      }
+      
+      return res.status(200).json({ success: true, message: 'Password reset successfully!' });
+    }
+    return res.status(400).json({ error: 'Người dùng không tồn tại!' });
   } else {
     // General lead tracking (ebook downloads, minigame registrations, etc.)
     if (!localUser) {
