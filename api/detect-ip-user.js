@@ -11,23 +11,25 @@ module.exports = async (req, res) => {
   }
 
   const clientIp = req.headers['x-forwarded-for'] || req.socket.remoteAddress || '';
+  const users = readUsers();
+  const userList = Object.values(users);
+
   if (!clientIp || clientIp === '127.0.0.1' || clientIp === '::1') {
     // For local development testing, we can optionally mock detection by pairing with the most recently logged in user
-    const users = readUsers();
-    const emails = Object.keys(users);
-    if (emails.length > 0) {
+    if (userList.length > 0) {
       // Find the most recently active user
       let latestUser = null;
       let latestTime = 0;
-      for (const email of emails) {
-        const time = new Date(users[email].lastActive || 0).getTime();
+      for (const user of userList) {
+        const time = new Date(user.lastActive || 0).getTime();
         if (time > latestTime) {
           latestTime = time;
-          latestUser = users[email];
+          latestUser = user;
         }
       }
       if (latestUser && latestUser.verified && (Date.now() - latestTime < 10 * 60 * 1000)) { // 10 minutes limit for local mockup testing
         return res.status(200).json({ found: true, user: {
+          id: latestUser.id || '',
           email: latestUser.email,
           name: latestUser.name,
           points: latestUser.points,
@@ -38,16 +40,15 @@ module.exports = async (req, res) => {
     return res.status(200).json({ found: false });
   }
 
-  const users = readUsers();
   const now = Date.now();
   let matchedUser = null;
 
-  for (const email of Object.keys(users)) {
-    const user = users[email];
+  for (const user of userList) {
     if (user.lastIp === clientIp && user.verified) {
       const activeTime = new Date(user.lastActive || 0).getTime();
       if (now - activeTime < 24 * 60 * 60 * 1000) { // 24h window
         matchedUser = {
+          id: user.id || '',
           email: user.email,
           name: user.name,
           points: user.points,
