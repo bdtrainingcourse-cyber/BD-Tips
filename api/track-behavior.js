@@ -35,10 +35,11 @@ module.exports = async (req, res) => {
 
   // Update last active IP for the user if profile exists
   const users = readUsers();
-  if (users[cleanEmail]) {
+  const matchedUser = Object.values(users).find(u => u.email && u.email.toLowerCase().trim() === cleanEmail);
+  if (matchedUser) {
     const clientIp = req.headers['x-forwarded-for'] || req.socket.remoteAddress || '';
-    users[cleanEmail].lastIp = clientIp;
-    users[cleanEmail].lastActive = timestamp;
+    matchedUser.lastIp = clientIp;
+    matchedUser.lastActive = timestamp;
     writeUsers(users);
   }
 
