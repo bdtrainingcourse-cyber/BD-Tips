@@ -360,6 +360,37 @@ function showQuestWelcomeBanner() {
     document.body.appendChild(tempDiv.firstElementChild);
 }
 
+async function checkIPAutoLogin() {
+    if (localStorage.getItem('streak_active') === 'true') return;
+    try {
+        const res = await fetch('/api/detect-ip-user');
+        const data = await res.json();
+        if (data.found && data.user) {
+            const user = data.user;
+            localStorage.setItem('streak_active', 'true');
+            if (user.id) localStorage.setItem('streak_user_id', user.id);
+            localStorage.setItem('streak_name', user.name);
+            localStorage.setItem('streak_email', user.email);
+            localStorage.setItem('b2b_points_balance', user.points.toString());
+            localStorage.setItem('b2b_user_verified', 'true');
+            if (user.avatar) localStorage.setItem('b2b_custom_avatar', user.avatar);
+            
+            // Mark as auto-logged in via IP (needs password verification for sensitive actions)
+            localStorage.setItem('b2b_ip_autologin', 'true');
+            
+            updateNavbarUserHUD();
+            updateUIElements();
+            
+            window.showGlobalNotification(
+                '⚡ Đăng Nhập Tự Động Thành Công',
+                `Chào mừng quay trở lại <strong>${user.name}</strong>! Cú BeeDee nhận diện thiết bị đáng tin cậy qua IP và đã tự động đồng bộ điểm tích lũy <strong>${user.points}đ ⚡</strong> cho bạn.`
+            );
+        }
+    } catch (e) {
+        console.warn('IP auto-login check failed:', e);
+    }
+}
+
 function checkQuestsOnLoad() {
     if (localStorage.getItem('streak_active') !== 'true') return;
     const todayStr = new Date().toISOString().split('T')[0];
@@ -629,6 +660,132 @@ function renderProfileDropdownContent(dropdownEl) {
     });
 }
 
+window.showPasswordSetupModal = function(onSubmitCallback) {
+    let overlay = document.getElementById('global-password-setup-modal');
+    if (!overlay) {
+        overlay = document.createElement('div');
+        overlay.id = 'global-password-setup-modal';
+        overlay.className = 'global-modal-overlay';
+        overlay.innerHTML = `
+            <div class="global-modal-box" style="max-width: 400px; background: #1e293b; border: 1px solid rgba(243, 168, 59, 0.3); border-radius: 12px; padding: 25px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 15px; margin-bottom: 20px;">
+                    <h3 style="font-size: 1.25rem; font-weight: 800; color: #f59e0b; margin: 0; display: flex; align-items: center; gap: 8px;">
+                        🔒 THIẾT LẬP MẬT KHẨU
+                    </h3>
+                </div>
+                <p style="font-size: 0.85rem; color: #cbd5e1; margin-bottom: 18px; line-height: 1.5;">
+                    Vui lòng tạo mật khẩu cho tài khoản của bạn để bảo mật điểm thưởng và lịch sử cá nhân.
+                </p>
+                <div style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 22px;">
+                    <input id="setup-password-input" type="password" placeholder="Nhập mật khẩu mới (tối thiểu 6 ký tự)..." style="padding: 10px 14px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.15); background: #0f172a; color: #cbd5e1; font-size: 0.88rem; outline: none;" />
+                    <input id="setup-password-confirm" type="password" placeholder="Xác nhận lại mật khẩu..." style="padding: 10px 14px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.15); background: #0f172a; color: #cbd5e1; font-size: 0.88rem; outline: none;" />
+                </div>
+                <div style="display: flex; justify-content: flex-end; gap: 10px;">
+                    <button id="btn-setup-password-submit" style="background: linear-gradient(135deg, #f3a83b 0%, #f59e0b 100%); border: none; color: #fff; padding: 8px 24px; border-radius: 8px; font-weight: 700; cursor: pointer;">Lưu & Tiếp Tục</button>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(overlay);
+
+        overlay.querySelector('#btn-setup-password-submit').addEventListener('click', () => {
+            const pwd = overlay.querySelector('#setup-password-input').value;
+            const confirmPwd = overlay.querySelector('#setup-password-confirm').value;
+            if (!pwd || pwd.length < 6) {
+                alert('Mật khẩu phải chứa ít nhất 6 ký tự!');
+                return;
+            }
+            if (pwd !== confirmPwd) {
+                alert('Mật khẩu xác nhận không khớp!');
+                return;
+            }
+            overlay.classList.remove('active');
+            onSubmitCallback(pwd);
+        });
+    }
+
+    overlay.querySelector('#setup-password-input').value = '';
+    overlay.querySelector('#setup-password-confirm').value = '';
+    overlay.classList.add('active');
+};
+
+window.showPasswordChallengeModal = function(onSubmitCallback) {
+    let overlay = document.getElementById('global-password-challenge-modal');
+    if (!overlay) {
+        overlay = document.createElement('div');
+        overlay.id = 'global-password-challenge-modal';
+        overlay.className = 'global-modal-overlay';
+        overlay.innerHTML = `
+            <div class="global-modal-box" style="max-width: 400px; background: #1e293b; border: 1px solid rgba(243, 168, 59, 0.3); border-radius: 12px; padding: 25px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 15px; margin-bottom: 20px;">
+                    <h3 style="font-size: 1.25rem; font-weight: 800; color: #f59e0b; margin: 0; display: flex; align-items: center; gap: 8px;">
+                        🔒 XÁC NHẬN MẬT KHẨU
+                    </h3>
+                </div>
+                <p style="font-size: 0.85rem; color: #cbd5e1; margin-bottom: 18px; line-height: 1.5;">
+                    Để đảm bảo an toàn, vui lòng nhập mật khẩu tài khoản của bạn để xác nhận giao dịch đổi quà này.
+                </p>
+                <div style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 22px;">
+                    <input id="challenge-password-input" type="password" placeholder="Nhập mật khẩu của bạn..." style="padding: 10px 14px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.15); background: #0f172a; color: #cbd5e1; font-size: 0.88rem; outline: none;" />
+                </div>
+                <div style="display: flex; justify-content: flex-end; gap: 10px;">
+                    <button id="btn-challenge-password-cancel" style="background: rgba(255,255,255,0.08); border: none; color: #cbd5e1; padding: 8px 16px; border-radius: 8px; font-weight: 700; cursor: pointer;">Hủy</button>
+                    <button id="btn-challenge-password-submit" style="background: linear-gradient(135deg, #f3a83b 0%, #f59e0b 100%); border: none; color: #fff; padding: 8px 24px; border-radius: 8px; font-weight: 700; cursor: pointer;">Xác Nhận</button>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(overlay);
+
+        overlay.querySelector('#btn-challenge-password-cancel').addEventListener('click', () => {
+            overlay.classList.remove('active');
+        });
+
+        overlay.querySelector('#btn-challenge-password-submit').addEventListener('click', async () => {
+            const pwd = overlay.querySelector('#challenge-password-input').value;
+            const email = localStorage.getItem('streak_email');
+            if (!pwd) {
+                alert('Vui lòng nhập mật khẩu!');
+                return;
+            }
+
+            const submitBtn = overlay.querySelector('#btn-challenge-password-submit');
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Đang xác minh... ⏳';
+
+            try {
+                const checkUrl = `/api/log-email?action=checkEmail&email=${encodeURIComponent(email)}&password=${encodeURIComponent(pwd)}`;
+                const res = await fetch(checkUrl);
+                const data = await res.json();
+
+                if (res.status === 401 || data.error) {
+                    alert(data.error || 'Mật khẩu không chính xác!');
+                    return;
+                }
+
+                localStorage.removeItem('b2b_ip_autologin');
+                overlay.classList.remove('active');
+                onSubmitCallback();
+            } catch (err) {
+                console.error(err);
+                alert('Xác minh mật khẩu thất bại, vui lòng thử lại.');
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Xác Nhận';
+            }
+        });
+    }
+
+    overlay.querySelector('#challenge-password-input').value = '';
+    overlay.classList.add('active');
+};
+
+window.verifyUserPasswordChallenge = function(onSuccessCallback) {
+    if (localStorage.getItem('b2b_ip_autologin') === 'true') {
+        window.showPasswordChallengeModal(onSuccessCallback);
+    } else {
+        onSuccessCallback();
+    }
+};
+
 window.showGlobalLoginModal = function() {
     let overlay = document.getElementById('global-login-modal');
     if (!overlay) {
@@ -644,10 +801,11 @@ window.showGlobalLoginModal = function() {
                     <button id="global-login-close-btn" style="background: none; border: none; font-size: 1.5rem; color: #94a3b8; cursor: pointer; line-height: 1;">&times;</button>
                 </div>
                 <p style="font-size: 0.88rem; color: #cbd5e1; margin-bottom: 18px; line-height: 1.5;">
-                    Nhập email đã đăng ký của bạn để đồng bộ điểm tích lũy ⚡ và xem lịch sử tương tác.
+                    Nhập email và mật khẩu đã đăng ký để đồng bộ điểm tích lũy ⚡ và xem lịch sử tương tác.
                 </p>
                 <div style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 22px;">
                     <input id="login-email-input" type="email" placeholder="Nhập email của bạn..." style="padding: 10px 14px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.15); background: #0f172a; color: #cbd5e1; font-size: 0.88rem; outline: none; transition: border-color 0.2s;" />
+                    <input id="login-password-input" type="password" placeholder="Nhập mật khẩu của bạn..." style="padding: 10px 14px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.15); background: #0f172a; color: #cbd5e1; font-size: 0.88rem; outline: none; transition: border-color 0.2s;" />
                 </div>
                 <div style="display: flex; justify-content: flex-end; gap: 10px;">
                     <button id="btn-login-submit" style="background: linear-gradient(135deg, #f3a83b 0%, #f59e0b 100%); border: none; color: #fff; padding: 8px 24px; border-radius: 8px; font-weight: 700; cursor: pointer; transition: transform 0.2s ease;">Đăng Nhập</button>
@@ -661,24 +819,29 @@ window.showGlobalLoginModal = function() {
             if (e.target === overlay) overlay.classList.remove('active');
         });
 
-        overlay.querySelector('#btn-login-submit').addEventListener('click', async () => {
-            const emailInput = overlay.querySelector('#login-email-input');
-            const email = emailInput.value.trim();
-            if (!email || !email.includes('@')) {
-                alert('Vui lòng nhập email hợp lệ!');
-                return;
-            }
-
+        const performLogin = async (email, pwd) => {
             const submitBtn = overlay.querySelector('#btn-login-submit');
             submitBtn.disabled = true;
             submitBtn.textContent = 'Đang kiểm tra... ⏳';
 
             try {
-                const checkUrl = `/api/log-email?action=checkEmail&email=${encodeURIComponent(email)}`;
+                const checkUrl = `/api/log-email?action=checkEmail&email=${encodeURIComponent(email)}&password=${encodeURIComponent(pwd)}`;
                 const res = await fetch(checkUrl);
                 const data = await res.json();
 
+                if (res.status === 401 || data.error) {
+                    alert(data.error || 'Mật khẩu không chính xác!');
+                    return;
+                }
+
                 if (data.exists && data.user) {
+                    if (data.legacyUser) {
+                        window.showPasswordSetupModal(async (newPwd) => {
+                            await performLogin(email, newPwd);
+                        });
+                        return;
+                    }
+
                     const user = data.user;
                     if (!user.verified) {
                         window.showGlobalNotification(
@@ -696,6 +859,7 @@ window.showGlobalLoginModal = function() {
                     localStorage.setItem('streak_email', email);
                     localStorage.setItem('b2b_points_balance', user.points.toString());
                     localStorage.setItem('b2b_user_verified', 'true');
+                    localStorage.removeItem('b2b_ip_autologin');
                     if (user.avatar) localStorage.setItem('b2b_custom_avatar', user.avatar);
                     
                     overlay.classList.remove('active');
@@ -716,10 +880,29 @@ window.showGlobalLoginModal = function() {
                 submitBtn.disabled = false;
                 submitBtn.textContent = 'Đăng Nhập';
             }
+        };
+
+        overlay.querySelector('#btn-login-submit').addEventListener('click', async () => {
+            const emailInput = overlay.querySelector('#login-email-input');
+            const pwdInput = overlay.querySelector('#login-password-input');
+            const email = emailInput.value.trim();
+            const pwd = pwdInput.value.trim();
+            if (!email || !email.includes('@')) {
+                alert('Vui lòng nhập email hợp lệ!');
+                return;
+            }
+            if (!pwd) {
+                alert('Vui lòng nhập mật khẩu!');
+                return;
+            }
+            await performLogin(email, pwd);
         });
     }
 
     overlay.querySelector('#login-email-input').value = '';
+    if (overlay.querySelector('#login-password-input')) {
+        overlay.querySelector('#login-password-input').value = '';
+    }
     overlay.classList.add('active');
 };
 
@@ -912,9 +1095,13 @@ window.injectNavbarUserHUD = injectNavbarUserHUD;
 
 // Check quest status on load
 if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', checkQuestsOnLoad);
+    document.addEventListener('DOMContentLoaded', () => {
+        checkQuestsOnLoad();
+        checkIPAutoLogin();
+    });
 } else {
     checkQuestsOnLoad();
+    checkIPAutoLogin();
 }
 
 // ==========================================
@@ -1029,49 +1216,64 @@ function handleEmailReminderRegistration(nameInputId, emailInputId, submitBtnId,
                 submitBtn.textContent = originalText;
                 return;
             } else {
-                // Sync user to sheets first to ensure it's not a spam request
-                const syncRes = await fetch('/api/log-email', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        action: 'syncUser',
-                        name: name,
-                        email: email,
-                        points: 25
-                    })
+                // Show password setup modal before registration sync
+                window.showPasswordSetupModal(async (newPassword) => {
+                    submitBtn.disabled = true;
+                    submitBtn.textContent = 'Đang xử lý... ⏳';
+
+                    try {
+                        const syncRes = await fetch('/api/log-email', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                action: 'syncUser',
+                                name: name,
+                                email: email,
+                                points: 25,
+                                password: newPassword
+                            })
+                        });
+
+                        const syncData = await syncRes.json();
+                        if (syncRes.status === 400 || syncData.error) {
+                            alert(syncData.error || 'Đăng ký thất bại!');
+                            submitBtn.disabled = false;
+                            submitBtn.textContent = originalText;
+                            return;
+                        }
+
+                        // New user: grant 25 points and register locally after successful backend verification
+                        const startPoints = 25;
+                        localStorage.setItem('streak_active', 'true');
+                        if (syncData.userId) localStorage.setItem('streak_user_id', syncData.userId);
+                        localStorage.setItem('streak_name', name);
+                        localStorage.setItem('streak_email', email);
+                        localStorage.setItem('b2b_points_balance', startPoints.toString());
+                        localStorage.removeItem('b2b_ip_autologin');
+
+                        // Clear inputs
+                        nameInput.value = '';
+                        emailInput.value = '';
+
+                        // Log points transaction locally & sync
+                        window.logPointsTransaction("🦉 Kích hoạt Nhắc nhở Cú BeeDee (Đăng ký mới)", startPoints);
+
+                        // Show HUD and success message
+                        updateNavbarUserHUD();
+                        if (successMsg) {
+                            successMsg.textContent = `🎉 Đăng ký thành công! Cú BeeDee đã mở tài khoản tích lũy 25 BD-Points cho bạn.`;
+                            successMsg.classList.remove('hidden');
+                            successMsg.style.display = 'block';
+                        }
+                        showPointToast(startPoints, "Kích hoạt Nhắc nhở Cú BeeDee!");
+                    } catch (err) {
+                        console.error('Đăng ký nhắc nhở email thất bại:', err);
+                        alert('Có lỗi xảy ra trong quá trình kết nối với máy chủ. Vui lòng thử lại!');
+                    } finally {
+                        submitBtn.disabled = false;
+                        submitBtn.textContent = originalText;
+                    }
                 });
-
-                const syncData = await syncRes.json();
-                if (syncRes.status === 400 || syncData.error) {
-                    alert(syncData.error || 'Đăng ký thất bại!');
-                    submitBtn.disabled = false;
-                    submitBtn.textContent = originalText;
-                    return;
-                }
-
-                // New user: grant 25 points and register locally after successful backend verification
-                const startPoints = 25;
-                localStorage.setItem('streak_active', 'true');
-                if (syncData.userId) localStorage.setItem('streak_user_id', syncData.userId);
-                localStorage.setItem('streak_name', name);
-                localStorage.setItem('streak_email', email);
-                localStorage.setItem('b2b_points_balance', startPoints.toString());
-                
-                // Clear inputs
-                nameInput.value = '';
-                emailInput.value = '';
-
-                // Log points transaction locally & sync
-                window.logPointsTransaction("🦉 Kích hoạt Nhắc nhở Cú BeeDee (Đăng ký mới)", startPoints);
-
-                // Show HUD and success message
-                updateNavbarUserHUD();
-                if (successMsg) {
-                    successMsg.textContent = `🎉 Đăng ký thành công! Cú BeeDee đã mở tài khoản tích lũy 25 BD-Points cho bạn.`;
-                    successMsg.classList.remove('hidden');
-                    successMsg.style.display = 'block';
-                }
-                showPointToast(startPoints, "Kích hoạt Nhắc nhở Cú BeeDee!");
             }
 
             // Hide success message after 7 seconds
