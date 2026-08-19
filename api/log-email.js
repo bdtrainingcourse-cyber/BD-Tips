@@ -161,7 +161,7 @@ module.exports = async (req, res) => {
   }
 
   const params = req.method === 'GET' ? req.query : req.body;
-  const { action, email, tool, name, phone, company, experience, ebookTitle, downloadLink, points } = params;
+  const { action, email, tool, name, phone, company, experience, ebookTitle, downloadLink, points, userId } = params;
   
   if (!email || !email.includes('@')) {
     return res.status(400).json({ error: 'Email không hợp lệ!' });
@@ -180,26 +180,46 @@ module.exports = async (req, res) => {
   // --- Simulated Database Persistence Logic ---
   const users = readUsers();
   
+  // Find local user by userId or email
+  let localUser = null;
+  let matchedUserId = null;
+  
+  if (userId && users[userId]) {
+    matchedUserId = userId;
+    localUser = users[userId];
+  } else {
+    // Search by email mapping
+    const match = Object.entries(users).find(([uid, u]) => u.email && u.email.toLowerCase().trim() === cleanEmail);
+    if (match) {
+      matchedUserId = match[0];
+      localUser = match[1];
+    }
+  }
+
   // If user profile is missing from Vercel's ephemeral memory, rehydrate it from Google Sheets
   const webhookUrl = tool === 'course-registration' 
     ? process.env.GOOGLE_SHEET_COURSE_WEBHOOK 
     : process.env.GOOGLE_SHEET_LEADS_WEBHOOK;
 
-  if (!users[cleanEmail] && webhookUrl && action !== 'verifyUser') {
+  if (!localUser && webhookUrl && action !== 'verifyUser') {
     try {
-      const response = await httpPost(webhookUrl, { action: 'checkEmail', email: cleanEmail });
+      const response = await httpPost(webhookUrl, { action: 'checkEmail', email: cleanEmail, userId: userId });
       const resText = await response.text();
       const result = JSON.parse(resText);
       if (result.exists && result.user) {
-        users[cleanEmail] = {
+        const uid = result.user.id || 'UID_' + Math.random().toString(36).substr(2, 9).toUpperCase();
+        users[uid] = {
+          id: uid,
           email: cleanEmail,
-          name: result.user.name,
-          points: result.user.points,
-          verified: result.user.verified,
+          name: result.user.name || name || 'Học viên',
+          points: result.user.points !== undefined ? result.user.points : 25,
+          verified: !!result.user.verified,
           lastIp: clientIp,
           lastActive: timestamp
         };
         writeUsers(users);
+        matchedUserId = uid;
+        localUser = users[uid];
       }
     } catch (e) {
       console.warn('[SHEETS_REHYDRATE_WARN] Failed to rehydrate user from sheets:', e.message);
@@ -207,7 +227,7 @@ module.exports = async (req, res) => {
   }
 
   // Guard against duplicate registrations or leads from verified users
-  const isVerified = users[cleanEmail] && users[cleanEmail].verified;
+  const isVerified = localUser && localUser.verified;
   if (isVerified && (action === 'syncUser' || !action)) {
     return res.status(400).json({
       error: 'Email này đã được đăng ký và xác thực. Vui lòng sử dụng tính năng Đăng Nhập ở góc phải Menu bar để đồng bộ tài khoản!'
@@ -215,16 +235,18 @@ module.exports = async (req, res) => {
   }
 
   if (action === 'verifyUser') {
-    if (users[cleanEmail]) {
-      if (!users[cleanEmail].verified) {
-        users[cleanEmail].verified = true;
-        users[cleanEmail].points = (users[cleanEmail].points || 0) + 15;
+    if (localUser) {
+      if (!localUser.verified) {
+        localUser.verified = true;
+        localUser.points = (localUser.points || 0) + 15;
       }
-      users[cleanEmail].lastActive = timestamp;
-      users[cleanEmail].lastIp = clientIp;
+      localUser.lastActive = timestamp;
+      localUser.lastIp = clientIp;
       writeUsers(users);
     } else {
-      users[cleanEmail] = {
+      const uid = 'UID_' + Math.random().toString(36).substr(2, 9).toUpperCase();
+      users[uid] = {
+        id: uid,
         email: cleanEmail,
         name: name || 'Học viên',
         points: 40, // 25 register + 15 verify
@@ -233,17 +255,19 @@ module.exports = async (req, res) => {
         lastActive: timestamp
       };
       writeUsers(users);
+      matchedUserId = uid;
+      localUser = users[uid];
     }
 
     // Forward verification to Google Sheets webhook
-    const webhookUrl = process.env.GOOGLE_SHEET_LEADS_WEBHOOK;
     if (webhookUrl) {
       try {
         await httpPost(webhookUrl, {
-          name: users[cleanEmail].name || 'Học viên',
+          userId: localUser.id,
+          name: localUser.name || 'Học viên',
           email: cleanEmail,
           tool: 'email-verification',
-          points: users[cleanEmail].points,
+          points: localUser.points,
           date: timestamp
         });
       } catch (err) {
@@ -254,75 +278,80 @@ module.exports = async (req, res) => {
     return res.status(200).json({
       success: true,
       message: 'Email verified successfully',
-      points: users[cleanEmail].points
+      userId: localUser.id,
+      points: localUser.points
     });
   } else if (action === 'syncUser') {
-    users[cleanEmail] = {
+    const uid = matchedUserId || 'UID_' + Math.random().toString(36).substr(2, 9).toUpperCase();
+    users[uid] = {
+      id: uid,
       email: cleanEmail,
-      name: name || (users[cleanEmail] ? users[cleanEmail].name : 'Học viên'),
-      points: points !== undefined ? points : (users[cleanEmail] ? users[cleanEmail].points : 25),
+      name: name || (localUser ? localUser.name : 'Học viên'),
+      points: points !== undefined ? points : (localUser ? localUser.points : 25),
+      verified: localUser ? localUser.verified : false,
       lastIp: clientIp,
       lastActive: timestamp
     };
     writeUsers(users);
+    matchedUserId = uid;
+    localUser = users[uid];
   } else if (action === 'updatePoints') {
-    if (users[cleanEmail]) {
-      users[cleanEmail].points = points;
-      users[cleanEmail].lastActive = timestamp;
-      users[cleanEmail].lastIp = clientIp;
+    if (localUser) {
+      localUser.points = points;
+      localUser.lastActive = timestamp;
+      localUser.lastIp = clientIp;
       writeUsers(users);
     }
-    return res.status(200).json({ success: true, message: 'Points updated locally' });
   } else if (action === 'checkEmail') {
-    // If the user exists in our local simulated database, return it immediately to avoid sheets delay/failures!
-    if (users[cleanEmail]) {
-      users[cleanEmail].lastIp = clientIp;
-      users[cleanEmail].lastActive = timestamp;
+    if (localUser) {
+      localUser.lastIp = clientIp;
+      localUser.lastActive = timestamp;
       writeUsers(users);
       return res.status(200).json({
         success: true,
         exists: true,
         user: {
-          email: users[cleanEmail].email,
-          name: users[cleanEmail].name,
-          points: users[cleanEmail].points,
-          avatar: users[cleanEmail].avatar || '',
-          verified: !!users[cleanEmail].verified
+          id: localUser.id,
+          email: localUser.email,
+          name: localUser.name,
+          points: localUser.points,
+          avatar: localUser.avatar || '',
+          verified: !!localUser.verified
         }
       });
     }
     return res.status(200).json({ success: true, exists: false });
   } else {
     // General lead tracking (ebook downloads, minigame registrations, etc.)
-    if (!users[cleanEmail]) {
-      users[cleanEmail] = {
+    if (!localUser) {
+      const uid = 'UID_' + Math.random().toString(36).substr(2, 9).toUpperCase();
+      users[uid] = {
+        id: uid,
         email: cleanEmail,
         name: name || 'Học viên',
         points: points !== undefined ? points : 25,
         lastIp: clientIp,
         lastActive: timestamp
       };
+      writeUsers(users);
+      matchedUserId = uid;
+      localUser = users[uid];
     } else {
-      if (name && name !== 'Học viên') users[cleanEmail].name = name;
-      if (points !== undefined) users[cleanEmail].points = points;
-      users[cleanEmail].lastIp = clientIp;
-      users[cleanEmail].lastActive = timestamp;
+      if (name && name !== 'Học viên') localUser.name = name;
+      if (points !== undefined) localUser.points = points;
+      localUser.lastIp = clientIp;
+      localUser.lastActive = timestamp;
+      writeUsers(users);
     }
-    writeUsers(users);
   }
 
-  // webhookUrl is already declared at the top of the handler
-
-  console.log(`[USER_LEAD] Email: ${email}, Name: ${name || 'N/A'}, Action: ${action || 'log'}, Tool: ${tool}, Date: ${timestamp}`);
+  console.log(`[USER_LEAD] UserID: ${localUser.id}, Email: ${email}, Name: ${name || 'N/A'}, Action: ${action || 'log'}, Tool: ${tool}, Date: ${timestamp}`);
 
   if (!webhookUrl) {
     console.warn(`[SHEETS_SYNC_WARN] Webhook URL not set.`);
-    // If checkEmail is requested and didn't find local user, return false
-    if (action === 'checkEmail') {
-      return res.status(200).json({ success: true, exists: false });
-    }
     return res.status(200).json({ 
       success: true, 
+      userId: localUser.id,
       warning: 'Webhook URL not configured, but local save completed.' 
     });
   }
@@ -332,20 +361,22 @@ module.exports = async (req, res) => {
     let payload = {};
     if (action === 'syncUser') {
       payload = {
-        name: name || (users[cleanEmail] ? users[cleanEmail].name : 'Học viên'),
+        userId: localUser.id,
+        name: name || localUser.name,
         email,
         tool: 'daily-reminder',
         points: points !== undefined ? points : 25,
         date: timestamp
       };
     } else if (action === 'updatePoints') {
-      payload = { action, email, points };
+      payload = { action, email, userId: localUser.id, points };
     } else {
       // Normal logging flow
       const isCourseReg = tool === 'course-registration';
       payload = isCourseReg
-        ? { name, email, phone, company, date: timestamp, tool }
+        ? { name, email, phone, company, date: timestamp, tool, userId: localUser.id }
         : { 
+            userId: localUser.id,
             name: name || 'Học viên', 
             email, 
             tool, 
@@ -358,37 +389,28 @@ module.exports = async (req, res) => {
     }
 
     const response = await httpPost(webhookUrl, payload);
-    
-    // Parse Google Sheets webhook response
     const resText = await response.text();
     console.log(`[SHEETS_SYNC] Success. Webhook response: ${resText}`);
 
-    // If it's checkEmail/syncUser, parse the returned JSON to return to the client
-    if (action === 'checkEmail' || action === 'syncUser') {
+    if (action === 'syncUser') {
       try {
         const result = JSON.parse(resText);
-        // Enrich sheets result with local data if available
-        if (result.exists && result.user && users[cleanEmail]) {
-          result.user.points = users[cleanEmail].points;
-          result.user.avatar = users[cleanEmail].avatar || '';
+        if (result.exists && result.user && localUser) {
+          result.user.points = localUser.points;
+          result.user.avatar = localUser.avatar || '';
         }
         return res.status(200).json(result);
       } catch (jsonErr) {
-        // Fallback if Apps Script returned text
         if (resText.includes("SUCCESS")) {
-          return res.status(200).json({ success: true, exists: false });
+          return res.status(200).json({ success: true, exists: false, userId: localUser.id });
         }
-        return res.status(200).json({ success: true, rawResponse: resText });
+        return res.status(200).json({ success: true, rawResponse: resText, userId: localUser.id });
       }
     }
 
-    return res.status(200).json({ success: true, sheetResponse: resText });
+    return res.status(200).json({ success: true, sheetResponse: resText, userId: localUser.id });
   } catch (err) {
     console.error(`[SHEETS_SYNC_ERROR] Failed to send to Google Sheets Webhook:`, err);
-    // Fallback response for local work
-    if (action === 'checkEmail') {
-      return res.status(200).json({ success: true, exists: false });
-    }
-    return res.status(500).json({ error: 'Failed to communicate with Google Sheets', details: err.message });
+    return res.status(200).json({ success: true, exists: false, userId: localUser.id });
   }
 };
