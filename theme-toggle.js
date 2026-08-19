@@ -134,6 +134,17 @@ const initThemeToggle = () => {
         }, 1200);
     }
 
+    // Auto Scroll to registration on page load if ?register=true
+    if (urlParams.get('register') === 'true') {
+        setTimeout(() => {
+            const regInput = document.getElementById('challenge-trigger-name') || document.getElementById('sidebar-trigger-name');
+            if (regInput) {
+                regInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                regInput.focus();
+            }
+        }, 1200);
+    }
+
     // Auto Welcome Back and IP detection on load
     const currentRegEmail = localStorage.getItem('streak_email');
     const welcomed = sessionStorage.getItem('bd_session_welcomed') === 'true';
@@ -954,6 +965,10 @@ function updateNavbarUserHUD() {
     if (active) {
         hud.classList.remove('hidden');
         hud.style.display = 'flex';
+        hud.style.background = '';
+        hud.style.border = '';
+        hud.style.padding = '';
+        hud.style.cursor = 'pointer';
         const name = localStorage.getItem('streak_name') || 'Chiến thần';
         const points = localStorage.getItem('b2b_points_balance') || '0';
         
@@ -978,13 +993,33 @@ function updateNavbarUserHUD() {
     } else {
         hud.classList.remove('hidden');
         hud.style.display = 'flex';
+        hud.style.background = 'none';
+        hud.style.border = 'none';
+        hud.style.padding = '0';
+        hud.style.cursor = 'default';
+        
         hud.innerHTML = `
-            <button class="nav-login-btn">🔑 Đăng Nhập</button>
+            <button class="nav-login-btn" id="btn-navbar-login">🔑 Đăng Nhập</button>
+            <button class="nav-register-btn" id="btn-navbar-register">📝 Đăng Ký</button>
         `;
-        hud.onclick = (e) => {
+        
+        hud.onclick = null;
+        
+        hud.querySelector('#btn-navbar-login').addEventListener('click', (e) => {
             e.stopPropagation();
             window.showGlobalLoginModal();
-        };
+        });
+        
+        hud.querySelector('#btn-navbar-register').addEventListener('click', (e) => {
+            e.stopPropagation();
+            const regInput = document.getElementById('challenge-trigger-name') || document.getElementById('sidebar-trigger-name');
+            if (regInput) {
+                regInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                regInput.focus();
+            } else {
+                window.location.href = 'index.html?register=true';
+            }
+        });
     }
 }
 
@@ -1519,6 +1554,24 @@ function initGlobalComponents() {
             transition: transform 0.2s ease;
         }
         .nav-login-btn:hover {
+            transform: scale(1.03);
+        }
+        .nav-register-btn {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: #cbd5e1;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-weight: 700;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: all 0.2s ease;
+            margin-left: 6px;
+        }
+        .nav-register-btn:hover {
+            background: rgba(255, 255, 255, 0.15);
+            color: #fff;
+            border-color: #f3a83b;
             transform: scale(1.03);
         }
         .profile-dropdown-card {
