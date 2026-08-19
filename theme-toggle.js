@@ -1345,7 +1345,9 @@ function initGlobalComponents() {
 
         // Verification validation check on load
         const isVerifiedLocal = localStorage.getItem('b2b_user_verified') === 'true';
-        if (!isVerifiedLocal) {
+        const hasUserId = !!localStorage.getItem('streak_user_id');
+
+        if (!isVerifiedLocal || !hasUserId) {
             setTimeout(async () => {
                 try {
                     const checkUserId = localStorage.getItem('streak_user_id') || '';
@@ -1358,8 +1360,9 @@ function initGlobalComponents() {
                         }
                         if (data.user.verified) {
                             localStorage.setItem('b2b_user_verified', 'true');
-                        } else {
-                            // Show verification reminder popup modal
+                        }
+                        // Only show notification reminder if they are actually not verified and didn't just get synced
+                        if (!data.user.verified && !isVerifiedLocal) {
                             window.showGlobalNotification(
                                 '✉️ Xác Thực Tài Khoản',
                                 `Tài khoản với email <strong>${currentEmail}</strong> của bạn chưa được xác thực.<br><br>Vui lòng kiểm tra hộp thư email (hoặc mục Thư rác/Spam) và click vào liên kết xác thực để kích hoạt tài khoản và tích lũy điểm thưởng.`
