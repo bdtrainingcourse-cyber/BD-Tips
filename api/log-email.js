@@ -196,6 +196,22 @@ module.exports = async (req, res) => {
     }
   }
 
+  // Ensure localUser has an id property for backward compatibility with old cache data
+  if (localUser) {
+    if (!localUser.id) {
+      localUser.id = (matchedUserId && matchedUserId.startsWith('UID_'))
+        ? matchedUserId 
+        : 'UID_' + Math.random().toString(36).substr(2, 9).toUpperCase();
+    }
+    // If the cache was keyed by email, migrate the key to the new UID format
+    if (matchedUserId && !matchedUserId.startsWith('UID_')) {
+      users[localUser.id] = localUser;
+      delete users[matchedUserId];
+      matchedUserId = localUser.id;
+    }
+    writeUsers(users);
+  }
+
   // If user profile is missing from Vercel's ephemeral memory, rehydrate it from Google Sheets
   const webhookUrl = tool === 'course-registration' 
     ? process.env.GOOGLE_SHEET_COURSE_WEBHOOK 
