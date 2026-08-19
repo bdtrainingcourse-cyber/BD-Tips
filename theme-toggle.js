@@ -75,6 +75,7 @@ const initThemeToggle = () => {
     // Auto Device Sync from URL Parameters (?sync_email=...)
     const urlParams = new URLSearchParams(window.location.search);
     const syncEmail = urlParams.get('sync_email');
+    const syncUserId = urlParams.get('sync_user_id');
     const syncName = urlParams.get('sync_name');
     const syncPoints = urlParams.get('sync_points');
     const syncAvatar = urlParams.get('sync_avatar');
@@ -82,6 +83,7 @@ const initThemeToggle = () => {
     if (syncEmail) {
         localStorage.setItem('streak_active', 'true');
         localStorage.setItem('streak_email', syncEmail);
+        if (syncUserId) localStorage.setItem('streak_user_id', syncUserId);
         if (syncName) localStorage.setItem('streak_name', syncName);
         if (syncPoints) localStorage.setItem('b2b_points_balance', syncPoints);
         if (syncAvatar) localStorage.setItem('b2b_custom_avatar', syncAvatar);
@@ -616,6 +618,7 @@ function renderProfileDropdownContent(dropdownEl) {
         e.stopPropagation();
         if (confirm('Bạn có chắc chắn muốn đăng xuất tài khoản?')) {
             localStorage.removeItem('streak_active');
+            localStorage.removeItem('streak_user_id');
             localStorage.removeItem('streak_email');
             localStorage.removeItem('streak_name');
             localStorage.removeItem('b2b_points_balance');
@@ -688,6 +691,7 @@ window.showGlobalLoginModal = function() {
 
                     // Successful login sync
                     localStorage.setItem('streak_active', 'true');
+                    if (user.id) localStorage.setItem('streak_user_id', user.id);
                     localStorage.setItem('streak_name', user.name);
                     localStorage.setItem('streak_email', email);
                     localStorage.setItem('b2b_points_balance', user.points.toString());
@@ -810,11 +814,12 @@ window.logPointsTransaction = function(action, change) {
     
     // Đồng bộ điểm tích lũy lên Google Sheets
     const email = localStorage.getItem('streak_email');
+    const userId = localStorage.getItem('streak_user_id') || '';
     if (email && email.includes('@')) {
         fetch('/api/log-email', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ action: 'updatePoints', email: email, points: balance })
+            body: JSON.stringify({ action: 'updatePoints', email: email, userId: userId, points: balance })
         }).catch(err => console.error('Gửi đồng bộ điểm lên Google Sheets thất bại:', err));
     }
 };
@@ -987,6 +992,7 @@ function handleEmailReminderRegistration(nameInputId, emailInputId, submitBtnId,
                     
                     // Clear local storage if there was a stale unverified login session
                     localStorage.removeItem('streak_active');
+                    localStorage.removeItem('streak_user_id');
                     localStorage.removeItem('streak_email');
                     localStorage.removeItem('streak_name');
                     localStorage.removeItem('b2b_points_balance');
@@ -1005,6 +1011,7 @@ function handleEmailReminderRegistration(nameInputId, emailInputId, submitBtnId,
                 );
                 
                 localStorage.setItem('streak_active', 'true');
+                if (user.id) localStorage.setItem('streak_user_id', user.id);
                 localStorage.setItem('streak_name', user.name || name);
                 localStorage.setItem('streak_email', email);
                 localStorage.setItem('b2b_points_balance', (user.points || 0).toString());
@@ -1045,6 +1052,7 @@ function handleEmailReminderRegistration(nameInputId, emailInputId, submitBtnId,
                 // New user: grant 25 points and register locally after successful backend verification
                 const startPoints = 25;
                 localStorage.setItem('streak_active', 'true');
+                if (syncData.userId) localStorage.setItem('streak_user_id', syncData.userId);
                 localStorage.setItem('streak_name', name);
                 localStorage.setItem('streak_email', email);
                 localStorage.setItem('b2b_points_balance', startPoints.toString());
@@ -1112,6 +1120,7 @@ async function checkEmailVerification() {
             if (data.success) {
                 // Update local storage
                 localStorage.setItem('streak_active', 'true');
+                if (data.userId) localStorage.setItem('streak_user_id', data.userId);
                 localStorage.setItem('streak_email', verifyEmail);
                 localStorage.setItem('b2b_points_balance', data.points.toString());
                 localStorage.setItem('b2b_user_verified', 'true');
@@ -1339,10 +1348,14 @@ function initGlobalComponents() {
         if (!isVerifiedLocal) {
             setTimeout(async () => {
                 try {
-                    const checkUrl = `/api/log-email?action=checkEmail&email=${encodeURIComponent(currentEmail)}`;
+                    const checkUserId = localStorage.getItem('streak_user_id') || '';
+                    const checkUrl = `/api/log-email?action=checkEmail&email=${encodeURIComponent(currentEmail)}&userId=${encodeURIComponent(checkUserId)}`;
                     const res = await fetch(checkUrl);
                     const data = await res.json();
                     if (data.exists && data.user) {
+                        if (data.user.id) {
+                            localStorage.setItem('streak_user_id', data.user.id);
+                        }
                         if (data.user.verified) {
                             localStorage.setItem('b2b_user_verified', 'true');
                         } else {
