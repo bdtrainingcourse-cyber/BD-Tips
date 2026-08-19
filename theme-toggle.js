@@ -101,6 +101,39 @@ const initThemeToggle = () => {
         }, 800);
     }
 
+    // Auto Password Reset from URL Parameters (?reset_token=...)
+    const resetToken = urlParams.get('reset_token');
+    const resetEmail = urlParams.get('email');
+    if (resetToken && resetEmail) {
+        // Clear query parameters
+        window.history.replaceState({}, document.title, window.location.pathname);
+        setTimeout(() => {
+            window.showPasswordSetupModal(async (newPassword) => {
+                try {
+                    const res = await fetch('/api/log-email', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            action: 'resetPassword',
+                            email: resetEmail,
+                            reset_token: resetToken,
+                            password: newPassword
+                        })
+                    });
+                    const data = await res.json();
+                    if (data.success) {
+                        alert('🎉 Đặt lại mật khẩu thành công! Bạn có thể sử dụng mật khẩu mới để đăng nhập ngay.');
+                        window.showGlobalLoginModal();
+                    } else {
+                        alert(data.error || 'Mã khôi phục không hợp lệ hoặc đã hết hạn!');
+                    }
+                } catch(e) {
+                    alert('Lỗi kết nối máy chủ khi đặt lại mật khẩu.');
+                }
+            });
+        }, 1200);
+    }
+
     // Auto Welcome Back and IP detection on load
     const currentRegEmail = localStorage.getItem('streak_email');
     const welcomed = sessionStorage.getItem('bd_session_welcomed') === 'true';
@@ -551,33 +584,6 @@ function injectNavbarUserHUD() {
     const navMenu = document.getElementById('nav-menu');
     if (!navMenu) return;
     
-    if (document.getElementById('navbar-user-hud')) return;
-    
-    const hud = document.createElement('div');
-    hud.id = 'navbar-user-hud';
-    hud.className = 'hidden';
-    hud.style.cssText = 'display: flex; align-items: center; gap: 8px; background: rgba(243, 168, 59, 0.1); border: 1px solid var(--primary); padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: bold; color: var(--text-main); margin-right: 10px; margin-left: 10px; align-self: center;';
-    
-    hud.innerHTML = `
-        <span style="font-size: 1rem; line-height: 1;">🦉</span>
-        <span id="navbar-user-name" style="max-width: 90px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">...</span>: 
-        <span id="navbar-user-points" style="color: var(--primary); margin-left: 2px;">0</span>đ
-    `;
-    
-    const themeToggle = document.getElementById('theme-toggle');
-    if (themeToggle) {
-        navMenu.insertBefore(hud, themeToggle);
-    } else {
-        navMenu.appendChild(hud);
-    }
-    
-    updateNavbarUserHUD();
-}
-
-function injectNavbarUserHUD() {
-    const navMenu = document.getElementById('nav-menu');
-    if (!navMenu) return;
-    
     // Check if HUD already injected
     if (document.getElementById('navbar-user-hud')) return;
     
@@ -785,7 +791,6 @@ window.verifyUserPasswordChallenge = function(onSuccessCallback) {
         onSuccessCallback();
     }
 };
-
 window.showGlobalLoginModal = function() {
     let overlay = document.getElementById('global-login-modal');
     if (!overlay) {
@@ -807,7 +812,8 @@ window.showGlobalLoginModal = function() {
                     <input id="login-email-input" type="email" placeholder="Nhập email của bạn..." style="padding: 10px 14px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.15); background: #0f172a; color: #cbd5e1; font-size: 0.88rem; outline: none; transition: border-color 0.2s;" />
                     <input id="login-password-input" type="password" placeholder="Nhập mật khẩu của bạn..." style="padding: 10px 14px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.15); background: #0f172a; color: #cbd5e1; font-size: 0.88rem; outline: none; transition: border-color 0.2s;" />
                 </div>
-                <div style="display: flex; justify-content: flex-end; gap: 10px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 10px;">
+                    <a id="btn-forgot-password-link" style="font-size: 0.78rem; color: #f3a83b; text-decoration: none; cursor: pointer; user-select: none;">Quên mật khẩu?</a>
                     <button id="btn-login-submit" style="background: linear-gradient(135deg, #f3a83b 0%, #f59e0b 100%); border: none; color: #fff; padding: 8px 24px; border-radius: 8px; font-weight: 700; cursor: pointer; transition: transform 0.2s ease;">Đăng Nhập</button>
                 </div>
             </div>
@@ -817,6 +823,38 @@ window.showGlobalLoginModal = function() {
         overlay.querySelector('#global-login-close-btn').addEventListener('click', () => overlay.classList.remove('active'));
         overlay.addEventListener('click', (e) => {
             if (e.target === overlay) overlay.classList.remove('active');
+        });
+
+        overlay.querySelector('#btn-forgot-password-link').addEventListener('click', async () => {
+            const emailInput = overlay.querySelector('#login-email-input');
+            const email = emailInput.value.trim();
+            if (!email || !email.includes('@')) {
+                alert('Vui lòng nhập email của bạn vào ô đăng nhập trước để nhận liên kết khôi phục!');
+                return;
+            }
+            
+            if (!confirm(`Gửi yêu cầu khôi phục mật khẩu tới email: ${email}?`)) return;
+            
+            const forgotBtn = overlay.querySelector('#btn-forgot-password-link');
+            forgotBtn.style.pointerEvents = 'none';
+            forgotBtn.textContent = 'Đang gửi yêu cầu...';
+            
+            try {
+                const res = await fetch(`/api/log-email?action=forgotPassword&email=${encodeURIComponent(email)}`);
+                const data = await res.json();
+                if (data.success) {
+                    alert('🦉 Yêu cầu thành công! Vui lòng kiểm tra hộp thư email của bạn (bao gồm cả thư rác/spam) để nhận liên kết đặt lại mật khẩu.');
+                    overlay.classList.remove('active');
+                } else {
+                    alert(data.error || 'Có lỗi xảy ra.');
+                }
+            } catch(err) {
+                console.error(err);
+                alert('Không thể kết nối máy chủ.');
+            } finally {
+                forgotBtn.style.pointerEvents = 'auto';
+                forgotBtn.textContent = 'Quên mật khẩu?';
+            }
         });
 
         const performLogin = async (email, pwd) => {
@@ -905,7 +943,6 @@ window.showGlobalLoginModal = function() {
     }
     overlay.classList.add('active');
 };
-
 function updateNavbarUserHUD() {
     const hud = document.getElementById('navbar-user-hud');
     if (!hud) {
@@ -1098,10 +1135,12 @@ if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', () => {
         checkQuestsOnLoad();
         checkIPAutoLogin();
+        updateNavbarUserHUD();
     });
 } else {
     checkQuestsOnLoad();
     checkIPAutoLogin();
+    updateNavbarUserHUD();
 }
 
 // ==========================================
