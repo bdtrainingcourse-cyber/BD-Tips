@@ -1,6 +1,7 @@
 // Serverless function to save user lead email to Google Sheets webhook and handle sync actions
 const https = require('https');
 const dns = require('dns').promises;
+const crypto = require('crypto');
 const { readUsers, writeUsers } = require('./_db-helper');
 
 const disposableDomains = [
@@ -161,7 +162,7 @@ module.exports = async (req, res) => {
   }
 
   const params = req.method === 'GET' ? req.query : req.body;
-  const { action, email, tool, name, phone, company, experience, ebookTitle, downloadLink, points, userId } = params;
+  const { action, email, tool, name, phone, company, experience, ebookTitle, downloadLink, points, userId, password } = params;
   
   if (!email || !email.includes('@')) {
     return res.status(400).json({ error: 'Email không hợp lệ!' });
@@ -230,6 +231,7 @@ module.exports = async (req, res) => {
           name: result.user.name || name || 'Học viên',
           points: result.user.points !== undefined ? result.user.points : 25,
           verified: !!result.user.verified,
+          password: result.user.passwordHash || '',
           lastIp: clientIp,
           lastActive: timestamp
         };
@@ -267,6 +269,7 @@ module.exports = async (req, res) => {
         name: name || 'Học viên',
         points: 40, // 25 register + 15 verify
         verified: true,
+        password: password ? crypto.createHash('sha256').update(password).digest('hex') : '',
         lastIp: clientIp,
         lastActive: timestamp
       };
@@ -284,7 +287,8 @@ module.exports = async (req, res) => {
           email: cleanEmail,
           tool: 'email-verification',
           points: localUser.points,
-          date: timestamp
+          date: timestamp,
+          password: localUser.password || ''
         });
       } catch (err) {
         console.error(`[SHEETS_SYNC_ERROR] Verify user forward failed:`, err.message);
@@ -305,6 +309,7 @@ module.exports = async (req, res) => {
       name: name || (localUser ? localUser.name : 'Học viên'),
       points: points !== undefined ? points : (localUser ? localUser.points : 25),
       verified: localUser ? localUser.verified : false,
+      password: password ? crypto.createHash('sha256').update(password).digest('hex') : (localUser && localUser.password ? localUser.password : ''),
       lastIp: clientIp,
       lastActive: timestamp
     };
@@ -320,12 +325,51 @@ module.exports = async (req, res) => {
     }
   } else if (action === 'checkEmail') {
     if (localUser) {
+      const hasPassword = !!localUser.password;
+      
+      // If a password is submitted, verify it
+      if (password) {
+        const submittedHash = crypto.createHash('sha256').update(password).digest('hex');
+        if (!hasPassword) {
+          // Legacy user setting password on first login
+          localUser.password = submittedHash;
+          localUser.lastIp = clientIp;
+          localUser.lastActive = timestamp;
+          writeUsers(users);
+          
+          if (webhookUrl) {
+            try {
+              await httpPost(webhookUrl, { 
+                action: 'syncUser', 
+                email: cleanEmail, 
+                userId: localUser.id, 
+                password: localUser.password,
+                name: localUser.name,
+                points: localUser.points
+              });
+            } catch (err) {
+              console.warn('[SHEETS_SYNC_WARN] Failed to sync new password to sheets:', err.message);
+            }
+          }
+        } else {
+          // Verify existing password
+          if (localUser.password !== submittedHash) {
+            return res.status(401).json({ success: false, error: 'Mật khẩu không chính xác! Vui lòng thử lại.' });
+          }
+        }
+      } else {
+        // Silent page load verify request
+        // If a password exists in database but they haven't submitted one, we don't return success: false
+        // because it's just checking email existence/verification status. The client-side handles sessions.
+      }
+
       localUser.lastIp = clientIp;
       localUser.lastActive = timestamp;
       writeUsers(users);
       return res.status(200).json({
         success: true,
         exists: true,
+        legacyUser: !hasPassword,
         user: {
           id: localUser.id,
           email: localUser.email,
@@ -346,6 +390,7 @@ module.exports = async (req, res) => {
         email: cleanEmail,
         name: name || 'Học viên',
         points: points !== undefined ? points : 25,
+        password: password ? crypto.createHash('sha256').update(password).digest('hex') : '',
         lastIp: clientIp,
         lastActive: timestamp
       };
@@ -355,6 +400,7 @@ module.exports = async (req, res) => {
     } else {
       if (name && name !== 'Học viên') localUser.name = name;
       if (points !== undefined) localUser.points = points;
+      if (password) localUser.password = crypto.createHash('sha256').update(password).digest('hex');
       localUser.lastIp = clientIp;
       localUser.lastActive = timestamp;
       writeUsers(users);
@@ -382,7 +428,8 @@ module.exports = async (req, res) => {
         email,
         tool: 'daily-reminder',
         points: points !== undefined ? points : 25,
-        date: timestamp
+        date: timestamp,
+        password: localUser.password || ''
       };
     } else if (action === 'updatePoints') {
       payload = { action, email, userId: localUser.id, points };
@@ -390,7 +437,7 @@ module.exports = async (req, res) => {
       // Normal logging flow
       const isCourseReg = tool === 'course-registration';
       payload = isCourseReg
-        ? { name, email, phone, company, date: timestamp, tool, userId: localUser.id }
+        ? { name, email, phone, company, date: timestamp, tool, userId: localUser.id, password: localUser.password || '' }
         : { 
             userId: localUser.id,
             name: name || 'Học viên', 
@@ -400,7 +447,8 @@ module.exports = async (req, res) => {
             ebookTitle: ebookTitle || '', 
             downloadLink: downloadLink || '', 
             points: points !== undefined ? points : 25,
-            date: timestamp 
+            date: timestamp,
+            password: localUser.password || ''
           };
     }
 
