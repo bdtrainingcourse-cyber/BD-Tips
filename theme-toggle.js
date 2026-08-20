@@ -1525,13 +1525,17 @@ function initGlobalComponents() {
             transform: translateY(-2px);
             filter: brightness(1.1);
         }
+        .nav-dropdown-toggle {
+            white-space: nowrap !important;
+        }
         .nav-user-hud {
             display: flex;
             align-items: center;
             gap: 8px;
             padding: 6px 14px;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(0, 0, 0, 0.03);
+            border: 1px solid rgba(0, 0, 0, 0.08);
+            color: #334155;
             border-radius: 20px;
             cursor: pointer;
             font-size: 0.82rem;
@@ -1541,6 +1545,15 @@ function initGlobalComponents() {
             position: relative;
         }
         .nav-user-hud:hover {
+            background: rgba(0, 0, 0, 0.06);
+            border-color: #f3a83b;
+        }
+        body.dark-theme .nav-user-hud {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #cbd5e1;
+        }
+        body.dark-theme .nav-user-hud:hover {
             background: rgba(255, 255, 255, 0.1);
             border-color: #f3a83b;
         }
@@ -1559,9 +1572,9 @@ function initGlobalComponents() {
             transform: scale(1.03);
         }
         .nav-register-btn {
-            background: rgba(255, 255, 255, 0.08);
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            color: #cbd5e1;
+            background: #ffffff;
+            border: 1px solid #cbd5e1;
+            color: #475569;
             padding: 6px 14px;
             border-radius: 20px;
             font-weight: 700;
@@ -1571,10 +1584,20 @@ function initGlobalComponents() {
             margin-left: 6px;
         }
         .nav-register-btn:hover {
-            background: rgba(255, 255, 255, 0.15);
-            color: #fff;
+            background: #f8fafc;
+            color: #0f172a;
             border-color: #f3a83b;
             transform: scale(1.03);
+        }
+        body.dark-theme .nav-register-btn {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: #cbd5e1;
+        }
+        body.dark-theme .nav-register-btn:hover {
+            background: rgba(255, 255, 255, 0.15);
+            color: #ffffff;
+            border-color: #f3a83b;
         }
         .profile-dropdown-card {
             position: absolute;
