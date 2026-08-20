@@ -321,7 +321,7 @@ module.exports = async (req, res) => {
           id: uid,
           email: cleanEmail,
           name: result.user.name || name || 'Học viên',
-          points: result.user.points !== undefined ? result.user.points : 25,
+          points: (result.user.points !== null && result.user.points !== undefined) ? Number(result.user.points) : 25,
           verified: !!result.user.verified,
           password: result.user.passwordHash || '',
           lastIp: clientIp,
