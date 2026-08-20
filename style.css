@@ -6,7 +6,7 @@
     --bg: #f7f4ee;
     --card-bg: #ffffff;
     --text-main: #2b2d42;
-    --text-light: #6c757d;
+    --text-light: #475569;
     --border-color: rgba(0, 0, 0, 0.08);
     --input-bg: #ffffff;
     --accent: #f3a83b;
@@ -248,9 +248,9 @@ body.dark-theme .nav-logo .logo-sub {
     border: 1px solid rgba(245, 158, 11, 0.4);
 }
 .nav-badge.ai {
-    background: rgba(99, 102, 241, 0.15);
-    color: #818cf8;
-    border: 1px solid rgba(99, 102, 241, 0.4);
+    background: rgba(162, 10, 10, 0.15);
+    color: #f3a83b;
+    border: 1px solid rgba(162, 10, 10, 0.4);
 }
 .nav-badge.new {
     background: rgba(16, 185, 129, 0.15);
@@ -546,13 +546,15 @@ body.dark-theme .mobile-menu-toggle {
         display: flex;
     }
 }
-
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
 }
 
+input, select, textarea, button {
+    font-family: inherit;
+}
 html, body {
     max-width: 100vw;
     overflow-x: hidden;
@@ -984,7 +986,7 @@ body.dark-theme .eco-tab-btn {
     gap: 28px;
     padding: 30px 10px;
     position: relative;
-    background: radial-gradient(circle at 10% 20%, rgba(99, 102, 241, 0.04) 0%, transparent 40%),
+    background: radial-gradient(circle at 10% 20%, rgba(162, 10, 10, 0.04) 0%, transparent 40%),
                 radial-gradient(circle at 90% 80%, rgba(239, 68, 68, 0.04) 0%, transparent 40%);
     border-radius: 30px;
 }
@@ -1589,7 +1591,7 @@ body.dark-theme .feature-card {
 
 .modal-subtitle {
     font-size: 1rem;
-    color: #818cf8;
+    color: #f3a83b;
     margin-bottom: 25px;
 }
 
@@ -1632,9 +1634,9 @@ body.dark-theme .feature-card {
 
 .form-group input:focus {
     outline: none;
-    border-color: #6366f1;
+    border-color: #a20a0a;
     background: var(--input-bg);
-    box-shadow: 0 0 15px rgba(99, 102, 241, 0.15);
+    box-shadow: 0 0 15px rgba(162, 10, 10, 0.15);
 }
 
 .form-group select {
@@ -1655,7 +1657,7 @@ body.dark-theme .feature-card {
 
 .form-group select:focus {
     outline: none;
-    border-color: #6366f1;
+    border-color: #a20a0a;
     background: var(--input-bg);
 }
 
@@ -2421,7 +2423,7 @@ body.dark-theme .eco-tab-btn.active {
     width: 100%;
     height: 720px;
     margin: 40px auto;
-    background: radial-gradient(circle at 50% 50%, rgba(99, 102, 241, 0.06) 0%, transparent 60%);
+    background: radial-gradient(circle at 50% 50%, rgba(162, 10, 10, 0.06) 0%, transparent 60%);
     border-radius: 32px;
     display: flex;
     align-items: center;
