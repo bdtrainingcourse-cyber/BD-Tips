@@ -1431,17 +1431,26 @@ async function checkEmailVerification() {
     }
 }
 
+function highlightCommunityLink() {
+    const communityLink = document.querySelector('.nav-links a[href="community.html"]');
+    if (communityLink && !communityLink.querySelector('.chat-badge')) {
+        communityLink.innerHTML = 'Cộng Đồng <span class="nav-badge chat-badge">🔥 LIVE</span>';
+    }
+}
+
 // Bind to window load / DOMContentLoaded
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', () => {
         initEmailRegistrations();
         initGlobalComponents();
         checkEmailVerification();
+        highlightCommunityLink();
     });
 } else {
     initEmailRegistrations();
     initGlobalComponents();
     checkEmailVerification();
+    highlightCommunityLink();
 }
 
 // Global behaviors, UI modals injection, and tracking helpers definition
@@ -1449,6 +1458,23 @@ function initGlobalComponents() {
     // Inject Custom Share & Sync Modals Styles
     const styleEl = document.createElement('style');
     styleEl.innerHTML = `
+        .nav-logo {
+            margin-right: 40px !important;
+        }
+        .nav-badge.chat-badge {
+            background: rgba(243, 168, 59, 0.15) !important;
+            color: #f3a83b !important;
+            border: 1px solid rgba(243, 168, 59, 0.4) !important;
+            animation: badgePulse 2s infinite !important;
+            font-size: 0.62rem !important;
+            padding: 2px 6px !important;
+            vertical-align: middle !important;
+        }
+        @keyframes badgePulse {
+            0% { box-shadow: 0 0 0 0 rgba(243, 168, 59, 0.4); }
+            70% { box-shadow: 0 0 0 6px rgba(243, 168, 59, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(243, 168, 59, 0); }
+        }
         .global-modal-overlay {
             position: fixed;
             top: 0;
