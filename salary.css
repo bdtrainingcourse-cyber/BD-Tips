@@ -248,6 +248,44 @@ body.dark-theme input[type="text"]:focus, body.dark-theme select:focus {
     margin-top: 2px;
 }
 
+/* Custom Conversion Direction Tab Pills */
+.salary-tab-pills {
+    display: flex;
+    background: rgba(0, 0, 0, 0.02);
+    padding: 6px;
+    border-radius: 14px;
+    border: 1.5px solid var(--border-color);
+    gap: 6px;
+}
+
+body.dark-theme .salary-tab-pills {
+    background: rgba(255, 255, 255, 0.02);
+}
+
+.tab-pill {
+    flex: 1;
+    background: transparent;
+    border: none;
+    padding: 12px;
+    border-radius: 10px;
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: center;
+}
+
+.tab-pill:hover {
+    color: var(--text-primary);
+}
+
+.tab-pill.active {
+    background: var(--primary-color);
+    color: #ffffff;
+    box-shadow: 0 4px 12px var(--primary-glow);
+}
+
 /* Custom Radio Toggle Segment */
 .radio-toggle-group {
     display: flex;
@@ -574,6 +612,92 @@ body.dark-theme .breakdown-table tr:hover td {
 
 body.dark-theme .breakdown-table .highlight-row td {
     background: rgba(162, 10, 10, 0.04) !important;
+}
+
+/* FAQ Section Styles */
+.faq-section {
+    margin-top: 40px;
+}
+
+.faq-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-top: 20px;
+}
+
+.faq-item {
+    background: rgba(0, 0, 0, 0.015);
+    border: 1.5px solid var(--border-color);
+    border-radius: 14px;
+    padding: 20px 24px;
+    transition: all 0.25s ease;
+}
+
+body.dark-theme .faq-item {
+    background: rgba(255, 255, 255, 0.01);
+}
+
+.faq-question {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    user-select: none;
+}
+
+.faq-question span {
+    font-size: 1.05rem;
+    font-weight: 800;
+    color: var(--text-primary);
+}
+
+.faq-icon {
+    font-size: 1.3rem;
+    font-weight: bold;
+    color: var(--accent-color);
+    transition: transform 0.25s ease;
+}
+
+.faq-answer {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1), margin-top 0.3s ease;
+}
+
+.faq-answer p {
+    font-size: 0.95rem;
+    line-height: 1.6;
+    color: var(--text-muted);
+    margin: 0;
+}
+
+.faq-answer ol, .faq-answer ul {
+    margin: 12px 0 0 0;
+    padding-left: 20px;
+}
+
+.faq-answer li {
+    margin-bottom: 8px;
+    color: var(--text-muted);
+    font-size: 0.93rem;
+}
+
+/* Active FAQ styles */
+.faq-item.active {
+    border-color: var(--primary-color);
+    background: rgba(162, 10, 10, 0.01);
+}
+
+body.dark-theme .faq-item.active {
+    background: rgba(162, 10, 10, 0.03);
+}
+
+.faq-item.active .faq-answer {
+    max-height: 800px;
+    margin-top: 15px;
+    border-top: 1.5px solid var(--border-color);
+    padding-top: 15px;
 }
 
 /* B2B Salary Lookup Tab styling */
