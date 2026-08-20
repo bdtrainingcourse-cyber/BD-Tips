@@ -1,10 +1,10 @@
-/* B2B Labor Law Styles - Redesigned Premium Glassmorphism Theme */
+/* B2B Labor Law Styles - Redesigned Premium Dotted Grid Theme */
 
 :root {
-    --bg-dark: #faf8f5; /* Premium soft cream background */
-    --panel-bg: rgba(255, 255, 255, 0.85);
-    --border-color: rgba(0, 0, 0, 0.06);
-    --text-primary: #1e293b;
+    --bg-dark: #f8fafc; /* Modern clean background */
+    --panel-bg: rgba(255, 255, 255, 0.9);
+    --border-color: rgba(226, 232, 240, 0.8);
+    --text-primary: #0f172a;
     --text-muted: #64748b;
     --primary-color: #a20a0a;
     --accent-color: #f3a83b;
@@ -17,12 +17,16 @@
     --danger-glow: rgba(239, 68, 68, 0.08);
     --input-bg: #ffffff;
     --pill-bg: #ffffff;
-    --shadow-main: 0 12px 30px rgba(0, 0, 0, 0.03), 0 2px 4px rgba(0, 0, 0, 0.01);
+    --shadow-main: 0 20px 40px -15px rgba(15, 23, 42, 0.06), 0 1px 3px rgba(0, 0, 0, 0.02);
 }
 
 body {
     background-color: var(--bg-dark);
-    background-image: none;
+    background-image: 
+        radial-gradient(rgba(15, 23, 42, 0.04) 1px, transparent 0),
+        radial-gradient(rgba(15, 23, 42, 0.04) 1px, transparent 0);
+    background-size: 24px 24px;
+    background-position: 0 0, 12px 12px;
     color: var(--text-primary);
     min-height: 100vh;
     font-family: 'Be Vietnam Pro', -apple-system, BlinkMacSystemFont, sans-serif;
@@ -30,22 +34,28 @@ body {
 }
 
 body.dark-theme {
-    --bg-dark: #0f0a0a; /* Burgundy-black */
-    --panel-bg: rgba(26, 18, 18, 0.75);
-    --border-color: rgba(255, 255, 255, 0.06);
-    --text-primary: #f1f5f9;
+    --bg-dark: #0a0606; /* Space burgundy-black */
+    --panel-bg: rgba(20, 13, 13, 0.8);
+    --border-color: rgba(255, 255, 255, 0.07);
+    --text-primary: #f8fafc;
     --text-muted: #94a3b8;
     --primary-color: #a20a0a;
     --accent-color: #f3a83b;
     --warning-color: #f59e0b;
     --danger-color: #ef4444;
-    --primary-glow: rgba(162, 10, 10, 0.25);
-    --accent-glow: rgba(243, 168, 59, 0.25);
-    --warning-glow: rgba(245, 158, 11, 0.25);
-    --danger-glow: rgba(239, 68, 68, 0.25);
-    --input-bg: rgba(15, 10, 10, 0.6);
+    --primary-glow: rgba(162, 10, 10, 0.3);
+    --accent-glow: rgba(243, 168, 59, 0.3);
+    --warning-glow: rgba(245, 158, 11, 0.3);
+    --danger-glow: rgba(239, 68, 68, 0.3);
+    --input-bg: rgba(10, 6, 6, 0.7);
     --pill-bg: rgba(255, 255, 255, 0.03);
-    --shadow-main: 0 16px 40px rgba(0, 0, 0, 0.45);
+    --shadow-main: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+}
+
+body.dark-theme {
+    background-image: 
+        radial-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 0),
+        radial-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 0);
 }
 
 .labor-main {
@@ -61,10 +71,10 @@ body.dark-theme {
 .labor-hero .hero-title {
     font-family: 'Plus Jakarta Sans', sans-serif;
     font-weight: 900;
-    font-size: 3rem;
-    margin-bottom: 10px;
-    letter-spacing: -1.2px;
-    background: linear-gradient(135deg, var(--text-primary) 30%, var(--primary-color) 100%);
+    font-size: 3.2rem;
+    margin-bottom: 12px;
+    letter-spacing: -1.5px;
+    background: linear-gradient(135deg, var(--text-primary) 20%, var(--primary-color) 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
 }
@@ -74,7 +84,7 @@ body.dark-theme {
     color: var(--text-muted);
     max-width: 700px;
     margin: 0 auto;
-    line-height: 1.5;
+    line-height: 1.6;
 }
 
 /* Filter Section */
@@ -94,23 +104,23 @@ body.dark-theme {
     box-sizing: border-box;
     background: var(--input-bg);
     border: 1.5px solid var(--border-color);
-    border-radius: 12px;
-    padding: 14px 18px;
+    border-radius: 14px;
+    padding: 16px 20px;
     color: var(--text-primary);
     font-size: 1rem;
     font-family: inherit;
-    transition: all 0.2s ease;
+    transition: all 0.25s ease;
 }
 
 .search-box input:focus {
     outline: none;
     border-color: var(--accent-color);
-    box-shadow: 0 0 0 3.5px var(--accent-glow);
+    box-shadow: 0 0 0 4px var(--accent-glow);
     background: #ffffff;
 }
 
 body.dark-theme .search-box input:focus {
-    background: rgba(15, 10, 10, 0.8);
+    background: rgba(10, 6, 6, 0.85);
 }
 
 .search-box input::placeholder {
@@ -128,27 +138,27 @@ body.dark-theme .search-box input:focus {
     background: var(--pill-bg);
     border: 1px solid var(--border-color);
     color: var(--text-muted);
-    padding: 8px 18px;
+    padding: 10px 22px;
     border-radius: 50px;
-    font-size: 0.88rem;
+    font-size: 0.9rem;
     font-weight: 700;
     cursor: pointer;
-    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all 0.2s ease;
     font-family: inherit;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.02);
+    box-shadow: 0 2px 5px rgba(0,0,0,0.02);
 }
 
 .filter-pill:hover {
     color: var(--text-primary);
     border-color: var(--accent-color);
-    transform: translateY(-1px);
+    transform: translateY(-2px);
 }
 
 .filter-pill.active {
     background: var(--accent-color);
     border-color: var(--accent-color);
     color: #ffffff;
-    box-shadow: 0 6px 16px var(--accent-glow);
+    box-shadow: 0 8px 20px var(--accent-glow);
 }
 
 /* Dashboard Layout */
@@ -171,47 +181,47 @@ body.dark-theme .search-box input:focus {
     font-weight: 800;
     margin-bottom: 25px;
     border-bottom: 1.5px solid var(--border-color);
-    padding-bottom: 14px;
-    letter-spacing: -0.5px;
+    padding-bottom: 16px;
+    letter-spacing: -0.6px;
 }
 
 /* Rules Section */
 .rules-list {
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    gap: 24px;
 }
 
 .law-card {
     border-left: 5px solid var(--primary-color) !important;
-    padding: 24px !important;
+    padding: 30px !important;
     background: var(--panel-bg);
     border: 1px solid var(--border-color);
-    border-radius: 16px;
+    border-radius: 20px;
     box-shadow: var(--shadow-main);
-    transition: all 0.3s ease;
+    transition: all 0.25s ease;
 }
 
 .law-card:hover {
     transform: translateY(-2px);
-    box-shadow: 0 8px 24px rgba(162, 10, 10, 0.05);
+    box-shadow: 0 12px 30px rgba(162, 10, 10, 0.05);
 }
 
 .law-header {
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
-    margin-bottom: 14px;
+    margin-bottom: 16px;
     gap: 15px;
 }
 
 .law-title-box h3 {
     font-family: 'Plus Jakarta Sans', sans-serif;
-    font-size: 1.25rem;
+    font-size: 1.3rem;
     font-weight: 800;
     color: var(--text-primary);
     margin: 0;
-    letter-spacing: -0.3px;
+    letter-spacing: -0.4px;
 }
 
 .law-article-code {
@@ -239,7 +249,7 @@ body.dark-theme .law-article-code {
 }
 
 .law-body ul {
-    margin-top: 10px;
+    margin-top: 12px;
     padding-left: 20px;
 }
 
@@ -256,23 +266,23 @@ body.dark-theme .law-article-code {
 .cases-list {
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    gap: 24px;
 }
 
 .case-card {
     border-left: 5px solid var(--accent-color) !important;
-    padding: 24px !important;
+    padding: 30px !important;
     background: var(--panel-bg);
     border: 1px solid var(--border-color);
-    border-radius: 16px;
+    border-radius: 20px;
     box-shadow: var(--shadow-main);
     cursor: pointer;
     transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .case-card:hover {
-    transform: translateX(6px) translateY(-1px);
-    box-shadow: 0 12px 24px rgba(243, 168, 59, 0.1);
+    transform: translateX(6px) translateY(-2px);
+    box-shadow: 0 16px 35px rgba(243, 168, 59, 0.1);
     border-color: var(--accent-color);
 }
 
@@ -280,22 +290,22 @@ body.dark-theme .law-article-code {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 14px;
+    margin-bottom: 16px;
 }
 
 .case-card h3 {
     font-family: 'Plus Jakarta Sans', sans-serif;
-    font-size: 1.2rem;
+    font-size: 1.25rem;
     font-weight: 800;
     margin: 0;
-    letter-spacing: -0.3px;
+    letter-spacing: -0.4px;
 }
 
 .case-card-desc {
-    font-size: 0.95rem;
+    font-size: 0.98rem;
     color: var(--text-muted);
-    line-height: 1.5;
-    margin-bottom: 16px;
+    line-height: 1.6;
+    margin-bottom: 18px;
 }
 
 .case-card-footer {
@@ -308,9 +318,9 @@ body.dark-theme .law-article-code {
 .category-badge {
     background: rgba(0, 0, 0, 0.03);
     border: 1px solid var(--border-color);
-    padding: 4px 10px;
+    padding: 4px 12px;
     border-radius: 8px;
-    font-size: 0.78rem;
+    font-size: 0.8rem;
     font-weight: 700;
     color: var(--text-muted);
 }
@@ -320,16 +330,21 @@ body.dark-theme .category-badge {
 }
 
 .read-more-btn {
-    font-size: 0.85rem;
-    font-weight: 700;
+    font-size: 0.88rem;
+    font-weight: 800;
     color: var(--primary-color);
     background: transparent;
     border: none;
     cursor: pointer;
     padding: 0;
-    display: flex;
+    display: inline-flex;
     align-items: center;
     gap: 4px;
+    transition: all 0.2s ease;
+}
+
+.read-more-btn:hover {
+    transform: translateX(4px);
 }
 
 /* Modal details overlay & glass panel */
@@ -339,14 +354,14 @@ body.dark-theme .category-badge {
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(12, 7, 7, 0.6);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
+    background: rgba(10, 6, 6, 0.7);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
     z-index: 1000;
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 20px;
+    padding: 24px;
     box-sizing: border-box;
 }
 
@@ -356,8 +371,8 @@ body.dark-theme .category-badge {
     max-height: 90vh;
     overflow-y: auto;
     position: relative;
-    box-shadow: 0 25px 50px rgba(0,0,0,0.5);
-    border-radius: 24px;
+    box-shadow: 0 30px 60px rgba(0,0,0,0.6);
+    border-radius: 28px;
 }
 
 .modal-close {
@@ -367,15 +382,15 @@ body.dark-theme .category-badge {
     background: rgba(0, 0, 0, 0.03);
     border: none;
     color: var(--text-primary);
-    width: 36px;
-    height: 36px;
+    width: 38px;
+    height: 38px;
     border-radius: 50%;
-    font-size: 1.5rem;
+    font-size: 1.6rem;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: all 0.2s;
+    transition: all 0.2s ease;
     line-height: 1;
 }
 
@@ -398,9 +413,9 @@ body.dark-theme .modal-close {
 .modal-title {
     font-family: 'Plus Jakarta Sans', sans-serif;
     font-weight: 900;
-    font-size: 1.6rem;
+    font-size: 1.7rem;
     color: var(--text-primary);
-    letter-spacing: -0.6px;
+    letter-spacing: -0.8px;
 }
 
 /* Modal Grid */
@@ -411,22 +426,22 @@ body.dark-theme .modal-close {
 }
 
 .modal-section-card {
-    background: rgba(0, 0, 0, 0.015);
-    border: 1px solid var(--border-color);
-    border-radius: 16px;
-    padding: 24px;
+    background: rgba(0, 0, 0, 0.01);
+    border: 1.5px solid var(--border-color);
+    border-radius: 20px;
+    padding: 30px;
 }
 
 body.dark-theme .modal-section-card {
-    background: rgba(255, 255, 255, 0.01);
+    background: rgba(255, 255, 255, 0.015);
 }
 
 .modal-section-card .section-title {
     font-family: 'Plus Jakarta Sans', sans-serif;
-    font-size: 1.15rem;
+    font-size: 1.2rem;
     font-weight: 800;
     margin-top: 0;
-    margin-bottom: 16px;
+    margin-bottom: 18px;
     color: var(--text-primary);
     display: flex;
     align-items: center;
@@ -436,26 +451,26 @@ body.dark-theme .modal-section-card {
 .modal-section-card .section-num {
     background: var(--accent-color);
     color: #ffffff;
-    width: 26px;
-    height: 26px;
+    width: 28px;
+    height: 28px;
     border-radius: 50%;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    font-size: 0.85rem;
+    font-size: 0.9rem;
     font-weight: 800;
 }
 
 .regulation-card {
-    border-top: 4px solid var(--primary-color);
+    border-top: 5px solid var(--primary-color);
 }
 
 .situation-card {
-    border-top: 4px solid var(--accent-color);
+    border-top: 5px solid var(--accent-color);
 }
 
 .section-body {
-    font-size: 0.98rem;
+    font-size: 1rem;
     line-height: 1.6;
     color: var(--text-muted);
 }
@@ -466,17 +481,17 @@ body.dark-theme .modal-section-card {
     background: var(--primary-glow);
     padding: 6px 14px;
     border-radius: 8px;
-    font-size: 0.85rem;
+    font-size: 0.88rem;
     display: inline-block;
-    margin-bottom: 12px;
+    margin-bottom: 14px;
 }
 
 .scenario-text {
-    margin-bottom: 20px;
+    margin-bottom: 24px;
     background: rgba(0, 0, 0, 0.01);
-    padding: 18px;
-    border-radius: 12px;
-    border: 1px dashed var(--border-color);
+    padding: 20px;
+    border-radius: 14px;
+    border: 1.5px dashed var(--border-color);
 }
 
 body.dark-theme .scenario-text {
@@ -485,9 +500,9 @@ body.dark-theme .scenario-text {
 
 .resolution-steps {
     background: rgba(16, 185, 129, 0.02);
-    border: 1px solid rgba(16, 185, 129, 0.15);
-    padding: 18px;
-    border-radius: 12px;
+    border: 1.5px solid rgba(16, 185, 129, 0.15);
+    padding: 20px;
+    border-radius: 14px;
     color: var(--text-primary);
 }
 
@@ -498,7 +513,8 @@ body.dark-theme .resolution-steps {
 .resolution-steps strong {
     color: var(--success-color);
     display: block;
-    margin-bottom: 6px;
+    margin-bottom: 8px;
+    font-weight: 800;
 }
 
 /* Modal bottom actions */
@@ -510,29 +526,29 @@ body.dark-theme .resolution-steps {
 
 /* Button override */
 .btn-primary {
-    background: linear-gradient(135deg, var(--primary-color), #bf1515);
+    background: linear-gradient(135deg, var(--primary-color), #b01010);
     color: #ffffff;
-    box-shadow: 0 4px 15px rgba(162, 10, 10, 0.25);
+    box-shadow: 0 6px 18px rgba(162, 10, 10, 0.25);
     border: none;
     font-family: inherit;
-    font-weight: 700;
-    padding: 12px 28px;
-    border-radius: 10px;
+    font-weight: 800;
+    padding: 14px 30px;
+    border-radius: 12px;
     cursor: pointer;
     transition: all 0.2s;
 }
 
 .btn-primary:hover {
     transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(162, 10, 10, 0.35);
+    box-shadow: 0 10px 24px rgba(162, 10, 10, 0.35);
 }
 
 /* Status Badges */
 .status-badge {
-    padding: 4px 10px;
-    border-radius: 8px;
+    padding: 5px 12px;
+    border-radius: 50px;
     font-size: 0.75rem;
-    font-weight: 700;
+    font-weight: 800;
     text-transform: uppercase;
 }
 
@@ -544,10 +560,10 @@ body.dark-theme .resolution-steps {
 .modal-category-badge {
     background: rgba(243, 168, 59, 0.1);
     color: #d97706;
-    padding: 4px 10px;
-    border-radius: 8px;
+    padding: 5px 12px;
+    border-radius: 50px;
     font-size: 0.75rem;
-    font-weight: 700;
+    font-weight: 800;
     text-transform: uppercase;
 }
 
