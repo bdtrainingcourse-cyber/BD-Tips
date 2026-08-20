@@ -761,6 +761,10 @@ async function endSalesSimulation(force = false) {
         // Save session history
         saveSessionToHistory(report.score, report.salesFramework, report.estimatedSkillLevel);
 
+        if (window.trackUserBehavior && currentScenario) {
+            window.trackUserBehavior('pitching_complete', `Kịch bản: ${currentScenario.title} | Điểm số: ${report.score}`);
+        }
+
         // Update gamification data
         awardPointsAndXP(report.score, report.scores);
 
