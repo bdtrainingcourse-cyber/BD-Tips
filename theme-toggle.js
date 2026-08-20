@@ -1671,10 +1671,8 @@ function initGlobalComponents() {
     }
 }
 
-// Global client behavior tracker
 window.trackUserBehavior = function(action, detail) {
-    const email = localStorage.getItem('streak_email');
-    if (!email) return; // Only track registered users
+    const email = localStorage.getItem('streak_email') || 'guest@petervo.vn';
     
     // Check if on community page to match its categories or general categories
     let category = 'general';
