@@ -1231,7 +1231,7 @@ function handleEmailReminderRegistration(nameInputId, emailInputId, submitBtnId,
 
         try {
             // Step 1: Check if email already exists in sheets
-            const checkUrl = `/api/log-email?action=checkEmail&email=${encodeURIComponent(email)}`;
+            const checkUrl = `/api/log-email?action=checkEmail&email=${encodeURIComponent(email)}&name=${encodeURIComponent(name)}`;
             const checkRes = await fetch(checkUrl);
             const checkData = await checkRes.json();
 
@@ -1265,15 +1265,17 @@ function handleEmailReminderRegistration(nameInputId, emailInputId, submitBtnId,
                     return;
                 }
                 
+                const resolvedName = (user.name && user.name !== 'Khách' && user.name !== 'Học viên') ? user.name : name;
+
                 // Welcome back user and automatically sync their local session with their existing points
                 window.showGlobalNotification(
                     '👋 Chào Mừng Quay Trở Lại!',
-                    `Chào mừng <strong>${user.name || name}</strong> quay trở lại với BD Bình Dân Học Vụ!<br><br>Hệ thống nhận diện tài khoản đã được đăng ký trước đó và tự động đồng bộ số điểm tích lũy <strong>${user.points}đ ⚡</strong> của bạn.`
+                    `Chào mừng <strong>${resolvedName}</strong> quay trở lại với BD Bình Dân Học Vụ!<br><br>Hệ thống nhận diện tài khoản đã được đăng ký trước đó và tự động đồng bộ số điểm tích lũy <strong>${user.points}đ ⚡</strong> của bạn.`
                 );
                 
                 localStorage.setItem('streak_active', 'true');
                 if (user.id) localStorage.setItem('streak_user_id', user.id);
-                localStorage.setItem('streak_name', user.name || name);
+                localStorage.setItem('streak_name', resolvedName);
                 localStorage.setItem('streak_email', email);
                 localStorage.setItem('b2b_points_balance', (user.points || 0).toString());
                 localStorage.setItem('b2b_user_verified', 'true');
