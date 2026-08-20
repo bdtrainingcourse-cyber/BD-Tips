@@ -1,4 +1,106 @@
+const https = require('https');
 const { readLogs, writeLogs, readUsers, writeUsers } = require('./_db-helper');
+
+// Native HTTPS POST helper with redirect-following
+function httpPost(url, body, maxRedirects = 5) {
+  return new Promise((resolve) => {
+    try {
+      const urlObj = new URL(url);
+      const postData = typeof body === 'string' ? body : JSON.stringify(body);
+      const options = {
+        hostname: urlObj.hostname,
+        path: urlObj.pathname + urlObj.search,
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Content-Length': Buffer.byteLength(postData)
+        }
+      };
+      
+      const req = https.request(options, (res) => {
+        if ((res.statusCode === 301 || res.statusCode === 302 || res.statusCode === 307 || res.statusCode === 308) && res.headers.location) {
+          if (maxRedirects <= 0) {
+            resolve({ ok: false, status: 500, text: () => Promise.resolve('Too many redirects') });
+            return;
+          }
+          httpGet(res.headers.location, maxRedirects - 1).then(resolve);
+          return;
+        }
+
+        let data = '';
+        res.on('data', (chunk) => data += chunk);
+        res.on('end', () => {
+          resolve({
+            ok: res.statusCode >= 200 && res.statusCode < 300,
+            status: res.statusCode,
+            text: () => Promise.resolve(data)
+          });
+        });
+      });
+      
+      req.setTimeout(5000, () => {
+        req.destroy();
+        resolve({ ok: false, status: 408, text: () => Promise.resolve('Timeout') });
+      });
+
+      req.on('error', (err) => {
+        resolve({ ok: false, status: 500, text: () => Promise.resolve(err.message) });
+      });
+
+      req.write(postData);
+      req.end();
+    } catch (e) {
+      resolve({ ok: false, status: 500, text: () => Promise.resolve(e.message) });
+    }
+  });
+}
+
+function httpGet(url, maxRedirects = 5) {
+  return new Promise((resolve) => {
+    try {
+      const urlObj = new URL(url);
+      const options = {
+        hostname: urlObj.hostname,
+        path: urlObj.pathname + urlObj.search,
+        method: 'GET'
+      };
+      
+      const req = https.request(options, (res) => {
+        if ((res.statusCode === 301 || res.statusCode === 302 || res.statusCode === 307 || res.statusCode === 308) && res.headers.location) {
+          if (maxRedirects <= 0) {
+            resolve({ ok: false, status: 500, text: () => Promise.resolve('Too many redirects') });
+            return;
+          }
+          httpGet(res.headers.location, maxRedirects - 1).then(resolve);
+          return;
+        }
+
+        let data = '';
+        res.on('data', (chunk) => data += chunk);
+        res.on('end', () => {
+          resolve({
+            ok: res.statusCode >= 200 && res.statusCode < 300,
+            status: res.statusCode,
+            text: () => Promise.resolve(data)
+          });
+        });
+      });
+      
+      req.setTimeout(5000, () => {
+        req.destroy();
+        resolve({ ok: false, status: 408, text: () => Promise.resolve('Timeout') });
+      });
+
+      req.on('error', (err) => {
+        resolve({ ok: false, status: 500, text: () => Promise.resolve(err.message) });
+      });
+
+      req.end();
+    } catch (e) {
+      resolve({ ok: false, status: 500, text: () => Promise.resolve(e.message) });
+    }
+  });
+}
 
 module.exports = async (req, res) => {
   // Set CORS headers
@@ -22,6 +124,7 @@ module.exports = async (req, res) => {
   const logs = readLogs();
   const timestamp = new Date().toISOString();
   const cleanEmail = email.toLowerCase().trim();
+  const isGuest = cleanEmail === 'guest@petervo.vn' || cleanEmail.startsWith('guest@');
   
   logs.push({
     email: cleanEmail,
@@ -36,11 +139,39 @@ module.exports = async (req, res) => {
   // Update last active IP for the user if profile exists
   const users = readUsers();
   const matchedUser = Object.values(users).find(u => u.email && u.email.toLowerCase().trim() === cleanEmail);
+  const clientIp = req.headers['x-forwarded-for'] || req.socket.remoteAddress || '';
+  
   if (matchedUser) {
-    const clientIp = req.headers['x-forwarded-for'] || req.socket.remoteAddress || '';
     matchedUser.lastIp = clientIp;
     matchedUser.lastActive = timestamp;
     writeUsers(users);
+  }
+
+  // Forward to Google Sheets Webhook
+  const webhookUrl = process.env.GOOGLE_SHEET_LEADS_WEBHOOK;
+  if (webhookUrl) {
+    try {
+      const payload = {
+        userId: matchedUser ? matchedUser.id : '',
+        name: matchedUser ? matchedUser.name : 'Khách',
+        email: cleanEmail,
+        tool: action,
+        detail: detail || '',
+        isGuest,
+        date: timestamp
+      };
+      
+      // Fire-and-forget or async call
+      httpPost(webhookUrl, payload).then(sheetRes => {
+        sheetRes.text().then(txt => {
+          console.log(`[BEHAVIOR_SYNC] Success. Webhook response: ${txt}`);
+        }).catch(() => {});
+      }).catch(err => {
+        console.warn(`[BEHAVIOR_SYNC_WARN] Failed to forward behavior: ${err.message}`);
+      });
+    } catch (e) {
+      console.warn('[BEHAVIOR_SYNC_WARN] Failed to forward to sheets:', e.message);
+    }
   }
 
   return res.status(200).json({ success: true });
