@@ -218,10 +218,14 @@ module.exports = async (req, res) => {
     ? process.env.GOOGLE_SHEET_COURSE_WEBHOOK 
     : process.env.GOOGLE_SHEET_LEADS_WEBHOOK;
 
+  let sheetsResponseText = "";
+  let debugError = "";
+
   if (!localUser && webhookUrl && action !== 'verifyUser') {
     try {
       const response = await httpPost(webhookUrl, { action: 'checkEmail', email: cleanEmail, userId: userId });
       const resText = await response.text();
+      sheetsResponseText = resText;
       const result = JSON.parse(resText);
       if (result.exists && result.user) {
         const uid = result.user.id || 'UID_' + Math.random().toString(36).substr(2, 9).toUpperCase();
@@ -240,6 +244,7 @@ module.exports = async (req, res) => {
         localUser = users[uid];
       }
     } catch (e) {
+      debugError = e.message;
       console.warn('[SHEETS_REHYDRATE_WARN] Failed to rehydrate user from sheets:', e.message);
     }
   }
@@ -380,7 +385,7 @@ module.exports = async (req, res) => {
         }
       });
     }
-    return res.status(200).json({ success: true, exists: false });
+    return res.status(200).json({ success: true, exists: false, debugWebhookUrl: webhookUrl || "NOT_SET", debugSheetsResponse: sheetsResponseText, debugError: debugError });
   } else if (action === 'forgotPassword') {
     if (localUser) {
       const resetToken = Math.random().toString(36).substr(2, 9).toUpperCase();
