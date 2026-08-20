@@ -365,14 +365,24 @@ body.dark-theme .category-badge {
     box-sizing: border-box;
 }
 
+/* Redesigned Modal Card to guarantee Light/Dark theme color compatibility */
 .modal-card {
     max-width: 850px;
     width: 100%;
     max-height: 90vh;
     overflow-y: auto;
     position: relative;
-    box-shadow: 0 30px 60px rgba(0,0,0,0.6);
+    box-shadow: 0 30px 60px rgba(0,0,0,0.3);
     border-radius: 28px;
+    background: #ffffff !important; /* Force light theme modal background */
+    color: #0f172a !important;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+body.dark-theme .modal-card {
+    background: #120d0d !important; /* Force dark burgundy-black modal background */
+    color: #f8fafc !important;
+    border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .modal-close {
@@ -381,7 +391,7 @@ body.dark-theme .category-badge {
     right: 24px;
     background: rgba(0, 0, 0, 0.03);
     border: none;
-    color: var(--text-primary);
+    color: #475569 !important;
     width: 38px;
     height: 38px;
     border-radius: 50%;
@@ -396,11 +406,12 @@ body.dark-theme .category-badge {
 
 body.dark-theme .modal-close {
     background: rgba(255, 255, 255, 0.05);
+    color: #94a3b8 !important;
 }
 
 .modal-close:hover {
     background: var(--primary-color);
-    color: #ffffff;
+    color: #ffffff !important;
     transform: rotate(90deg);
 }
 
@@ -414,7 +425,7 @@ body.dark-theme .modal-close {
     font-family: 'Plus Jakarta Sans', sans-serif;
     font-weight: 900;
     font-size: 1.7rem;
-    color: var(--text-primary);
+    color: inherit;
     letter-spacing: -0.8px;
 }
 
@@ -426,7 +437,7 @@ body.dark-theme .modal-close {
 }
 
 .modal-section-card {
-    background: rgba(0, 0, 0, 0.01);
+    background: rgba(0, 0, 0, 0.015);
     border: 1.5px solid var(--border-color);
     border-radius: 20px;
     padding: 30px;
@@ -442,7 +453,7 @@ body.dark-theme .modal-section-card {
     font-weight: 800;
     margin-top: 0;
     margin-bottom: 18px;
-    color: var(--text-primary);
+    color: inherit;
     display: flex;
     align-items: center;
     gap: 12px;
@@ -472,7 +483,7 @@ body.dark-theme .modal-section-card {
 .section-body {
     font-size: 1rem;
     line-height: 1.6;
-    color: var(--text-muted);
+    color: inherit;
 }
 
 .legal-article {
@@ -484,6 +495,11 @@ body.dark-theme .modal-section-card {
     font-size: 0.88rem;
     display: inline-block;
     margin-bottom: 14px;
+}
+
+body.dark-theme .legal-article {
+    color: #fca5a5;
+    background: rgba(239, 68, 68, 0.15);
 }
 
 .scenario-text {
@@ -498,23 +514,38 @@ body.dark-theme .scenario-text {
     background: rgba(255, 255, 255, 0.01);
 }
 
+/* Bulletproof styles for Resolution Steps block */
 .resolution-steps {
-    background: rgba(16, 185, 129, 0.02);
-    border: 1.5px solid rgba(16, 185, 129, 0.15);
-    padding: 20px;
-    border-radius: 14px;
-    color: var(--text-primary);
+    background: rgba(16, 185, 129, 0.04) !important;
+    border: 1.5px solid rgba(16, 185, 129, 0.25) !important;
+    padding: 20px !important;
+    border-radius: 14px !important;
+    color: inherit !important;
 }
 
 body.dark-theme .resolution-steps {
-    background: rgba(16, 185, 129, 0.04);
+    background: rgba(16, 185, 129, 0.08) !important;
 }
 
 .resolution-steps strong {
-    color: var(--success-color);
-    display: block;
-    margin-bottom: 8px;
-    font-weight: 800;
+    color: var(--success-color) !important;
+    display: block !important;
+    margin-bottom: 8px !important;
+    font-weight: 800 !important;
+}
+
+/* Force correct font and remove default text highlights on resolution text */
+#case-resolution, #case-resolution p, #case-resolution br, #case-resolution span {
+    font-family: 'Be Vietnam Pro', -apple-system, BlinkMacSystemFont, sans-serif !important;
+    background: transparent !important;
+    color: inherit !important;
+    line-height: 1.65 !important;
+    font-size: 0.98rem !important;
+    text-shadow: none !important;
+}
+
+body.dark-theme #case-resolution {
+    color: #e2e8f0 !important;
 }
 
 /* Modal bottom actions */
