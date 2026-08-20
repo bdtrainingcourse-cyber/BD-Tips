@@ -54,7 +54,7 @@ function httpGet(url) {
 }
 
 // Native HTTPS POST helper that mimics fetch response structure with 3s timeout
-function httpPost(url, body) {
+function httpPost(url, body, maxRedirects = 5) {
   return new Promise((resolve) => {
     try {
       const urlObj = new URL(url);
@@ -69,13 +69,27 @@ function httpPost(url, body) {
         }
       };
       
-      const req = https.request(options, (postRes) => {
+      const req = https.request(options, (res) => {
+        if ((res.statusCode === 301 || res.statusCode === 302 || res.statusCode === 307 || res.statusCode === 308) && res.headers.location) {
+          if (maxRedirects <= 0) {
+            resolve({
+              ok: false,
+              status: 500,
+              text: () => Promise.resolve('Too many redirects'),
+              json: () => Promise.resolve({})
+            });
+            return;
+          }
+          httpGet(res.headers.location, maxRedirects - 1).then(resolve);
+          return;
+        }
+
         let data = '';
-        postRes.on('data', (chunk) => data += chunk);
-        postRes.on('end', () => {
+        res.on('data', (chunk) => data += chunk);
+        res.on('end', () => {
           resolve({
-            ok: postRes.statusCode >= 200 && postRes.statusCode < 300,
-            status: postRes.statusCode,
+            ok: res.statusCode >= 200 && res.statusCode < 300,
+            status: res.statusCode,
             text: () => Promise.resolve(data),
             json: () => {
               try {
@@ -88,7 +102,7 @@ function httpPost(url, body) {
         });
       });
       
-      req.setTimeout(3000, () => {
+      req.setTimeout(5000, () => {
         req.destroy();
         resolve({
           ok: false,
@@ -108,6 +122,80 @@ function httpPost(url, body) {
       });
 
       req.write(postData);
+      req.end();
+    } catch (e) {
+      resolve({
+        ok: false,
+        status: 500,
+        text: () => Promise.resolve(e.message),
+        json: () => Promise.resolve({})
+      });
+    }
+  });
+}
+
+function httpGet(url, maxRedirects = 5) {
+  return new Promise((resolve) => {
+    try {
+      const urlObj = new URL(url);
+      const options = {
+        hostname: urlObj.hostname,
+        path: urlObj.pathname + urlObj.search,
+        method: 'GET'
+      };
+      
+      const req = https.request(options, (res) => {
+        if ((res.statusCode === 301 || res.statusCode === 302 || res.statusCode === 307 || res.statusCode === 308) && res.headers.location) {
+          if (maxRedirects <= 0) {
+            resolve({
+              ok: false,
+              status: 500,
+              text: () => Promise.resolve('Too many redirects'),
+              json: () => Promise.resolve({})
+            });
+            return;
+          }
+          httpGet(res.headers.location, maxRedirects - 1).then(resolve);
+          return;
+        }
+
+        let data = '';
+        res.on('data', (chunk) => data += chunk);
+        res.on('end', () => {
+          resolve({
+            ok: res.statusCode >= 200 && res.statusCode < 300,
+            status: res.statusCode,
+            text: () => Promise.resolve(data),
+            json: () => {
+              try {
+                return Promise.resolve(JSON.parse(data));
+              } catch (e) {
+                return Promise.reject(e);
+              }
+            }
+          });
+        });
+      });
+      
+      req.setTimeout(5000, () => {
+        req.destroy();
+        resolve({
+          ok: false,
+          status: 408,
+          text: () => Promise.resolve('Timeout'),
+          json: () => Promise.resolve({})
+        });
+      });
+
+      req.on('error', (err) => {
+        resolve({
+          ok: false,
+          status: 500,
+          text: () => Promise.resolve(err.message),
+          json: () => Promise.resolve({})
+        });
+      });
+
       req.end();
     } catch (e) {
       resolve({
