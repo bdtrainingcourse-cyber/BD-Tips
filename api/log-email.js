@@ -311,16 +311,19 @@ module.exports = async (req, res) => {
 
   if (!localUser && webhookUrl && action !== 'verifyUser') {
     try {
-      const response = await httpPost(webhookUrl, { action: 'checkEmail', email: cleanEmail, userId: userId });
+      const response = await httpPost(webhookUrl, { action: 'checkEmail', email: cleanEmail, userId: userId, name: name });
       const resText = await response.text();
       sheetsResponseText = resText;
       const result = JSON.parse(resText);
       if (result.exists && result.user) {
         const uid = result.user.id || 'UID_' + Math.random().toString(36).substr(2, 9).toUpperCase();
+        const resolvedName = (result.user.name && result.user.name !== 'Khách' && result.user.name !== 'Học viên') 
+          ? result.user.name 
+          : (name || 'Học viên');
         users[uid] = {
           id: uid,
           email: cleanEmail,
-          name: result.user.name || name || 'Học viên',
+          name: resolvedName,
           points: (result.user.points !== null && result.user.points !== undefined) ? Number(result.user.points) : 25,
           verified: !!result.user.verified,
           password: result.user.passwordHash || '',
@@ -418,6 +421,19 @@ module.exports = async (req, res) => {
     }
   } else if (action === 'checkEmail') {
     if (localUser) {
+      if ((localUser.name === 'Khách' || localUser.name === 'Học viên' || !localUser.name) && name && name !== 'Khách' && name !== 'Học viên') {
+        localUser.name = name;
+        localUser.lastActive = timestamp;
+        localUser.lastIp = clientIp;
+        writeUsers(users);
+        if (webhookUrl) {
+          try {
+            await httpPost(webhookUrl, { action: 'updateName', email: cleanEmail, userId: localUser.id, name: name });
+          } catch (err) {
+            console.warn('[SHEETS_SYNC_WARN] Failed to sync new name to sheets:', err.message);
+          }
+        }
+      }
       const hasPassword = !!localUser.password;
       
       // If a password is submitted, verify it
