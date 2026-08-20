@@ -147,7 +147,7 @@ module.exports = async (req, res) => {
     writeUsers(users);
   }
 
-  // Forward to Google Sheets Webhook
+  // Forward to Google Sheets Webhook (awaited to prevent Vercel context freeze)
   const webhookUrl = process.env.GOOGLE_SHEET_LEADS_WEBHOOK;
   if (webhookUrl) {
     try {
@@ -161,16 +161,11 @@ module.exports = async (req, res) => {
         date: timestamp
       };
       
-      // Fire-and-forget or async call
-      httpPost(webhookUrl, payload).then(sheetRes => {
-        sheetRes.text().then(txt => {
-          console.log(`[BEHAVIOR_SYNC] Success. Webhook response: ${txt}`);
-        }).catch(() => {});
-      }).catch(err => {
-        console.warn(`[BEHAVIOR_SYNC_WARN] Failed to forward behavior: ${err.message}`);
-      });
-    } catch (e) {
-      console.warn('[BEHAVIOR_SYNC_WARN] Failed to forward to sheets:', e.message);
+      const sheetRes = await httpPost(webhookUrl, payload);
+      const txt = await sheetRes.text();
+      console.log(`[BEHAVIOR_SYNC] Success. Webhook response: ${txt}`);
+    } catch (err) {
+      console.warn(`[BEHAVIOR_SYNC_WARN] Failed to forward behavior: ${err.message}`);
     }
   }
 
