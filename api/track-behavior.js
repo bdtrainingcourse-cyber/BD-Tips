@@ -137,12 +137,16 @@ module.exports = async (req, res) => {
   const timestamp = new Date().toISOString();
   const cleanEmail = email.toLowerCase().trim();
   const isGuest = cleanEmail === 'guest@petervo.vn' || cleanEmail.startsWith('guest@');
-  
+  const ua = req.headers['user-agent'] || '';
+  const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(ua);
+  const deviceType = isMobile ? 'Mobile' : 'Desktop';
+
   logs.push({
     email: cleanEmail,
     action,
     category,
     detail,
+    device: deviceType,
     timestamp
   });
   
@@ -170,6 +174,7 @@ module.exports = async (req, res) => {
         tool: action,
         detail: detail || '',
         isGuest,
+        device: deviceType,
         date: timestamp
       };
       
