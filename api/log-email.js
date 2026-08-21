@@ -82,6 +82,18 @@ async function validateEmail(email) {
 
 // Native HTTPS POST helper with 3s timeout
 function httpPost(url, body, maxRedirects = 5) {
+  if (url.includes('script.google.com') && process.env.B2B_SECRET_KEY) {
+    if (typeof body === 'object' && body !== null) {
+      body.secretKey = process.env.B2B_SECRET_KEY;
+    } else if (typeof body === 'string') {
+      try {
+        const parsed = JSON.parse(body);
+        parsed.secretKey = process.env.B2B_SECRET_KEY;
+        body = JSON.stringify(parsed);
+      } catch (e) {}
+    }
+  }
+
   return new Promise((resolve) => {
     try {
       const urlObj = new URL(url);
