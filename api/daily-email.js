@@ -177,7 +177,7 @@ function httpGet(url, maxRedirects = 5) {
         });
       });
       
-      req.setTimeout(5000, () => {
+      req.setTimeout(1500, () => {
         req.destroy();
         resolve({
           ok: false,
@@ -357,10 +357,39 @@ module.exports = async (req, res) => {
   const days = ["Chủ Nhật", "Thứ Hai", "Thứ Ba", "Thứ Tư", "Thứ Năm", "Thứ Sáu", "Thứ Bảy"];
   const dayName = days[dayOfWeek];
 
-  // 1. Fetch weather in Vietnam (TP HCM) using VnExpress crawler API
+  // 1. Fetch weather in Vietnam (TP HCM) using VnExpress crawler API, fallback to Open-Meteo if blocked
   let temp = 28;
   let weatherDesc = "Trời dịu mát";
   let weatherCode = 0;
+
+  async function fallbackToOpenMeteo() {
+    try {
+      const weatherRes = await httpGet("https://api.open-meteo.com/v1/forecast?latitude=10.823&longitude=106.63&current_weather=true");
+      if (weatherRes.ok) {
+        const data = await weatherRes.json();
+        if (data.current_weather) {
+          temp = Math.round(data.current_weather.temperature);
+          const weatherCodeRaw = data.current_weather.weathercode;
+          if (weatherCodeRaw === 0) weatherDesc = "Trời quang nắng ráo";
+          else if ([1, 2, 3].includes(weatherCodeRaw)) weatherDesc = "Trời dịu mát nhiều mây";
+          else if ([45, 48].includes(weatherCodeRaw)) weatherDesc = "Có sương mù";
+          else if ([51, 53, 55, 61, 63, 65, 80, 81, 82].includes(weatherCodeRaw)) weatherDesc = "Trời mưa ẩm ướt";
+          else if ([95, 96, 99].includes(weatherCodeRaw)) weatherDesc = "Có giông bão sấm sét";
+
+          if ([51, 53, 55, 61, 63, 65, 80, 81, 82].includes(weatherCodeRaw)) {
+            weatherCode = 61;
+          } else if ([95, 96, 99].includes(weatherCodeRaw)) {
+            weatherCode = 95;
+          } else if ([45, 48].includes(weatherCodeRaw)) {
+            weatherCode = 45;
+          }
+        }
+      }
+    } catch (err) {
+      console.error("Failed to fetch weather from Open-Meteo fallback:", err.message);
+    }
+  }
+
   try {
     const weatherRes = await httpGet("https://api3.vnexpress.net/api/crawler?type=get_data&key=weather_dot_com&province=79&app_id=d9b81e");
     if (weatherRes.ok) {
@@ -380,11 +409,18 @@ module.exports = async (req, res) => {
           } else if (phraseLower.includes("sương")) {
             weatherCode = 45; // Fog
           }
+        } else {
+          await fallbackToOpenMeteo();
         }
+      } else {
+        await fallbackToOpenMeteo();
       }
+    } else {
+      await fallbackToOpenMeteo();
     }
   } catch (e) {
-    console.error("Failed to fetch weather from VnExpress API:", e.message);
+    console.error("Failed to fetch weather from VnExpress API, using Open-Meteo fallback:", e.message);
+    await fallbackToOpenMeteo();
   }
 
   // 2. Fetch latest economic news from VnExpress Business RSS Feed
