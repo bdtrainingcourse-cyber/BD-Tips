@@ -598,6 +598,10 @@ module.exports = async (req, res) => {
     });
   }
 
+  const ua = req.headers['user-agent'] || '';
+  const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(ua);
+  const deviceType = isMobile ? 'Mobile' : 'Desktop';
+
   try {
     // Forward to Google Sheets Webhook
     let payload = {};
@@ -608,16 +612,17 @@ module.exports = async (req, res) => {
         email,
         tool: 'daily-reminder',
         points: points !== undefined ? points : 25,
+        device: deviceType,
         date: timestamp,
         password: localUser.password || ''
       };
     } else if (action === 'updatePoints') {
-      payload = { action, email, userId: localUser.id, points };
+      payload = { action, email, userId: localUser.id, points, device: deviceType };
     } else {
       // Normal logging flow
       const isCourseReg = tool === 'course-registration';
       payload = isCourseReg
-        ? { name, email, phone, company, date: timestamp, tool, userId: localUser.id, password: localUser.password || '' }
+        ? { name, email, phone, company, date: timestamp, tool, userId: localUser.id, device: deviceType, password: localUser.password || '' }
         : { 
             userId: localUser.id,
             name: name || 'Học viên', 
@@ -627,6 +632,7 @@ module.exports = async (req, res) => {
             ebookTitle: ebookTitle || '', 
             downloadLink: downloadLink || '', 
             points: points !== undefined ? points : 25,
+            device: deviceType,
             date: timestamp,
             password: localUser.password || ''
           };
