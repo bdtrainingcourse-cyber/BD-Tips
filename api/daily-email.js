@@ -1,3 +1,4 @@
+// Trigger rebuild for B2B_SECRET_KEY env variable injection
 const https = require('https');
 const { readUsers } = require('./_db-helper');
 
