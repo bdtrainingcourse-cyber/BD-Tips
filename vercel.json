@@ -6,5 +6,10 @@
       "path": "/api/daily-email",
       "schedule": "40 1 * * *"
     }
-  ]
+  ],
+  "functions": {
+    "api/daily-email.js": {
+      "maxDuration": 60
+    }
+  }
 }
