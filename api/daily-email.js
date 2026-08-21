@@ -357,26 +357,34 @@ module.exports = async (req, res) => {
   const days = ["Chủ Nhật", "Thứ Hai", "Thứ Ba", "Thứ Tư", "Thứ Năm", "Thứ Sáu", "Thứ Bảy"];
   const dayName = days[dayOfWeek];
 
-  // 1. Fetch weather in Vietnam (default HCMC) using local httpGet helper
+  // 1. Fetch weather in Vietnam (TP HCM) using VnExpress crawler API
   let temp = 28;
   let weatherDesc = "Trời dịu mát";
   let weatherCode = 0;
   try {
-    const weatherRes = await httpGet("https://api.open-meteo.com/v1/forecast?latitude=10.823&longitude=106.63&current_weather=true");
+    const weatherRes = await httpGet("https://api3.vnexpress.net/api/crawler?type=get_data&key=weather_dot_com&province=79&app_id=d9b81e");
     if (weatherRes.ok) {
       const data = await weatherRes.json();
-      if (data.current_weather) {
-        temp = Math.round(data.current_weather.temperature);
-        weatherCode = data.current_weather.weathercode;
-        if (weatherCode === 0) weatherDesc = "Trời quang nắng ráo";
-        else if ([1, 2, 3].includes(weatherCode)) weatherDesc = "Trời dịu mát nhiều mây";
-        else if ([45, 48].includes(weatherCode)) weatherDesc = "Có sương mù";
-        else if ([51, 53, 55, 61, 63, 65, 80, 81, 82].includes(weatherCode)) weatherDesc = "Trời mưa ẩm ướt";
-        else if ([95, 96, 99].includes(weatherCode)) weatherDesc = "Có giông bão sấm sét";
+      if (data && data.error === 0 && data.data && data.data.value) {
+        const parsedValue = JSON.parse(data.data.value);
+        const hcmWeather = parsedValue["TP HCM"];
+        if (hcmWeather) {
+          temp = parseInt(hcmWeather.temperature, 10) || 28;
+          weatherDesc = hcmWeather.phrase || hcmWeather.cloud_status || "Trời dịu mát";
+          
+          const phraseLower = weatherDesc.toLowerCase();
+          if (phraseLower.includes("giông") || phraseLower.includes("bão") || phraseLower.includes("storm") || phraseLower.includes("thunder")) {
+            weatherCode = 95; // Storm
+          } else if (phraseLower.includes("mưa") || phraseLower.includes("drizzle") || phraseLower.includes("shower") || phraseLower.includes("rain")) {
+            weatherCode = 61; // Rain
+          } else if (phraseLower.includes("sương")) {
+            weatherCode = 45; // Fog
+          }
+        }
       }
     }
   } catch (e) {
-    console.error("Failed to fetch weather:", e.message);
+    console.error("Failed to fetch weather from VnExpress API:", e.message);
   }
 
   // 2. Fetch latest economic news from VnExpress Business RSS Feed
@@ -396,9 +404,9 @@ module.exports = async (req, res) => {
 
   // 3. Match Mascot based on context
   let selectedMascot = "https://bd-tips.vercel.app/mascot_mascot.jpg";
-  if ([51, 53, 55, 61, 63, 65, 80, 81, 82].includes(weatherCode)) {
+  if (weatherCode === 61) {
     selectedMascot = "https://bd-tips.vercel.app/mascot_rain.jpg";
-  } else if ([95, 96, 99].includes(weatherCode)) {
+  } else if (weatherCode === 95) {
     selectedMascot = "https://bd-tips.vercel.app/mascot_storm.jpg";
   } else if (temp >= 33) {
     selectedMascot = "https://bd-tips.vercel.app/mascot_hot.jpg";
@@ -412,28 +420,28 @@ module.exports = async (req, res) => {
   const fallbackTemplates = [
     {
       subject: `Pipeline của bạn có lạnh như thời tiết ${temp}°C? ❄️`,
-      message: `Chào Chiến thần B2B!<br><br>Hôm nay ${dayName} thời tiết khá dịu mát (${temp}°C), thích hợp để ngồi sưởi ấm pipeline bằng vài deal mới. Tin tức hôm nay: "${newsTitle}". Hãy dùng trợ lý <b>Cold Email AI</b> để bứt phá tỉ lệ mở thư nhé!`,
+      message: `Hôm nay ${dayName} thời tiết khá dịu mát (${temp}°C), thích hợp để ngồi sưởi ấm pipeline bằng vài deal mới. Tin tức hôm nay: "${newsTitle}". Hãy dùng trợ lý <b>Cold Email AI</b> để bứt phá tỉ lệ mở thư nhé!`,
       buttonText: "✍️ Soạn Cold Email Ngay",
       buttonUrl: "https://bd-tips.vercel.app/email-assistant.html",
       mascot: "https://bd-tips.vercel.app/mascot_ghost.jpg"
     },
     {
       subject: `Nắng nóng ${temp}°C làm deal bốc hơi? ☀️`,
-      message: `Chào Chiến thần B2B!<br><br>Trời hôm nay đang nắng nóng gay gắt (${temp}°C) dễ làm tụt năng lượng. Tin nóng: "${newsTitle}". Đừng để deal bị bốc hơi, hãy cày ngay kịch bản pitching thuyết phục cùng <b>Pitching AI</b>!`,
+      message: `Trời hôm nay đang nắng nóng gay gắt (${temp}°C) dễ làm tụt năng lượng. Tin nóng: "${newsTitle}". Đừng để deal bị bốc hơi, hãy cày ngay kịch bản pitching thuyết phục cùng <b>Pitching AI</b>!`,
       buttonText: "🎤 Pitching AI Ngay",
       buttonUrl: "https://bd-tips.vercel.app/pitching.html",
       mascot: "https://bd-tips.vercel.app/mascot_hot.jpg"
     },
     {
       subject: `Trời mưa rả rích, làm sao để lead không ghost? 🌧️`,
-      message: `Chào Chiến thần B2B!<br><br>Thời tiết mưa ẩm dễ làm tinh thần đi xuống. Đọc ngay tin tiêu điểm: "${newsTitle}" và vào <b>Thư viện BD</b> xem mẹo rã đông lead từ anh Peter Vo!`,
+      message: `Thời tiết mưa ẩm dễ làm tinh thần đi xuống. Đọc ngay tin tiêu điểm: "${newsTitle}" và vào <b>Thư viện BD</b> xem mẹo rã đông lead từ anh Peter Vo!`,
       buttonText: "📚 Đọc Case-Study Ngay",
       buttonUrl: "https://bd-tips.vercel.app/library.html",
       mascot: "https://bd-tips.vercel.app/mascot_rain.jpg"
     },
     {
       subject: `Luyện phản xạ thực chiến ngày ${dayName}! 🦉`,
-      message: `Chào Chiến thần B2B!<br><br>Bản tin kinh tế: "${newsTitle}". Hãy dành 2 phút giải trí và rèn luyện phản xạ xử lý từ chối cùng <b>Minigame B2B Challenge</b> để tích lũy điểm đổi quà nhé!`,
+      message: `Bản tin kinh tế: "${newsTitle}". Hãy dành 2 phút giải trí và rèn luyện phản xạ xử lý từ chối cùng <b>Minigame B2B Challenge</b> để tích lũy điểm đổi quà nhé!`,
       buttonText: "🎮 Chơi Game Thực Chiến",
       buttonUrl: "https://bd-tips.vercel.app/#minigame-section",
       mascot: "https://bd-tips.vercel.app/mascot_challenge.jpg"
@@ -469,9 +477,10 @@ DANH SÁCH TÍNH NĂNG/CÔNG CỤ CỦA WEBSITE ĐỂ ĐIỀU HƯỚNG:
 
 YÊU CẦU NỘI DUNG:
 1. Độ dài: Cực kỳ NGẮN GỌN (tối đa 2 đến 3 câu ngắn), phong cách vui vẻ, tích cực, thực chiến và hóm hỉnh của dân Sales/BD (ví dụ: cày KPI, chốt deal, pipeline, PIC, lead...).
-2. Nội dung đa dạng: Không lặp đi lặp lại. Phải lồng ghép khéo léo tin tức kinh tế nóng trong ngày hoặc tình hình thời tiết vào câu chuyện B2B (ví dụ: Tin tức kinh tế "${newsTitle}" có tác động gì đến doanh nghiệp hay deal của bạn không? Hoặc thời tiết hôm nay gợi ý cho bạn cách tiếp cận khách hàng thế nào?).
-3. Tập trung quảng bá: Hãy luân phiên giới thiệu các công cụ khác nhau. Đặc biệt khuyến khích và kêu gọi học viên vào "Cộng Đồng B2B" chia sẻ bài viết hoặc chơi "Challenge Game" để rèn luyện phản xạ và tích điểm (BD-Points) đổi quà trà sữa...
-4. Chọn Mascot thích hợp: Chọn 1 sắc thái mascot phản ánh đúng tâm trạng hoặc nội dung của email đó.
+2. Tiêu điểm sáng tạo chính: Sử dụng tiêu đề tin tức kinh tế tiêu điểm "${newsTitle}" làm nguồn cảm hứng/joke ẩn dụ cho câu chuyện sales/marketing. Thời tiết là yếu tố phụ họa (nếu tin tức có liên quan, hoặc để làm dịu câu chuyện), không bắt buộc phải xoay quanh thời tiết để tránh đơn điệu.
+3. TUYỆT ĐỐI KHÔNG bắt đầu email bằng bất kỳ lời chào nào như "Chào Peter", "Chào bạn", "Chào Chiến thần B2B", "Xin chào" vì tiêu đề mẫu mail đã có sẵn lời chào tự động rồi. Hãy đi thẳng vào nội dung chính ngay từ câu đầu tiên.
+4. Tập trung quảng bá: Hãy luân phiên giới thiệu các công cụ khác nhau. Đặc biệt khuyến khích và kêu gọi học viên vào "Cộng Đồng B2B" chia sẻ bài viết hoặc chơi "Challenge Game" để rèn luyện phản xạ và tích điểm (BD-Points) đổi quà trà sữa...
+5. Chọn Mascot thích hợp: Chọn 1 sắc thái mascot phản ánh đúng tâm trạng hoặc nội dung của email đó.
 
 ĐỊNH DẠNG ĐẦU RA: Trả về duy nhất một chuỗi JSON hợp lệ (không bọc trong tag code markdown) có cấu trúc như sau:
 {
@@ -528,7 +537,7 @@ YÊU CẦU NỘI DUNG:
     if (isEvening) {
       template = {
         subject: "Cuối tuần rồi! Xả stress cực mạnh thôi! 🦉🎉",
-        message: "Chào Chiến thần B2B!<br><br>6h00 chiều thứ Sáu đã điểm! Hãy gấp laptop lại, xả stress cực mạnh bằng câu chuyện cười BD giòn giã tại <b>Thư viện BD</b> và tận hưởng kỳ nghỉ cuối tuần trọn vẹn nhé!",
+        message: "6h00 chiều thứ Sáu đã điểm! Hãy gấp laptop lại, xả stress cực mạnh bằng câu chuyện cười BD giòn giã tại <b>Thư viện BD</b> và tận hưởng kỳ nghỉ cuối tuần trọn vẹn nhé!",
         buttonText: "🤪 Đọc Truyện Cười BD",
         buttonUrl: "https://bd-tips.vercel.app/library.html",
         mascot: "https://bd-tips.vercel.app/mascot_relax.jpg"
@@ -536,7 +545,7 @@ YÊU CẦU NỘI DUNG:
     } else {
       template = {
         subject: "Thứ 6 rồi! Cùng share chuyện vui lên cộng đồng nào! 🧋✨",
-        message: "Chào Chiến thần B2B!<br><br>Cuối cùng thì ngày thứ 6 mong đợi cũng đã tới! Hãy ghé ngay <b>Diễn đàn Cộng đồng</b> chia sẻ những câu chuyện vui hoặc kỷ niệm đi làm đáng nhớ trong tuần qua nhé!",
+        message: "Cuối cùng thì ngày thứ 6 mong đợi cũng đã tới! Hãy ghé ngay <b>Diễn đàn Cộng đồng</b> chia sẻ những câu chuyện vui hoặc kỷ niệm đi làm đáng nhớ trong tuần qua nhé!",
         buttonText: "💬 Chia Sẻ Chuyện Vui Ngay",
         buttonUrl: "https://bd-tips.vercel.app/community.html",
         mascot: "https://bd-tips.vercel.app/mascot_milktea.jpg"
