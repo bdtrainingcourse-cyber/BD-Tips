@@ -44,6 +44,7 @@ body.dark-theme .app-nav {
     text-decoration: none;
     line-height: 1.15;
     white-space: nowrap;
+    margin-right: 40px;
 }
 
 .nav-logo .logo-main {
@@ -277,6 +278,7 @@ body.dark-theme .nav-logo .logo-sub {
     align-items: center;
     gap: 4px;
     transition: color 0.3s ease;
+    white-space: nowrap !important;
 }
 
 .nav-dropdown:hover .nav-dropdown-toggle,
