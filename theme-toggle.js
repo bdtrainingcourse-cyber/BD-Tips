@@ -2481,52 +2481,57 @@ const TOURS = {
     challenge: [
         {
             elementId: 'minigame-section',
-            title: '🎮 1. B2B Sales Challenge là gì?',
-            text: 'Đây là đấu trường rèn phản xạ đàm phán B2B. Nơi bác đối diện trực tiếp với các tình huống từ chối phũ phàng nhất từ phía Purchasing (Ví dụ: khách chê giá đắt, đã có đối tác thân thiết, hoặc từ chối gặp mặt).'
+            title: '🎮 1. Đấu trường B2B Sales Challenge',
+            text: '🦉 Cú BeeDeee mách nước: Bác chuẩn bị bước vào nơi rèn phản xạ đàm phán đắt giá! Đây là chỗ để bác luyện đối đáp khi bị Purchasing "hành xác" hoặc từ chối phũ phàng (chê đắt, đã có mối ruột,...).'
         },
         {
             elementId: 'start-btn',
-            title: '🎬 2. Bắt đầu thử thách',
-            text: 'Nhấp chọn nút "Bắt đầu thử thách" để bốc ngẫu nhiên một tình huống thực tế khó nhằn nhất, kèm 3 phong cách đối đáp gợi ý.'
+            title: '🎬 2. Bốc ca khó thực chiến',
+            text: '🦉 Cú BeeDeee mách nước: Nhấp nhẹ nút này để bốc ngẫu nhiên một tình huống Purchasing từ chối siêu kinh điển ngoài thực tế.'
         },
         {
             elementId: 'options-container',
-            title: '⚡ 3. Chọn phong cách đối đáp để kiếm điểm',
-            text: 'Đọc kỹ bối cảnh và chọn câu trả lời tương ứng với 3 phong cách đàm phán: 💡 Chuyên nghiệp (Professional), 🤝 Tập trung giải pháp (Solution), hoặc 🎯 Trực diện (Direct). AI sẽ phân tích phản ứng của khách mua và chấm điểm BD-Points ⚡ giúp bác thăng hạng trên Bảng xếp hạng cao thủ.'
+            title: '⚡ 3. Lựa chọn tông giọng đàm phán',
+            text: '🦉 Cú BeeDeee mách nước: Đọc kỹ tình huống và chọn 1 trong 3 câu trả lời theo các tông giọng: Chuyên nghiệp (Professional), Giải pháp (Solution), hoặc Trực diện (Direct). AI sẽ chấm điểm và tặng bác điểm thưởng BD-Points ⚡ nâng hạng!'
         }
     ],
     pitching: [
         {
             elementId: 'scenarios-container-list',
-            title: '🎙️ 1. Lựa chọn Kịch bản Pitching',
-            text: 'Chọn một tình huống thương thảo thực tế: Gọi điện lạnh (Cold Call) cho khách hàng mới, hoặc đàm phán trực tiếp với Giám đốc Purchasing của các tập đoàn lớn.'
+            title: '🎙️ 1. Lựa chọn Đối mặt với Purchasing',
+            text: '🦉 Cú BeeDeee mách nước: Chọn một kịch bản thực tế đi săn lead: Gọi Cold Call chào hàng làm quen, hoặc gặp trực tiếp Giám đốc Purchasing của các tập đoàn lớn.'
         },
         {
             elementId: 'btn-start-chat-simulation',
-            title: '📞 2. Bắt đầu cuộc gọi điện giả lập',
-            text: 'Nhấn nút này để bắt đầu mô phỏng cuộc gọi thoại. AI Buyer sẽ bắt đầu bắt máy và phản ứng với câu chào hàng của bác.'
+            title: '📞 2. Bắt đầu cuộc gọi đàm thoại',
+            text: '🦉 Cú BeeDeee mách nước: Bấm để kết nối giả lập. AI Buyer sẽ bắt máy và thử thách phản xạ đàm thoại trực tiếp của bác.'
         },
         {
             elementId: 'btn-voice-mic-main',
-            title: '🎤 3. Nói chuyện trực tiếp & xem AI Coach nhắc bài',
-            text: 'Bấm giữ nút Micro và nói trực tiếp giọng nói của bác. Điểm đặc biệt: Góc dưới màn hình sẽ hiển thị các "Mẹo ứng phó" thời gian thực từ AI Coach giúp bác gỡ rối khi bị khách hàng dồn vào thế bí. Sau khi gác máy, bác sẽ nhận báo cáo chấm điểm chi tiết về tốc độ nói, độ tự tin và tỷ lệ chốt hẹn thành công.'
+            title: '🎤 3. Nhấn Mic nói & Xem AI Coach nhắc bài',
+            text: '🦉 Cú BeeDeee mách nước: Nhấn giữ Mic để đối đáp. Điểm cực đỉnh: Góc dưới sẽ hiện mẹo ứng phó từ AI Coach khi bác bị khách hàng dồn vào thế bí! Cuộc gọi kết thúc sẽ có bảng phân tích độ tự tin và tỷ lệ chốt cuộc hẹn.'
         }
     ],
     community: [
         {
             elementId: 'posts-container',
-            title: '🧠 1. Luồng thảo luận Cộng đồng BD',
-            text: 'Nơi thảo luận nghiệp vụ, chia sẻ những câu chuyện bán hàng thực chiến "xương máu". Đặc biệt chia làm 3 tab: Hỏi đáp, Câu chuyện, và Tìm PIC (Người phụ trách mua hàng).'
+            title: '🧠 1. Đấu trường Cộng đồng BD',
+            text: '🦉 Cú BeeDeee mách nước: Nơi giao lưu võ nghệ của giới BD. Bác có thể đọc những câu chuyện bán hàng thực chiến xương máu hoặc học hỏi nghiệp vụ từ đồng nghiệp.'
+        },
+        {
+            elementId: 'vote-box',
+            title: '🔺 2. Bộ đếm lượt Upvote uy tín',
+            text: '🦉 Cú BeeDeee mách nước: Đây là điểm đánh giá giá trị bài viết! Bài chia sẻ nào càng hay, càng thực chiến thì càng được nhiều Upvote (ví dụ như bài này có điểm uy tín là ▲ 15). Hãy tích cực bấm mũi tên đỏ để Upvote ủng hộ đồng nghiệp nhé!'
         },
         {
             elementId: 'btn-create-post',
-            title: '✍️ 2. Cách săn hoặc treo thưởng Bounty Point ⚡',
-            text: 'Khi cần tìm kiếm đầu mối mua hàng gấp (PIC), bác có thể đăng bài viết và treo thưởng điểm Bounty ⚡. Đồng nghiệp nào chia sẻ liên hệ PIC chính xác sẽ được bác duyệt nhận thưởng điểm Bounty. Ngược lại, bác cũng có thể săn điểm từ mọi người bằng cách hỗ trợ họ kết nối đối tác!'
+            title: '✍️ 3. Săn & Treo thưởng điểm Bounty',
+            text: '🦉 Cú BeeDeee mách nước: Khi cần tìm thông tin PIC mua hàng gấp, bác đăng bài và treo điểm Bounty ⚡. Đồng nghiệp chia sẻ liên hệ PIC đúng sẽ giật giải nhận điểm Bounty này của bác!'
         },
         {
             elementId: 'btn-edit-profile',
-            title: '🦉 3. Kích hoạt B2B Profile nhận điểm thưởng',
-            text: 'Nhấp chọn đổi ảnh/tên và xác thực bằng Email B2B của bác để nhận ngay 25⚡ điểm thưởng ban đầu. Email này cũng giúp bác xem được đầy đủ các thông tin PIC bảo mật do cộng đồng chia sẻ.'
+            title: '🦉 4. Điền Email nhận 25⚡ lót tay',
+            text: '🦉 Cú BeeDeee mách nước: Xác thực Email công ty để kích hoạt danh tính BD. Bác sẽ được mở khóa xem toàn bộ thông tin PIC mua hàng bảo mật và nhận ngay 25⚡ điểm thưởng!'
         }
     ]
 };
@@ -2569,6 +2574,9 @@ window.startB2BOnboardingTour = function(pageId) {
         if (!targetEl && step.elementId === 'btn-voice-mic-main') {
             targetEl = document.getElementById('scenarios-container-list');
         }
+        if (!targetEl && step.elementId === 'vote-box') {
+            targetEl = document.querySelector('.vote-box') || document.getElementById('posts-container');
+        }
 
         if (targetEl) {
             targetEl.classList.add('onboarding-highlight');
@@ -2578,7 +2586,8 @@ window.startB2BOnboardingTour = function(pageId) {
         const isLast = index === steps.length - 1;
         
         tooltip.innerHTML = `
-            <div style="font-weight: 800; font-size: 0.95rem; color: #f59e0b; margin-bottom: 8px; display: flex; align-items: center; justify-content: space-between;">
+            <button id="onboarding-close-x" style="position: absolute; top: 10px; right: 12px; background: transparent; border: none; color: var(--text-light); font-size: 1.2rem; cursor: pointer; line-height: 1; padding: 2px; font-weight: bold; transition: color 0.2s;" title="Thoát hướng dẫn">&times;</button>
+            <div style="font-weight: 800; font-size: 0.95rem; color: #f59e0b; margin-bottom: 8px; display: flex; align-items: center; justify-content: space-between; padding-right: 20px;">
                 <span>${step.title}</span>
                 <span style="font-size: 0.72rem; color: var(--text-light); font-weight: normal;">${index + 1}/${steps.length}</span>
             </div>
@@ -2601,6 +2610,7 @@ window.startB2BOnboardingTour = function(pageId) {
             }
         }, 150);
 
+        tooltip.querySelector('#onboarding-close-x').addEventListener('click', endTour);
         tooltip.querySelector('#onboarding-skip-btn').addEventListener('click', endTour);
         tooltip.querySelector('#onboarding-next-btn').addEventListener('click', () => {
             if (isLast) {
