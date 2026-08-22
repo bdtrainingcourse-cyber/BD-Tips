@@ -2616,10 +2616,32 @@ window.startB2BOnboardingTour = function(pageId) {
             if (isLast) {
                 endTour();
             } else {
-                currentStepIndex++;
-                showStep(currentStepIndex);
+                executeStepTransition(pageId, currentStepIndex);
+                setTimeout(() => {
+                    currentStepIndex++;
+                    showStep(currentStepIndex);
+                }, 350);
             }
         });
+    }
+
+    function executeStepTransition(pageId, index) {
+        if (pageId === 'challenge' && index === 1) {
+            const btn = document.getElementById('start-btn');
+            if (btn) btn.click();
+        }
+        if (pageId === 'pitching' && index === 0) {
+            const firstCard = document.querySelector('.scenario-card');
+            if (firstCard) firstCard.click();
+        }
+        if (pageId === 'pitching' && index === 1) {
+            const btn = document.getElementById('btn-start-chat-simulation');
+            if (btn) btn.click();
+        }
+        if (pageId === 'community' && index === 2) {
+            const btn = document.getElementById('btn-create-post');
+            if (btn) btn.click();
+        }
     }
 
     function endTour() {
