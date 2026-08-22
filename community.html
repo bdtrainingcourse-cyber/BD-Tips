@@ -10,7 +10,7 @@
     
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css?v=2.2.0">
-    <link rel="stylesheet" href="community.css?v=2.0.4">
+    <link rel="stylesheet" href="community.css?v=2.2.0">
     
     <script src="theme-toggle.js?v=2.2.0"></script>
 </head>
@@ -218,14 +218,14 @@
                     </select>
                 </div>
 
-                <!-- Media Preview Container (Displays selected image or video) -->
-                <div id="composerMediaPreview" class="hidden" style="position: relative; border-radius: 12px; overflow: hidden; background: #000; max-height: 250px; display: flex; align-items: center; justify-content: center; border: 1px solid var(--border-color);">
-                    <!-- dynamic preview inserted here -->
-                    <button type="button" id="btnRemoveMedia" style="position: absolute; top: 10px; right: 10px; background: rgba(0,0,0,0.6); color: white; border: none; border-radius: 50%; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; cursor: pointer; transition: all 0.2s; font-weight: bold; z-index: 10;">&times;</button>
+                <!-- Media Preview Container (Displays selected images or video) -->
+                <div id="composerMediaPreview" class="hidden" style="border-radius: 12px; padding: 10px; background: rgba(0,0,0,0.15); border: 1px solid var(--border-color); display: flex; flex-direction: column; gap: 10px;">
+                    <div id="mediaPreviewGrid" style="display: flex; gap: 8px; flex-wrap: wrap;"></div>
+                    <div style="font-size: 0.72rem; color: var(--text-light); text-align: left;" id="mediaUploadCounter">Đã chọn: 0 ảnh, 0 video</div>
                 </div>
 
                 <!-- Hidden file inputs -->
-                <input type="file" id="mediaPhotoInput" accept="image/*" style="display: none;">
+                <input type="file" id="mediaPhotoInput" accept="image/*" multiple style="display: none;">
                 <input type="file" id="mediaVideoInput" accept="video/*" style="display: none;">
 
                 <!-- Bottom Toolbar & Submit Button -->
@@ -290,6 +290,6 @@
         </div>
     </div>
 
-    <script src="community.js?v=2.0.4"></script>
+    <script src="community.js?v=2.2.0"></script>
 </body>
 </html>

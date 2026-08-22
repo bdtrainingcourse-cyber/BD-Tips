@@ -7,7 +7,7 @@
     --bg: #f7f4ee;
     --card-bg: #ffffff;
     --text-main: #2b2d42;
-    --text-light: #6c757d;
+    --text-light: #475569;
     --border-color: rgba(0, 0, 0, 0.08);
     --shadow: 0 10px 30px rgba(0,0,0,0.05);
 }
@@ -584,3 +584,33 @@ body.dark-theme {
 .modal-overlay.active .modal-box {
     transform: scale(1);
 }
+
+/* Emojis Reactions Styles (v=2.2.0) */
+.reaction-btn {
+    transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+.reaction-btn:hover {
+    background: rgba(162, 10, 10, 0.05) !important;
+    border-color: var(--primary) !important;
+    transform: translateY(-1px);
+}
+.reaction-btn.active {
+    background: rgba(162, 10, 10, 0.12) !important;
+    border-color: var(--primary) !important;
+    color: var(--primary) !important;
+    box-shadow: 0 2px 8px rgba(162, 10, 10, 0.15);
+}
+body.dark-theme .reaction-btn.active {
+    background: rgba(244, 63, 94, 0.15) !important;
+    border-color: #f43f5e !important;
+    color: #fca5a5 !important;
+}
+.reaction-btn:active {
+    transform: scale(0.95);
+}
+.share-post-btn:hover, .details-share-post-btn:hover {
+    background: rgba(243, 168, 59, 0.1) !important;
+    border-color: var(--accent) !important;
+    color: var(--accent) !important;
+}
+

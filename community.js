@@ -4,6 +4,80 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentCategory = 'all';
     let currentSearch = '';
 
+    // IndexedDB initialization for rich media files
+    const DB_NAME = 'bd_community_uploads_db';
+    const DB_VERSION = 1;
+    const STORE_NAME = 'media_uploads';
+    let db = null;
+
+    function initIndexedDB() {
+        return new Promise((resolve) => {
+            const request = indexedDB.open(DB_NAME, DB_VERSION);
+            request.onupgradeneeded = (e) => {
+                const database = e.target.result;
+                if (!database.objectStoreNames.contains(STORE_NAME)) {
+                    database.createObjectStore(STORE_NAME, { keyPath: 'postId' });
+                }
+            };
+            request.onsuccess = (e) => {
+                db = e.target.result;
+                resolve(db);
+            };
+            request.onerror = (e) => {
+                console.warn('IndexedDB failed to open. Fallback to standard storage.', e);
+                resolve(null);
+            };
+        });
+    }
+
+    initIndexedDB();
+
+    function savePostMedia(postId, filesData) {
+        return new Promise((resolve) => {
+            if (!db) return resolve();
+            try {
+                const transaction = db.transaction(STORE_NAME, 'readwrite');
+                const store = transaction.objectStore(STORE_NAME);
+                store.put({ postId, media: filesData });
+                transaction.oncomplete = () => resolve();
+                transaction.onerror = () => resolve();
+            } catch(err) {
+                console.warn('Failed to save to IndexedDB:', err);
+                resolve();
+            }
+        });
+    }
+
+    function getPostMedia(postId) {
+        return new Promise((resolve) => {
+            if (!db) return resolve([]);
+            try {
+                const transaction = db.transaction(STORE_NAME, 'readonly');
+                const store = transaction.objectStore(STORE_NAME);
+                const request = store.get(postId);
+                request.onsuccess = (e) => {
+                    const result = e.target.result;
+                    resolve(result ? result.media : []);
+                };
+                request.onerror = () => resolve([]);
+            } catch(err) {
+                console.warn('Failed to read from IndexedDB:', err);
+                resolve([]);
+            }
+        });
+    }
+
+    function readFileAsBase64(file) {
+        return new Promise((resolve) => {
+            const reader = new FileReader();
+            reader.onload = (e) => resolve(e.target.result);
+            reader.onerror = () => resolve(null);
+            reader.readAsDataURL(file);
+        });
+    }
+
+    let attachedFiles = []; // Array of { file: File, type: 'image'|'video', previewUrl: string, base64: string }
+
     // DOM Elements
     const postsContainer = document.getElementById('posts-container');
     const categoryTabs = document.querySelectorAll('.category-tab');
@@ -276,20 +350,58 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const bountyHtml = (post.bounty && post.bounty > 0) ? `<span class="post-bounty-badge">🎯 Thưởng ${post.bounty}⚡</span>` : '';
 
-            let mediaHtml = '';
-            if (post.mediaType === 'image' && post.mediaUrl) {
-                mediaHtml = `
+            let mediaHtml = `<div class="post-media-container-dynamic" id="media-container-${post.id}">`;
+            if (post.mediaType === 'image' && post.mediaUrl && !post.mediaUrl.startsWith('data:') && !post.mediaUrl.startsWith('post-')) {
+                mediaHtml += `
                     <div class="post-media-container" style="margin-top: 10px; border-radius: 8px; overflow: hidden; max-height: 250px; border: 1px solid var(--border-color); display: flex; align-items: center; justify-content: center; background: #000;">
                         <img src="${post.mediaUrl}" style="max-width: 100%; max-height: 250px; object-fit: contain;">
                     </div>
                 `;
-            } else if (post.mediaType === 'video' && post.mediaUrl) {
-                mediaHtml = `
+            } else if (post.mediaType === 'video' && post.mediaUrl && !post.mediaUrl.startsWith('data:') && !post.mediaUrl.startsWith('post-')) {
+                mediaHtml += `
                     <div class="post-media-container" style="margin-top: 10px; border-radius: 8px; overflow: hidden; max-height: 250px; border: 1px solid var(--border-color); display: flex; align-items: center; justify-content: center; background: #000;">
                         <video src="${post.mediaUrl}" controls style="max-width: 100%; max-height: 250px; object-fit: contain;" onclick="event.stopPropagation();"></video>
                     </div>
                 `;
             }
+            mediaHtml += `</div>`;
+
+            let userReactions = {};
+            try {
+                userReactions = JSON.parse(localStorage.getItem('bd_user_reactions') || '{}');
+            } catch(e){}
+            const activeReaction = userReactions[post.id];
+
+            const emojis = [
+                { type: 'love', char: '❤️' },
+                { type: 'like', char: '👍' },
+                { type: 'funny', char: '😂' },
+                { type: 'support', char: '🤝' },
+                { type: 'consider', char: '🤔' },
+                { type: 'insight', char: '💡' }
+            ];
+
+            let reactionsHtml = `
+                <div class="post-reactions-bar" style="margin-top: 12px; border-top: 1px solid var(--border-color); padding-top: 8px; display: flex; gap: 6px; flex-wrap: wrap; align-items: center;" onclick="event.stopPropagation();">
+            `;
+            
+            emojis.forEach(emo => {
+                const count = (post.reactions && post.reactions[emo.type]) || 0;
+                const isActive = activeReaction === emo.type;
+                reactionsHtml += `
+                    <button class="reaction-btn ${isActive ? 'active' : ''}" data-type="${emo.type}" style="padding: 4px 8px; font-size: 0.8rem; border-radius: 20px; border: 1px solid ${isActive ? 'var(--primary)' : 'var(--border-color)'}; background: ${isActive ? 'rgba(162, 10, 10, 0.08)' : 'var(--card-bg)'}; color: var(--text-main); cursor: pointer; display: flex; align-items: center; gap: 4px; transition: all 0.2s;">
+                        <span>${emo.char}</span>
+                        <span style="font-weight: bold;">${count}</span>
+                    </button>
+                `;
+            });
+            
+            reactionsHtml += `
+                <button class="reaction-btn share-post-btn" style="margin-left: auto; padding: 4px 10px; font-size: 0.8rem; border-radius: 20px; border: 1px solid var(--border-color); background: var(--card-bg); color: var(--text-main); cursor: pointer; display: flex; align-items: center; gap: 4px; transition: all 0.2s;">
+                    <span>📤 Chia sẻ</span>
+                </button>
+            `;
+            reactionsHtml += `</div>`;
 
             card.innerHTML = `
                 <div class="vote-box ${post.upvoted ? 'upvoted' : ''}" data-id="${post.id}">
@@ -307,6 +419,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     <h4 class="post-title">${post.title}</h4>
                     <p class="post-excerpt">${post.content.length > 160 ? post.content.substring(0, 160) + '...' : post.content}</p>
                     ${mediaHtml}
+                    ${reactionsHtml}
                     <div class="post-footer-row">
                         <span>Đăng bởi: <strong>${post.author}</strong> ${verifiedBadgeHtml}</span>
                         <span>💬 ${post.comments.length} bình luận</span>
@@ -315,7 +428,9 @@ document.addEventListener('DOMContentLoaded', () => {
             `;
 
             // Card Click to details
-            card.querySelector('.post-main-content').addEventListener('click', () => {
+            card.querySelector('.post-main-content').addEventListener('click', (e) => {
+                // Prevent click if we clicked reaction buttons
+                if (e.target.closest('.reaction-btn')) return;
                 showPostDetails(post.id);
             });
 
@@ -325,7 +440,56 @@ document.addEventListener('DOMContentLoaded', () => {
                 handleUpvote(post.id);
             });
 
+            // Reaction buttons click
+            card.querySelectorAll('.reaction-btn[data-type]').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const type = btn.getAttribute('data-type');
+                    handleReaction(post.id, type);
+                });
+            });
+
+            // Share post click
+            const shareBtn = card.querySelector('.share-post-btn');
+            if (shareBtn) {
+                shareBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    openPostShareMenu(post.id, post.title);
+                });
+            }
+
             postsContainer.appendChild(card);
+
+            // Fetch and render IndexedDB media
+            const mediaContainer = card.querySelector(`#media-container-${post.id}`);
+            if (mediaContainer && post.mediaType && (post.mediaUrl === null || post.mediaUrl.startsWith('data:') || post.mediaUrl.startsWith('post-'))) {
+                getPostMedia(post.id).then(mediaItems => {
+                    if (mediaItems && mediaItems.length > 0) {
+                        const photos = mediaItems.filter(m => m.type === 'image');
+                        const videos = mediaItems.filter(m => m.type === 'video');
+                        
+                        let html = '';
+                        if (photos.length > 0) {
+                            const gridCols = photos.length === 1 ? '1fr' : photos.length === 2 ? '1fr 1fr' : 'repeat(3, 1fr)';
+                            html += `<div style="display: grid; grid-template-columns: ${gridCols}; gap: 6px; margin-top: 10px;">`;
+                            photos.forEach(p => {
+                                html += `<img src="${p.data}" style="width: 100%; height: ${photos.length === 1 ? '200px' : '100px'}; object-fit: cover; border-radius: 8px; cursor: zoom-in;" onclick="window.openImageLightbox(event, '${p.data}')">`;
+                            });
+                            html += `</div>`;
+                        }
+                        if (videos.length > 0) {
+                            videos.forEach(v => {
+                                html += `
+                                    <div style="margin-top: 10px; border-radius: 8px; overflow: hidden; max-height: 250px; border: 1px solid var(--border-color); display: flex; align-items: center; justify-content: center; background: #000;">
+                                        <video src="${v.data}" controls style="max-width: 100%; max-height: 250px; object-fit: contain;" onclick="event.stopPropagation();"></video>
+                                    </div>
+                                `;
+                            });
+                        }
+                        mediaContainer.innerHTML = html;
+                    }
+                });
+            }
         });
     }
 
@@ -351,6 +515,115 @@ document.addEventListener('DOMContentLoaded', () => {
                 detailsVoteCount.textContent = post.upvotes;
                 detailsVoteBox.classList.toggle('upvoted', post.upvoted);
             }
+        }
+    }
+
+    function handleReaction(postId, type) {
+        const posts = getPosts();
+        const post = posts.find(p => p.id === postId);
+        if (!post) return;
+
+        if (!post.reactions) {
+            post.reactions = { love: 0, like: 0, funny: 0, support: 0, consider: 0, insight: 0 };
+        }
+
+        let userReactions = {};
+        try {
+            userReactions = JSON.parse(localStorage.getItem('bd_user_reactions') || '{}');
+        } catch(e){}
+
+        const activeReaction = userReactions[postId];
+        
+        if (activeReaction === type) {
+            post.reactions[type] = Math.max(0, (post.reactions[type] || 0) - 1);
+            delete userReactions[postId];
+        } else {
+            if (activeReaction) {
+                post.reactions[activeReaction] = Math.max(0, (post.reactions[activeReaction] || 0) - 1);
+            }
+            post.reactions[type] = (post.reactions[type] || 0) + 1;
+            userReactions[postId] = type;
+        }
+
+        localStorage.setItem('bd_user_reactions', JSON.stringify(userReactions));
+        savePosts(posts);
+        renderPosts();
+        
+        if (postDetailContainer && !postDetailContainer.classList.contains('hidden')) {
+            const detailId = postDetailContainer.getAttribute('data-post-id');
+            if (detailId === postId) {
+                renderPostDetailsReactions(post);
+            }
+        }
+    }
+
+    function openPostShareMenu(postId, title) {
+        const url = `${window.location.origin}${window.location.pathname}?post=${postId}`;
+        if (window.openGlobalShareModal) {
+            window.openGlobalShareModal(title, url);
+        } else {
+            navigator.clipboard.writeText(url);
+            alert(`🔗 Đã sao chép liên kết bài đăng vào Clipboard!\n${url}`);
+        }
+    }
+
+    function renderPostDetailsReactions(post) {
+        const container = document.getElementById(`details-reactions-container-${post.id}`);
+        if (!container) return;
+
+        let userReactions = {};
+        try {
+            userReactions = JSON.parse(localStorage.getItem('bd_user_reactions') || '{}');
+        } catch(e){}
+        const activeReaction = userReactions[post.id];
+
+        const emojis = [
+            { type: 'love', char: '❤️' },
+            { type: 'like', char: '👍' },
+            { type: 'funny', char: '😂' },
+            { type: 'support', char: '🤝' },
+            { type: 'consider', char: '🤔' },
+            { type: 'insight', char: '💡' }
+        ];
+
+        let html = `
+            <div class="post-reactions-bar" style="margin-top: 15px; border-top: 1px solid var(--border-color); padding-top: 12px; display: flex; gap: 8px; flex-wrap: wrap; align-items: center;">
+        `;
+        
+        emojis.forEach(emo => {
+            const count = (post.reactions && post.reactions[emo.type]) || 0;
+            const isActive = activeReaction === emo.type;
+            html += `
+                <button class="reaction-btn details-reaction-btn ${isActive ? 'active' : ''}" data-type="${emo.type}" style="padding: 6px 12px; font-size: 0.85rem; border-radius: 20px; border: 1px solid ${isActive ? 'var(--primary)' : 'var(--border-color)'}; background: ${isActive ? 'rgba(162, 10, 10, 0.08)' : 'var(--card-bg)'}; color: var(--text-main); cursor: pointer; display: flex; align-items: center; gap: 6px; transition: all 0.2s;">
+                    <span>${emo.char}</span>
+                    <span style="font-weight: bold;">${count}</span>
+                </button>
+            `;
+        });
+        
+        html += `
+            <button class="reaction-btn details-share-post-btn" style="margin-left: auto; padding: 6px 14px; font-size: 0.85rem; border-radius: 20px; border: 1px solid var(--border-color); background: var(--card-bg); color: var(--text-main); cursor: pointer; display: flex; align-items: center; gap: 6px; transition: all 0.2s;">
+                <span>📤 Chia sẻ</span>
+            </button>
+        `;
+
+        html += `</div>`;
+        container.innerHTML = html;
+
+        container.querySelectorAll('.details-reaction-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const type = btn.getAttribute('data-type');
+                handleReaction(post.id, type);
+            });
+        });
+
+        const shareBtn = container.querySelector('.details-share-post-btn');
+        if (shareBtn) {
+            shareBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                openPostShareMenu(post.id, post.title);
+            });
         }
     }
 
@@ -407,6 +680,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         postsListContainer.classList.add('hidden');
         postDetailContainer.classList.remove('hidden');
+        postDetailContainer.setAttribute('data-post-id', post.id);
 
         // Trigger action-based streak increase
         if (window.registerUserAction) {
@@ -476,20 +750,21 @@ document.addEventListener('DOMContentLoaded', () => {
             `;
         }).join('');
 
-        let mediaHtml = '';
-        if (post.mediaType === 'image' && post.mediaUrl) {
-            mediaHtml = `
+        let mediaHtml = `<div class="post-media-container-dynamic" id="details-media-container-${post.id}">`;
+        if (post.mediaType === 'image' && post.mediaUrl && !post.mediaUrl.startsWith('data:') && !post.mediaUrl.startsWith('post-')) {
+            mediaHtml += `
                 <div class="post-media-container" style="margin-top: 15px; border-radius: 12px; overflow: hidden; max-height: 400px; border: 1px solid var(--border-color); display: flex; align-items: center; justify-content: center; background: #000;">
                     <img src="${post.mediaUrl}" style="max-width: 100%; max-height: 400px; object-fit: contain;">
                 </div>
             `;
-        } else if (post.mediaType === 'video' && post.mediaUrl) {
-            mediaHtml = `
+        } else if (post.mediaType === 'video' && post.mediaUrl && !post.mediaUrl.startsWith('data:') && !post.mediaUrl.startsWith('post-')) {
+            mediaHtml += `
                 <div class="post-media-container" style="margin-top: 15px; border-radius: 12px; overflow: hidden; max-height: 400px; border: 1px solid var(--border-color); display: flex; align-items: center; justify-content: center; background: #000;">
                     <video src="${post.mediaUrl}" controls style="max-width: 100%; max-height: 400px; object-fit: contain;"></video>
                 </div>
             `;
         }
+        mediaHtml += `</div>`;
 
         // Dynamic Detail Fill
         document.getElementById('post-detail-content').innerHTML = `
@@ -509,6 +784,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     <h2 style="font-size: 1.6rem; font-weight: 800; color: var(--text-main); margin-bottom: 15px;">${post.title}</h2>
                     <p style="font-size: 1.05rem; color: var(--text-main); line-height: 1.6; white-space: pre-line;">${post.content}</p>
                     ${mediaHtml}
+                    <div id="details-reactions-container-${post.id}"></div>
                     <div style="margin-top: 20px; font-size: 0.85rem; color: var(--text-light);">
                         Đăng bởi: <strong>${post.author}</strong> ${verifiedBadgeHtml}
                     </div>
@@ -543,6 +819,39 @@ document.addEventListener('DOMContentLoaded', () => {
                 </form>
             </div>
         `;
+
+        renderPostDetailsReactions(post);
+
+        // Fetch and render IndexedDB media for details view
+        const detailsMediaContainer = document.getElementById(`details-media-container-${post.id}`);
+        if (detailsMediaContainer && post.mediaType && (post.mediaUrl === null || post.mediaUrl.startsWith('data:') || post.mediaUrl.startsWith('post-'))) {
+            getPostMedia(post.id).then(mediaItems => {
+                if (mediaItems && mediaItems.length > 0) {
+                    const photos = mediaItems.filter(m => m.type === 'image');
+                    const videos = mediaItems.filter(m => m.type === 'video');
+                    
+                    let html = '';
+                    if (photos.length > 0) {
+                        const gridCols = photos.length === 1 ? '1fr' : photos.length === 2 ? '1fr 1fr' : 'repeat(3, 1fr)';
+                        html += `<div style="display: grid; grid-template-columns: ${gridCols}; gap: 8px; margin-top: 15px;">`;
+                        photos.forEach(p => {
+                            html += `<img src="${p.data}" style="width: 100%; height: ${photos.length === 1 ? '350px' : '150px'}; object-fit: cover; border-radius: 12px; cursor: zoom-in;" onclick="window.openImageLightbox(event, '${p.data}')">`;
+                        });
+                        html += `</div>`;
+                    }
+                    if (videos.length > 0) {
+                        videos.forEach(v => {
+                            html += `
+                                <div style="margin-top: 15px; border-radius: 12px; overflow: hidden; max-height: 400px; border: 1px solid var(--border-color); display: flex; align-items: center; justify-content: center; background: #000;">
+                                    <video src="${v.data}" controls style="max-width: 100%; max-height: 400px; object-fit: contain;"></video>
+                                </div>
+                            `;
+                        });
+                    }
+                    detailsMediaContainer.innerHTML = html;
+                }
+            });
+        }
 
         // Bind upvote in details
         document.getElementById('details-vote-box').addEventListener('click', () => {
@@ -681,9 +990,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Rich Social Media Composer Handle
-    let attachedMediaType = null; // 'image' or 'video'
-    let attachedMediaUrl = null;
-
     const btnAttachPhoto = document.getElementById('btnAttachPhoto');
     const btnAttachVideo = document.getElementById('btnAttachVideo');
     const mediaPhotoInput = document.getElementById('mediaPhotoInput');
@@ -705,25 +1011,100 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    function updateMediaPreviewGrid() {
+        let grid = document.getElementById('mediaPreviewGrid');
+        let counter = document.getElementById('mediaUploadCounter');
+        if (!grid || !counter) return;
+
+        grid.innerHTML = '';
+        
+        const photosCount = attachedFiles.filter(f => f.type === 'image').length;
+        const videosCount = attachedFiles.filter(f => f.type === 'video').length;
+        counter.textContent = `Đã chọn: ${photosCount} ảnh (tối đa 10), ${videosCount} video (tối đa 1)`;
+
+        if (attachedFiles.length > 0) {
+            composerMediaPreview.classList.remove('hidden');
+        } else {
+            composerMediaPreview.classList.add('hidden');
+        }
+
+        attachedFiles.forEach((item, index) => {
+            const wrapper = document.createElement('div');
+            wrapper.style.position = 'relative';
+            wrapper.style.width = '70px';
+            wrapper.style.height = '70px';
+            wrapper.style.borderRadius = '8px';
+            wrapper.style.overflow = 'hidden';
+            wrapper.style.border = '1px solid var(--border-color)';
+            wrapper.style.background = '#000';
+            wrapper.style.display = 'flex';
+            wrapper.style.alignItems = 'center';
+            wrapper.style.justifyContent = 'center';
+
+            if (item.type === 'image') {
+                wrapper.innerHTML = `<img src="${item.previewUrl}" style="width: 100%; height: 100%; object-fit: cover;">`;
+            } else {
+                wrapper.innerHTML = `<span style="font-size: 1.5rem;">🎥</span>`;
+            }
+
+            const removeBtn = document.createElement('button');
+            removeBtn.type = 'button';
+            removeBtn.innerHTML = '&times;';
+            removeBtn.style.position = 'absolute';
+            removeBtn.style.top = '2px';
+            removeBtn.style.right = '2px';
+            removeBtn.style.width = '16px';
+            removeBtn.style.height = '16px';
+            removeBtn.style.borderRadius = '50%';
+            removeBtn.style.background = 'rgba(0,0,0,0.6)';
+            removeBtn.style.color = '#fff';
+            removeBtn.style.border = 'none';
+            removeBtn.style.display = 'flex';
+            removeBtn.style.alignItems = 'center';
+            removeBtn.style.justifyContent = 'center';
+            removeBtn.style.fontSize = '12px';
+            removeBtn.style.cursor = 'pointer';
+            removeBtn.style.fontWeight = 'bold';
+
+            removeBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                URL.revokeObjectURL(item.previewUrl);
+                attachedFiles.splice(index, 1);
+                updateMediaPreviewGrid();
+            });
+
+            wrapper.appendChild(removeBtn);
+            grid.appendChild(wrapper);
+        });
+    }
+
     // Attach Photo Trigger
     if (btnAttachPhoto && mediaPhotoInput) {
         btnAttachPhoto.addEventListener('click', () => {
             mediaPhotoInput.click();
         });
-        mediaPhotoInput.addEventListener('change', (e) => {
-            const file = e.target.files[0];
-            if (file) {
-                attachedMediaType = 'image';
-                attachedMediaUrl = URL.createObjectURL(file);
-                
-                // Show preview
-                composerMediaPreview.innerHTML = `
-                    <img src="${attachedMediaUrl}" style="max-width: 100%; max-height: 250px; object-fit: contain;" onerror="this.src='https://images.unsplash.com/photo-1557804506-669a67965ba0?auto=format&fit=crop&w=600&q=80'">
-                    <button type="button" id="btnRemoveMedia" style="position: absolute; top: 10px; right: 10px; background: rgba(0,0,0,0.6); color: white; border: none; border-radius: 50%; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; cursor: pointer; transition: all 0.2s; font-weight: bold; z-index: 10;">&times;</button>
-                `;
-                composerMediaPreview.classList.remove('hidden');
-                bindRemoveMediaButton();
+        mediaPhotoInput.addEventListener('change', async (e) => {
+            const files = Array.from(e.target.files);
+            const currentPhotosCount = attachedFiles.filter(f => f.type === 'image').length;
+            if (currentPhotosCount + files.length > 10) {
+                alert('⚠️ Bạn chỉ được đăng tối đa 10 hình ảnh!');
+                return;
             }
+            
+            for (let file of files) {
+                if (file.size > 1.5 * 1024 * 1024) {
+                    alert(`⚠️ Ảnh "${file.name}" vượt quá dung lượng 1.5MB! Để hệ thống hoạt động ổn định lâu dài, vui lòng chọn ảnh nhẹ hơn.`);
+                    continue;
+                }
+                const previewUrl = URL.createObjectURL(file);
+                const base64 = await readFileAsBase64(file);
+                attachedFiles.push({
+                    type: 'image',
+                    previewUrl,
+                    base64
+                });
+            }
+            updateMediaPreviewGrid();
         });
     }
 
@@ -732,35 +1113,28 @@ document.addEventListener('DOMContentLoaded', () => {
         btnAttachVideo.addEventListener('click', () => {
             mediaVideoInput.click();
         });
-        mediaVideoInput.addEventListener('change', (e) => {
+        mediaVideoInput.addEventListener('change', async (e) => {
             const file = e.target.files[0];
             if (file) {
-                attachedMediaType = 'video';
-                attachedMediaUrl = URL.createObjectURL(file);
-                
-                // Show preview
-                composerMediaPreview.innerHTML = `
-                    <video src="${attachedMediaUrl}" controls style="max-width: 100%; max-height: 250px; object-fit: contain;"></video>
-                    <button type="button" id="btnRemoveMedia" style="position: absolute; top: 10px; right: 10px; background: rgba(0,0,0,0.6); color: white; border: none; border-radius: 50%; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; cursor: pointer; transition: all 0.2s; font-weight: bold; z-index: 10;">&times;</button>
-                `;
-                composerMediaPreview.classList.remove('hidden');
-                bindRemoveMediaButton();
+                const currentVideosCount = attachedFiles.filter(f => f.type === 'video').length;
+                if (currentVideosCount >= 1) {
+                    alert('⚠️ Bạn chỉ được đăng tối đa 1 video mỗi bài đăng!');
+                    return;
+                }
+                if (file.size > 10 * 1024 * 1024) {
+                    alert('⚠️ Dung lượng video vượt quá 10MB! Vui lòng chọn video ngắn và nhẹ hơn để đảm bảo khả năng tải trang tốt nhất.');
+                    return;
+                }
+                const previewUrl = URL.createObjectURL(file);
+                const base64 = await readFileAsBase64(file);
+                attachedFiles.push({
+                    type: 'video',
+                    previewUrl,
+                    base64
+                });
             }
+            updateMediaPreviewGrid();
         });
-    }
-
-    function bindRemoveMediaButton() {
-        const btn = document.getElementById('btnRemoveMedia');
-        if (btn) {
-            btn.addEventListener('click', () => {
-                attachedMediaType = null;
-                attachedMediaUrl = null;
-                if (mediaPhotoInput) mediaPhotoInput.value = '';
-                if (mediaVideoInput) mediaVideoInput.value = '';
-                composerMediaPreview.innerHTML = '';
-                composerMediaPreview.classList.add('hidden');
-            });
-        }
     }
 
     // Open Composer Modal
@@ -775,13 +1149,16 @@ document.addEventListener('DOMContentLoaded', () => {
     function closeModal() {
         if (createPostModal) {
             createPostModal.classList.remove('active');
-            // Reset media attachments and form fields
-            attachedMediaType = null;
-            attachedMediaUrl = null;
+            attachedFiles.forEach(f => {
+                if (f.previewUrl) URL.revokeObjectURL(f.previewUrl);
+            });
+            attachedFiles = [];
+            
             if (mediaPhotoInput) mediaPhotoInput.value = '';
             if (mediaVideoInput) mediaVideoInput.value = '';
             if (composerMediaPreview) {
-                composerMediaPreview.innerHTML = '';
+                const grid = document.getElementById('mediaPreviewGrid');
+                if (grid) grid.innerHTML = '';
                 composerMediaPreview.classList.add('hidden');
             }
             const form = document.getElementById('socialComposerForm');
@@ -803,7 +1180,6 @@ document.addEventListener('DOMContentLoaded', () => {
             let authorName = localStorage.getItem('streak_name');
             let emailValue = localStorage.getItem('streak_email');
 
-            // If guest user, set default anonymous author values
             if (!authorName) {
                 authorName = 'Thành viên mới';
             }
@@ -811,13 +1187,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 emailValue = 'guest@b2bbd.com';
             }
 
-            // Extract title as the first line of content (capped at 80 characters)
             let title = content.split('\n')[0].trim() || 'Thảo luận mới';
             if (title.length > 80) {
                 title = title.substring(0, 80) + '...';
             }
 
-            // Handle bounty points logic
             let bountyValue = 0;
             if (category === 'pic') {
                 bountyValue = parseInt(document.getElementById('composerBounty').value || '0', 10);
@@ -827,7 +1201,6 @@ document.addEventListener('DOMContentLoaded', () => {
                         alert(`⚠️ Số dư BD-Points ⚡ của bạn hiện tại (${balance}đ) không đủ để treo thưởng ${bountyValue}đ!`);
                         return;
                     }
-                    // Deduct points
                     const newBalance = balance - bountyValue;
                     localStorage.setItem('b2b_points_balance', newBalance.toString());
                     
@@ -836,7 +1209,21 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             }
 
-            // Create new post structure with rich media support
+            let type = null;
+            let firstUrl = null;
+            const hasImages = attachedFiles.some(f => f.type === 'image');
+            const hasVideos = attachedFiles.some(f => f.type === 'video');
+            if (hasImages && hasVideos) {
+                type = 'mixed';
+                firstUrl = attachedFiles[0].base64;
+            } else if (hasImages) {
+                type = 'image';
+                firstUrl = attachedFiles[0].base64;
+            } else if (hasVideos) {
+                type = 'video';
+                firstUrl = attachedFiles[0].base64;
+            }
+
             const newPost = {
                 id: 'post-' + Date.now(),
                 category: category,
@@ -846,19 +1233,24 @@ document.addEventListener('DOMContentLoaded', () => {
                 email: emailValue || '',
                 bounty: bountyValue,
                 bountyClaimed: false,
-                mediaType: attachedMediaType,
-                mediaUrl: attachedMediaUrl,
+                mediaType: type,
+                mediaUrl: firstUrl,
                 date: new Date().toLocaleDateString('vi-VN', { day: 'numeric', month: 'long', year: 'numeric' }),
                 upvotes: 1,
                 upvoted: true,
-                comments: []
+                comments: [],
+                reactions: { love: 0, like: 0, funny: 0, support: 0, consider: 0, insight: 0 }
             };
+
+            if (attachedFiles.length > 0) {
+                const mediaToSave = attachedFiles.map(f => ({ type: f.type, data: f.base64 }));
+                savePostMedia(newPost.id, mediaToSave);
+            }
 
             const posts = getPosts();
             posts.unshift(newPost);
             savePosts(posts);
 
-            // Mark own post as seen
             try {
                 let seenIds = JSON.parse(localStorage.getItem('bd_seen_post_ids') || '[]');
                 seenIds.push(newPost.id);

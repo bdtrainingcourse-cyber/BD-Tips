@@ -1446,6 +1446,7 @@ if (document.readyState === 'loading') {
         initGlobalComponents();
         checkEmailVerification();
         highlightCommunityLink();
+        if (typeof initLiveUserCounter === 'function') initLiveUserCounter();
         if (typeof initMobileHeaderUtilities === 'function') initMobileHeaderUtilities();
         if (typeof adjustHeaderUtilities === 'function') adjustHeaderUtilities();
         window.addEventListener('resize', () => {
@@ -1457,6 +1458,7 @@ if (document.readyState === 'loading') {
     initGlobalComponents();
     checkEmailVerification();
     highlightCommunityLink();
+    if (typeof initLiveUserCounter === 'function') initLiveUserCounter();
     if (typeof initMobileHeaderUtilities === 'function') initMobileHeaderUtilities();
     if (typeof adjustHeaderUtilities === 'function') adjustHeaderUtilities();
     window.addEventListener('resize', () => {
@@ -1616,6 +1618,67 @@ function initGlobalComponents() {
             0% { box-shadow: 0 0 0 0 rgba(243, 168, 59, 0.4); }
             70% { box-shadow: 0 0 0 6px rgba(243, 168, 59, 0); }
             100% { box-shadow: 0 0 0 0 rgba(243, 168, 59, 0); }
+        }
+        .live-counter {
+            font-size: 0.8rem !important;
+            font-weight: 700 !important;
+            color: #10b981 !important;
+            background: rgba(16, 185, 129, 0.08) !important;
+            border: 1px solid rgba(16, 185, 129, 0.2) !important;
+            padding: 4px 10px !important;
+            border-radius: 12px !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            gap: 6px !important;
+            white-space: nowrap !important;
+            flex-shrink: 0 !important;
+            margin-left: 10px !important;
+        }
+        body.dark-theme .live-counter {
+            color: #34d399 !important;
+            background: rgba(52, 211, 153, 0.1) !important;
+            border-color: rgba(52, 211, 153, 0.25) !important;
+        }
+        .live-indicator-dot {
+            width: 8px !important;
+            height: 8px !important;
+            background-color: #10b981 !important;
+            border-radius: 50% !important;
+            display: inline-block !important;
+            flex-shrink: 0 !important;
+            animation: livePulse 1.8s infinite !important;
+        }
+        body.dark-theme .live-indicator-dot {
+            background-color: #34d399 !important;
+        }
+        @keyframes livePulse {
+            0% {
+                transform: scale(0.9);
+                opacity: 0.6;
+                box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.5);
+            }
+            70% {
+                transform: scale(1.1);
+                opacity: 1;
+                box-shadow: 0 0 0 6px rgba(16, 185, 129, 0);
+            }
+            100% {
+                transform: scale(0.9);
+                opacity: 0.6;
+                box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
+            }
+        }
+        @media (max-width: 992px) {
+            .live-counter-text {
+                display: none !important;
+            }
+            .live-counter {
+                padding: 4px 6px !important;
+                font-size: 0.75rem !important;
+                gap: 4px !important;
+                border-radius: 10px !important;
+                margin-left: 0 !important;
+            }
         }
         .global-modal-overlay {
             position: fixed;
@@ -2261,22 +2324,63 @@ function initMobileHeaderUtilities() {
     }
 }
 
+function initLiveUserCounter() {
+    let counterEl = document.getElementById('live-user-counter');
+    if (!counterEl) {
+        counterEl = document.createElement('div');
+        counterEl.id = 'live-user-counter';
+        counterEl.className = 'live-counter';
+        counterEl.innerHTML = `
+            <span class="live-indicator-dot"></span>
+            <span id="live-counter-number">--</span>
+            <span class="live-counter-text">đang online</span>
+        `;
+        document.body.appendChild(counterEl); // temporary holder, will be adjusted by layout
+    }
+    
+    function updateCounter() {
+        if (!window.currentLiveUsers) {
+            window.currentLiveUsers = Math.floor(Math.random() * (58 - 35 + 1)) + 35;
+        } else {
+            const change = Math.floor(Math.random() * 5) - 2;
+            window.currentLiveUsers = Math.max(35, Math.min(58, window.currentLiveUsers + change));
+        }
+        const numEl = document.getElementById('live-counter-number');
+        if (numEl) {
+            numEl.textContent = window.currentLiveUsers;
+        }
+    }
+    
+    updateCounter();
+    setInterval(updateCounter, 5000);
+}
+
 function adjustHeaderUtilities() {
     const isMobile = window.innerWidth <= 992;
     const desktopParent = document.getElementById('nav-menu');
     const mobileParent = document.getElementById('mobile-header-utilities');
     
+    const liveCounter = document.getElementById('live-user-counter');
     const hud = document.getElementById('navbar-user-hud');
     const shareBtn = document.getElementById('nav-share-btn');
     const bell = document.getElementById('notification-bell-container');
     const themeToggle = document.getElementById('theme-toggle');
     
     if (isMobile && mobileParent) {
+        if (liveCounter) mobileParent.appendChild(liveCounter);
         if (hud) mobileParent.appendChild(hud);
         if (shareBtn) mobileParent.appendChild(shareBtn);
         if (bell) mobileParent.appendChild(bell);
         if (themeToggle) mobileParent.appendChild(themeToggle);
     } else if (!isMobile && desktopParent) {
+        const targetAnchor = hud || themeToggle;
+        if (liveCounter) {
+            if (targetAnchor) {
+                desktopParent.insertBefore(liveCounter, targetAnchor);
+            } else {
+                desktopParent.appendChild(liveCounter);
+            }
+        }
         if (hud) {
             if (themeToggle) {
                 desktopParent.insertBefore(hud, themeToggle);
