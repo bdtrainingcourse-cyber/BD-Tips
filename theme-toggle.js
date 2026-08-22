@@ -2465,56 +2465,68 @@ function adjustHeaderUtilities() {
 }
 
 // --- B2B Onboarding Tour System (v=2.2.0) ---
+
+// Verify if visitor is a new user (within 24 hours of first visit)
+function isNewUser() {
+    let firstVisit = localStorage.getItem('bd_first_visit_time');
+    if (!firstVisit) {
+        firstVisit = Date.now().toString();
+        localStorage.setItem('bd_first_visit_time', firstVisit);
+    }
+    const ageMs = Date.now() - parseInt(firstVisit, 10);
+    return ageMs < 24 * 60 * 60 * 1000;
+}
+
 const TOURS = {
     challenge: [
         {
             elementId: 'minigame-section',
-            title: '🎮 B2B Sales Challenge',
-            text: 'Nơi bác rèn luyện kỹ năng xử lý từ chối và đàm phán thông qua các tình huống thực chiến tế nhị.'
+            title: '🎮 1. B2B Sales Challenge là gì?',
+            text: 'Đây là đấu trường rèn phản xạ đàm phán B2B. Nơi bác đối diện trực tiếp với các tình huống từ chối phũ phàng nhất từ phía Purchasing (Ví dụ: khách chê giá đắt, đã có đối tác thân thiết, hoặc từ chối gặp mặt).'
         },
         {
             elementId: 'start-btn',
-            title: '🎬 Kích hoạt Challenge',
-            text: 'Nhấp chọn nút "Bắt đầu thử thách" để nhận tình huống ngẫu nhiên và các lựa chọn đối đáp.'
+            title: '🎬 2. Bắt đầu thử thách',
+            text: 'Nhấp chọn nút "Bắt đầu thử thách" để bốc ngẫu nhiên một tình huống thực tế khó nhằn nhất, kèm 3 phong cách đối đáp gợi ý.'
         },
         {
             elementId: 'options-container',
-            title: '⚡ Lựa chọn giải pháp',
-            text: 'Đọc kĩ bối cảnh và lựa chọn phương án đối đáp khôn khéo nhất để thuyết phục khách hàng và kiếm điểm thưởng BD-Points.'
+            title: '⚡ 3. Chọn phong cách đối đáp để kiếm điểm',
+            text: 'Đọc kỹ bối cảnh và chọn câu trả lời tương ứng với 3 phong cách đàm phán: 💡 Chuyên nghiệp (Professional), 🤝 Tập trung giải pháp (Solution), hoặc 🎯 Trực diện (Direct). AI sẽ phân tích phản ứng của khách mua và chấm điểm BD-Points ⚡ giúp bác thăng hạng trên Bảng xếp hạng cao thủ.'
         }
     ],
     pitching: [
         {
             elementId: 'scenarios-container-list',
-            title: '🎙️ Kịch bản Pitching',
-            text: 'Chọn kịch bản phù hợp (gặp Giám đốc, gọi Cold Call...) để bắt đầu luyện tập hội thoại.'
+            title: '🎙️ 1. Lựa chọn Kịch bản Pitching',
+            text: 'Chọn một tình huống thương thảo thực tế: Gọi điện lạnh (Cold Call) cho khách hàng mới, hoặc đàm phán trực tiếp với Giám đốc Purchasing của các tập đoàn lớn.'
         },
         {
             elementId: 'btn-start-chat-simulation',
-            title: '📞 Bắt đầu giả lập thoại',
-            text: 'Nhấn nút này để bắt đầu cuộc trò chuyện thoại giả lập với AI Buyer.'
+            title: '📞 2. Bắt đầu cuộc gọi điện giả lập',
+            text: 'Nhấn nút này để bắt đầu mô phỏng cuộc gọi thoại. AI Buyer sẽ bắt đầu bắt máy và phản ứng với câu chào hàng của bác.'
         },
         {
             elementId: 'btn-voice-mic-main',
-            title: '🎤 Nói chuyện với AI Buyer',
-            text: 'Nhấn nút Micro và nói trực tiếp bằng giọng của bác để luyện phản xạ thương thuyết.'
+            title: '🎤 3. Nói chuyện trực tiếp & xem AI Coach nhắc bài',
+            text: 'Bấm giữ nút Micro và nói trực tiếp giọng nói của bác. Điểm đặc biệt: Góc dưới màn hình sẽ hiển thị các "Mẹo ứng phó" thời gian thực từ AI Coach giúp bác gỡ rối khi bị khách hàng dồn vào thế bí. Sau khi gác máy, bác sẽ nhận báo cáo chấm điểm chi tiết về tốc độ nói, độ tự tin và tỷ lệ chốt hẹn thành công.'
         }
     ],
     community: [
         {
             elementId: 'posts-container',
-            title: '🧠 Cộng đồng B2B BD',
-            text: 'Nơi thảo luận nghiệp vụ, chia sẻ câu chuyện bán hàng thực chiến và hỗ trợ kết nối PIC mua hàng.'
+            title: '🧠 1. Luồng thảo luận Cộng đồng BD',
+            text: 'Nơi thảo luận nghiệp vụ, chia sẻ những câu chuyện bán hàng thực chiến "xương máu". Đặc biệt chia làm 3 tab: Hỏi đáp, Câu chuyện, và Tìm PIC (Người phụ trách mua hàng).'
         },
         {
             elementId: 'btn-create-post',
-            title: '✍️ Tạo thảo luận mới',
-            text: 'Bấm nút này để chia sẻ kiến thức hoặc treo thưởng Bounty ⚡ nhờ đồng nghiệp kết nối PIC mua hàng.'
+            title: '✍️ 2. Cách săn hoặc treo thưởng Bounty Point ⚡',
+            text: 'Khi cần tìm kiếm đầu mối mua hàng gấp (PIC), bác có thể đăng bài viết và treo thưởng điểm Bounty ⚡. Đồng nghiệp nào chia sẻ liên hệ PIC chính xác sẽ được bác duyệt nhận thưởng điểm Bounty. Ngược lại, bác cũng có thể săn điểm từ mọi người bằng cách hỗ trợ họ kết nối đối tác!'
         },
         {
             elementId: 'btn-edit-profile',
-            title: '🦉 B2B Profile',
-            text: 'Kích hoạt B2B Profile bằng Email của bác để nhận ngay 25⚡ điểm thưởng.'
+            title: '🦉 3. Kích hoạt B2B Profile nhận điểm thưởng',
+            text: 'Nhấp chọn đổi ảnh/tên và xác thực bằng Email B2B của bác để nhận ngay 25⚡ điểm thưởng ban đầu. Email này cũng giúp bác xem được đầy đủ các thông tin PIC bảo mật do cộng đồng chia sẻ.'
         }
     ]
 };
@@ -2566,15 +2578,15 @@ window.startB2BOnboardingTour = function(pageId) {
         const isLast = index === steps.length - 1;
         
         tooltip.innerHTML = `
-            <div style="font-weight: 800; font-size: 0.95rem; color: #f59e0b; margin-bottom: 6px; display: flex; align-items: center; justify-content: space-between;">
+            <div style="font-weight: 800; font-size: 0.95rem; color: #f59e0b; margin-bottom: 8px; display: flex; align-items: center; justify-content: space-between;">
                 <span>${step.title}</span>
                 <span style="font-size: 0.72rem; color: var(--text-light); font-weight: normal;">${index + 1}/${steps.length}</span>
             </div>
-            <p style="font-size: 0.84rem; line-height: 1.45; color: var(--text-main); margin: 0 0 12px 0;">${step.text}</p>
-            <div style="display: flex; justify-content: space-between; align-items: center; gap: 8px;">
+            <p style="font-size: 0.84rem; line-height: 1.5; color: var(--text-main); margin: 0 0 14px 0; text-align: justify;">${step.text}</p>
+            <div style="display: flex; justify-content: space-between; align-items: center; gap: 8px; border-top: 1px dashed var(--border-color); padding-top: 10px;">
                 <button id="onboarding-skip-btn" style="background: transparent; border: none; color: var(--text-light); font-size: 0.75rem; cursor: pointer; padding: 4px;">Bỏ qua</button>
-                <button id="onboarding-next-btn" style="background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); border: none; color: #fff; padding: 6px 12px; border-radius: 6px; font-weight: bold; font-size: 0.78rem; cursor: pointer; min-width: 70px;">
-                    ${isLast ? 'Hoàn tất' : 'Tiếp tục &rarr;'}
+                <button id="onboarding-next-btn" style="background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); border: none; color: #fff; padding: 6px 14px; border-radius: 6px; font-weight: bold; font-size: 0.78rem; cursor: pointer; min-width: 80px;">
+                    ${isLast ? 'Hoàn tất ✓' : 'Tiếp tục &rarr;'}
                 </button>
             </div>
         `;
@@ -2607,12 +2619,16 @@ window.startB2BOnboardingTour = function(pageId) {
         if (overlay) overlay.style.display = 'none';
         if (tooltip) tooltip.style.display = 'none';
         localStorage.setItem('bd_tour_completed_' + pageId, 'true');
+        
+        // Hide the floating widget if it exists
+        const widget = document.getElementById('new-user-helper-widget');
+        if (widget) widget.style.display = 'none';
     }
 
     function positionTooltip(target, tip) {
         const rect = target.getBoundingClientRect();
         const tipWidth = 280;
-        const tipHeight = tip.offsetHeight || 130;
+        const tipHeight = tip.offsetHeight || 150;
         
         let top = rect.bottom + 12;
         let left = rect.left + (rect.width / 2) - (tipWidth / 2);
@@ -2702,6 +2718,67 @@ function injectTourTriggerButtons() {
     }
 }
 
+function showNewUserHelperWidget(pageId) {
+    if (document.getElementById('new-user-helper-widget')) return;
+
+    const widget = document.createElement('div');
+    widget.id = 'new-user-helper-widget';
+    widget.style.cssText = `
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        z-index: 99999;
+        background: var(--card-bg);
+        border: 2px solid var(--accent);
+        border-radius: 16px;
+        padding: 15px;
+        width: 320px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        display: flex;
+        gap: 12px;
+        align-items: flex-start;
+        transition: all 0.3s ease;
+        animation: slideInUp 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    `;
+
+    widget.innerHTML = `
+        <span style="font-size: 2.2rem; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.15));">🦉</span>
+        <div style="flex: 1; display: flex; flex-direction: column;">
+            <h5 style="margin: 0 0 5px 0; font-weight: 800; font-size: 0.9rem; color: var(--accent); font-family: 'Plus Jakarta Sans', sans-serif;">Bác là BD mới (Trong 24h đầu)!</h5>
+            <p style="margin: 0 0 10px 0; font-size: 0.78rem; color: var(--text-main); line-height: 1.45; text-align: left;">Bấm nút Hướng dẫn bên dưới để xem chi tiết cách thức rèn luyện phản xạ đàm phán đắt giá, cách gọi điện Pitching AI và săn điểm Bounty Cộng đồng nhé.</p>
+            <div style="display: flex; gap: 8px;">
+                <button id="btn-helper-start" style="background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); border: none; color: white; padding: 6px 12px; border-radius: 6px; font-weight: bold; font-size: 0.75rem; cursor: pointer; transition: transform 0.2s;">Xem Hướng dẫn</button>
+                <button id="btn-helper-dismiss" style="background: transparent; border: 1px solid var(--border-color); color: var(--text-light); padding: 5px 10px; border-radius: 6px; font-size: 0.72rem; cursor: pointer;">Đóng lại</button>
+            </div>
+        </div>
+    `;
+
+    document.body.appendChild(widget);
+
+    widget.querySelector('#btn-helper-start').addEventListener('click', () => {
+        window.startB2BOnboardingTour(pageId);
+    });
+
+    widget.querySelector('#btn-helper-dismiss').addEventListener('click', () => {
+        widget.style.opacity = '0';
+        widget.style.transform = 'translateY(20px)';
+        setTimeout(() => widget.remove(), 300);
+        localStorage.setItem('bd_tour_completed_' + pageId, 'true');
+    });
+
+    if (!document.getElementById('slide-in-keyframe')) {
+        const style = document.createElement('style');
+        style.id = 'slide-in-keyframe';
+        style.innerHTML = `
+            @keyframes slideInUp {
+                from { transform: translateY(50px); opacity: 0; }
+                to { transform: translateY(0); opacity: 1; }
+            }
+        `;
+        document.head.appendChild(style);
+    }
+}
+
 // Check auto-trigger tour
 setTimeout(() => {
     injectTourTriggerButtons();
@@ -2711,8 +2788,20 @@ setTimeout(() => {
     else if (path.includes('pitching.html')) pageId = 'pitching';
     else if (path.includes('index.html') || path === '/' || path.endsWith('/')) pageId = 'challenge';
     
-    if (pageId && !localStorage.getItem('bd_tour_completed_' + pageId)) {
-        window.startB2BOnboardingTour(pageId);
+    if (pageId) {
+        // Track first visit time to define "New User within 24 hours"
+        let firstVisit = localStorage.getItem('bd_first_visit_time');
+        if (!firstVisit) {
+            firstVisit = Date.now().toString();
+            localStorage.setItem('bd_first_visit_time', firstVisit);
+        }
+        
+        const ageMs = Date.now() - parseInt(firstVisit, 10);
+        const isNew = ageMs < 24 * 60 * 60 * 1000;
+        
+        if (isNew && !localStorage.getItem('bd_tour_completed_' + pageId)) {
+            showNewUserHelperWidget(pageId);
+        }
     }
 }, 1500);
 
