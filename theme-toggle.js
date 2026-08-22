@@ -1680,6 +1680,43 @@ function initGlobalComponents() {
                 margin-left: 0 !important;
             }
         }
+        .onboarding-overlay-mask {
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            width: 100vw !important;
+            height: 100vh !important;
+            background: rgba(0,0,0,0.5) !important;
+            z-index: 99999 !important;
+            pointer-events: none !important;
+            transition: opacity 0.3s !important;
+            display: none;
+        }
+        .onboarding-tooltip {
+            position: absolute !important;
+            z-index: 1000000 !important;
+            background: var(--card-bg) !important;
+            border: 2px solid var(--accent) !important;
+            border-radius: 12px !important;
+            padding: 16px !important;
+            width: 280px !important;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.4) !important;
+            transition: all 0.2s ease !important;
+            color: var(--text-main) !important;
+            pointer-events: auto !important;
+            display: none;
+        }
+        .onboarding-highlight {
+            position: relative !important;
+            z-index: 999999 !important;
+            box-shadow: 0 0 0 9999px rgba(15, 23, 42, 0.75), 0 0 20px 8px var(--accent) !important;
+            pointer-events: none !important;
+            transition: box-shadow 0.2s ease !important;
+        }
+        #btn-trigger-tour:hover {
+            background: rgba(243, 168, 59, 0.25) !important;
+            transform: translateY(-1px);
+        }
         .global-modal-overlay {
             position: fixed;
             top: 0;
@@ -2426,6 +2463,258 @@ function adjustHeaderUtilities() {
         }
     }
 }
+
+// --- B2B Onboarding Tour System (v=2.2.0) ---
+const TOURS = {
+    challenge: [
+        {
+            elementId: 'minigame-section',
+            title: '🎮 B2B Sales Challenge',
+            text: 'Nơi bác rèn luyện kỹ năng xử lý từ chối và đàm phán thông qua các tình huống thực chiến tế nhị.'
+        },
+        {
+            elementId: 'start-btn',
+            title: '🎬 Kích hoạt Challenge',
+            text: 'Nhấp chọn nút "Bắt đầu thử thách" để nhận tình huống ngẫu nhiên và các lựa chọn đối đáp.'
+        },
+        {
+            elementId: 'options-container',
+            title: '⚡ Lựa chọn giải pháp',
+            text: 'Đọc kĩ bối cảnh và lựa chọn phương án đối đáp khôn khéo nhất để thuyết phục khách hàng và kiếm điểm thưởng BD-Points.'
+        }
+    ],
+    pitching: [
+        {
+            elementId: 'scenarios-container-list',
+            title: '🎙️ Kịch bản Pitching',
+            text: 'Chọn kịch bản phù hợp (gặp Giám đốc, gọi Cold Call...) để bắt đầu luyện tập hội thoại.'
+        },
+        {
+            elementId: 'btn-start-chat-simulation',
+            title: '📞 Bắt đầu giả lập thoại',
+            text: 'Nhấn nút này để bắt đầu cuộc trò chuyện thoại giả lập với AI Buyer.'
+        },
+        {
+            elementId: 'btn-voice-mic-main',
+            title: '🎤 Nói chuyện với AI Buyer',
+            text: 'Nhấn nút Micro và nói trực tiếp bằng giọng của bác để luyện phản xạ thương thuyết.'
+        }
+    ],
+    community: [
+        {
+            elementId: 'posts-container',
+            title: '🧠 Cộng đồng B2B BD',
+            text: 'Nơi thảo luận nghiệp vụ, chia sẻ câu chuyện bán hàng thực chiến và hỗ trợ kết nối PIC mua hàng.'
+        },
+        {
+            elementId: 'btn-create-post',
+            title: '✍️ Tạo thảo luận mới',
+            text: 'Bấm nút này để chia sẻ kiến thức hoặc treo thưởng Bounty ⚡ nhờ đồng nghiệp kết nối PIC mua hàng.'
+        },
+        {
+            elementId: 'btn-edit-profile',
+            title: '🦉 B2B Profile',
+            text: 'Kích hoạt B2B Profile bằng Email của bác để nhận ngay 25⚡ điểm thưởng.'
+        }
+    ]
+};
+
+window.startB2BOnboardingTour = function(pageId) {
+    const steps = TOURS[pageId];
+    if (!steps || steps.length === 0) return;
+
+    let currentStepIndex = 0;
+    
+    let overlay = document.getElementById('onboarding-overlay');
+    if (!overlay) {
+        overlay = document.createElement('div');
+        overlay.id = 'onboarding-overlay';
+        overlay.className = 'onboarding-overlay-mask';
+        document.body.appendChild(overlay);
+    }
+    overlay.style.display = 'block';
+
+    let tooltip = document.getElementById('onboarding-tooltip');
+    if (!tooltip) {
+        tooltip = document.createElement('div');
+        tooltip.id = 'onboarding-tooltip';
+        tooltip.className = 'onboarding-tooltip';
+        document.body.appendChild(tooltip);
+    }
+    tooltip.style.display = 'block';
+
+    function showStep(index) {
+        document.querySelectorAll('.onboarding-highlight').forEach(el => {
+            el.classList.remove('onboarding-highlight');
+        });
+
+        const step = steps[index];
+        let targetEl = document.getElementById(step.elementId) || document.querySelector(`.${step.elementId}`);
+
+        if (!targetEl && step.elementId === 'options-container') {
+            targetEl = document.getElementById('minigame-section');
+        }
+        if (!targetEl && step.elementId === 'btn-voice-mic-main') {
+            targetEl = document.getElementById('scenarios-container-list');
+        }
+
+        if (targetEl) {
+            targetEl.classList.add('onboarding-highlight');
+            targetEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+
+        const isLast = index === steps.length - 1;
+        
+        tooltip.innerHTML = `
+            <div style="font-weight: 800; font-size: 0.95rem; color: #f59e0b; margin-bottom: 6px; display: flex; align-items: center; justify-content: space-between;">
+                <span>${step.title}</span>
+                <span style="font-size: 0.72rem; color: var(--text-light); font-weight: normal;">${index + 1}/${steps.length}</span>
+            </div>
+            <p style="font-size: 0.84rem; line-height: 1.45; color: var(--text-main); margin: 0 0 12px 0;">${step.text}</p>
+            <div style="display: flex; justify-content: space-between; align-items: center; gap: 8px;">
+                <button id="onboarding-skip-btn" style="background: transparent; border: none; color: var(--text-light); font-size: 0.75rem; cursor: pointer; padding: 4px;">Bỏ qua</button>
+                <button id="onboarding-next-btn" style="background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); border: none; color: #fff; padding: 6px 12px; border-radius: 6px; font-weight: bold; font-size: 0.78rem; cursor: pointer; min-width: 70px;">
+                    ${isLast ? 'Hoàn tất' : 'Tiếp tục &rarr;'}
+                </button>
+            </div>
+        `;
+
+        setTimeout(() => {
+            if (targetEl) {
+                positionTooltip(targetEl, tooltip);
+            } else {
+                tooltip.style.top = '50%';
+                tooltip.style.left = '50%';
+                tooltip.style.transform = 'translate(-50%, -50%)';
+            }
+        }, 150);
+
+        tooltip.querySelector('#onboarding-skip-btn').addEventListener('click', endTour);
+        tooltip.querySelector('#onboarding-next-btn').addEventListener('click', () => {
+            if (isLast) {
+                endTour();
+            } else {
+                currentStepIndex++;
+                showStep(currentStepIndex);
+            }
+        });
+    }
+
+    function endTour() {
+        document.querySelectorAll('.onboarding-highlight').forEach(el => {
+            el.classList.remove('onboarding-highlight');
+        });
+        if (overlay) overlay.style.display = 'none';
+        if (tooltip) tooltip.style.display = 'none';
+        localStorage.setItem('bd_tour_completed_' + pageId, 'true');
+    }
+
+    function positionTooltip(target, tip) {
+        const rect = target.getBoundingClientRect();
+        const tipWidth = 280;
+        const tipHeight = tip.offsetHeight || 130;
+        
+        let top = rect.bottom + 12;
+        let left = rect.left + (rect.width / 2) - (tipWidth / 2);
+        
+        if (left < 10) left = 10;
+        if (left + tipWidth > window.innerWidth - 10) {
+            left = window.innerWidth - tipWidth - 10;
+        }
+        
+        if (top + tipHeight > window.innerHeight - 10) {
+            top = rect.top - tipHeight - 12;
+        }
+        
+        if (top < 10) top = 10;
+        
+        tip.style.top = `${top + window.scrollY}px`;
+        tip.style.left = `${left}px`;
+        tip.style.transform = 'none';
+    }
+
+    showStep(currentStepIndex);
+};
+
+function injectTourTriggerButtons() {
+    const path = window.location.pathname;
+    
+    if (path.includes('community.html')) {
+        const target = document.querySelector('.search-bar-row');
+        if (target && !document.getElementById('btn-trigger-tour')) {
+            const btn = document.createElement('button');
+            btn.id = 'btn-trigger-tour';
+            btn.className = 'btn';
+            btn.innerHTML = '💡 Hướng dẫn';
+            btn.style.background = 'rgba(243, 168, 59, 0.12)';
+            btn.style.border = '1px solid var(--accent)';
+            btn.style.color = 'var(--accent)';
+            btn.style.padding = '8px 14px';
+            btn.style.borderRadius = '8px';
+            btn.style.fontSize = '0.85rem';
+            btn.style.fontWeight = 'bold';
+            btn.style.cursor = 'pointer';
+            btn.style.marginLeft = '10px';
+            btn.style.transition = 'all 0.2s';
+            btn.addEventListener('click', () => window.startB2BOnboardingTour('community'));
+            target.appendChild(btn);
+        }
+    } else if (path.includes('pitching.html')) {
+        const target = document.querySelector('#scenarios-container-list')?.parentNode;
+        if (target && !document.getElementById('btn-trigger-tour')) {
+            const btn = document.createElement('button');
+            btn.id = 'btn-trigger-tour';
+            btn.className = 'btn';
+            btn.innerHTML = '💡 Hướng dẫn nhanh';
+            btn.style.background = 'rgba(243, 168, 59, 0.12)';
+            btn.style.border = '1px solid var(--accent)';
+            btn.style.color = 'var(--accent)';
+            btn.style.padding = '8px 14px';
+            btn.style.borderRadius = '8px';
+            btn.style.fontSize = '0.85rem';
+            btn.style.fontWeight = 'bold';
+            btn.style.cursor = 'pointer';
+            btn.style.marginBottom = '15px';
+            btn.style.display = 'inline-block';
+            btn.addEventListener('click', () => window.startB2BOnboardingTour('pitching'));
+            target.insertBefore(btn, target.firstChild);
+        }
+    } else if (path.includes('index.html') || path === '/' || path.endsWith('/')) {
+        const target = document.querySelector('#minigame-section h2');
+        if (target && !document.getElementById('btn-trigger-tour')) {
+            const btn = document.createElement('button');
+            btn.id = 'btn-trigger-tour';
+            btn.className = 'btn';
+            btn.innerHTML = '💡 Hướng dẫn';
+            btn.style.background = 'rgba(243, 168, 59, 0.12)';
+            btn.style.border = '1px solid var(--accent)';
+            btn.style.color = 'var(--accent)';
+            btn.style.padding = '4px 10px';
+            btn.style.borderRadius = '6px';
+            btn.style.fontSize = '0.75rem';
+            btn.style.fontWeight = 'bold';
+            btn.style.cursor = 'pointer';
+            btn.style.marginLeft = '12px';
+            btn.style.verticalAlign = 'middle';
+            btn.addEventListener('click', () => window.startB2BOnboardingTour('challenge'));
+            target.appendChild(btn);
+        }
+    }
+}
+
+// Check auto-trigger tour
+setTimeout(() => {
+    injectTourTriggerButtons();
+    const path = window.location.pathname;
+    let pageId = null;
+    if (path.includes('community.html')) pageId = 'community';
+    else if (path.includes('pitching.html')) pageId = 'pitching';
+    else if (path.includes('index.html') || path === '/' || path.endsWith('/')) pageId = 'challenge';
+    
+    if (pageId && !localStorage.getItem('bd_tour_completed_' + pageId)) {
+        window.startB2BOnboardingTour(pageId);
+    }
+}, 1500);
 
 // Trigger build: 2026-08-22T08:57:00Z
 
