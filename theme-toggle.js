@@ -1482,6 +1482,7 @@ function initGlobalComponents() {
                 gap: 8px !important;
                 margin-left: auto !important;
                 margin-right: 12px !important;
+                flex-shrink: 0 !important;
             }
             .mobile-header-utilities .nav-user-hud {
                 padding: 4px 8px !important;
@@ -1493,14 +1494,17 @@ function initGlobalComponents() {
                 display: flex !important;
                 align-items: center !important;
                 gap: 4px !important;
+                flex-shrink: 0 !important;
+            }
+            .mobile-header-utilities #navbar-user-name {
+                display: none !important;
             }
             body.dark-theme .mobile-header-utilities .nav-user-hud {
                 background: rgba(255, 255, 255, 0.05) !important;
                 border: 1px solid rgba(255, 255, 255, 0.1) !important;
             }
             .mobile-header-utilities .theme-toggle-btn,
-            .mobile-header-utilities .nav-share-btn,
-            .mobile-header-utilities .nav-notification-bell {
+            .mobile-header-utilities .nav-share-btn {
                 width: 32px !important;
                 height: 32px !important;
                 font-size: 0.9rem !important;
@@ -1514,19 +1518,42 @@ function initGlobalComponents() {
                 color: inherit !important;
                 margin: 0 !important;
                 padding: 0 !important;
+                flex-shrink: 0 !important;
+            }
+            .mobile-header-utilities .nav-notification-bell {
+                position: relative !important;
+                display: inline-flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+                width: auto !important;
+                height: auto !important;
+                background: none !important;
+                border: none !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                flex-shrink: 0 !important;
+            }
+            .mobile-header-utilities .nav-notification-bell button {
+                width: 32px !important;
+                height: 32px !important;
+                font-size: 0.9rem !important;
+                border-radius: 50% !important;
+                display: flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+                border: 1px solid rgba(0, 0, 0, 0.08) !important;
+                background: rgba(0, 0, 0, 0.02) !important;
+                cursor: pointer !important;
+                color: inherit !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                flex-shrink: 0 !important;
             }
             body.dark-theme .mobile-header-utilities .theme-toggle-btn,
             body.dark-theme .mobile-header-utilities .nav-share-btn,
-            body.dark-theme .mobile-header-utilities .nav-notification-bell {
+            body.dark-theme .mobile-header-utilities .nav-notification-bell button {
                 border-color: rgba(255, 255, 255, 0.1) !important;
                 background: rgba(255, 255, 255, 0.05) !important;
-            }
-            .mobile-header-utilities .nav-notification-bell button {
-                padding: 0 !important;
-                margin: 0 !important;
-                background: none !important;
-                border: none !important;
-                font-size: 0.9rem !important;
             }
             .mobile-header-utilities .nav-notification-bell .noti-badge {
                 top: -4px !important;
