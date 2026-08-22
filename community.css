@@ -56,6 +56,44 @@ body.dark-theme {
 @media (max-width: 767px) {
     .community-layout {
         grid-template-columns: 1fr;
+        gap: 15px;
+    }
+    .community-sidebar {
+        flex-direction: row !important;
+        overflow-x: auto !important;
+        white-space: nowrap !important;
+        padding: 8px 4px !important;
+        gap: 8px !important;
+        width: 100% !important;
+        scroll-snap-type: x mandatory;
+        -webkit-overflow-scrolling: touch;
+        border-bottom: 1px solid var(--border-color);
+        margin-bottom: 10px;
+    }
+    .community-sidebar::-webkit-scrollbar {
+        display: none;
+    }
+    .community-sidebar {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+    }
+    .category-tab {
+        padding: 8px 16px !important;
+        font-size: 0.82rem !important;
+        border-radius: 20px !important;
+        white-space: nowrap !important;
+        flex-shrink: 0 !important;
+        text-align: center !important;
+    }
+    .profile-card {
+        display: none !important;
+    }
+    .search-bar-row {
+        flex-direction: column !important;
+        gap: 10px !important;
+    }
+    .search-bar-row .btn {
+        width: 100% !important;
     }
 }
 
@@ -78,10 +116,18 @@ body.dark-theme {
     transition: all 0.3s;
 }
 
-.category-tab:hover, .category-tab.active {
+.category-tab.active {
     background: var(--primary);
     color: #ffffff;
     border-color: var(--primary);
+}
+
+@media (hover: hover) {
+    .category-tab:hover {
+        background: var(--primary);
+        color: #ffffff;
+        border-color: var(--primary);
+    }
 }
 
 /* Posts Area */
