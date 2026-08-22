@@ -128,7 +128,7 @@ module.exports = async (req, res) => {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  const { email, action, category, detail } = req.body;
+  const { email, action, category, detail, userId: clientUserId, name: clientName } = req.body;
   if (!email) {
     return res.status(400).json({ error: 'Missing email' });
   }
@@ -168,8 +168,8 @@ module.exports = async (req, res) => {
   if (webhookUrl) {
     try {
       const payload = {
-        userId: matchedUser ? matchedUser.id : '',
-        name: matchedUser ? matchedUser.name : 'Khách',
+        userId: matchedUser ? matchedUser.id : (clientUserId || ''),
+        name: matchedUser ? (matchedUser.name || 'Khách') : (clientName || 'Khách'),
         email: cleanEmail,
         tool: action,
         detail: detail || '',
