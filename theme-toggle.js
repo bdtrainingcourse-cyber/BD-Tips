@@ -1713,6 +1713,13 @@ function initGlobalComponents() {
             pointer-events: none !important;
             transition: box-shadow 0.2s ease !important;
         }
+        .floating-chat-box {
+            animation: chatSlideIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        @keyframes chatSlideIn {
+            from { transform: translateY(40px) scale(0.9); opacity: 0; }
+            to { transform: translateY(0) scale(1); opacity: 1; }
+        }
         #btn-trigger-tour:hover {
             background: rgba(243, 168, 59, 0.25) !important;
             transform: translateY(-1px);
@@ -2837,5 +2844,162 @@ setTimeout(() => {
     }
 }, 1500);
 
-// Trigger build: 2026-08-22T08:57:00Z
+// --- B2B P2P Simulated Chat System (v=2.2.1) ---
+window.openDirectMessage = function(targetName, targetEmail = '') {
+    const currentUser = localStorage.getItem('streak_name');
+    if (!currentUser) {
+        alert('🔑 Vui lòng thiết lập Nickname bằng cách Đăng ký / Xác thực B2B Profile trước khi sử dụng tính năng Chat!');
+        return;
+    }
+
+    if (currentUser === targetName) {
+        alert('🦉 Cú BeeDeee mách nước: Bác không thể tự chat với chính mình đâu nè!');
+        return;
+    }
+
+    let chatBox = document.getElementById(`chat-box-${targetName}`);
+    if (chatBox) {
+        chatBox.style.display = 'flex';
+        return;
+    }
+
+    // Close other chat boxes to avoid screen clutter on mobile
+    document.querySelectorAll('.floating-chat-box').forEach(el => el.remove());
+
+    chatBox = document.createElement('div');
+    chatBox.id = `chat-box-${targetName}`;
+    chatBox.className = 'floating-chat-box';
+    chatBox.style.cssText = `
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        width: 300px;
+        height: 380px;
+        background: var(--card-bg);
+        border: 2px solid var(--primary);
+        border-radius: 12px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        display: flex;
+        flex-direction: column;
+        z-index: 100000;
+        font-family: inherit;
+        overflow: hidden;
+    `;
+
+    chatBox.innerHTML = `
+        <div style="background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); color: white; padding: 10px 15px; display: flex; justify-content: space-between; align-items: center;">
+            <div style="display: flex; align-items: center; gap: 8px;">
+                <span style="font-size: 1.2rem;">💬</span>
+                <div>
+                    <div style="font-weight: bold; font-size: 0.85rem; color: #fff;">${targetName}</div>
+                    <div style="font-size: 0.65rem; color: #cbd5e1;">Đang hoạt động</div>
+                </div>
+            </div>
+            <button onclick="this.closest('.floating-chat-box').remove()" style="background: transparent; border: none; color: white; font-size: 1.2rem; cursor: pointer; line-height: 1;">&times;</button>
+        </div>
+        <div class="chat-messages-container" style="flex: 1; padding: 12px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; background: rgba(0,0,0,0.03);"></div>
+        <div style="padding: 10px; border-top: 1px solid var(--border-color); display: flex; gap: 6px; background: var(--card-bg);">
+            <input type="text" class="chat-input-field" placeholder="Nhập tin nhắn..." style="flex: 1; padding: 8px 12px; border-radius: 20px; border: 1px solid var(--border-color); background: var(--bg); color: var(--text-main); font-size: 0.85rem; outline: none;" />
+            <button class="chat-send-btn" style="background: var(--primary); border: none; color: white; padding: 8px 14px; border-radius: 20px; font-weight: bold; font-size: 0.8rem; cursor: pointer;">Gửi</button>
+        </div>
+    `;
+
+    document.body.appendChild(chatBox);
+
+    const msgsContainer = chatBox.querySelector('.chat-messages-container');
+    const inputField = chatBox.querySelector('.chat-input-field');
+    const sendBtn = chatBox.querySelector('.chat-send-btn');
+
+    const chatKey = `bd_chat_history_${[currentUser, targetName].sort().join('_')}`;
+    
+    function renderMessages() {
+        const history = JSON.parse(localStorage.getItem(chatKey) || '[]');
+        msgsContainer.innerHTML = '';
+        
+        if (history.length === 0) {
+            msgsContainer.innerHTML = `
+                <div style="text-align: center; padding: 20px 10px; color: var(--text-light); font-size: 0.72rem; line-height: 1.4;">
+                    🦉 Chào mừng bác đến với kênh chat bảo mật. <br>Hãy trao đổi lịch thiệp về PIC hoặc chia sẻ tài liệu nghiệp vụ nhé!
+                </div>
+            `;
+            return;
+        }
+
+        history.forEach(m => {
+            const isMe = m.sender === currentUser;
+            const msgRow = document.createElement('div');
+            msgRow.style.cssText = `
+                display: flex;
+                flex-direction: column;
+                align-items: ${isMe ? 'flex-end' : 'flex-start'};
+                width: 100%;
+            `;
+            
+            const bubble = document.createElement('div');
+            bubble.style.cssText = `
+                background: ${isMe ? 'var(--primary)' : 'rgba(255,255,255,0.08)'};
+                color: ${isMe ? 'white' : 'var(--text-main)'};
+                padding: 8px 12px;
+                border-radius: 12px;
+                border: 1px solid ${isMe ? 'transparent' : 'var(--border-color)'};
+                max-width: 80%;
+                font-size: 0.8rem;
+                line-height: 1.4;
+                word-break: break-word;
+            `;
+            bubble.textContent = m.text;
+            msgRow.appendChild(bubble);
+            msgsContainer.appendChild(msgRow);
+        });
+        msgsContainer.scrollTop = msgsContainer.scrollHeight;
+    }
+
+    function sendMessage() {
+        const val = inputField.value.trim();
+        if (!val) return;
+
+        const history = JSON.parse(localStorage.getItem(chatKey) || '[]');
+        history.push({
+            sender: currentUser,
+            text: val,
+            time: Date.now()
+        });
+        localStorage.setItem(chatKey, JSON.stringify(history));
+        inputField.value = '';
+        renderMessages();
+
+        // Simulated auto response after 1.5 seconds from mock target
+        setTimeout(() => {
+            const targetHistory = JSON.parse(localStorage.getItem(chatKey) || '[]');
+            const replies = [
+                "Bác ơi, check giùm em PIC bên Vinamilk nha! Đang kẹt quá hứa hậu tạ 200⚡ luôn.",
+                "Tin nhắn mật từ Cú: Chúc bác săn lead thành công hôm nay nhé! 🦉",
+                "Được bác nhé, có gì gửi email hoặc thông tin PIC qua đây giùm em với.",
+                "Cảm ơn bác nhiều nha, đúng PIC mua hàng em đang tìm bấy lâu nay! 🙌"
+            ];
+            const randomReply = replies[Math.floor(Math.random() * replies.length)];
+            
+            targetHistory.push({
+                sender: targetName,
+                text: randomReply,
+                time: Date.now()
+            });
+            localStorage.setItem(chatKey, JSON.stringify(targetHistory));
+            renderMessages();
+            
+            if (window.showGlobalNotification) {
+                window.showGlobalNotification(`💬 Tin nhắn mới từ ${targetName}`, randomReply);
+            }
+        }, 1500);
+    }
+
+    sendBtn.addEventListener('click', sendMessage);
+    inputField.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') sendMessage();
+    });
+
+    renderMessages();
+};
+
+// Trigger build: 2026-08-22T08:58:00Z
 

@@ -420,8 +420,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     <p class="post-excerpt">${post.content.length > 160 ? post.content.substring(0, 160) + '...' : post.content}</p>
                     ${mediaHtml}
                     ${reactionsHtml}
-                    <div class="post-footer-row">
-                        <span>Đăng bởi: <strong>${post.author}</strong> ${verifiedBadgeHtml}</span>
+                        <span>Đăng bởi: <strong onclick="event.stopPropagation(); window.openDirectMessage('${post.author}')" style="cursor: pointer; color: var(--accent); text-decoration: underline;" title="Nhấp để Chat riêng với ${post.author}">${post.author} 💬</strong> ${verifiedBadgeHtml}</span>
                         <span>💬 ${post.comments.length} bình luận</span>
                     </div>
                 </div>
@@ -633,26 +632,47 @@ document.addEventListener('DOMContentLoaded', () => {
         const post = posts.find(p => p.id === postId);
         if (!post) return;
 
+        const comment = post.comments[commentIndex];
+        if (!comment) return;
+
         post.bountyClaimed = true;
         post.bountyWinnerIndex = commentIndex;
         post.bountyWinnerName = commentAuthor;
         savePosts(posts);
 
-        // Simulated credit transfer
-        const bountyVal = post.bounty || 20;
-        const balance = parseInt(localStorage.getItem('b2b_points_balance') || '0', 10);
-        const newBalance = balance + bountyVal;
-        localStorage.setItem('b2b_points_balance', newBalance.toString());
+        const bountyVal = post.bounty || 100;
+        
+        // If the winner is registered and has an email, sync it to the backend database
+        if (comment.email) {
+            fetch('/api/log-email', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    action: 'awardBounty',
+                    email: comment.email,
+                    points: bountyVal
+                })
+            })
+            .then(res => res.json())
+            .then(data => {
+                console.log('Bounty successfully awarded to helper via API:', data);
+            })
+            .catch(err => {
+                console.error('Error forwarding bounty to API:', err);
+            });
 
-        // Sync local scoreboard HUD
-        if (window.updateNavbarUserHUD) {
-            window.updateNavbarUserHUD();
-        }
-        if (window.showPointToast) {
-            window.showPointToast(bountyVal, `Bounty nhận được từ ${post.author}!`);
+            // For testing: if the commenter is the current logged-in user in this browser, credit them locally
+            const currentUserEmail = localStorage.getItem('streak_email');
+            if (currentUserEmail && comment.email.toLowerCase() === currentUserEmail.toLowerCase()) {
+                const balance = parseInt(localStorage.getItem('b2b_points_balance') || '0', 10);
+                const newBalance = balance + bountyVal;
+                localStorage.setItem('b2b_points_balance', newBalance.toString());
+                if (window.updateNavbarUserHUD) window.updateNavbarUserHUD();
+                if (window.showPointToast) window.showPointToast(bountyVal, `Nhận Bounty ⚡ từ bài đăng!`);
+            }
         }
 
-        alert(`🏆 Đã chấp nhận thông tin và chuyển ${bountyVal}⚡ cho ${commentAuthor}!`);
+        alert(`🏆 Đã chấp nhận thông tin PIC và thưởng ${bountyVal}⚡ cho ${commentAuthor}!`);
         showPostDetails(postId);
     };
 
@@ -738,7 +758,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 <div class="comment-card" style="display: flex; flex-direction: column; gap: 6px; position: relative;">
                     <div style="display: flex; justify-content: space-between; font-size: 0.8rem; color: var(--text-light); margin-bottom: 4px;">
                         <span style="display: inline-flex; align-items: center; gap: 6px;">
-                            <strong>${c.author}</strong> ${comVerified} ${winnerBadge} ${secureBadgeHtml}
+                            <strong onclick="window.openDirectMessage('${c.author}')" style="cursor: pointer; color: var(--accent); text-decoration: underline;" title="Nhấp để Chat riêng với ${c.author}">${c.author} 💬</strong> ${comVerified} ${winnerBadge} ${secureBadgeHtml}
                         </span>
                         <span>${c.date || 'Gần đây'}</span>
                     </div>
@@ -786,7 +806,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     ${mediaHtml}
                     <div id="details-reactions-container-${post.id}"></div>
                     <div style="margin-top: 20px; font-size: 0.85rem; color: var(--text-light);">
-                        Đăng bởi: <strong>${post.author}</strong> ${verifiedBadgeHtml}
+                        Đăng bởi: <strong onclick="window.openDirectMessage('${post.author}')" style="cursor: pointer; color: var(--accent); text-decoration: underline;" title="Nhấp để Chat riêng với ${post.author}">${post.author} 💬</strong> ${verifiedBadgeHtml}
                     </div>
                 </div>
             </div>
@@ -888,7 +908,11 @@ document.addEventListener('DOMContentLoaded', () => {
             
             const content = document.getElementById('comContent').value;
             const comAnonymous = document.getElementById('comAnonymous').checked;
-            const comPrivate = document.getElementById('comPrivate').checked;
+            let comPrivate = document.getElementById('comPrivate').checked;
+
+            if (post.category === 'pic') {
+                comPrivate = true;
+            }
 
             if (comAnonymous) {
                 authorName = '🕵️ BD_Ẩn_Danh_' + Math.floor(100 + Math.random() * 900);
@@ -1214,18 +1238,20 @@ document.addEventListener('DOMContentLoaded', () => {
             let bountyValue = 0;
             if (category === 'pic') {
                 bountyValue = parseInt(document.getElementById('composerBounty').value || '0', 10);
-                if (bountyValue > 0) {
-                    const balance = parseInt(localStorage.getItem('b2b_points_balance') || '0', 10);
-                    if (balance < bountyValue) {
-                        alert(`⚠️ Số dư BD-Points ⚡ của bạn hiện tại (${balance}đ) không đủ để treo thưởng ${bountyValue}đ!`);
-                        return;
-                    }
-                    const newBalance = balance - bountyValue;
-                    localStorage.setItem('b2b_points_balance', newBalance.toString());
-                    
-                    if (window.updateNavbarUserHUD) window.updateNavbarUserHUD();
-                    if (window.showPointToast) window.showPointToast(-bountyValue, `Đã khấu trừ treo thưởng Bounty!`);
+                if (bountyValue < 100) {
+                    alert('⚠️ Theo quy định mới, yêu cầu kết nối PIC phải treo thưởng tối thiểu từ 100đ ⚡ trở lên!');
+                    return;
                 }
+                const balance = parseInt(localStorage.getItem('b2b_points_balance') || '0', 10);
+                if (balance < bountyValue) {
+                    alert(`⚠️ Số dư BD-Points ⚡ của bạn hiện tại (${balance}đ) không đủ để treo thưởng ${bountyValue}đ!`);
+                    return;
+                }
+                const newBalance = balance - bountyValue;
+                localStorage.setItem('b2b_points_balance', newBalance.toString());
+                
+                if (window.updateNavbarUserHUD) window.updateNavbarUserHUD();
+                if (window.showPointToast) window.showPointToast(-bountyValue, `Đã khấu trừ treo thưởng Bounty!`);
             }
 
             let type = null;

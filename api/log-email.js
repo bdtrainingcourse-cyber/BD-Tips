@@ -431,6 +431,28 @@ module.exports = async (req, res) => {
       localUser.lastIp = clientIp;
       writeUsers(users);
     }
+  } else if (action === 'awardBounty') {
+    const cleanWinnerEmail = email.toLowerCase().trim();
+    const match = Object.entries(users).find(([uid, u]) => u.email && u.email.toLowerCase().trim() === cleanWinnerEmail);
+    if (match) {
+        const winnerUser = match[1];
+        winnerUser.points = (winnerUser.points || 0) + Number(points);
+        winnerUser.lastActive = timestamp;
+        winnerUser.lastIp = clientIp;
+        writeUsers(users);
+        
+        if (webhookUrl) {
+            try {
+                await httpPost(webhookUrl, {
+                    action: 'updatePoints',
+                    email: cleanWinnerEmail,
+                    points: winnerUser.points
+                });
+            } catch(e){}
+        }
+        return res.status(200).json({ success: true, points: winnerUser.points });
+    }
+    return res.status(404).json({ error: 'Winner email not found' });
   } else if (action === 'checkEmail') {
     if (localUser) {
       if ((localUser.name === 'Khách' || localUser.name === 'Học viên' || !localUser.name) && name && name !== 'Khách' && name !== 'Học viên') {
