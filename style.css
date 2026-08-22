@@ -3194,3 +3194,88 @@ body.dark-theme .planet-tooltip-card {
     }
 }
 
+/* Glossary Card Styles (v=2.2.0) */
+.glossary-section {
+    border-radius: 8px;
+    padding: 12px;
+    margin-bottom: 12px;
+    border: 1px solid var(--border-color);
+    background: var(--input-bg);
+}
+.glossary-section-title {
+    font-size: 0.78rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+    color: var(--text-light);
+}
+.glossary-section-content {
+    font-size: 0.88rem;
+    color: var(--text-main);
+    line-height: 1.5;
+}
+
+/* Context Block */
+.context-section {
+    background: rgba(99, 102, 241, 0.05);
+    border: 1px solid rgba(99, 102, 241, 0.15);
+}
+body.dark-theme .context-section {
+    background: rgba(99, 102, 241, 0.1);
+    border: 1px solid rgba(99, 102, 241, 0.25);
+}
+.context-title {
+    color: #4f46e5;
+}
+body.dark-theme .context-title {
+    color: #a5b4fc;
+}
+.context-content {
+    font-style: italic;
+    color: #1e1b4b;
+}
+body.dark-theme .context-content {
+    color: #e0e7ff;
+}
+
+/* Formula Block */
+.formula-section {
+    background: rgba(16, 185, 129, 0.05);
+    border: 1px solid rgba(16, 185, 129, 0.15);
+}
+body.dark-theme .formula-section {
+    background: rgba(16, 185, 129, 0.1);
+    border: 1px solid rgba(16, 185, 129, 0.25);
+}
+.formula-title {
+    color: #059669;
+}
+body.dark-theme .formula-title {
+    color: #34d399;
+}
+.formula-code {
+    font-family: monospace;
+    font-size: 0.92rem;
+    color: #065f46;
+    font-weight: 700;
+    margin-bottom: 6px;
+    word-break: break-word;
+    background: rgba(16, 185, 129, 0.1);
+    padding: 6px 10px;
+    border-radius: 6px;
+}
+body.dark-theme .formula-code {
+    color: #6ee7b7;
+    background: rgba(0, 0, 0, 0.25);
+}
+.formula-example {
+    font-size: 0.84rem;
+    color: #047857;
+    line-height: 1.4;
+    font-style: italic;
+}
+body.dark-theme .formula-example {
+    color: #d1fae5;
+}
+
+

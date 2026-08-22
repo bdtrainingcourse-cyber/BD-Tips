@@ -321,12 +321,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 card.style.transition = 'all 0.3s ease';
 
                 const formulaHtml = item.formula ? `
-                    <div style="background: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 0.25); border-radius: 8px; padding: 12px; margin-bottom: 12px;">
-                        <div style="font-size: 0.78rem; font-weight: 700; color: #34d399; text-transform: uppercase; margin-bottom: 4px; display: flex; align-items: center; gap: 6px;">
+                    <div class="glossary-section formula-section">
+                        <div class="glossary-section-title formula-title">
                             <span>📐</span> Công thức tính (Formula):
                         </div>
-                        <div style="font-family: monospace; font-size: 0.92rem; color: #6ee7b7; font-weight: 700; margin-bottom: 6px; word-break: break-word; background: rgba(0,0,0,0.3); padding: 6px 10px; border-radius: 6px;">${item.formula}</div>
-                        ${item.formulaExample ? `<div style="font-size: 0.84rem; color: #d1fae5; line-height: 1.4; font-style: italic;">🧮 <strong>Ví dụ tính toán:</strong> ${item.formulaExample}</div>` : ''}
+                        <div class="formula-code">${item.formula}</div>
+                        ${item.formulaExample ? `<div class="formula-example">🧮 <strong>Ví dụ tính toán:</strong> ${item.formulaExample}</div>` : ''}
                     </div>
                 ` : '';
 
@@ -339,16 +339,16 @@ document.addEventListener('DOMContentLoaded', () => {
                         <h3 style="font-size: 1.15rem; font-weight: 800; color: var(--text-main); margin-bottom: 4px;">${item.term}</h3>
                         <div style="font-size: 0.92rem; font-weight: 700; color: #f3a83b; margin-bottom: 12px;">${item.vietnamese}</div>
                         
-                        <div style="background: rgba(0,0,0,0.25); border: 1px solid rgba(255,255,255,0.06); border-radius: 8px; padding: 12px; margin-bottom: 12px;">
-                            <div style="font-size: 0.78rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 4px;">📌 Định nghĩa thực chiến:</div>
-                            <div style="font-size: 0.88rem; color: var(--text-light); line-height: 1.5;">${item.definition}</div>
+                        <div class="glossary-section definition-section">
+                            <div class="glossary-section-title">📌 Định nghĩa thực chiến:</div>
+                            <div class="glossary-section-content">${item.definition}</div>
                         </div>
 
                         ${formulaHtml}
 
-                        <div style="background: rgba(99, 102, 241, 0.08); border: 1px solid rgba(99, 102, 241, 0.2); border-radius: 8px; padding: 12px; margin-bottom: 15px;">
-                            <div style="font-size: 0.78rem; font-weight: 700; color: #a5b4fc; text-transform: uppercase; margin-bottom: 4px;">💡 Bối cảnh ứng dụng thực tế:</div>
-                            <div style="font-size: 0.86rem; color: #e0e7ff; line-height: 1.5; font-style: italic;">"${item.context}"</div>
+                        <div class="glossary-section context-section">
+                            <div class="glossary-section-title context-title">💡 Bối cảnh ứng dụng thực tế:</div>
+                            <div class="glossary-section-content context-content">"${item.context}"</div>
                         </div>
                     </div>
 
