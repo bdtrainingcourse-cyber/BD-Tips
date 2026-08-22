@@ -338,7 +338,7 @@ module.exports = async (req, res) => {
           name: resolvedName,
           points: (result.user.points !== null && result.user.points !== undefined) ? Number(result.user.points) : 25,
           verified: !!result.user.verified,
-          password: result.user.passwordHash || '',
+          password: result.user.password || result.user.passwordHash || '',
           lastIp: clientIp,
           lastActive: timestamp
         };

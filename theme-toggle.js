@@ -2687,7 +2687,7 @@ window.startB2BOnboardingTour = function(pageId) {
 function injectTourTriggerButtons() {
     const path = window.location.pathname;
     
-    if (path.includes('community.html')) {
+    if (path.includes('community')) {
         const target = document.querySelector('.search-bar-row');
         if (target && !document.getElementById('btn-trigger-tour')) {
             const btn = document.createElement('button');
@@ -2707,7 +2707,7 @@ function injectTourTriggerButtons() {
             btn.addEventListener('click', () => window.startB2BOnboardingTour('community'));
             target.appendChild(btn);
         }
-    } else if (path.includes('pitching.html')) {
+    } else if (path.includes('pitching')) {
         const target = document.querySelector('#scenarios-container-list')?.parentNode;
         if (target && !document.getElementById('btn-trigger-tour')) {
             const btn = document.createElement('button');
@@ -2727,7 +2727,7 @@ function injectTourTriggerButtons() {
             btn.addEventListener('click', () => window.startB2BOnboardingTour('pitching'));
             target.insertBefore(btn, target.firstChild);
         }
-    } else if (path.includes('index.html') || path === '/' || path.endsWith('/')) {
+    } else if (path.includes('index') || path === '/' || path.endsWith('/')) {
         const target = document.querySelector('#minigame-section h2');
         if (target && !document.getElementById('btn-trigger-tour')) {
             const btn = document.createElement('button');
@@ -2816,9 +2816,9 @@ setTimeout(() => {
     injectTourTriggerButtons();
     const path = window.location.pathname;
     let pageId = null;
-    if (path.includes('community.html')) pageId = 'community';
-    else if (path.includes('pitching.html')) pageId = 'pitching';
-    else if (path.includes('index.html') || path === '/' || path.endsWith('/')) pageId = 'challenge';
+    if (path.includes('community')) pageId = 'community';
+    else if (path.includes('pitching')) pageId = 'pitching';
+    else if (path.includes('index') || path === '/' || path.endsWith('/')) pageId = 'challenge';
     
     if (pageId) {
         // Track first visit time to define "New User within 24 hours"
