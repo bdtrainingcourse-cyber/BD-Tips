@@ -1476,24 +1476,35 @@ function initGlobalComponents() {
             display: none;
         }
         @media (max-width: 992px) {
+            .nav-logo {
+                flex-shrink: 0 !important;
+                margin-right: 0 !important;
+            }
+            .nav-logo .logo-sub {
+                display: none !important;
+            }
+            .nav-logo .logo-main {
+                font-size: 1.1rem !important;
+            }
+
             .mobile-header-utilities {
                 display: flex !important;
                 align-items: center !important;
-                gap: 8px !important;
+                gap: 6px !important;
                 margin-left: auto !important;
-                margin-right: 12px !important;
+                margin-right: 6px !important;
                 flex-shrink: 0 !important;
             }
             .mobile-header-utilities .nav-user-hud {
-                padding: 4px 8px !important;
-                font-size: 0.8rem !important;
+                padding: 4px 6px !important;
+                font-size: 0.75rem !important;
                 margin: 0 !important;
-                border-radius: 12px !important;
+                border-radius: 10px !important;
                 background: rgba(0, 0, 0, 0.03) !important;
                 border: 1px solid rgba(0, 0, 0, 0.05) !important;
                 display: flex !important;
                 align-items: center !important;
-                gap: 4px !important;
+                gap: 2px !important;
                 flex-shrink: 0 !important;
             }
             .mobile-header-utilities #navbar-user-name {
@@ -1505,9 +1516,9 @@ function initGlobalComponents() {
             }
             .mobile-header-utilities .theme-toggle-btn,
             .mobile-header-utilities .nav-share-btn {
-                width: 32px !important;
-                height: 32px !important;
-                font-size: 0.9rem !important;
+                width: 28px !important;
+                height: 28px !important;
+                font-size: 0.8rem !important;
                 border-radius: 50% !important;
                 display: flex !important;
                 align-items: center !important;
@@ -1534,9 +1545,9 @@ function initGlobalComponents() {
                 flex-shrink: 0 !important;
             }
             .mobile-header-utilities .nav-notification-bell button {
-                width: 32px !important;
-                height: 32px !important;
-                font-size: 0.9rem !important;
+                width: 28px !important;
+                height: 28px !important;
+                font-size: 0.8rem !important;
                 border-radius: 50% !important;
                 display: flex !important;
                 align-items: center !important;
@@ -1548,6 +1559,24 @@ function initGlobalComponents() {
                 margin: 0 !important;
                 padding: 0 !important;
                 flex-shrink: 0 !important;
+            }
+            .mobile-menu-toggle {
+                width: 28px !important;
+                height: 28px !important;
+                font-size: 0.85rem !important;
+                border-radius: 50% !important;
+                display: flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+                padding: 0 !important;
+                margin: 0 !important;
+                flex-shrink: 0 !important;
+                border: 1px solid rgba(0, 0, 0, 0.08) !important;
+                background: rgba(0, 0, 0, 0.02) !important;
+            }
+            body.dark-theme .mobile-menu-toggle {
+                border-color: rgba(255, 255, 255, 0.1) !important;
+                background: rgba(255, 255, 255, 0.05) !important;
             }
             body.dark-theme .mobile-header-utilities .theme-toggle-btn,
             body.dark-theme .mobile-header-utilities .nav-share-btn,
@@ -1572,9 +1601,6 @@ function initGlobalComponents() {
                 right: 15px !important;
                 width: 280px !important;
                 z-index: 100000 !important;
-            }
-            .mobile-menu-toggle {
-                margin-left: 0 !important;
             }
         }
         .nav-badge.chat-badge {
