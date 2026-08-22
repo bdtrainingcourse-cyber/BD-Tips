@@ -1021,6 +1021,7 @@ function updateNavbarUserHUD() {
             }
         });
     }
+    if (typeof adjustHeaderUtilities === 'function') adjustHeaderUtilities();
 }
 
 function updateUIElements() {
@@ -1445,12 +1446,22 @@ if (document.readyState === 'loading') {
         initGlobalComponents();
         checkEmailVerification();
         highlightCommunityLink();
+        if (typeof initMobileHeaderUtilities === 'function') initMobileHeaderUtilities();
+        if (typeof adjustHeaderUtilities === 'function') adjustHeaderUtilities();
+        window.addEventListener('resize', () => {
+            if (typeof adjustHeaderUtilities === 'function') adjustHeaderUtilities();
+        });
     });
 } else {
     initEmailRegistrations();
     initGlobalComponents();
     checkEmailVerification();
     highlightCommunityLink();
+    if (typeof initMobileHeaderUtilities === 'function') initMobileHeaderUtilities();
+    if (typeof adjustHeaderUtilities === 'function') adjustHeaderUtilities();
+    window.addEventListener('resize', () => {
+        if (typeof adjustHeaderUtilities === 'function') adjustHeaderUtilities();
+    });
 }
 
 // Global behaviors, UI modals injection, and tracking helpers definition
@@ -1460,6 +1471,84 @@ function initGlobalComponents() {
     styleEl.innerHTML = `
         .nav-logo {
             margin-right: 40px !important;
+        }
+        .mobile-header-utilities {
+            display: none;
+        }
+        @media (max-width: 992px) {
+            .mobile-header-utilities {
+                display: flex !important;
+                align-items: center !important;
+                gap: 8px !important;
+                margin-left: auto !important;
+                margin-right: 12px !important;
+            }
+            .mobile-header-utilities .nav-user-hud {
+                padding: 4px 8px !important;
+                font-size: 0.8rem !important;
+                margin: 0 !important;
+                border-radius: 12px !important;
+                background: rgba(0, 0, 0, 0.03) !important;
+                border: 1px solid rgba(0, 0, 0, 0.05) !important;
+                display: flex !important;
+                align-items: center !important;
+                gap: 4px !important;
+            }
+            body.dark-theme .mobile-header-utilities .nav-user-hud {
+                background: rgba(255, 255, 255, 0.05) !important;
+                border: 1px solid rgba(255, 255, 255, 0.1) !important;
+            }
+            .mobile-header-utilities .theme-toggle-btn,
+            .mobile-header-utilities .nav-share-btn,
+            .mobile-header-utilities .nav-notification-bell {
+                width: 32px !important;
+                height: 32px !important;
+                font-size: 0.9rem !important;
+                border-radius: 50% !important;
+                display: flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+                border: 1px solid rgba(0, 0, 0, 0.08) !important;
+                background: rgba(0, 0, 0, 0.02) !important;
+                cursor: pointer !important;
+                color: inherit !important;
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+            body.dark-theme .mobile-header-utilities .theme-toggle-btn,
+            body.dark-theme .mobile-header-utilities .nav-share-btn,
+            body.dark-theme .mobile-header-utilities .nav-notification-bell {
+                border-color: rgba(255, 255, 255, 0.1) !important;
+                background: rgba(255, 255, 255, 0.05) !important;
+            }
+            .mobile-header-utilities .nav-notification-bell button {
+                padding: 0 !important;
+                margin: 0 !important;
+                background: none !important;
+                border: none !important;
+                font-size: 0.9rem !important;
+            }
+            .mobile-header-utilities .nav-notification-bell .noti-badge {
+                top: -4px !important;
+                right: -4px !important;
+            }
+            .mobile-header-utilities .profile-dropdown-card {
+                position: fixed !important;
+                top: 60px !important;
+                right: 15px !important;
+                width: 280px !important;
+                z-index: 100000 !important;
+            }
+            .mobile-header-utilities .noti-dropdown {
+                position: fixed !important;
+                top: 60px !important;
+                right: 15px !important;
+                width: 280px !important;
+                z-index: 100000 !important;
+            }
+            .mobile-menu-toggle {
+                margin-left: 0 !important;
+            }
         }
         .nav-badge.chat-badge {
             background: rgba(243, 168, 59, 0.15) !important;
@@ -2099,7 +2188,64 @@ function initGlobalNotificationBell() {
 
     // Initial badge update
     updateGlobalNotiBadge();
+    if (typeof adjustHeaderUtilities === 'function') adjustHeaderUtilities();
 }
 
-// Trigger build: 2026-08-13T15:10:00Z
+function initMobileHeaderUtilities() {
+    const mobileToggle = document.getElementById('mobile-menu-toggle');
+    if (!mobileToggle) return;
+    
+    let mobileParent = document.getElementById('mobile-header-utilities');
+    if (!mobileParent) {
+        mobileParent = document.createElement('div');
+        mobileParent.id = 'mobile-header-utilities';
+        mobileParent.className = 'mobile-header-utilities';
+        mobileToggle.parentNode.insertBefore(mobileParent, mobileToggle);
+    }
+}
+
+function adjustHeaderUtilities() {
+    const isMobile = window.innerWidth <= 992;
+    const desktopParent = document.getElementById('nav-menu');
+    const mobileParent = document.getElementById('mobile-header-utilities');
+    
+    const hud = document.getElementById('navbar-user-hud');
+    const shareBtn = document.getElementById('nav-share-btn');
+    const bell = document.getElementById('notification-bell-container');
+    const themeToggle = document.getElementById('theme-toggle');
+    
+    if (isMobile && mobileParent) {
+        if (hud) mobileParent.appendChild(hud);
+        if (shareBtn) mobileParent.appendChild(shareBtn);
+        if (bell) mobileParent.appendChild(bell);
+        if (themeToggle) mobileParent.appendChild(themeToggle);
+    } else if (!isMobile && desktopParent) {
+        if (hud) {
+            if (themeToggle) {
+                desktopParent.insertBefore(hud, themeToggle);
+            } else {
+                desktopParent.appendChild(hud);
+            }
+        }
+        if (shareBtn) {
+            if (themeToggle) {
+                desktopParent.insertBefore(shareBtn, themeToggle);
+            } else {
+                desktopParent.appendChild(shareBtn);
+            }
+        }
+        if (bell) {
+            if (themeToggle) {
+                desktopParent.insertBefore(bell, themeToggle);
+            } else {
+                desktopParent.appendChild(bell);
+            }
+        }
+        if (themeToggle) {
+            desktopParent.appendChild(themeToggle);
+        }
+    }
+}
+
+// Trigger build: 2026-08-22T08:57:00Z
 
