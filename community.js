@@ -1011,6 +1011,25 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // Quick Emoji Insert listeners
+    const composerContent = document.getElementById('composerContent');
+    document.querySelectorAll('.btn-emoji-insert').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const emoji = btn.getAttribute('data-emoji');
+            if (!composerContent) return;
+
+            const startPos = composerContent.selectionStart;
+            const endPos = composerContent.selectionEnd;
+            const text = composerContent.value;
+            
+            composerContent.value = text.substring(0, startPos) + emoji + text.substring(endPos);
+            
+            composerContent.focus();
+            composerContent.selectionStart = startPos + emoji.length;
+            composerContent.selectionEnd = startPos + emoji.length;
+        });
+    });
+
     function updateMediaPreviewGrid() {
         let grid = document.getElementById('mediaPreviewGrid');
         let counter = document.getElementById('mediaUploadCounter');

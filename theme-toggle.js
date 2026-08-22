@@ -2338,21 +2338,40 @@ function initLiveUserCounter() {
         document.body.appendChild(counterEl); // temporary holder, will be adjusted by layout
     }
     
-    function updateCounter() {
-        if (!window.currentLiveUsers) {
-            window.currentLiveUsers = Math.floor(Math.random() * (58 - 35 + 1)) + 35;
-        } else {
-            const change = Math.floor(Math.random() * 5) - 2;
-            window.currentLiveUsers = Math.max(35, Math.min(58, window.currentLiveUsers + change));
+    function getLiveUsers() {
+        const cached = sessionStorage.getItem('bd_live_users');
+        const timestamp = sessionStorage.getItem('bd_live_users_timestamp');
+        const now = Date.now();
+        
+        if (cached && timestamp && (now - parseInt(timestamp, 10)) < 60000) {
+            return parseInt(cached, 10);
         }
+        
+        const val = Math.floor(Math.random() * (54 - 38 + 1)) + 38;
+        sessionStorage.setItem('bd_live_users', val.toString());
+        sessionStorage.setItem('bd_live_users_timestamp', now.toString());
+        return val;
+    }
+
+    function updateCounter() {
+        let current = getLiveUsers();
+        const change = Math.floor(Math.random() * 3) - 1; // -1, 0, or 1
+        current = Math.max(38, Math.min(54, current + change));
+        
+        sessionStorage.setItem('bd_live_users', current.toString());
+        sessionStorage.setItem('bd_live_users_timestamp', Date.now().toString());
+        
         const numEl = document.getElementById('live-counter-number');
         if (numEl) {
-            numEl.textContent = window.currentLiveUsers;
+            numEl.textContent = current;
         }
     }
     
-    updateCounter();
-    setInterval(updateCounter, 5000);
+    const initialVal = getLiveUsers();
+    const numEl = counterEl.querySelector('#live-counter-number');
+    if (numEl) numEl.textContent = initialVal;
+    
+    setInterval(updateCounter, 20000);
 }
 
 function adjustHeaderUtilities() {

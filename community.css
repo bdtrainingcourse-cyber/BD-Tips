@@ -614,3 +614,9 @@ body.dark-theme .reaction-btn.active {
     color: var(--accent) !important;
 }
 
+/* Quick Emoji Toolbar insert buttons hover effect */
+.btn-emoji-insert:hover {
+    transform: scale(1.25) !important;
+}
+
+
