@@ -1840,6 +1840,8 @@ function initGlobalComponents() {
 
 window.trackUserBehavior = function(action, detail) {
     const email = localStorage.getItem('streak_email') || 'guest@petervo.vn';
+    const userId = localStorage.getItem('streak_user_id') || '';
+    const name = localStorage.getItem('streak_name') || 'Khách';
     
     // Check if on community page to match its categories or general categories
     let category = 'general';
@@ -1858,7 +1860,9 @@ window.trackUserBehavior = function(action, detail) {
             email,
             action,
             category,
-            detail: detail || ''
+            detail: detail || '',
+            userId,
+            name
         })
     }).catch(err => console.warn('Behavior tracking failed:', err));
 };
