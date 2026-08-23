@@ -114,10 +114,10 @@ body.dark-theme {
 }
 
 .tab-btn.active {
-    background: var(--primary);
-    color: #ffffff;
-    border-color: var(--primary);
-    box-shadow: 0 8px 24px var(--primary-glow);
+    background: linear-gradient(135deg, var(--primary) 0%, #d97706 100%) !important;
+    color: #ffffff !important;
+    border-color: transparent !important;
+    box-shadow: 0 8px 24px rgba(162, 10, 10, 0.25) !important;
 }
 
 /* Settings Bar */
@@ -264,7 +264,7 @@ textarea.form-control {
 /* Buttons */
 .submit-btn {
     width: 100%;
-    background: linear-gradient(135deg, var(--primary), #b01010);
+    background: linear-gradient(135deg, var(--primary) 0%, #f3a83b 100%) !important;
     border: none;
     color: #ffffff;
     padding: 16px;
@@ -621,4 +621,21 @@ body.dark-theme .offline-banner {
 
 .offline-banner svg {
     flex-shrink: 0;
+}
+
+/* Navigation Banners Responsive Layout */
+@media (max-width: 767px) {
+    .assistant-nav-banners {
+        grid-template-columns: 1fr !important;
+        gap: 16px !important;
+    }
+    .assistant-nav-banners .nav-banner-card {
+        flex-direction: column;
+        align-items: flex-start !important;
+        padding: 20px !important;
+    }
+    .assistant-nav-banners .nav-banner-card img {
+        width: 100% !important;
+        height: 140px !important;
+    }
 }
