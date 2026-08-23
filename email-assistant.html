@@ -10,10 +10,10 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <!-- Custom CSS -->
-    <link rel="stylesheet" href="style.css?v=2.3.0">
-    <link rel="stylesheet" href="email-assistant.css?v=2.3.0">
+    <link rel="stylesheet" href="style.css?v=2.3.1">
+    <link rel="stylesheet" href="email-assistant.css?v=2.3.1">
     <link rel="stylesheet" href="ai-chat.css?v=2.1.2">
-    <script src="theme-toggle.js?v=2.3.0"></script>
+    <script src="theme-toggle.js?v=2.3.1"></script>
 </head>
 <body>
     <!-- Navbar -->
@@ -54,7 +54,7 @@
             <p>Đánh giá hiệu quả cold email và tự động soạn thảo mẫu tiếp cận đối tác đạt tỷ lệ chuyển đổi cao</p>
             <div style="margin-top: 20px; display: flex; justify-content: center;">
                 <div style="border-radius: 16px; overflow: hidden; border: 1.5px solid var(--border-color); box-shadow: var(--shadow); height: 140px; width: 185px;">
-                    <img src="mascot_email.jpg?v=2.3.0" style="width: 100%; height: 100%; object-fit: cover;" alt="BeeDee Email">
+                    <img src="mascot_email.jpg?v=2.3.1" style="width: 100%; height: 100%; object-fit: cover;" alt="BeeDee Email">
                 </div>
             </div>
         </div>
@@ -269,13 +269,40 @@
     <!-- Sidebar Founder Card matching Image 2 ("BD khó có Peter lo") -->
     
     <!-- Sidebar Founder Poster Image -->
-    <div class="peter-sidebar-poster" style="margin-top: 25px; text-align: center;">
+    <div class="peter-sidebar-poster" style="margin-top: 25px; text-align: center; margin-bottom: 25px;">
         <a href="https://www.linkedin.com/in/vp-tan/" target="_blank" title="Kết nối LinkedIn với Peter Vo">
             <img src="peter_slogan.png" alt="BD khó có Peter lo" style="width: 100%; max-width: 360px; height: auto; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1);">
         </a>
     </div>
 
+    <!-- Navigation Banners Section (Stacked Vertically inside Left Column) -->
+    <div class="assistant-side-banners" style="display: flex; flex-direction: column; gap: 20px;">
+        <!-- Banner 1: Thư Viện -->
+        <div class="glass-panel nav-banner-card" style="padding: 20px; border-radius: 20px; border: 1.5px solid rgba(243, 168, 59, 0.15); background: var(--panel-bg); display: flex; gap: 15px; align-items: center; box-shadow: var(--shadow-main); transition: all 0.3s ease; text-align: left;">
+            <div style="width: 100px; height: 90px; border-radius: 10px; overflow: hidden; border: 1px solid var(--border-color); flex-shrink: 0;">
+                <img src="mascot_relax.jpg" style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s ease;" onmouseover="this.style.transform='scale(1.08)'" onmouseout="this.style.transform='scale(1)'" alt="Thư Viện BD">
+            </div>
+            <div style="flex: 1;">
+                <span style="font-size: 0.68rem; font-weight: 800; color: var(--primary); text-transform: uppercase; letter-spacing: 0.5px; display: block; margin-bottom: 2px;">📚 Cẩm Nang Thực Chiến</span>
+                <h4 style="margin: 0 0 4px 0; font-size: 1rem; font-weight: 800; color: var(--text-main);">Thư Viện B2B BD</h4>
+                <p style="margin: 0 0 8px 0; font-size: 0.74rem; color: var(--text-light); line-height: 1.4;">Ebooks, bài viết chuyên sâu của Peter Vo.</p>
+                <a href="library.html" class="btn btn-primary" style="display: inline-block; padding: 5px 12px; font-size: 0.72rem; font-weight: 800; text-decoration: none; border-radius: 6px; background: linear-gradient(135deg, var(--primary) 0%, #ef4444 100%); color: white; border: none; box-shadow: 0 4px 10px rgba(162,10,10,0.2);">Khám Phá &rarr;</a>
+            </div>
+        </div>
 
+        <!-- Banner 2: Cộng Đồng -->
+        <div class="glass-panel nav-banner-card" style="padding: 20px; border-radius: 20px; border: 1.5px solid rgba(243, 168, 59, 0.15); background: var(--panel-bg); display: flex; gap: 15px; align-items: center; box-shadow: var(--shadow-main); transition: all 0.3s ease; text-align: left;">
+            <div style="width: 100px; height: 90px; border-radius: 10px; overflow: hidden; border: 1px solid var(--border-color); flex-shrink: 0;">
+                <img src="beedee_community.jpg?v=2.3.1" style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s ease;" onmouseover="this.style.transform='scale(1.08)'" onmouseout="this.style.transform='scale(1)'" alt="Cộng Đồng B2B">
+            </div>
+            <div style="flex: 1;">
+                <span style="font-size: 0.68rem; font-weight: 800; color: var(--primary); text-transform: uppercase; letter-spacing: 0.5px; display: block; margin-bottom: 2px;">🤝 Kết Nối Thực Chiến</span>
+                <h4 style="margin: 0 0 4px 0; font-size: 1rem; font-weight: 800; color: var(--text-main);">Cộng Đồng BD Việt Nam</h4>
+                <p style="margin: 0 0 8px 0; font-size: 0.74rem; color: var(--text-light); line-height: 1.4;">Thảo luận ca khó, kết nối sếp mua hàng.</p>
+                <a href="community.html" class="btn btn-primary" style="display: inline-block; padding: 5px 12px; font-size: 0.72rem; font-weight: 800; text-decoration: none; border-radius: 6px; background: linear-gradient(135deg, var(--primary) 0%, #ef4444 100%); color: white; border: none; box-shadow: 0 4px 10px rgba(162,10,10,0.2);">Tham Gia &rarr;</a>
+            </div>
+        </div>
+    </div>
             </div>
 
             <!-- Right panel: Outputs -->
@@ -346,35 +373,6 @@
                         </div>
                     </div>
                 </div>
-        </div>
-
-        <!-- Navigation Banners Section to balance layout and guide users -->
-        <div class="assistant-nav-banners" style="margin-top: 40px; display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 20px;">
-            <!-- Banner 1: Thư Viện -->
-            <div class="glass-panel nav-banner-card" style="padding: 24px; border-radius: 20px; border: 1.5px solid rgba(243, 168, 59, 0.15); background: var(--panel-bg); display: flex; gap: 20px; align-items: center; box-shadow: var(--shadow-main); transition: all 0.3s ease; text-align: left;">
-                <div style="width: 130px; height: 110px; border-radius: 12px; overflow: hidden; border: 1px solid var(--border-color); flex-shrink: 0;">
-                    <img src="mascot_relax.jpg" style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s ease;" onmouseover="this.style.transform='scale(1.08)'" onmouseout="this.style.transform='scale(1)'" alt="Thư Viện BD">
-                </div>
-                <div style="flex: 1;">
-                    <span style="font-size: 0.72rem; font-weight: 800; color: var(--primary); text-transform: uppercase; letter-spacing: 0.5px; display: block; margin-bottom: 3px;">📚 Cẩm Nang Thực Chiến</span>
-                    <h4 style="margin: 0 0 6px 0; font-size: 1.1rem; font-weight: 800; color: var(--text-main);">Thư Viện B2B BD</h4>
-                    <p style="margin: 0 0 10px 0; font-size: 0.78rem; color: var(--text-light); line-height: 1.45;">Tổng hợp Ebooks, bài viết chuyên sâu của anh Peter Vo để mài sắc tư duy chốt deal.</p>
-                    <a href="library.html" class="btn btn-primary" style="display: inline-block; padding: 6px 16px; font-size: 0.78rem; font-weight: 800; text-decoration: none; border-radius: 6px; background: linear-gradient(135deg, var(--primary) 0%, #ef4444 100%); color: white; border: none; box-shadow: 0 4px 10px rgba(162,10,10,0.2);">Khám Phá Thư Viện &rarr;</a>
-                </div>
-            </div>
-
-            <!-- Banner 2: Cộng Đồng -->
-            <div class="glass-panel nav-banner-card" style="padding: 24px; border-radius: 20px; border: 1.5px solid rgba(243, 168, 59, 0.15); background: var(--panel-bg); display: flex; gap: 20px; align-items: center; box-shadow: var(--shadow-main); transition: all 0.3s ease; text-align: left;">
-                <div style="width: 130px; height: 110px; border-radius: 12px; overflow: hidden; border: 1px solid var(--border-color); flex-shrink: 0;">
-                    <img src="beedee_community.jpg?v=2.3.0" style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s ease;" onmouseover="this.style.transform='scale(1.08)'" onmouseout="this.style.transform='scale(1)'" alt="Cộng Đồng B2B">
-                </div>
-                <div style="flex: 1;">
-                    <span style="font-size: 0.72rem; font-weight: 800; color: var(--primary); text-transform: uppercase; letter-spacing: 0.5px; display: block; margin-bottom: 3px;">🤝 Kết Nối Thực Chiến</span>
-                    <h4 style="margin: 0 0 6px 0; font-size: 1.1rem; font-weight: 800; color: var(--text-main);">Cộng Đồng BD Việt Nam</h4>
-                    <p style="margin: 0 0 10px 0; font-size: 0.78rem; color: var(--text-light); line-height: 1.45;">Thảo luận ca khó, xin danh bạ PIC sếp mua hàng và cùng học hỏi kinh nghiệm thực chiến.</p>
-                    <a href="community.html" class="btn btn-primary" style="display: inline-block; padding: 6px 16px; font-size: 0.78rem; font-weight: 800; text-decoration: none; border-radius: 6px; background: linear-gradient(135deg, var(--primary) 0%, #ef4444 100%); color: white; border: none; box-shadow: 0 4px 10px rgba(162,10,10,0.2);">Tham Gia Thảo Luận &rarr;</a>
-                </div>
-            </div>
         </div>
 
         <!-- Course CTA Bottom Banner -->
@@ -460,6 +458,6 @@
     <script src="ai-chat.js?v=2.2.4"></script>
     <!-- Custom Page Script -->
     <script src="email-assistant.js?v=2.0.0"></script>
-    <script defer src="/_vercel/insights/script.js?v=2.3.0"></script>
+    <script defer src="/_vercel/insights/script.js?v=2.3.1"></script>
 </body>
 </html>
