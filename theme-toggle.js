@@ -278,6 +278,118 @@ const initThemeToggle = () => {
     if (typeof initGlobalNotificationBell === 'function') {
         initGlobalNotificationBell();
     }
+
+    // Floating Mid-Autumn Launching Badge
+    let midAutumnBadge = document.getElementById('floating-mid-autumn-badge');
+    if (!midAutumnBadge) {
+        midAutumnBadge = document.createElement('div');
+        midAutumnBadge.id = 'floating-mid-autumn-badge';
+        midAutumnBadge.style.position = 'fixed';
+        midAutumnBadge.style.bottom = '20px';
+        midAutumnBadge.style.left = '20px';
+        midAutumnBadge.style.zIndex = '99999';
+        midAutumnBadge.style.cursor = 'pointer';
+        midAutumnBadge.style.display = 'flex';
+        midAutumnBadge.style.alignItems = 'center';
+        midAutumnBadge.style.gap = '8px';
+        midAutumnBadge.style.background = 'linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%)';
+        midAutumnBadge.style.border = '1.5px solid #d97706';
+        midAutumnBadge.style.padding = '8px 14px';
+        midAutumnBadge.style.borderRadius = '30px';
+        midAutumnBadge.style.boxShadow = '0 6px 20px rgba(217, 119, 6, 0.4)';
+        midAutumnBadge.style.transition = 'all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
+        midAutumnBadge.style.color = '#78350f';
+        
+        // Add floating animation styling inline
+        const styleSheet = document.createElement("style");
+        styleSheet.innerText = `
+            @keyframes pulseGlow {
+                0% { transform: scale(1); box-shadow: 0 6px 20px rgba(217, 119, 6, 0.4); }
+                50% { transform: scale(1.05); box-shadow: 0 6px 25px rgba(217, 119, 6, 0.6), 0 0 10px rgba(245, 158, 11, 0.4); }
+                100% { transform: scale(1); box-shadow: 0 6px 20px rgba(217, 119, 6, 0.4); }
+            }
+            .pulse-badge { animation: pulseGlow 2.5s infinite ease-in-out; }
+            .pulse-badge:hover { transform: scale(1.1) !important; filter: brightness(1.05); }
+        `;
+        document.head.appendChild(styleSheet);
+        
+        midAutumnBadge.className = 'pulse-badge';
+        midAutumnBadge.innerHTML = `
+            <span style="font-size: 1.15rem;">🥮</span>
+            <span style="font-size: 0.74rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; text-shadow: 0 1px 2px rgba(255,255,255,0.2);">Trăng Rằm Launching</span>
+        `;
+        document.body.appendChild(midAutumnBadge);
+
+        midAutumnBadge.addEventListener('click', () => {
+            window.showMidAutumnModal();
+        });
+    }
+};
+
+window.showMidAutumnModal = function() {
+    let overlay = document.getElementById('mid-autumn-greetings-modal');
+    if (!overlay) {
+        overlay = document.createElement('div');
+        overlay.id = 'mid-autumn-greetings-modal';
+        overlay.style.position = 'fixed';
+        overlay.style.top = '0';
+        overlay.style.left = '0';
+        overlay.style.width = '100vw';
+        overlay.style.height = '100vh';
+        overlay.style.background = 'rgba(9, 10, 16, 0.82)';
+        overlay.style.backdropFilter = 'blur(10px)';
+        overlay.style.webkitBackdropFilter = 'blur(10px)';
+        overlay.style.zIndex = '999999';
+        overlay.style.display = 'flex';
+        overlay.style.justifyContent = 'center';
+        overlay.style.alignItems = 'center';
+        overlay.style.opacity = '0';
+        overlay.style.visibility = 'hidden';
+        overlay.style.transition = 'opacity 0.3s ease, visibility 0.3s ease';
+
+        overlay.innerHTML = `
+            <div style="background: rgba(30, 41, 59, 0.95); border: 1.5px solid rgba(245, 158, 11, 0.3); border-radius: 24px; padding: 25px; width: 90%; max-width: 480px; max-height: 90vh; overflow-y: auto; box-shadow: 0 25px 50px rgba(0, 0, 0, 0.6); color: #f1f5f9; text-align: center; display: flex; flex-direction: column; gap: 16px; position: relative;">
+                <button id="btn-close-mid-autumn" style="position: absolute; top: 12px; right: 15px; background: none; border: none; font-size: 1.5rem; color: #94a3b8; cursor: pointer; transition: color 0.2s;">&times;</button>
+                <div style="border-radius: 16px; overflow: hidden; border: 1px solid rgba(245, 158, 11, 0.2); box-shadow: 0 8px 24px rgba(245, 158, 11, 0.15); height: 260px;">
+                    <img src="beedee_mid_autumn.jpg" style="width: 100%; height: 100%; object-fit: cover;" alt="BeeDee Trung Thu">
+                </div>
+                <h3 style="margin: 5px 0 0 0; font-size: 1.25rem; font-weight: 800; background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">🥮 TRĂNG RẰM LAUNCHING PARTY!</h3>
+                <p style="margin: 0; font-size: 0.86rem; line-height: 1.6; color: #cbd5e1; text-align: justify;">
+                    Chào mừng sự kiện khai trương chính thức cổng thông tin <strong>BD Tips Portal</strong> trùng hợp với dịp Lễ hội Trăng Rằm Trung Thu Việt Nam! Chúc cộng đồng B2B BD Việt Nam gặt hái nhiều thương vụ vàng, chốt deal sắc bén như ánh trăng và luôn ngập tràn niềm vui đoàn viên đầm ấm.
+                </p>
+                <div style="background: rgba(245, 158, 11, 0.08); border: 1px dashed rgba(245, 158, 11, 0.4); padding: 12px; border-radius: 14px; margin-top: 5px;">
+                    <span style="font-size: 0.72rem; font-weight: 800; color: #fbbf24; text-transform: uppercase; display: block; margin-bottom: 4px; letter-spacing: 0.5px;">🎁 Quà Tặng Ra Mắt:</span>
+                    <p style="margin: 0; font-size: 0.8rem; color: #f8fafc; line-height: 1.4;">
+                        Nhập mã quà tặng <strong style="color: #fbbf24; font-size: 0.95rem; background: rgba(0,0,0,0.2); padding: 2px 8px; border-radius: 4px; font-family: monospace;">TRANGRAM2026</strong> tại trang Nhiệm vụ để nhận ngay <strong style="color: #fbbf24;">+50đ BD-Points</strong> làm vốn!
+                    </p>
+                </div>
+                <button id="btn-accept-mid-autumn" style="background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%); border: none; color: #fff; padding: 10px 24px; border-radius: 10px; font-weight: 700; cursor: pointer; transition: transform 0.2s ease; margin-top: 5px;" onmouseover="this.style.transform='scale(1.03)'" onmouseout="this.style.transform='scale(1)'">Nhận Quà & Khám Phá Ngay</button>
+            </div>
+        `;
+        document.body.appendChild(overlay);
+
+        const closeBtn = overlay.querySelector('#btn-close-mid-autumn');
+        const acceptBtn = overlay.querySelector('#btn-accept-mid-autumn');
+
+        const hideModal = () => {
+            overlay.style.opacity = '0';
+            setTimeout(() => {
+                overlay.style.visibility = 'hidden';
+            }, 300);
+        };
+
+        closeBtn.addEventListener('click', hideModal);
+        acceptBtn.addEventListener('click', () => {
+            hideModal();
+            window.location.href = 'quests.html';
+        });
+        overlay.addEventListener('click', (e) => {
+            if (e.target === overlay) hideModal();
+        });
+    }
+
+    overlay.style.visibility = 'visible';
+    overlay.style.opacity = '1';
 };
 
 if (document.readyState === 'loading') {

@@ -820,7 +820,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Initialize Page
     loadArticles();
-    loadPersonalizedSidebar();
+    // loadPersonalizedSidebar(); // Disabled in favor of static light-themed Luyện Pitching AI banner
 
     // --- Personalization suggestions panel ---
     async function loadPersonalizedSidebar() {

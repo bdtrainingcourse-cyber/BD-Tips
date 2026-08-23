@@ -6,9 +6,9 @@
     <title>Nhiệm Vụ & Quà Tặng | Tích Lũy Điểm Thực Chiến BD | BD Bình Dân Học Vụ</title>
     <meta name="description" content="Hệ thống tích lũy điểm thực chiến BD, làm nhiệm vụ hàng ngày/tuần để đổi lấy quà tặng độc quyền từ anh Peter Vo.">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css?v=2.2.5">
+    <link rel="stylesheet" href="style.css?v=2.2.6">
     <link rel="stylesheet" href="ai-chat.css?v=2.1.2">
-    <script src="theme-toggle.js?v=2.2.5"></script>
+    <script src="theme-toggle.js?v=2.2.6"></script>
 </head>
 <body>
     <!-- Navbar -->
@@ -99,6 +99,18 @@
                             <div style="width: 140px; height: 8px; background: rgba(255,255,255,0.05); border-radius: 4px; overflow: hidden; display: inline-block;">
                                 <div id="hud-next-gift-bar" style="width: 0%; height: 100%; background: var(--primary); transition: width 0.3s ease;"></div>
                             </div>
+                        </div>
+                    </div>
+
+                    <!-- Gift Code / Promo Code Input Form -->
+                    <div style="background: rgba(243, 168, 59, 0.04); border: 1.5px dashed rgba(243, 168, 59, 0.25); padding: 15px; border-radius: 12px; margin-bottom: 20px; display: flex; gap: 12px; align-items: center; justify-content: space-between; flex-wrap: wrap;">
+                        <div style="flex: 1; min-width: 200px; text-align: left;">
+                            <h5 style="margin: 0; font-size: 0.85rem; font-weight: 800; color: var(--primary);">🎁 NHẬP MÃ QUÀ TẶNG / PROMO CODE</h5>
+                            <p style="margin: 3px 0 0 0; font-size: 0.72rem; color: var(--text-light);">Nhập các mã khuyến mãi, sự kiện để nhận ngay điểm thưởng BD-Points.</p>
+                        </div>
+                        <div style="display: flex; gap: 8px; flex-shrink: 0;">
+                            <input type="text" id="gift-code-input" placeholder="Mã quà tặng..." style="width: 140px; padding: 8px 12px; border-radius: 6px; border: 1px solid var(--border-color); background: rgba(255,255,255,0.02); color: var(--text-main); font-family: inherit; font-size: 0.82rem; font-weight: 700; text-transform: uppercase;">
+                            <button id="btn-claim-gift-code" class="btn btn-primary" style="padding: 8px 16px; font-size: 0.8rem; font-weight: bold; border-radius: 6px;">Đổi Mã</button>
                         </div>
                     </div>
 
@@ -246,7 +258,7 @@
     <!-- Chat Bot Integration -->
     <div id="ai-chat-root"></div>
 
-    <script src="script.js?v=2.2.4"></script>
+    <script src="script.js?v=2.2.6"></script>
     <script src="ai-chat.js?v=2.2.4"></script>
 </body>
 </html>
