@@ -68,35 +68,26 @@ function doPost(e) {
 function checkEmail(email, name) {
   const sheet = getOrCreateSheet("Học Viên Đăng Ký");
   const data = sheet.getDataRange().getValues();
-  const headers = data[0].map(h => h.toString().toLowerCase().trim());
-  
-  const emailIdx = headers.indexOf("email");
-  const nameIdx = headers.indexOf("name");
-  const pointsIdx = headers.indexOf("points");
-  const verifiedIdx = headers.indexOf("verified");
-  const passIdx = headers.indexOf("password");
-  const idIdx = headers.indexOf("userid") !== -1 ? headers.indexOf("userid") : headers.indexOf("user id");
-  const expIdx = headers.indexOf("kinh nghiệm") !== -1 ? headers.indexOf("kinh nghiệm") : headers.indexOf("experience");
-  const indIdx = headers.indexOf("lĩnh vực") !== -1 ? headers.indexOf("lĩnh vực") : headers.indexOf("industry");
-  const skillIdx = headers.indexOf("kỹ năng mong muốn") !== -1 ? headers.indexOf("kỹ năng mong muốn") : headers.indexOf("skill");
+  const headers = data[0];
+  const idx = getHeaderIndices(headers);
 
-  if (emailIdx === -1) {
+  if (idx.email === -1) {
     return createJsonResponse({ exists: false, error: "Email column not found." });
   }
 
   for (let i = 1; i < data.length; i++) {
-    if (data[i][emailIdx].toString().toLowerCase().trim() === email) {
+    if (data[i][idx.email].toString().toLowerCase().trim() === email) {
       // User exists!
       const userProfile = {
-        id: idIdx !== -1 ? data[i][idIdx] : "UID_" + i,
+        id: idx.id !== -1 ? data[i][idx.id] : "UID_" + i,
         email: email,
-        name: nameIdx !== -1 ? data[i][nameIdx] : name,
-        points: pointsIdx !== -1 ? Number(data[i][pointsIdx]) : 25,
-        verified: verifiedIdx !== -1 ? (data[i][verifiedIdx] === true || data[i][verifiedIdx].toString().toUpperCase() === "TRUE") : false,
-        password: passIdx !== -1 ? data[i][passIdx] : "",
-        experience: expIdx !== -1 ? data[i][expIdx] : "",
-        industry: indIdx !== -1 ? data[i][indIdx] : "",
-        skill: skillIdx !== -1 ? data[i][skillIdx] : ""
+        name: idx.name !== -1 ? data[i][idx.name] : name,
+        points: idx.points !== -1 ? Number(data[i][idx.points]) : 25,
+        verified: idx.verified !== -1 ? (data[i][idx.verified] === true || data[i][idx.verified].toString().toUpperCase() === "TRUE" || data[i][idx.verified].toString().trim() === "Đã xác thực") : false,
+        password: idx.password !== -1 ? data[i][idx.password] : "",
+        experience: idx.experience !== -1 ? data[i][idx.experience] : "",
+        industry: idx.industry !== -1 ? data[i][idx.industry] : "",
+        skill: idx.skill !== -1 ? data[i][idx.skill] : ""
       };
       
       return createJsonResponse({ exists: true, user: userProfile });
@@ -124,47 +115,54 @@ function syncUser(data) {
   const skill = data.skill || "";
   
   const sheetData = sheet.getDataRange().getValues();
-  const headers = sheetData[0].map(h => h.toString().toLowerCase().trim());
-  const emailIdx = headers.indexOf("email");
+  const headers = sheetData[0];
+  const idx = getHeaderIndices(headers);
+  
+  if (idx.email === -1) {
+    return createJsonResponse({ success: false, error: "Email column not found." });
+  }
   
   let userRowIndex = -1;
-  if (emailIdx !== -1) {
-    for (let i = 1; i < sheetData.length; i++) {
-      if (sheetData[i][emailIdx].toString().toLowerCase().trim() === email) {
-        userRowIndex = i + 1;
-        break;
-      }
+  for (let i = 1; i < sheetData.length; i++) {
+    if (sheetData[i][idx.email].toString().toLowerCase().trim() === email) {
+      userRowIndex = i + 1;
+      break;
     }
   }
   
   if (userRowIndex === -1) {
-    // New User Registration: append a new row
-    // Headers: User ID | Name | Email | Points | Verified | Password | Date | Device | Tool
-    sheet.appendRow([userId, name, email, points, false, password, date, device, "daily-reminder"]);
+    // New User: Construct a row matching the sheet's current headers!
+    const newRow = new Array(headers.length).fill("");
+    if (idx.id !== -1) newRow[idx.id] = userId;
+    if (idx.name !== -1) newRow[idx.name] = name;
+    if (idx.email !== -1) newRow[idx.email] = email;
+    if (idx.points !== -1) newRow[idx.points] = points;
+    if (idx.verified !== -1) newRow[idx.verified] = "Chưa xác thực";
+    if (idx.password !== -1) newRow[idx.password] = password;
+    if (idx.date !== -1) newRow[idx.date] = formatTimestamp(date);
+    if (idx.lastActivity !== -1) newRow[idx.lastActivity] = formatTimestamp(date);
+    
+    sheet.appendRow(newRow);
     const rowIndex = sheet.getLastRow();
     
     // Write profile fields if present
-    if (experience) writeProfileFieldToRow(sheet, rowIndex, "experience", experience);
-    if (industry) writeProfileFieldToRow(sheet, rowIndex, "industry", industry);
-    if (skill) writeProfileFieldToRow(sheet, rowIndex, "skill", skill);
+    if (experience) writeProfileFieldToRow(sheet, rowIndex, "experience", experience, idx);
+    if (industry) writeProfileFieldToRow(sheet, rowIndex, "industry", industry, idx);
+    if (skill) writeProfileFieldToRow(sheet, rowIndex, "skill", skill, idx);
     
     // SEND VERIFICATION EMAIL IMMEDIATELY
     sendVerificationEmail(email, name);
     
     return createJsonResponse({ success: true, exists: false, userId: userId, message: "Registered. Verification email sent." });
   } else {
-    // Existing user: update points and info if not already verified
-    const pointsIdx = headers.indexOf("points");
-    const passIdx = headers.indexOf("password");
-    const expIdx = headers.indexOf("kinh nghiệm") !== -1 ? headers.indexOf("kinh nghiệm") : headers.indexOf("experience");
-    const indIdx = headers.indexOf("lĩnh vực") !== -1 ? headers.indexOf("lĩnh vực") : headers.indexOf("industry");
-    const skillIdx = headers.indexOf("kỹ năng mong muốn") !== -1 ? headers.indexOf("kỹ năng mong muốn") : headers.indexOf("skill");
+    // Existing user: update details
+    if (idx.points !== -1) sheet.getRange(userRowIndex, idx.points + 1).setValue(points);
+    if (idx.password !== -1 && password) sheet.getRange(userRowIndex, idx.password + 1).setValue(password);
+    if (idx.lastActivity !== -1) sheet.getRange(userRowIndex, idx.lastActivity + 1).setValue(formatTimestamp(date));
     
-    if (pointsIdx !== -1) sheet.getRange(userRowIndex, pointsIdx + 1).setValue(points);
-    if (passIdx !== -1 && password) sheet.getRange(userRowIndex, passIdx + 1).setValue(password);
-    if (expIdx !== -1 && experience) sheet.getRange(userRowIndex, expIdx + 1).setValue(experience);
-    if (indIdx !== -1 && industry) sheet.getRange(userRowIndex, indIdx + 1).setValue(industry);
-    if (skillIdx !== -1 && skill) sheet.getRange(userRowIndex, skillIdx + 1).setValue(skill);
+    if (experience) writeProfileFieldToRow(sheet, userRowIndex, "experience", experience, idx);
+    if (industry) writeProfileFieldToRow(sheet, userRowIndex, "industry", industry, idx);
+    if (skill) writeProfileFieldToRow(sheet, userRowIndex, "skill", skill, idx);
     
     return createJsonResponse({ success: true, exists: true, userId: userId, message: "User profile updated." });
   }
@@ -176,22 +174,22 @@ function syncUser(data) {
 function verifyUser(email, points) {
   const sheet = getOrCreateSheet("Học Viên Đăng Ký");
   const sheetData = sheet.getDataRange().getValues();
-  const headers = sheetData[0].map(h => h.toString().toLowerCase().trim());
+  const headers = sheetData[0];
+  const idx = getHeaderIndices(headers);
   
-  const emailIdx = headers.indexOf("email");
-  const verifiedIdx = headers.indexOf("verified");
-  const pointsIdx = headers.indexOf("points");
-  
-  if (emailIdx === -1) return createJsonResponse({ success: false, error: "Email column not found." });
+  if (idx.email === -1) return createJsonResponse({ success: false, error: "Email column not found." });
   
   for (let i = 1; i < sheetData.length; i++) {
-    if (sheetData[i][emailIdx].toString().toLowerCase().trim() === email) {
+    if (sheetData[i][idx.email].toString().toLowerCase().trim() === email) {
       const rowIndex = i + 1;
-      if (verifiedIdx !== -1) sheet.getRange(rowIndex, verifiedIdx + 1).setValue(true);
-      if (pointsIdx !== -1) {
-        const currentPoints = Number(sheetData[i][pointsIdx]) || 25;
+      if (idx.verified !== -1) sheet.getRange(rowIndex, idx.verified + 1).setValue("Đã xác thực");
+      if (idx.points !== -1) {
+        const currentPoints = Number(sheetData[i][idx.points]) || 25;
         const newPoints = points !== undefined ? Number(points) : (currentPoints + 15);
-        sheet.getRange(rowIndex, pointsIdx + 1).setValue(newPoints);
+        sheet.getRange(rowIndex, idx.points + 1).setValue(newPoints);
+      }
+      if (idx.lastActivity !== -1) {
+        sheet.getRange(rowIndex, idx.lastActivity + 1).setValue(formatTimestamp(new Date().toISOString()));
       }
       return createJsonResponse({ success: true, message: "User verified successfully." });
     }
@@ -205,16 +203,17 @@ function verifyUser(email, points) {
 function updatePoints(email, points) {
   const sheet = getOrCreateSheet("Học Viên Đăng Ký");
   const sheetData = sheet.getDataRange().getValues();
-  const headers = sheetData[0].map(h => h.toString().toLowerCase().trim());
+  const headers = sheetData[0];
+  const idx = getHeaderIndices(headers);
   
-  const emailIdx = headers.indexOf("email");
-  const pointsIdx = headers.indexOf("points");
-  
-  if (emailIdx === -1 || pointsIdx === -1) return createJsonResponse({ success: false, error: "Columns not found." });
+  if (idx.email === -1 || idx.points === -1) return createJsonResponse({ success: false, error: "Columns not found." });
   
   for (let i = 1; i < sheetData.length; i++) {
-    if (sheetData[i][emailIdx].toString().toLowerCase().trim() === email) {
-      sheet.getRange(i + 1, pointsIdx + 1).setValue(Number(points));
+    if (sheetData[i][idx.email].toString().toLowerCase().trim() === email) {
+      sheet.getRange(i + 1, idx.points + 1).setValue(Number(points));
+      if (idx.lastActivity !== -1) {
+        sheet.getRange(i + 1, idx.lastActivity + 1).setValue(formatTimestamp(new Date().toISOString()));
+      }
       return createJsonResponse({ success: true });
     }
   }
@@ -227,24 +226,27 @@ function updatePoints(email, points) {
 function updateProfile(email, field, value, points) {
   const sheet = getOrCreateSheet("Học Viên Đăng Ký");
   const data = sheet.getDataRange().getValues();
-  const rowIndex = findUserRowIndex(data, email);
+  const headers = data[0];
+  const idx = getHeaderIndices(headers);
+  const rowIndex = findUserRowIndex(data, email, idx.email);
   if (rowIndex === -1) return createJsonResponse({ success: false, error: "User not found." });
 
-  writeProfileFieldToRow(sheet, rowIndex, field, value);
+  writeProfileFieldToRow(sheet, rowIndex, field, value, idx);
 
   // Update points
-  const headers = data[0].map(h => h.toString().toLowerCase().trim());
-  const pointsIdx = headers.indexOf("points");
-  if (pointsIdx !== -1 && points !== undefined) {
-    sheet.getRange(rowIndex, pointsIdx + 1).setValue(Number(points));
+  if (idx.points !== -1 && points !== undefined) {
+    sheet.getRange(rowIndex, idx.points + 1).setValue(Number(points));
+  }
+  
+  // Update last activity!
+  if (idx.lastActivity !== -1) {
+    sheet.getRange(rowIndex, idx.lastActivity + 1).setValue(formatTimestamp(new Date().toISOString()));
   }
 
   return createJsonResponse({ success: true, message: "Profile field " + field + " updated." });
 }
 
-function findUserRowIndex(data, email) {
-  const headers = data[0].map(h => h.toString().toLowerCase().trim());
-  const emailIdx = headers.indexOf("email");
+function findUserRowIndex(data, email, emailIdx) {
   if (emailIdx === -1) return -1;
   for (let i = 1; i < data.length; i++) {
     if (data[i][emailIdx].toString().toLowerCase().trim() === email) {
@@ -254,23 +256,35 @@ function findUserRowIndex(data, email) {
   return -1;
 }
 
-function writeProfileFieldToRow(sheet, rowIndex, field, value) {
-  const headers = sheet.getDataRange().getValues()[0].map(h => h.toString().toLowerCase().trim());
+function writeProfileFieldToRow(sheet, rowIndex, field, value, idx) {
+  let targetColIdx = -1;
   let colName = "";
-  if (field === "experience") colName = "Kinh nghiệm";
-  else if (field === "industry") colName = "Lĩnh vực";
-  else if (field === "skill") colName = "Kỹ năng mong muốn";
-  else if (field === "phone") colName = "Số điện thoại";
-  else if (field === "company") colName = "Công ty";
-  else return;
+  
+  if (field === "experience") {
+    targetColIdx = idx.experience;
+    colName = "Kinh nghiệm";
+  } else if (field === "industry") {
+    targetColIdx = idx.industry;
+    colName = "Lĩnh vực";
+  } else if (field === "skill") {
+    targetColIdx = idx.skill;
+    colName = "Kỹ năng mong muốn";
+  } else if (field === "phone") {
+    targetColIdx = idx.phone;
+    colName = "Số điện thoại";
+  } else if (field === "company") {
+    targetColIdx = idx.company;
+    colName = "Công ty";
+  } else {
+    return;
+  }
 
-  let colIdx = headers.indexOf(colName.toLowerCase().trim());
-  if (colIdx === -1) {
+  if (targetColIdx === -1) {
     const lastCol = sheet.getLastColumn();
     sheet.getRange(1, lastCol + 1).setValue(colName);
-    colIdx = lastCol;
+    targetColIdx = lastCol;
   }
-  sheet.getRange(rowIndex, colIdx + 1).setValue(value);
+  sheet.getRange(rowIndex, targetColIdx + 1).setValue(value);
 }
 
 // ------------------------------------------------------------------
@@ -522,6 +536,34 @@ function formatTimestamp(isoString) {
 // ------------------------------------------------------------------
 // UTILITY FUNCTIONS: Helpers for Sheets and HTML
 // ------------------------------------------------------------------
+function getHeaderIndices(headers) {
+  const h = headers.map(val => val.toString().toLowerCase().trim());
+  
+  function findIdx(names) {
+    for (let name of names) {
+      const idx = h.indexOf(name.toLowerCase().trim());
+      if (idx !== -1) return idx;
+    }
+    return -1;
+  }
+  
+  return {
+    email: findIdx(["email người dùng", "email", "email_address", "email address"]),
+    name: findIdx(["họ và tên", "name", "full name", "tên", "họ tên"]),
+    points: findIdx(["điểm bd-points", "points", "điểm", "bd-points"]),
+    verified: findIdx(["trạng thái xác thực", "verified", "xác thực", "trạng thái"]),
+    password: findIdx(["password", "mật khẩu"]),
+    id: findIdx(["id", "userid", "user id", "mã học viên"]),
+    date: findIdx(["thời gian đăng ký", "date", "ngày đăng ký", "thời gian"]),
+    lastActivity: findIdx(["hoạt động cuối", "last activity", "last_activity"]),
+    experience: findIdx(["kinh nghiệm", "experience", "experience_years"]),
+    industry: findIdx(["lĩnh vực", "industry", "lĩnh vực hoạt động"]),
+    skill: findIdx(["kỹ năng mong muốn", "skill", "kỹ năng"]),
+    phone: findIdx(["số điện thoại", "phone", "sđt", "điện thoại"]),
+    company: findIdx(["công ty", "company", "doanh nghiệp"])
+  };
+}
+
 function getOrCreateSheet(sheetName) {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
   
