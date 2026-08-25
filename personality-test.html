@@ -6,9 +6,9 @@
     <title>Trắc Nghiệm Tính Cách B2B BD (MBTI) | Cú BeeDee | BD Bình Dân Học Vụ</title>
     <meta name="description" content="Trải nghiệm game quẹt thẻ tính cách MBTI cực thú vị để đo chỉ số B2B BD của bạn. Nhận quà 50đ và tải chứng chỉ độc quyền.">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css?v=2.3.8">
-    <link rel="stylesheet" href="ai-chat.css?v=2.3.7">
-    <script src="theme-toggle.js?v=2.3.8"></script>
+    <link rel="stylesheet" href="style.css?v=2.3.9">
+    <link rel="stylesheet" href="ai-chat.css?v=2.3.8">
+    <script src="theme-toggle.js?v=2.3.9"></script>
     <style>
         .quiz-container {
             max-width: 600px;
@@ -253,7 +253,7 @@
         <!-- Banner Title -->
         <section style="text-align: center; margin-bottom: 30px;">
             <span class="hero-badge" style="background: rgba(243, 168, 59, 0.15); color: var(--primary); padding: 6px 16px; border-radius: 20px; font-size: 0.8rem; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; display: inline-block; margin-bottom: 12px; border: 1px solid rgba(243, 168, 59, 0.3);">
-                BD Match &bull; MBTI Edition
+                BD Match &bull; MBTI Challenge
             </span>
             <h1 style="font-size: 2.2rem; font-weight: 800; margin: 0 0 10px 0; background: linear-gradient(135deg, var(--text-main) 0%, var(--primary) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-transform: uppercase;">
                 QUẸT THẺ ĐO CHỈ SỐ BD CỦA BẠN 🦉
@@ -269,7 +269,7 @@
                 <div style="font-size: 3rem; margin-bottom: 15px; line-height: 1;">🗂️🦉</div>
                 <h2 style="font-size: 1.3rem; font-weight: 800; color: var(--text-main); margin: 0 0 12px 0;">BẮT ĐẦU TRÒ CHƠI QUẸT THẺ</h2>
                 <p style="font-size: 0.88rem; color: var(--text-light); line-height: 1.6; max-width: 440px; margin: 0 auto 25px auto;">
-                    Đứng trước 8 quan điểm thực chiến trong ngành BD B2B, bạn sẽ lựa chọn thế nào? Hãy thể hiện quan điểm thật của mình để phân định phong cách.
+                    Đứng trước 12 tình huống lưỡng lự, hóc búa của giới sales B2B, bác sẽ chọn thế nào? Hãy trả lời chân thật để Cú BeeDee phân tích phong cách chiến đấu của bác!
                 </p>
                 <button onclick="startQuiz()" class="btn btn-primary" style="padding: 12px 30px; font-size: 0.95rem; font-weight: bold; border-radius: 12px; border: none; cursor: pointer;">
                     🚀 Vào Trận Quẹt Thẻ Ngay
@@ -291,48 +291,52 @@
     <!-- Chatbot -->
     <div id="ai-chat-root"></div>
 
-    <script src="script.js?v=2.3.8"></script>
-    <script src="ai-chat.js?v=2.3.8"></script>
+    <script src="script.js?v=2.3.9"></script>
+    <script src="ai-chat.js?v=2.3.9"></script>
 
     <script>
-        // 8 statements corresponding to the 4 MBTI dimensions: E vs I, S vs N, T vs F, J vs P
+        // 12 challenging statements for MBTI B2B Sales assessment
         const STATEMENTS = [
-            { id: 1, text: "Bác thích tụ tập giao lưu, mở rộng mối quan hệ tại các sự kiện B2B lớn hơn là ngồi nghiên cứu một mình thông tin doanh nghiệp.", dimension: "EI", active: "E" },
-            { id: 2, text: "Khi tiếp cận khách hàng mới, bác tin tưởng vào quy trình chuẩn mực và số liệu khảo sát hơn là trực giác cá nhân.", dimension: "SN", active: "S" },
-            { id: 3, text: "Đối với bác, cách thuyết phục khách tốt nhất là chứng minh chỉ số ROI và các tính năng cụ thể vượt trội, chứ không phải nói chuyện tình cảm.", dimension: "TF", active: "T" },
-            { id: 4, text: "Bác luôn lập kế hoạch chi tiết cho tuần làm việc, cập nhật CRM đều đặn và ghét việc bị phá vỡ kế hoạch ban đầu.", dimension: "JP", active: "J" },
-            { id: 5, text: "Khi gặp khó khăn về KPI, phản xạ đầu tiên của bác là tìm đồng nghiệp hoặc nhóm đối tác để thảo luận, thay vì tự suy ngẫm giải pháp.", dimension: "EI", active: "E" },
-            { id: 6, text: "Bác thích nhìn bức tranh toàn cảnh và tìm kiếm các mô hình hợp tác mới mẻ, đột phá hơn là tối ưu hóa những quy trình cũ có sẵn.", dimension: "SN", active: "N" },
-            { id: 7, text: "Khi khách hàng gặp sự cố, bác ưu tiên giải quyết cảm xúc và xoa dịu tinh thần của họ trước khi đi vào phân tích kỹ thuật hay đền bù.", dimension: "TF", active: "F" },
-            { id: 8, text: "Bác cảm thấy thoải mái hơn khi chốt các deal linh hoạt, ứng biến theo tính cách của khách hàng thay vì bám sát kịch bản pitching.", dimension: "JP", active: "P" }
+            { id: 1, text: "Khi thâm nhập thị trường mới, tôi thích tham dự trực tiếp các hội thảo doanh nghiệp lớn để networking trực tiếp hơn là ngồi lập quy trình gửi email hàng loạt.", dimension: "EI", active: "E" },
+            { id: 2, text: "Tôi sẵn sàng dành hàng giờ tự nghiên cứu chi tiết sơ đồ phòng ban và LinkedIn của PIC doanh nghiệp trước khi gọi cuộc gọi đầu tiên, thay vì gọi điện thăm dò trực tiếp.", dimension: "EI", active: "I" },
+            { id: 3, text: "Gặp khách hàng từ chối thẳng thừng, tôi thích gọi lại ngay sau vài ngày bằng một góc tiếp cận hoàn toàn mới lạ hơn là im lặng gửi tài liệu bổ sung qua email.", dimension: "EI", active: "E" },
+            { id: 4, text: "Tôi luôn dựa vào số liệu doanh thu lịch sử và cấu trúc ngân sách thực tế của khách hàng để làm đề xuất thương mại, thay vì đề cập đến các viễn cảnh công nghệ tương lai.", dimension: "SN", active: "S" },
+            { id: 5, text: "Khi pitching giải pháp B2B, tôi muốn vẽ ra bức tranh thay đổi vị thế chiến lược của khách hàng trong 3 năm tới hơn là liệt kê chi tiết các bước triển khai kỹ thuật hàng ngày.", dimension: "SN", active: "N" },
+            { id: 6, text: "Tôi thích thử nghiệm các ý tưởng tiếp cận khách hàng độc lạ (như gửi quà tặng sáng tạo cá nhân hóa) hơn là bám sát quy trình gọi điện/email truyền thống.", dimension: "SN", active: "N" },
+            { id: 7, text: "Tôi sẵn sàng từ chối thẳng thắn các yêu cầu phát sinh ngoài hợp đồng của đối tác nếu điều đó làm giảm biên lợi nhuận tối thiểu của công ty tôi.", dimension: "TF", active: "T" },
+            { id: 8, text: "Mối quan hệ tin tưởng và sự 'hợp cạ' (chemistry) giữa tôi và người quyết định phía khách hàng quan trọng hơn việc giải pháp của tôi có giá rẻ hơn đối thủ 10%.", dimension: "TF", active: "F" },
+            { id: 9, text: "Khi giải quyết sự cố hợp đồng với khách hàng, tôi tập trung phân tích điều khoản pháp lý và đền bù tài chính rõ ràng thay vì dành nhiều thời gian để xoa dịu cảm xúc của PIC mua hàng.", dimension: "TF", active: "T" },
+            { id: 10, text: "Tôi luôn cập nhật CRM đầy đủ mỗi ngày và bám sát kịch bản sales định sẵn của công ty để đảm bảo tính hệ thống, kỷ luật.", dimension: "JP", active: "J" },
+            { id: 11, text: "Tôi thích tự ý điều chỉnh cấu trúc hợp đồng và thỏa thuận giá ngay trong cuộc họp tùy theo phản ứng của khách hàng, hơn là chờ đợi quy trình phê duyệt giá cứng nhắc.", dimension: "JP", active: "P" },
+            { id: 12, text: "Tôi thấy thoải mái nhất khi làm việc với các mục tiêu chỉ số (KPI) được định lượng cụ thể rõ ràng theo tuần, hơn là các định hướng hành động tự do tự quản.", dimension: "JP", active: "J" }
         ];
 
         const PERSONAS = {
             commander: {
                 title: "Tổng Tư Lệnh Săn Deal (The B2B Commander)",
                 compatibility: "Độ phù hợp BD: 95% 🪙",
-                mascot: "mascot_pitching.jpg?v=2.3.8",
+                mascot: "mascot_pitching.jpg?v=2.3.9",
                 description: "Bác sở hữu phong cách lý trí, quyết đoán và hoạt ngôn mạnh mẽ! Bác tin vào hiệu quả công việc, số liệu và chốt hợp đồng nhanh chóng. Bác là thợ săn đầu phễu cực kỳ uy lực, đầy bản lĩnh trên bàn thương thảo B2B.",
                 advice: "Lời khuyên từ Peter Vo: Hãy lưu ý phối hợp nhịp nhàng với đội ngũ kỹ thuật/CS phía sau để hỗ trợ khách tốt nhất sau khi ký nhé!"
             },
             architect: {
                 title: "Kiến Trúc Sư Công Nghệ (The Tech BD Architect)",
                 compatibility: "Độ phù hợp BD: 92% 🪙",
-                mascot: "mascot_email.jpg?v=2.3.8",
+                mascot: "mascot_email.jpg?v=2.3.9",
                 description: "Bác là nhà làm BD của thời đại mới! Thích nghiên cứu sâu, tận dụng tối đa sức mạnh của AI và các công cụ tự động hóa để gieo hạt, tìm leads. Bác tư duy logic, làm việc độc lập và tối ưu hóa hệ thống để đạt hiệu quả tối đa.",
                 advice: "Lời khuyên từ Peter Vo: Đôi khi các khách hàng B2B lớn vẫn thích những buổi cafe gặp mặt trực tiếp hơn là email hay tin nhắn tự động đấy bác!"
             },
             champion: {
                 title: "Đại Sứ Khách Hàng (The Client Champion)",
                 compatibility: "Độ phù hợp BD: 88% 🪙",
-                mascot: "beedee_mid_autumn.jpg?v=2.3.8",
+                mascot: "beedee_mid_autumn.jpg?v=2.3.9",
                 description: "Bác là nguồn năng lượng tuyệt vời và tạo niềm tin tuyệt đối với khách hàng! Bác giao tiếp bằng sự đồng cảm, kết nối cảm xúc xuất sắc và luôn ưu tiên giải quyết nỗi đau của khách hàng. Đối tác chọn bác vì họ tin con người bác.",
                 advice: "Lời khuyên từ Peter Vo: Hãy nhớ bám sát bài toán kinh tế (ROI) của doanh nghiệp để chứng minh giá trị sản phẩm rõ ràng hơn nữa."
             },
             farmer: {
                 title: "Nông Dân Chiến Lược (The Strategic Farmer)",
                 compatibility: "Độ phù hợp BD: 90% 🪙",
-                mascot: "mascot_quests.jpg?v=2.3.8",
+                mascot: "mascot_quests.jpg?v=2.3.9",
                 description: "Bác là nhà làm nông nghiệp B2B bền bỉ, có tính kỷ luật cao! Bác làm việc có kế hoạch, tập trung xây dựng lòng trung thành dài hạn và tối ưu hóa giá trị vòng đời khách hàng (LTV). Sự kiên trì của bác mang lại các deal chất lượng.",
                 advice: "Lời khuyên từ Peter Vo: Hãy quyết đoán hơn ở khâu chốt deal để rút ngắn thời gian đàm phán kéo dài."
             }
@@ -348,17 +352,12 @@
         function startQuiz() {
             currentIdx = 0;
             scores = { E: 0, I: 0, S: 0, N: 0, T: 0, F: 0, J: 0, P: 0 };
-            renderStack();
-            bindDragEvents();
-            bindKeyboardEvents();
-        }
-
-        function renderStack() {
+            
             const root = document.getElementById('quiz-root-box');
             
-            // Build the card stack HTML
+            // Build the card stack HTML (reverse order so Card 0 is the last child and renders on top)
             let cardsHtml = '';
-            for (let i = currentIdx; i < STATEMENTS.length; i++) {
+            for (let i = STATEMENTS.length - 1; i >= 0; i--) {
                 const s = STATEMENTS[i];
                 cardsHtml += `
                     <div class="swipe-card" data-idx="${i}">
@@ -373,11 +372,11 @@
 
             root.innerHTML = `
                 <div class="progress-bar-container">
-                    <div class="progress-bar-fill" style="width: ${(currentIdx / STATEMENTS.length) * 100}%"></div>
+                    <div class="progress-bar-fill" id="progress-bar-fill-element" style="width: 0%"></div>
                 </div>
                 
                 <div class="card-stack" id="card-stack-element">
-                    ${cardsHtml || '<div style="margin: 50px 0;">Đang xử lý kết quả...</div>'}
+                    ${cardsHtml}
                 </div>
                 
                 <div class="swipe-actions">
@@ -390,6 +389,9 @@
                     Mẹo: Nhấn phím <span class="keyboard-key">←</span> để Không đồng ý, phím <span class="keyboard-key">→</span> để Đồng ý.
                 </div>
             `;
+            
+            bindDragEvents();
+            bindKeyboardEvents();
         }
 
         function handleBtnSwipe(isAgree) {
@@ -427,8 +429,13 @@
 
         function nextStep() {
             currentIdx++;
+            
+            // Update progress bar
+            const progress = (currentIdx / STATEMENTS.length) * 100;
+            const bar = document.getElementById('progress-bar-fill-element');
+            if (bar) bar.style.width = `${progress}%`;
+            
             if (currentIdx < STATEMENTS.length) {
-                renderStack();
                 bindDragEvents();
             } else {
                 // Remove keyboard listener
@@ -533,41 +540,101 @@
         }
 
         function calculateMBTIResult() {
-            // E vs I
-            const E = scores.E;
-            const I = scores.I;
-            
-            // S vs N
-            const S = scores.S;
-            const N = scores.N;
-            
-            // T vs F
-            const T = scores.T;
-            const F = scores.F;
-            
-            // J vs P
-            const J = scores.J;
-            const P = scores.P;
-
-            // Determine dominant archetype
-            const isExtravert = E >= I;
-            const isThinking = T >= F;
+            const isExtravert = scores.E >= scores.I;
+            const isThinking = scores.T >= scores.F;
             
             if (isExtravert && isThinking) {
-                return 'commander'; // ExTx
+                return 'commander';
             } else if (!isExtravert && !isThinking) {
-                return 'farmer'; // IxxJ or passive relationship builder
+                return 'farmer';
             } else if (isExtravert && !isThinking) {
-                return 'champion'; // ExFx
+                return 'champion';
             } else {
-                return 'architect'; // IxxP
+                return 'architect';
             }
+        }
+
+        function renderPureCSSChart(isCert = false) {
+            // Compute percentages (each out of 3 statements)
+            const E_pct = Math.round((scores.E / 3) * 100);
+            const I_pct = 100 - E_pct;
+            
+            const S_pct = Math.round((scores.S / 3) * 100);
+            const N_pct = 100 - S_pct;
+            
+            const T_pct = Math.round((scores.T / 3) * 100);
+            const F_pct = 100 - T_pct;
+            
+            const J_pct = Math.round((scores.J / 3) * 100);
+            const P_pct = 100 - J_pct;
+
+            const labelColor = isCert ? '#334155' : 'var(--text-main)';
+            const barBg = isCert ? '#e2e8f0' : 'rgba(0,0,0,0.2)';
+            const border = isCert ? '1px solid #cbd5e1' : '1px solid var(--border-color)';
+            const containerStyle = isCert 
+                ? 'margin: 25px 0; background: #fafaf9; padding: 20px; border-radius: 12px; border: 1px solid #e2e8f0; text-align: left;'
+                : 'margin: 20px 0; background: rgba(255,255,255,0.03); padding: 20px; border-radius: 16px; border: 1px solid var(--border-color); text-align: left;';
+
+            return `
+                <div class="mbti-chart-container" style="${containerStyle}">
+                    <h4 style="margin: 0 0 15px 0; font-size: 0.95rem; font-weight: 800; color: #d97706; text-transform: uppercase; letter-spacing: 0.5px;">Biểu Đồ Tính Cách MBTI B2B</h4>
+                    
+                    <!-- EI -->
+                    <div style="margin-bottom: 12px;">
+                        <div style="display: flex; justify-content: space-between; font-size: 0.78rem; font-weight: 700; margin-bottom: 4px; color: ${labelColor};">
+                            <span>Hướng Ngoại (E): ${E_pct}%</span>
+                            <span>Hướng Nội (I): ${I_pct}%</span>
+                        </div>
+                        <div style="width: 100%; height: 10px; background: ${barBg}; border-radius: 5px; display: flex; overflow: hidden; border: ${border};">
+                            <div style="width: ${E_pct}%; height: 100%; background: #f3a83b;"></div>
+                            <div style="width: ${I_pct}%; height: 100%; background: #64748b;"></div>
+                        </div>
+                    </div>
+                    
+                    <!-- SN -->
+                    <div style="margin-bottom: 12px;">
+                        <div style="display: flex; justify-content: space-between; font-size: 0.78rem; font-weight: 700; margin-bottom: 4px; color: ${labelColor};">
+                            <span>Thực Tế (S): ${S_pct}%</span>
+                            <span>Trực Giác (N): ${N_pct}%</span>
+                        </div>
+                        <div style="width: 100%; height: 10px; background: ${barBg}; border-radius: 5px; display: flex; overflow: hidden; border: ${border};">
+                            <div style="width: ${S_pct}%; height: 100%; background: #f3a83b;"></div>
+                            <div style="width: ${N_pct}%; height: 100%; background: #64748b;"></div>
+                        </div>
+                    </div>
+                    
+                    <!-- TF -->
+                    <div style="margin-bottom: 12px;">
+                        <div style="display: flex; justify-content: space-between; font-size: 0.78rem; font-weight: 700; margin-bottom: 4px; color: ${labelColor};">
+                            <span>Lý Trí (T): ${T_pct}%</span>
+                            <span>Cảm Xúc (F): ${F_pct}%</span>
+                        </div>
+                        <div style="width: 100%; height: 10px; background: ${barBg}; border-radius: 5px; display: flex; overflow: hidden; border: ${border};">
+                            <div style="width: ${T_pct}%; height: 100%; background: #f3a83b;"></div>
+                            <div style="width: ${F_pct}%; height: 100%; background: #64748b;"></div>
+                        </div>
+                    </div>
+                    
+                    <!-- JP -->
+                    <div style="margin-bottom: 5px;">
+                        <div style="display: flex; justify-content: space-between; font-size: 0.78rem; font-weight: 700; margin-bottom: 4px; color: ${labelColor};">
+                            <span>Kỷ Luật (J): ${J_pct}%</span>
+                            <span>Linh Hoạt (P): ${P_pct}%</span>
+                        </div>
+                        <div style="width: 100%; height: 10px; background: ${barBg}; border-radius: 5px; display: flex; overflow: hidden; border: ${border};">
+                            <div style="width: ${J_pct}%; height: 100%; background: #f3a83b;"></div>
+                            <div style="width: ${P_pct}%; height: 100%; background: #64748b;"></div>
+                        </div>
+                    </div>
+                </div>
+            `;
         }
 
         function showResult() {
             const root = document.getElementById('quiz-root-box');
             const resultType = calculateMBTIResult();
             const p = PERSONAS[resultType];
+            const chartHtml = renderPureCSSChart(false);
             
             root.innerHTML = `
                 <div class="progress-bar-container">
@@ -583,6 +650,9 @@
                 
                 <h2 class="result-title">${p.title}</h2>
                 <div class="result-compatibility">${p.compatibility}</div>
+                
+                <!-- Pure CSS Visual Chart -->
+                ${chartHtml}
                 
                 <div class="result-description">
                     ${p.description}
@@ -627,6 +697,7 @@
             const p = PERSONAS[type];
             const name = localStorage.getItem('streak_name') || 'Chiến thần B2B';
             const dateStr = new Date().toLocaleDateString('vi-VN');
+            const certChartHtml = renderPureCSSChart(true);
             
             const htmlContent = `<!DOCTYPE html>
 <html lang="vi">
@@ -768,8 +839,11 @@
         <div class="cert-awardee">Trao tặng cho Chiến thần</div>
         <div class="cert-name">${name}</div>
         
+        <!-- MBTI Visual Chart Embed -->
+        ${certChartHtml}
+        
         <div class="cert-statement">
-            Qua quá trình kiểm định 8 quan điểm thực chiến bằng công cụ quẹt thẻ thông minh, Cú BeeDee đã xác thực bác thuộc nhóm tính cách: <b>${p.title}</b>. Bác sở hữu các tố chất nổi trội, phù hợp định hình phong cách đàm phán B2B bền vững. Chúc bác đóng deal mỏi tay!
+            Qua kiểm định 12 tình huống thực chiến đầy thách thức bằng công cụ quẹt thẻ thông minh, Cú BeeDee đã xác thực bác thuộc nhóm tính cách: <b>${p.title}</b>. Bác sở hữu các tố chất nổi trội, phù hợp định hình phong cách đàm phán B2B bền vững. Chúc bác đóng deal mỏi tay!
         </div>
         
         <div class="cert-footer">
