@@ -1487,20 +1487,9 @@ function initEmailRegistrations() {
     const streakActive = localStorage.getItem('streak_active') === 'true';
     const funnyBox = document.getElementById('challenge-funny-trigger-box');
     if (funnyBox && streakActive) {
-        funnyBox.innerHTML = `
-            <div style="display: flex; align-items: center; gap: 12px; flex: 1; min-width: 280px; text-align: left;">
-                <span style="font-size: 1.8rem; line-height: 1;">🦉</span>
-                <div>
-                    <h4 style="margin: 0; font-size: 0.9rem; font-weight: 800; color: var(--text-main); text-transform: uppercase;">NHẮC NHỞ CÚ BEEDEE ĐÃ BẬT</h4>
-                    <p style="margin: 2px 0 0 0; font-size: 0.78rem; color: var(--text-light); line-height: 1.3;">Mẹo thực chiến hàng ngày gửi tới email của bạn lúc 8h45 mỗi sáng.</p>
-                </div>
-            </div>
-            <div style="display: flex; gap: 8px;">
-                <a href="quests.html" class="btn btn-secondary" style="padding: 8px 16px; font-size: 0.82rem; font-weight: 800; text-decoration: none; border-radius: 6px; border: 1px solid var(--border-color); background: rgba(255,255,255,0.05); color: var(--text-main);">
-                    🎯 Quản Lý Nhắc Nhở
-                </a>
-            </div>
-        `;
+        funnyBox.style.display = 'none';
+        const parent = funnyBox.closest('.funny-reminder-container');
+        if (parent) parent.style.display = 'none';
     }
 
     // Challenge trigger box (Homepage)
