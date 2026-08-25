@@ -6,9 +6,9 @@
     <title>Trắc Nghiệm Tính Cách B2B BD (MBTI) | Cú BeeDee | BD Bình Dân Học Vụ</title>
     <meta name="description" content="Trải nghiệm game quẹt thẻ tính cách MBTI cực thú vị để đo chỉ số B2B BD của bạn. Nhận quà 50đ và tải chứng chỉ độc quyền.">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css?v=2.3.10">
+    <link rel="stylesheet" href="style.css?v=2.3.11">
     <link rel="stylesheet" href="ai-chat.css?v=2.3.8">
-    <script src="theme-toggle.js?v=2.3.10"></script>
+    <script src="theme-toggle.js?v=2.3.11"></script>
     <style>
         .quiz-container {
             max-width: 600px;
@@ -291,8 +291,8 @@
     <!-- Chatbot -->
     <div id="ai-chat-root"></div>
 
-    <script src="script.js?v=2.3.10"></script>
-    <script src="ai-chat.js?v=2.3.10"></script>
+    <script src="script.js?v=2.3.11"></script>
+    <script src="ai-chat.js?v=2.3.11"></script>
 
     <script>
         // 12 challenging statements for MBTI B2B Sales assessment
@@ -315,28 +315,28 @@
             commander: {
                 title: "Tổng Tư Lệnh Săn Deal (The B2B Commander)",
                 compatibility: "Độ phù hợp BD: 95% 🪙",
-                mascot: "mascot_commander.jpg?v=2.3.10",
+                mascot: "mascot_commander.jpg?v=2.3.11",
                 description: "Bác sở hữu phong cách lý trí, quyết đoán và hoạt ngôn mạnh mẽ! Bác tin vào hiệu quả công việc, số liệu và chốt hợp đồng nhanh chóng. Bác là thợ săn đầu phễu cực kỳ uy lực, đầy bản lĩnh trên bàn thương thảo B2B.",
                 advice: "Lời khuyên từ Peter Vo: Hãy lưu ý phối hợp nhịp nhàng với đội ngũ kỹ thuật/CS phía sau để hỗ trợ khách tốt nhất sau khi ký nhé!"
             },
             architect: {
                 title: "Kiến Trúc Sư Công Nghệ (The Tech BD Architect)",
                 compatibility: "Độ phù hợp BD: 92% 🪙",
-                mascot: "mascot_architect.jpg?v=2.3.10",
+                mascot: "mascot_architect.jpg?v=2.3.11",
                 description: "Bác là nhà làm BD của thời đại mới! Thích nghiên cứu sâu, tận dụng tối đa sức mạnh của AI và các công cụ tự động hóa để gieo hạt, tìm leads. Bác tư duy logic, làm việc độc lập và tối ưu hóa hệ thống để đạt hiệu quả tối đa.",
                 advice: "Lời khuyên từ Peter Vo: Đôi khi các khách hàng B2B lớn vẫn thích những buổi cafe gặp mặt trực tiếp hơn là email hay tin nhắn tự động đấy bác!"
             },
             champion: {
                 title: "Đại Sứ Khách Hàng (The Client Champion)",
                 compatibility: "Độ phù hợp BD: 88% 🪙",
-                mascot: "mascot_champion.jpg?v=2.3.10",
+                mascot: "mascot_champion.jpg?v=2.3.11",
                 description: "Bác là nguồn năng lượng tuyệt vời và tạo niềm tin tuyệt đối với khách hàng! Bác giao tiếp bằng sự đồng cảm, kết nối cảm xúc xuất sắc và luôn ưu tiên giải quyết nỗi đau của khách hàng. Đối tác chọn bác vì họ tin con người bác.",
                 advice: "Lời khuyên từ Peter Vo: Hãy nhớ bám sát bài toán kinh tế (ROI) của doanh nghiệp để chứng minh giá trị sản phẩm rõ ràng hơn nữa."
             },
             farmer: {
                 title: "Nông Dân Chiến Lược (The Strategic Farmer)",
                 compatibility: "Độ phù hợp BD: 90% 🪙",
-                mascot: "mascot_farmer.jpg?v=2.3.10",
+                mascot: "mascot_farmer.jpg?v=2.3.11",
                 description: "Bác là nhà làm nông nghiệp B2B bền bỉ, có tính kỷ luật cao! Bác làm việc có kế hoạch, tập trung xây dựng lòng trung thành dài hạn và tối ưu hóa giá trị vòng đời khách hàng (LTV). Sự kiên trì của bác mang lại các deal chất lượng.",
                 advice: "Lời khuyên từ Peter Vo: Hãy quyết đoán hơn ở khâu chốt deal để rút ngắn thời gian đàm phán kéo dài."
             }
@@ -346,11 +346,13 @@
         let scores = { E: 0, I: 0, S: 0, N: 0, T: 0, F: 0, J: 0, P: 0 };
         
         let isDragging = false;
+        let isSwiping = false;
         let startX = 0;
         let currentX = 0;
 
         function startQuiz() {
             currentIdx = 0;
+            isSwiping = false;
             scores = { E: 0, I: 0, S: 0, N: 0, T: 0, F: 0, J: 0, P: 0 };
             
             const root = document.getElementById('quiz-root-box');
@@ -395,11 +397,13 @@
         }
 
         function handleBtnSwipe(isAgree) {
+            if (isSwiping) return;
             const stack = document.getElementById('card-stack-element');
             if (!stack) return;
             const topCard = stack.querySelector('.swipe-card:nth-last-child(1)');
             if (!topCard) return;
             
+            isSwiping = true;
             if (isAgree) {
                 topCard.classList.add('swipe-right');
                 recordVote(true);
@@ -416,6 +420,7 @@
 
         function recordVote(isAgree) {
             const currentStatement = STATEMENTS[currentIdx];
+            if (!currentStatement) return;
             const dim = currentStatement.dimension; // e.g. "EI"
             const active = currentStatement.active; // e.g. "E"
             const opposite = dim.replace(active, ''); // e.g. "I"
@@ -437,10 +442,12 @@
             
             if (currentIdx < STATEMENTS.length) {
                 bindDragEvents();
+                isSwiping = false;
             } else {
                 // Remove keyboard listener
                 document.onkeydown = null;
                 showResult();
+                isSwiping = false;
             }
         }
 
@@ -473,6 +480,7 @@
         }
 
         function startDrag(e) {
+            if (isSwiping) return;
             const stack = document.getElementById('card-stack-element');
             if (!stack) return;
             const topCard = stack.querySelector('.swipe-card:nth-last-child(1)');
@@ -514,6 +522,11 @@
             const threshold = 130;
             
             if (diffX > threshold) {
+                if (isSwiping) {
+                    topCard.style.transform = 'scale(1) translateY(0) rotate(0deg)';
+                    return;
+                }
+                isSwiping = true;
                 // Swipe Right
                 topCard.classList.add('swipe-right');
                 recordVote(true);
@@ -522,6 +535,11 @@
                     nextStep();
                 }, 300);
             } else if (diffX < -threshold) {
+                if (isSwiping) {
+                    topCard.style.transform = 'scale(1) translateY(0) rotate(0deg)';
+                    return;
+                }
+                isSwiping = true;
                 // Swipe Left
                 topCard.classList.add('swipe-left');
                 recordVote(false);
@@ -663,7 +681,7 @@
                 <!-- Linkedin Promotion Banner -->
                 <div style="margin: 20px 0; text-align: center;">
                     <a href="https://www.linkedin.com/in/vp-tan/" target="_blank" style="display: inline-block; width: 100%; max-width: 440px;">
-                        <img src="peter_linkedin_banner.png?v=2.3.10" alt="Peter Vo Linkedin" style="width: 100%; border-radius: 16px; border: 1.5px solid var(--border-color); box-shadow: 0 4px 15px rgba(0,0,0,0.15); transition: transform 0.2s ease;" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">
+                        <img src="peter_linkedin_banner.png?v=2.3.11" alt="Peter Vo Linkedin" style="width: 100%; border-radius: 16px; border: 1.5px solid var(--border-color); box-shadow: 0 4px 15px rgba(0,0,0,0.15); transition: transform 0.2s ease;" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">
                     </a>
                 </div>
                 
