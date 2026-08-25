@@ -3279,15 +3279,14 @@ window.showSubtleProfileModal = function({ title, subtitle, options, fieldName, 
     overlay.style.transition = 'opacity 0.3s ease';
 
     const container = document.createElement('div');
-    container.className = 'glass-panel';
     container.style.maxWidth = '460px';
     container.style.width = '100%';
     container.style.padding = '30px 24px';
     container.style.borderRadius = '20px';
-    container.style.border = '1px solid var(--primary)';
-    container.style.background = '#12131c';
+    container.style.border = '1px solid #e2e8f0';
+    container.style.background = '#ffffff';
     container.style.textAlign = 'center';
-    container.style.boxShadow = '0 20px 50px rgba(0, 0, 0, 0.4)';
+    container.style.boxShadow = '0 20px 40px rgba(15, 23, 42, 0.15)';
     container.style.transform = 'scale(0.9)';
     container.style.transition = 'transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)';
 
@@ -3300,13 +3299,13 @@ window.showSubtleProfileModal = function({ title, subtitle, options, fieldName, 
     titleEl.style.margin = '0 0 10px 0';
     titleEl.style.fontSize = '1.25rem';
     titleEl.style.fontWeight = '800';
-    titleEl.style.color = '#ffffff';
+    titleEl.style.color = '#0f172a';
     titleEl.innerText = title;
 
     const subEl = document.createElement('p');
     subEl.style.margin = '0 0 24px 0';
     subEl.style.fontSize = '0.85rem';
-    subEl.style.color = 'var(--text-light)';
+    subEl.style.color = '#475569';
     subEl.style.lineHeight = '1.5';
     subEl.innerText = subtitle;
 
@@ -3321,9 +3320,9 @@ window.showSubtleProfileModal = function({ title, subtitle, options, fieldName, 
         btn.style.padding = '12px 16px';
         btn.style.fontSize = '0.88rem';
         btn.style.fontWeight = 'bold';
-        btn.style.color = 'var(--text-main)';
-        btn.style.background = 'rgba(255, 255, 255, 0.03)';
-        btn.style.border = '1px solid var(--border-color)';
+        btn.style.color = '#0f172a';
+        btn.style.background = '#f8fafc';
+        btn.style.border = '1px solid #e2e8f0';
         btn.style.borderRadius = '10px';
         btn.style.cursor = 'pointer';
         btn.style.textAlign = 'left';
@@ -3333,14 +3332,14 @@ window.showSubtleProfileModal = function({ title, subtitle, options, fieldName, 
 
         btn.onmouseenter = () => {
             btn.style.background = 'rgba(243, 168, 59, 0.08)';
-            btn.style.borderColor = 'var(--primary)';
-            btn.style.color = 'var(--primary)';
+            btn.style.borderColor = '#f59e0b';
+            btn.style.color = '#d97706';
             btn.style.transform = 'translateX(4px)';
         };
         btn.onmouseleave = () => {
-            btn.style.background = 'rgba(255, 255, 255, 0.03)';
-            btn.style.borderColor = 'var(--border-color)';
-            btn.style.color = 'var(--text-main)';
+            btn.style.background = '#f8fafc';
+            btn.style.borderColor = '#e2e8f0';
+            btn.style.color = '#0f172a';
             btn.style.transform = 'none';
         };
 
