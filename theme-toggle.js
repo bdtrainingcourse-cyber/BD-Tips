@@ -1484,6 +1484,25 @@ function handleEmailReminderRegistration(nameInputId, emailInputId, submitBtnId,
 }
 
 function initEmailRegistrations() {
+    const streakActive = localStorage.getItem('streak_active') === 'true';
+    const funnyBox = document.getElementById('challenge-funny-trigger-box');
+    if (funnyBox && streakActive) {
+        funnyBox.innerHTML = `
+            <div style="display: flex; align-items: center; gap: 12px; flex: 1; min-width: 280px; text-align: left;">
+                <span style="font-size: 1.8rem; line-height: 1;">🦉</span>
+                <div>
+                    <h4 style="margin: 0; font-size: 0.9rem; font-weight: 800; color: var(--text-main); text-transform: uppercase;">NHẮC NHỞ CÚ BEEDEE ĐÃ BẬT</h4>
+                    <p style="margin: 2px 0 0 0; font-size: 0.78rem; color: var(--text-light); line-height: 1.3;">Mẹo thực chiến hàng ngày gửi tới email của bạn lúc 8h45 mỗi sáng.</p>
+                </div>
+            </div>
+            <div style="display: flex; gap: 8px;">
+                <a href="quests.html" class="btn btn-secondary" style="padding: 8px 16px; font-size: 0.82rem; font-weight: 800; text-decoration: none; border-radius: 6px; border: 1px solid var(--border-color); background: rgba(255,255,255,0.05); color: var(--text-main);">
+                    🎯 Quản Lý Nhắc Nhở
+                </a>
+            </div>
+        `;
+    }
+
     // Challenge trigger box (Homepage)
     handleEmailReminderRegistration(
         'challenge-trigger-name',
@@ -3114,4 +3133,63 @@ window.openDirectMessage = function(targetName, targetEmail = '') {
 };
 
 // Trigger build: 2026-08-22T08:58:00Z
+
+window.testEmailReminder = async function() {
+    const email = localStorage.getItem('streak_email');
+    if (!email) {
+        alert('Vui lòng kích hoạt streak hoặc đăng nhập trước khi chạy gửi thử email nhắc nhở!');
+        return;
+    }
+    
+    const btn = document.getElementById('btn-test-email-reminder');
+    let originalText = '✉️ Gửi Thử Email';
+    if (btn) {
+        originalText = btn.textContent;
+        btn.disabled = true;
+        btn.textContent = 'Đang xử lý... ⏳';
+    }
+    
+    try {
+        const res = await fetch(`/api/daily-email?email=${encodeURIComponent(email)}`);
+        const data = await res.json();
+        
+        if (data.success) {
+            if (data.bodyHtml) {
+                // Mock send - open in new window/tab
+                const newWindow = window.open();
+                if (newWindow) {
+                    newWindow.document.write(data.bodyHtml);
+                    newWindow.document.close();
+                }
+                if (window.showGlobalNotification) {
+                    window.showGlobalNotification(
+                        '🦉 Đã tạo Email Nhắc Nhở thành công!',
+                        `Hệ thống đang chạy ở chế độ thử nghiệm nội bộ.<br><br>Đã tạo mẫu email nhắc nhở thành công và mở trong tab mới để bác xem trước thiết kế!`
+                    );
+                } else {
+                    alert('Đã tạo mẫu email nhắc nhở thành công và mở trong tab mới!');
+                }
+            } else {
+                if (window.showGlobalNotification) {
+                    window.showGlobalNotification(
+                        '✉️ Đã Gửi Email Nhắc Nhở!',
+                        `Cú BeeDee đã gửi một email nhắc nhở thực tế tới địa chỉ <strong>${email}</strong>.<br><br>Vui lòng kiểm tra hộp thư của bác (bao gồm cả mục Spam/Thư rác nếu không tìm thấy).`
+                    );
+                } else {
+                    alert(`Cú BeeDee đã gửi một email nhắc nhở thực tế tới địa chỉ ${email}.`);
+                }
+            }
+        } else {
+            alert('Gửi thử email nhắc nhở thất bại: ' + (data.error || 'Lỗi không xác định'));
+        }
+    } catch (err) {
+        console.error('Lỗi khi gửi thử email nhắc nhở:', err);
+        alert('Không thể kết nối tới máy chủ hoặc tính năng chưa sẵn sàng. Vui lòng thử lại!');
+    } finally {
+        if (btn) {
+            btn.disabled = false;
+            btn.textContent = originalText;
+        }
+    }
+};
 

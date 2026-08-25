@@ -6,9 +6,9 @@
     <title>Nhiệm Vụ & Quà Tặng | Tích Lũy Điểm Thực Chiến BD | BD Bình Dân Học Vụ</title>
     <meta name="description" content="Hệ thống tích lũy điểm thực chiến BD, làm nhiệm vụ hàng ngày/tuần để đổi lấy quà tặng độc quyền từ anh Peter Vo.">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css?v=2.3.4">
+    <link rel="stylesheet" href="style.css?v=2.3.5">
     <link rel="stylesheet" href="ai-chat.css?v=2.1.2">
-    <script src="theme-toggle.js?v=2.3.4"></script>
+    <script src="theme-toggle.js?v=2.3.5"></script>
 </head>
 <body>
     <!-- Navbar -->
@@ -56,7 +56,7 @@
             </p>
             <div style="margin-top: 20px; display: flex; justify-content: center;">
                 <div style="border-radius: 16px; overflow: hidden; border: 1.5px solid var(--border-color); box-shadow: var(--shadow); height: 140px; width: 185px;">
-                    <img src="mascot_quests.jpg?v=2.3.4" style="width: 100%; height: 100%; object-fit: cover;" alt="BeeDee Quests">
+                    <img src="mascot_quests.jpg?v=2.3.5" style="width: 100%; height: 100%; object-fit: cover;" alt="BeeDee Quests">
                 </div>
             </div>
         </section>
@@ -104,6 +104,17 @@
                             <div style="width: 140px; height: 8px; background: rgba(255,255,255,0.05); border-radius: 4px; overflow: hidden; display: inline-block;">
                                 <div id="hud-next-gift-bar" style="width: 0%; height: 100%; background: var(--primary); transition: width 0.3s ease;"></div>
                             </div>
+                        </div>
+                    </div>
+
+                    <!-- Email Reminder Control and Test Panel -->
+                    <div style="background: rgba(162, 10, 10, 0.03); border: 1.5px solid var(--border-color); padding: 16px; border-radius: 12px; margin-bottom: 20px; display: flex; gap: 12px; align-items: center; justify-content: space-between; flex-wrap: wrap; text-align: left;">
+                        <div style="flex: 1; min-width: 200px;">
+                            <h5 style="margin: 0; font-size: 0.85rem; font-weight: 800; color: var(--text-main); display: flex; align-items: center; gap: 6px;">🦉 LUỒNG NHẮC NHỞ CÚ BEEDEE</h5>
+                            <p style="margin: 3px 0 0 0; font-size: 0.72rem; color: var(--text-light); line-height: 1.4;">Hệ thống sẽ gửi email nhắc nhở học tập kèm dự báo thời tiết và tin tức B2B mỗi sáng.</p>
+                        </div>
+                        <div style="display: flex; gap: 8px; flex-shrink: 0;">
+                            <button id="btn-test-email-reminder" onclick="window.testEmailReminder()" class="btn btn-secondary" style="padding: 8px 14px; font-size: 0.8rem; font-weight: bold; border-radius: 6px; cursor: pointer; border: 1px solid var(--border-color); background: rgba(255,255,255,0.05); color: var(--text-main);">✉️ Gửi Thử Email</button>
                         </div>
                     </div>
 
@@ -263,7 +274,7 @@
     <!-- Chat Bot Integration -->
     <div id="ai-chat-root"></div>
 
-    <script src="script.js?v=2.3.4"></script>
+    <script src="script.js?v=2.3.5"></script>
     <script src="ai-chat.js?v=2.2.4"></script>
 </body>
 </html>
