@@ -268,4 +268,28 @@ document.addEventListener('DOMContentLoaded', () => {
     // Initialize
     initSliders();
     calculateFunnel();
+
+    if (window.showSubtleProfileModal && !localStorage.getItem('profile_industry')) {
+        setTimeout(() => {
+            window.showSubtleProfileModal({
+                title: '📊 Tối ưu tỷ lệ KPI',
+                subtitle: 'Chào bác! Để Cú BeeDee tối ưu các định mức tỷ lệ chuyển đổi KPI phù hợp nhất với đặc thù ngành nghề của bác, vui lòng chọn lĩnh vực hoạt động:',
+                options: [
+                    'Công nghệ',
+                    'Giáo dục/ Edtech',
+                    'Marketing/Digital',
+                    'Thương mại điện tử',
+                    'Logistics',
+                    'FMCG/ Retail',
+                    'Tài chính/Bảo hiểm',
+                    'HR Service/ HRtech',
+                    'Khác'
+                ],
+                fieldName: 'industry',
+                callback: () => {
+                    if (typeof calculateFunnel === 'function') calculateFunnel();
+                }
+            });
+        }, 800);
+    }
 });

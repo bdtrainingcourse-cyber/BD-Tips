@@ -1183,9 +1183,33 @@ document.addEventListener('DOMContentLoaded', () => {
     // Open Composer Modal
     if (btnCreatePost) {
         btnCreatePost.addEventListener('click', () => {
-            const registeredName = localStorage.getItem('streak_name');
-            composerAuthorDisplay.textContent = registeredName || 'Thành viên mới';
-            createPostModal.classList.add('active');
+            const proceedOpen = () => {
+                const registeredName = localStorage.getItem('streak_name');
+                composerAuthorDisplay.textContent = registeredName || 'Thành viên mới';
+                createPostModal.classList.add('active');
+            };
+
+            if (window.showSubtleProfileModal && !localStorage.getItem('profile_industry')) {
+                window.showSubtleProfileModal({
+                    title: '🦉 Kết nối đúng tệp đối tác',
+                    subtitle: 'Chào bác! Để Cú BeeDee phân loại và gợi ý các bài thảo luận/kết nối đối tác phù hợp nhất với lĩnh vực của bác, vui lòng chọn ngành bác đang làm nhé:',
+                    options: [
+                        'Công nghệ',
+                        'Giáo dục/ Edtech',
+                        'Marketing/Digital',
+                        'Thương mại điện tử',
+                        'Logistics',
+                        'FMCG/ Retail',
+                        'Tài chính/Bảo hiểm',
+                        'HR Service/ HRtech',
+                        'Khác'
+                    ],
+                    fieldName: 'industry',
+                    callback: proceedOpen
+                });
+            } else {
+                proceedOpen();
+            }
         });
     }
 

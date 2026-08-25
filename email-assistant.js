@@ -247,76 +247,52 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        const proceedSubmit = async () => {
-            const content = document.getElementById('eval-content').value.trim();
-            const level = document.getElementById('eval-level').value;
-            const dept = document.getElementById('eval-dept').value;
-            const industry = document.getElementById('eval-industry').value;
-            const tone = document.getElementById('eval-tone').value;
-            const lang = document.getElementById('eval-lang').value;
-            const key = localStorage.getItem('gemini_api_key');
+        const content = document.getElementById('eval-content').value.trim();
+        const level = document.getElementById('eval-level').value;
+        const dept = document.getElementById('eval-dept').value;
+        const industry = document.getElementById('eval-industry').value;
+        const tone = document.getElementById('eval-tone').value;
+        const lang = document.getElementById('eval-lang').value;
+        const key = localStorage.getItem('gemini_api_key');
 
-            const role = `${level} - ${dept}`;
+        const role = `${level} - ${dept}`;
 
-            showLoading(true);
+        showLoading(true);
 
-            try {
-                const res = await fetch('/api/email-assistant', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        action: 'evaluate',
-                        emailContent: content,
-                        recipientRole: role,
-                        industry: industry,
-                        tone: tone,
-                        language: lang,
-                        geminiApiKey: key
-                    })
-                });
-
-                if (!res.ok) {
-                    if (res.status === 429) {
-                        const errData = await res.json();
-                        throw new Error(errData.error || 'Rate limit exceeded');
-                    }
-                    throw new Error(`Status error: ${res.status}`);
-                }
-                const data = await res.json();
-                
-                renderEvaluation(data);
-                if (window.registerUserAction) {
-                    window.registerUserAction('ai_email');
-                }
-            } catch (error) {
-                console.error('Evaluation failed:', error);
-                alert(error.message || 'Gặp lỗi khi kết nối hệ thống AI. Vui lòng thử lại.');
-                outputEmpty.classList.remove('hidden');
-            } finally {
-                showLoading(false);
-            }
-        };
-
-        if (window.showSubtleProfileModal && !localStorage.getItem('profile_industry')) {
-            window.showSubtleProfileModal({
-                title: '🦉 Tối ưu hóa phân tích AI',
-                subtitle: 'Chào bác! Để Cú BeeDee phân tích ngữ cảnh và gợi ý từ vựng chuyên ngành chính xác nhất, vui lòng chọn lĩnh vực hoạt động của bác:',
-                options: [
-                    'Công nghệ',
-                    'Giáo dục/ Edtech',
-                    'Marketing/Digital',
-                    'Thương mại điện tử',
-                    'Logistics',
-                    'FMCG/ Retail',
-                    'Tài chính/Bảo hiểm',
-                    'HR Service/ HRtech',
-                    'Khác'
-                ],
-                fieldName: 'industry',
-                callback: proceedSubmit
+        try {
+            const res = await fetch('/api/email-assistant', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    action: 'evaluate',
+                    emailContent: content,
+                    recipientRole: role,
+                    industry: industry,
+                    tone: tone,
+                    language: lang,
+                    geminiApiKey: key
+                })
             });
-        } else {
-            await proceedSubmit();
+
+            if (!res.ok) {
+                if (res.status === 429) {
+                    const errData = await res.json();
+                    throw new Error(errData.error || 'Rate limit exceeded');
+                }
+                throw new Error(`Status error: ${res.status}`);
+            }
+            const data = await res.json();
+            
+            renderEvaluation(data);
+            if (window.registerUserAction) {
+                window.registerUserAction('ai_email');
+            }
+        } catch (error) {
+            console.error('Evaluation failed:', error);
+            alert(error.message || 'Gặp lỗi khi kết nối hệ thống AI. Vui lòng thử lại.');
+            outputEmpty.classList.remove('hidden');
+        } finally {
+            showLoading(false);
         }
     });
 
@@ -327,82 +303,58 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        const proceedSubmit = async () => {
-            const promptVal = document.getElementById('gen-prompt').value.trim();
-            const companyVal = document.getElementById('gen-company').value.trim();
-            const level = document.getElementById('gen-level').value;
-            const dept = document.getElementById('gen-dept').value;
-            const industry = document.getElementById('gen-industry').value;
+        const promptVal = document.getElementById('gen-prompt').value.trim();
+        const companyVal = document.getElementById('gen-company').value.trim();
+        const level = document.getElementById('gen-level').value;
+        const dept = document.getElementById('gen-dept').value;
+        const industry = document.getElementById('gen-industry').value;
 
-            if (window.trackUserBehavior) {
-                window.trackUserBehavior('email_generate', `Company: ${companyVal}, Level: ${level}, Dept: ${dept}`);
-            }
-            const tone = document.getElementById('gen-tone').value;
-            const lang = document.getElementById('gen-lang').value;
-            const key = localStorage.getItem('gemini_api_key');
+        if (window.trackUserBehavior) {
+            window.trackUserBehavior('email_generate', `Company: ${companyVal}, Level: ${level}, Dept: ${dept}`);
+        }
+        const tone = document.getElementById('gen-tone').value;
+        const lang = document.getElementById('gen-lang').value;
+        const key = localStorage.getItem('gemini_api_key');
 
-            const role = `${level} - ${dept}`;
+        const role = `${level} - ${dept}`;
 
-            showLoading(true);
+        showLoading(true);
 
-            try {
-                const res = await fetch('/api/email-assistant', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        action: 'generate',
-                        prompt: promptVal,
-                        company: companyVal,
-                        recipientRole: role,
-                        industry: industry,
-                        tone: tone,
-                        language: lang,
-                        geminiApiKey: key
-                    })
-                });
-
-                if (!res.ok) {
-                    if (res.status === 429) {
-                        const errData = await res.json();
-                        throw new Error(errData.error || 'Rate limit exceeded');
-                    }
-                    throw new Error(`Status error: ${res.status}`);
-                }
-                const data = await res.json();
-
-                renderGeneration(data);
-                if (window.registerUserAction) {
-                    window.registerUserAction('ai_email');
-                }
-            } catch (error) {
-                console.error('Generation failed:', error);
-                alert(error.message || 'Gặp lỗi khi soạn email bằng AI. Vui lòng thử lại.');
-                outputEmpty.classList.remove('hidden');
-            } finally {
-                showLoading(false);
-            }
-        };
-
-        if (window.showSubtleProfileModal && !localStorage.getItem('profile_industry')) {
-            window.showSubtleProfileModal({
-                title: '🦉 Tối ưu soạn thảo AI',
-                subtitle: 'Chào bác! Để Cú BeeDee thiết kế văn phong tiếp cận phù hợp nhất với tệp khách hàng của bác, vui lòng chọn lĩnh vực hoạt động của bác:',
-                options: [
-                    'Công nghệ',
-                    'Giáo dục/ Edtech',
-                    'Marketing/Digital',
-                    'Thương mại điện tử',
-                    'Logistics',
-                    'FMCG/ Retail',
-                    'Tài chính/Bảo hiểm',
-                    'HR Service/ HRtech',
-                    'Khác'
-                ],
-                fieldName: 'industry',
-                callback: proceedSubmit
+        try {
+            const res = await fetch('/api/email-assistant', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    action: 'generate',
+                    prompt: promptVal,
+                    company: companyVal,
+                    recipientRole: role,
+                    industry: industry,
+                    tone: tone,
+                    language: lang,
+                    geminiApiKey: key
+                })
             });
-        } else {
-            await proceedSubmit();
+
+            if (!res.ok) {
+                if (res.status === 429) {
+                    const errData = await res.json();
+                    throw new Error(errData.error || 'Rate limit exceeded');
+                }
+                throw new Error(`Status error: ${res.status}`);
+            }
+            const data = await res.json();
+
+            renderGeneration(data);
+            if (window.registerUserAction) {
+                window.registerUserAction('ai_email');
+            }
+        } catch (error) {
+            console.error('Generation failed:', error);
+            alert(error.message || 'Gặp lỗi khi soạn email bằng AI. Vui lòng thử lại.');
+            outputEmpty.classList.remove('hidden');
+        } finally {
+            showLoading(false);
         }
     });
 
