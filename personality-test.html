@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trắc Nghiệm Tính Cách BD | Khám Phá Bản Thân cùng BeeDee | BD Bình Dân Học Vụ</title>
+    <meta name="description" content="Trắc nghiệm xem bạn thuộc nhóm tính cách BD nào trong B2B Sales. Lời văn hóm hỉnh, hình ảnh cú BeeDee cực sinh động và tải chứng nhận năng lực cá nhân.">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css?v=2.3.7">
+    <link rel="stylesheet" href="ai-chat.css?v=2.3.6">
+    <script src="theme-toggle.js?v=2.3.7"></script>
+    <style>
+        .quiz-container {
+            max-width: 720px;
+            margin: 40px auto;
+            padding: 30px;
+            border-radius: 24px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border-color);
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
+            text-align: center;
+        }
+        .progress-bar-container {
+            width: 100%;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 3px;
+            margin-bottom: 25px;
+            overflow: hidden;
+        }
+        .progress-bar-fill {
+            height: 100%;
+            width: 0%;
+            background: var(--primary);
+            transition: width 0.3s ease;
+        }
+        .question-card h3 {
+            font-size: 1.25rem;
+            font-weight: 800;
+            color: var(--text-main);
+            margin-bottom: 20px;
+            line-height: 1.45;
+            text-align: left;
+        }
+        .options-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 15px;
+        }
+        .option-item {
+            display: flex;
+            align-items: center;
+            padding: 15px 20px;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            background: rgba(255, 255, 255, 0.01);
+            color: var(--text-main);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: left;
+            font-size: 0.9rem;
+            line-height: 1.4;
+            font-weight: 500;
+        }
+        .option-item:hover {
+            border-color: var(--primary);
+            background: rgba(243, 168, 59, 0.05);
+            transform: translateY(-2px);
+        }
+        .option-item.selected {
+            border-color: var(--primary);
+            background: rgba(243, 168, 59, 0.1);
+            box-shadow: 0 0 10px rgba(243, 168, 59, 0.15);
+        }
+        .option-prefix {
+            font-weight: bold;
+            color: var(--primary);
+            margin-right: 12px;
+            font-size: 1rem;
+            flex-shrink: 0;
+        }
+        .mascot-result-box {
+            width: 160px;
+            height: 160px;
+            border-radius: 24px;
+            overflow: hidden;
+            border: 2px solid var(--primary);
+            margin: 20px auto;
+            box-shadow: 0 8px 24px rgba(243, 168, 59, 0.15);
+        }
+        .mascot-result-box img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .result-title {
+            font-size: 1.8rem;
+            font-weight: 800;
+            margin: 15px 0 5px 0;
+            background: linear-gradient(135deg, var(--text-main) 0%, var(--primary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .result-compatibility {
+            font-size: 0.9rem;
+            font-weight: 800;
+            color: var(--primary);
+            margin-bottom: 20px;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+        .result-description {
+            font-size: 0.92rem;
+            line-height: 1.65;
+            color: var(--text-light);
+            text-align: left;
+            background: rgba(255, 255, 255, 0.02);
+            padding: 20px;
+            border-radius: 16px;
+            border: 1px solid var(--border-color);
+            margin-bottom: 25px;
+        }
+        .reward-badge-panel {
+            background: linear-gradient(135deg, rgba(243,168,59,0.12) 0%, rgba(239,68,68,0.06) 100%);
+            border: 1.5px dashed var(--primary);
+            padding: 15px 20px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <header class="app-nav">
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo" title="BD Bình Dân Học Vụ - Nơi Học Hỏi & Kết Nối của BD">
+                <span class="logo-main"><span class="logo-accent">BD</span> Bình Dân Học Vụ</span>
+                <span class="logo-sub">Nơi Học Hỏi & Kết Nối của BD</span>
+            </a>
+            <nav class="nav-links" id="nav-menu">
+                <a href="index.html" class="">Homepage</a>
+                <a href="library.html" class="">Thư Viện <span class="nav-badge hot">HOT</span></a>
+                <div class="nav-dropdown active">
+                    <button class="nav-dropdown-toggle">Bộ Công Cụ BD <span class="dropdown-arrow">▾</span></button>
+                    <div class="nav-dropdown-menu">
+                        <a href="finder.html" class="" style="display: none !important;">B2B PIC Finder <span class="nav-badge pro">Pro</span></a>
+                        <a href="pitching.html" class="">Luyện Pitching AI <span class="nav-badge hot">🔥 VOICE AI</span></a>
+                        <a href="email-assistant.html" class="">AI Email Assistant <span class="nav-badge ai">✍️ EMAIL AI</span></a>
+                        <a href="kpi-estimation.html" class="">Ma Trận KPI BD <span class="nav-badge new">📊 NEW</span></a>
+                        <a href="salary.html" class="">Tính Lương Gross - Net</a>
+                        <a href="labor-law.html" class="">Tra Cứu Luật Lao Động</a>
+                        <a href="personality-test.html" class="active">Trắc Nghiệm BD Match <span class="nav-badge new">📊 FUN</span></a>
+                    </div>
+                </div>
+                <a href="index.html#minigame-section">B2B Challenge <span class="nav-badge new">New</span></a>
+                <a href="community.html" class="">Cộng Đồng</a>
+                <button id="theme-toggle" class="theme-toggle-btn" aria-label="Toggle theme">🌓</button>
+            </nav>
+            <button class="mobile-menu-toggle" id="mobile-menu-toggle" aria-label="Open Mobile Menu">
+                <span class="hamburger-icon">☰</span>
+            </button>
+        </div>
+    </header>
+
+    <main class="container" style="max-width: 900px; margin: 40px auto; padding: 0 20px;">
+        <!-- Banner Title -->
+        <section style="text-align: center; margin-bottom: 30px;">
+            <span class="hero-badge" style="background: rgba(243, 168, 59, 0.15); color: var(--primary); padding: 6px 16px; border-radius: 20px; font-size: 0.8rem; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; display: inline-block; margin-bottom: 12px; border: 1px solid rgba(243, 168, 59, 0.3);">
+                BD Match Game
+            </span>
+            <h1 style="font-size: 2.2rem; font-weight: 800; margin: 0 0 10px 0; background: linear-gradient(135deg, var(--text-main) 0%, var(--primary) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-transform: uppercase;">
+                Tính Cách Bạn Hợp Với BD B2B Đến Mức Nào?
+            </h1>
+            <p style="font-size: 1rem; color: var(--text-light); max-width: 600px; margin: 0 auto; line-height: 1.55;">
+                Nhấp chuột trả lời 5 câu hỏi tình huống thực chiến hóc búa, vui nhộn để Cú BeeDee phân tích nhóm tính cách và trao tặng "Chứng nhận BD" riêng biệt!
+            </p>
+        </section>
+
+        <!-- Quiz Panel Box -->
+        <div class="quiz-container glass-panel" id="quiz-root-box">
+            <!-- Dynamic quiz screens will render here -->
+            <div id="start-screen">
+                <div style="font-size: 3rem; margin-bottom: 15px; line-height: 1;">🦉⚔️</div>
+                <h2 style="font-size: 1.35rem; font-weight: 800; color: var(--text-main); margin: 0 0 15px 0;">SẴN SÀNG KHÁM PHÁ BẢN THÂN?</h2>
+                <p style="font-size: 0.88rem; color: var(--text-light); line-height: 1.6; max-width: 480px; margin: 0 auto 25px auto;">
+                    Bác là Thợ săn hung hãn chốt deal siêu tốc, Nông dân chiến lược gieo mầm quan hệ bền chặt, hay là Chiến thần công nghệ có AI gánh tạ? Hãy để BeeDee làm giám khảo!
+                </p>
+                <button onclick="startQuiz()" class="btn btn-primary" style="padding: 12px 30px; font-size: 0.95rem; font-weight: bold; border-radius: 12px;">
+                    🚀 Bắt Đầu Trắc Nghiệm Ngay
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container text-center">
+            <blockquote class="final-quote">
+                "Hiểu người là thông thái, hiểu mình là trí tuệ. Trong B2B, hiểu cả hai là chiến thắng."
+            </blockquote>
+            <p class="author-name">B2B BD Tips Portal &copy; 2026</p>
+        </div>
+    </footer>
+
+    <!-- Chatbot -->
+    <div id="ai-chat-root"></div>
+
+    <script src="script.js?v=2.3.7"></script>
+    <script src="ai-chat.js?v=2.3.7"></script>
+    
+    <!-- Game Engine Script -->
+    <script>
+        const QUESTIONS = [
+            {
+                text: "Gặp PIC (Người phụ trách) mua hàng lạnh lùng từ chối cuộc gọi đầu tiên, phản xạ của bác là gì?",
+                options: [
+                    { label: "A", text: "Gọi lại ngay bằng số khác, đóng vai 'khách hàng gọi nhầm' để bắt chuyện tìm sơ hở. Mặt dày mới ăn tiền!", type: "hunter" },
+                    { label: "B", text: "Lên LinkedIn dò la sở thích của PIC, thấy họ thích nuôi mèo liền gửi bài viết 'Cách nuôi mèo mập' để tiếp cận tự nhiên.", type: "farmer" },
+                    { label: "C", text: "Quét email của PIC qua Finder, soạn 3 mẫu email follow-up cá nhân hóa bằng Gemini và lên lịch gửi tự động.", type: "tech" },
+                    { label: "D", text: "Ghi chép vào sổ tay, thở dài một tiếng rồi tự nhủ 'chắc hôm nay ngày xấu, mai gọi lại sau vậy'.", type: "rookie" }
+                ]
+            },
+            {
+                text: "Sếp giao chỉ tiêu KPI tăng doanh số B2B lên 300% trong quý tới. Phản ứng đầu tiên của bác là:",
+                options: [
+                    { label: "A", text: "'Được sếp ơi, để em đi săn mấy dự án Enterprise lớn luôn!' (Chưa biết săn được không nhưng máu cái đã!).", type: "hunter" },
+                    { label: "B", text: "Lấy file Excel 'Ma Trận KPI', ngồi phân tích dung lượng thị trường và lập kế hoạch tiếp cận 50 đối tác chiến lược.", type: "farmer" },
+                    { label: "C", text: "Lập tức setup công cụ cào leads tự động, tối ưu pipeline bằng AI để scale-up phễu khách hàng lập tức.", type: "tech" },
+                    { label: "D", text: "Lên group 'BD Bình Dân Học Vụ' đăng bài: 'Làm sao đạt KPI 300% mà không bị trầm cảm cứu em với các bác!'", type: "rookie" }
+                ]
+            },
+            {
+                text: "Khách hàng nhăn mặt chê: 'Bên em giá đắt quá, bên đối thủ rẻ hơn 30%!' Bác sẽ làm sao?",
+                options: [
+                    { label: "A", text: "'Đắt xắt ra miếng bác ơi! Bên em hỗ trợ 24/7, đối thủ rẻ nhưng đêm bác gọi họ có nghe máy không?' (Đập tan đối thủ).", type: "hunter" },
+                    { label: "B", text: "Rủ khách đi cafe, phân tích bài toán ROI (Tỉ suất hoàn vốn) và tổng chi phí sở hữu (TCO) dài hạn để chứng minh giá trị.", type: "farmer" },
+                    { label: "C", text: "Dùng AI viết ngay một bản so sánh tính năng chi tiết (Feature Matrix) gửi khách hàng để chứng minh chất lượng.", type: "tech" },
+                    { label: "D", text: "Khóc thầm trong lòng, rồi chạy về xin sếp giảm giá kịch sàn để giữ chân khách bằng mọi giá.", type: "rookie" }
+                ]
+            },
+            {
+                text: "Khi đi pitching (thuyết trình) trước Hội đồng Quản trị của khách hàng lớn, vũ khí bí mật của bác là gì?",
+                options: [
+                    { label: "A", text: "Kỹ năng ăn nói hoạt ngôn, đối đáp trôi chảy và khả năng 'đọc vị' tâm lý các sếp ngay tại bàn họp.", type: "hunter" },
+                    { label: "B", text: "Một slide pitch deck thiết kế tối giản, chuyên nghiệp với số liệu nghiên cứu thị trường cực kỳ sâu sắc.", type: "farmer" },
+                    { label: "C", text: "Bản demo sản phẩm tương tác trực quan chạy cực mượt mà kèm video giới thiệu do AI lồng tiếng thuyết minh.", type: "tech" },
+                    { label: "D", text: "Sự chân thành, nụ cười tỏa nắng và lời cầu nguyện 'hy vọng các sếp thương tình ký duyệt'.", type: "rookie" }
+                ]
+            },
+            {
+                text: "Sau khi ký thành công hợp đồng lớn, bác sẽ ăn mừng bằng cách nào?",
+                options: [
+                    { label: "A", text: "Nhấc điện thoại lên gọi tiếp cho lead mới. Sắt đang nóng phải rèn ngay, không được nghỉ ngơi!", type: "hunter" },
+                    { label: "B", text: "Viết email cảm ơn chi tiết gửi toàn bộ team hỗ trợ phía sau và lên lịch đi ăn tối tri ân đối tác.", type: "farmer" },
+                    { label: "C", text: "Cập nhật trạng thái CRM lên 'Closed Won', kích hoạt quy trình bàn giao cho CS và ngồi xem AI thống kê hoa hồng.", type: "tech" },
+                    { label: "D", text: "Chụp ảnh màn hình hợp đồng đăng Story: 'BD khó có Peter lo, cuối cùng cũng sống sót qua tháng này!'", type: "rookie" }
+                ]
+            }
+        ];
+
+        const PERSONAS = {
+            hunter: {
+                title: "Thợ Săn Thiện Chiến (The Aggressive Hunter)",
+                compatibility: "Độ phù hợp BD: 95% 🪙",
+                mascot: "mascot_pitching.jpg?v=2.3.7",
+                description: "Bác sở hữu bản năng của một thợ săn B2B thực thụ! Máu lửa, kiên trì, không sợ bị từ chối và luôn hướng về mục tiêu đóng deal. Bác nói chuyện sắc bén, chốt sale nhanh gọn nhưng nhớ chú ý chăm sóc khách hàng sau bán hàng kỹ lưỡng hơn để tạo doanh số bền vững nhé!",
+                advice: "Lời khuyên từ Peter Vo: Hãy phối hợp với các đồng nghiệp làm Operations/CS để giữ chân khách tốt hơn sau khi ký hợp đồng."
+            },
+            farmer: {
+                title: "Chiến Lược Gia Thực Thảo (The Strategic Farmer)",
+                compatibility: "Độ phù hợp BD: 90% 🪙",
+                mascot: "mascot_quests.jpg?v=2.3.7",
+                description: "Bác là bậc thầy về xây dựng quan hệ và lập kế hoạch dài hạn. Bác không chốt sale vội vã mà tập trung tạo dựng lòng tin, phân tích ROI cực kỹ và đi sâu vào giải quyết nỗi đau của khách hàng. Đối tác luôn yêu quý bác vì sự chuyên nghiệp và chân thành.",
+                advice: "Lời khuyên từ Peter Vo: Đôi khi bác cần dứt khoát đẩy nhanh tiến độ chốt deal để tránh chu kỳ bán hàng (sales cycle) bị kéo dài quá mức."
+            },
+            tech: {
+                title: "Chiến Thần BD Công Nghệ (The Tech-Savvy BD)",
+                compatibility: "Độ phù hợp BD: 92% 🪙",
+                mascot: "mascot_email.jpg?v=2.3.7",
+                description: "Bác là BD thời đại mới - làm việc thông minh bằng công nghệ! Thay vì chạy bằng cơm, bác dùng AI để tìm lead, viết mail cá nhân hóa và quản lý phễu tự động. Năng suất của bác bằng cả một team cộng lại!",
+                advice: "Lời khuyên từ Peter Vo: Đừng để công nghệ che mờ sự tương tác cá nhân. Khách hàng B2B lớn vẫn thích những buổi gặp mặt nói chuyện trực tiếp hơn là email tự động."
+            },
+            rookie: {
+                title: "Tân Binh Tò Mò (The Eager Rookie)",
+                compatibility: "Độ phù hợp BD: 75% (Tiềm năng vô hạn!) 🪙",
+                mascot: "beedee_mid_autumn.jpg?v=2.3.7",
+                description: "Bác là một chú cú non đầy nhiệt huyết và tò mò với thế giới B2B BD! Đôi khi bác còn bỡ ngỡ trước khách hàng khó tính hay chỉ tiêu KPI khủng, nhưng tinh thần ham học hỏi sẽ giúp bác tiến rất xa.",
+                advice: "Lời khuyên từ Peter Vo: Hãy ghé qua 'Thư Viện Thực Chiến' mỗi ngày và tích cực trao đổi trên 'Cộng Đồng' để học hỏi kinh nghiệm thực tế."
+            }
+        };
+
+        let currentQuestionIdx = 0;
+        let userAnswers = [];
+
+        function startQuiz() {
+            currentQuestionIdx = 0;
+            userAnswers = [];
+            renderQuestion();
+        }
+
+        function renderQuestion() {
+            const root = document.getElementById('quiz-root-box');
+            const q = QUESTIONS[currentQuestionIdx];
+            const progress = (currentQuestionIdx / QUESTIONS.length) * 100;
+            
+            root.innerHTML = `
+                <div class="progress-bar-container">
+                    <div class="progress-bar-fill" style="width: ${progress}%"></div>
+                </div>
+                <div style="font-size: 0.8rem; font-weight: bold; color: var(--text-light); text-transform: uppercase; margin-bottom: 8px; text-align: left;">
+                    Câu hỏi ${currentQuestionIdx + 1}/${QUESTIONS.length}
+                </div>
+                <div class="question-card">
+                    <h3>${q.text}</h3>
+                    <div class="options-list">
+                        ${q.options.map((opt, idx) => `
+                            <div class="option-item" onclick="selectOption('${opt.type}')">
+                                <span class="option-prefix">${opt.label}</span>
+                                <span>${opt.text}</span>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+        }
+
+        function selectOption(type) {
+            userAnswers.push(type);
+            currentQuestionIdx++;
+            if (currentQuestionIdx < QUESTIONS.length) {
+                renderQuestion();
+            } else {
+                showResult();
+            }
+        }
+
+        function calculateResult() {
+            const counts = {};
+            let maxType = 'rookie';
+            let maxCount = 0;
+            
+            userAnswers.forEach(ans => {
+                counts[ans] = (counts[ans] || 0) + 1;
+                if (counts[ans] > maxCount) {
+                    maxCount = counts[ans];
+                    maxType = ans;
+                }
+            });
+            
+            return maxType;
+        }
+
+        function showResult() {
+            const root = document.getElementById('quiz-root-box');
+            const resultType = calculateResult();
+            const p = PERSONAS[resultType];
+            
+            root.innerHTML = `
+                <div class="progress-bar-container">
+                    <div class="progress-bar-fill" style="width: 100%"></div>
+                </div>
+                <div style="font-size: 0.8rem; font-weight: bold; color: #10b981; text-transform: uppercase; margin-bottom: 5px;">
+                    🎉 ĐÃ HOÀN THÀNH TRẮC NGHIỆM!
+                </div>
+                
+                <div class="mascot-result-box">
+                    <img src="${p.mascot}" alt="${p.title}">
+                </div>
+                
+                <h2 class="result-title">${p.title}</h2>
+                <div class="result-compatibility">${p.compatibility}</div>
+                
+                <div class="result-description">
+                    ${p.description}
+                    <br><br>
+                    <strong style="color: var(--primary);">${p.advice}</strong>
+                </div>
+                
+                <!-- Reward Gift Code Box -->
+                <div class="reward-badge-panel">
+                    <h5 style="margin: 0; font-size: 0.82rem; font-weight: 800; color: var(--primary);">🎁 QUÀ TẶNG THỰC CHIẾN TỪ CÚ BEEDEE</h5>
+                    <p style="margin: 4px 0 10px 0; font-size: 0.76rem; color: var(--text-light);">Bác nhận ngay 50 BD-Points! Sao chép mã dưới đây rồi dán vào mục <b>Nhiệm Vụ</b>:</p>
+                    <div style="display: flex; gap: 8px; justify-content: center; align-items: center;">
+                        <span id="gift-code-badge" style="font-family: monospace; font-size: 0.95rem; font-weight: bold; background: rgba(0,0,0,0.15); color: #fff; padding: 6px 14px; border-radius: 6px; border: 1px solid var(--border-color); letter-spacing: 1px;">BDMATCH50</span>
+                        <button onclick="copyCode()" class="btn btn-secondary" style="padding: 6px 12px; font-size: 0.72rem; font-weight: bold; border-radius: 6px; cursor: pointer; border: 1px solid var(--border-color); background: rgba(255,255,255,0.05); color: var(--text-main);">Sao Chép</button>
+                    </div>
+                </div>
+                
+                <!-- CTA buttons -->
+                <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
+                    <button onclick="downloadCertificate('${resultType}')" class="btn btn-primary" style="padding: 12px 24px; font-size: 0.85rem; font-weight: bold; border-radius: 8px;">
+                        📥 Tải Chứng Chỉ Tính Cách
+                    </button>
+                    <button onclick="startQuiz()" class="btn btn-secondary" style="padding: 12px 24px; font-size: 0.85rem; font-weight: bold; border-radius: 8px; border: 1px solid var(--border-color); background: rgba(255,255,255,0.03); color: var(--text-main);">
+                        🔄 Thử Lại
+                    </button>
+                </div>
+            `;
+
+            // Trigger global points notification if possible
+            if (window.showPointToast) {
+                window.showPointToast(50, "Đã mở khóa mã quà tặng BDMATCH50!");
+            }
+        }
+
+        function copyCode() {
+            navigator.clipboard.writeText("BDMATCH50").then(() => {
+                alert("Đã sao chép mã quà tặng BDMATCH50! Bác ghé trang Nhiệm vụ để đổi 50đ nhé.");
+            });
+        }
+
+        function downloadCertificate(type) {
+            const p = PERSONAS[type];
+            const name = localStorage.getItem('streak_name') || 'Chiến thần B2B';
+            const dateStr = new Date().toLocaleDateString('vi-VN');
+            
+            const htmlContent = `<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Chứng Chỉ Năng Lực BD B2B - Cú BeeDee</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Lexend:wght@400;700;800&family=Plus+Jakarta+Sans:wght@400;700;800&display=swap');
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #fcf9f4;
+            color: #334155;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        .cert-container {
+            max-width: 600px;
+            width: 100%;
+            background: #ffffff;
+            border: 8px double #f3a83b;
+            border-radius: 28px;
+            padding: 45px 35px;
+            text-align: center;
+            position: relative;
+            box-shadow: 0 15px 35px rgba(243, 168, 59, 0.12);
+        }
+        .cert-header {
+            font-family: 'Lexend', sans-serif;
+            font-size: 0.78rem;
+            font-weight: 800;
+            color: #d97706;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 15px;
+        }
+        .cert-logo {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            line-height: 1;
+        }
+        .cert-title {
+            font-family: 'Lexend', sans-serif;
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: #1e293b;
+            margin: 0 0 5px 0;
+            text-transform: uppercase;
+            line-height: 1.25;
+        }
+        .cert-subtitle {
+            font-size: 0.85rem;
+            color: #64748b;
+            font-style: italic;
+            margin-bottom: 30px;
+        }
+        .cert-awardee {
+            font-size: 0.8rem;
+            color: #475569;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 5px;
+        }
+        .cert-name {
+            font-family: 'Lexend', sans-serif;
+            font-size: 1.6rem;
+            font-weight: 800;
+            color: #b45309;
+            border-bottom: 2px solid #f3a83b;
+            display: inline-block;
+            padding-bottom: 5px;
+            margin-bottom: 25px;
+            min-width: 250px;
+        }
+        .cert-statement {
+            font-size: 0.95rem;
+            line-height: 1.65;
+            color: #334155;
+            text-align: justify;
+            margin-bottom: 35px;
+            background: #fdfaf6;
+            padding: 20px;
+            border-radius: 16px;
+            border: 1px dashed rgba(243, 168, 59, 0.4);
+        }
+        .cert-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-top: 40px;
+            border-top: 1px solid rgba(0,0,0,0.05);
+            padding-top: 25px;
+        }
+        .cert-sign {
+            text-align: left;
+            font-size: 0.78rem;
+            color: #64748b;
+        }
+        .cert-sign-title {
+            font-weight: bold;
+            color: #1e293b;
+            margin-bottom: 5px;
+        }
+        .cert-sign-name {
+            font-family: 'Lexend', sans-serif;
+            font-weight: bold;
+            color: #b45309;
+            margin-top: 20px;
+        }
+        .print-btn {
+            margin-top: 25px;
+            padding: 10px 20px;
+            background: #f3a83b;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(243,168,59,0.3);
+        }
+        @media print {
+            .print-btn { display: none; }
+            body { background: #fff; padding: 0; }
+            .cert-container { border: 8px double #000; box-shadow: none; margin: 0; }
+        }
+    </style>
+</head>
+<body>
+    <div class="cert-container">
+        <div class="cert-header">B2B BD Tips Portal &bull; Gamification</div>
+        <div class="cert-logo">🦉📜</div>
+        <div class="cert-title">Chứng Chỉ Tính Cách BD</div>
+        <div class="cert-subtitle">Hệ thống Đánh giá Năng lực B2B Thực Chiến</div>
+        
+        <div class="cert-awardee">Trao tặng cho Chiến thần</div>
+        <div class="cert-name">${name}</div>
+        
+        <div class="cert-statement">
+            Qua quá trình kiểm tra và phân tích 5 tình huống thực chiến hóc búa, Cú BeeDee đã xác định bác thuộc nhóm tính cách: <b>${p.title}</b>. Bác sở hữu các phẩm chất ưu tú của một chuyên gia phát triển thị trường B2B xuất sắc. Chúc bác tiếp tục săn deal thành công rực rỡ!
+        </div>
+        
+        <div class="cert-footer">
+            <div class="cert-sign">
+                <div class="cert-sign-title">Ngày kiểm định:</div>
+                <div>${dateStr}</div>
+            </div>
+            <div class="cert-sign" style="text-align: right;">
+                <div class="cert-sign-title">Giám khảo thẩm định:</div>
+                <div class="cert-sign-name">Cú Thông Thái BeeDee</div>
+            </div>
+        </div>
+        
+        <button class="print-btn" onclick="window.print()">In / Lưu File PDF 📥</button>
+    </div>
+</body>
+</html>`;
+
+            const blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `Chung_Nhan_BD_BeeDee_${name.replace(/\s+/g, '_')}.html`;
+            link.click();
+        }
+    </script>
+</body>
+</html>
