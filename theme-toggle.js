@@ -1494,11 +1494,74 @@ function handleEmailReminderRegistration(nameInputId, emailInputId, submitBtnId,
 
 function initEmailRegistrations() {
     const streakActive = localStorage.getItem('streak_active') === 'true';
+    const email = localStorage.getItem('streak_email');
+    const verified = localStorage.getItem('b2b_user_verified') === 'true';
     const funnyBox = document.getElementById('challenge-funny-trigger-box');
-    if (funnyBox && streakActive) {
-        funnyBox.style.display = 'none';
-        const parent = funnyBox.closest('.funny-reminder-container');
-        if (parent) parent.style.display = 'none';
+    
+    if (funnyBox) {
+        if (streakActive && verified) {
+            funnyBox.style.display = 'none';
+            const parent = funnyBox.closest('.funny-reminder-container');
+            if (parent) parent.style.display = 'none';
+        } else if (email && !verified) {
+            funnyBox.style.display = 'flex';
+            const parent = funnyBox.closest('.funny-reminder-container');
+            if (parent) parent.style.display = 'block';
+            
+            funnyBox.innerHTML = `
+                <div style="display: flex; align-items: center; gap: 12px; flex: 1; min-width: 280px; text-align: left;">
+                    <span style="font-size: 1.8rem; line-height: 1; animation: pulse 2s infinite;">⚠️</span>
+                    <div>
+                        <h4 style="margin: 0; font-size: 0.9rem; font-weight: 800; color: #f59e0b; text-transform: uppercase;">Xác thực Nhắc nhở Cú BeeDee</h4>
+                        <p style="margin: 2px 0 0 0; font-size: 0.78rem; color: var(--text-light); line-height: 1.3;">
+                            Nhắc nhở chưa hoạt động! Vui lòng kiểm tra email <strong>${email}</strong> và click vào link xác thực để kích hoạt & nhận 15đ.
+                        </p>
+                    </div>
+                </div>
+                <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+                    <button id="btn-resend-verification" class="btn btn-primary" style="padding: 8px 16px; font-size: 0.82rem; font-weight: 800; border-radius: 6px; border: none; cursor: pointer;">
+                        ✉️ Gửi Lại Link Xác Thực
+                    </button>
+                </div>
+            `;
+            
+            const resendBtn = document.getElementById('btn-resend-verification');
+            if (resendBtn) {
+                resendBtn.onclick = async () => {
+                    resendBtn.disabled = true;
+                    resendBtn.textContent = 'Đang gửi...';
+                    try {
+                        const name = localStorage.getItem('streak_name') || 'Học viên';
+                        const res = await fetch('/api/log-email', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                action: 'syncUser',
+                                email: email,
+                                name: name,
+                                points: parseInt(localStorage.getItem('b2b_points_balance') || '25', 10),
+                                device: 'Desktop',
+                                tool: 'daily-reminder'
+                            })
+                        });
+                        if (res.ok) {
+                            alert('🎉 Đã gửi lại email xác thực thành công! Vui lòng kiểm tra hộp thư của bạn (bao gồm cả thư rác/spam).');
+                        } else {
+                            alert('Gửi lại email xác thực thất bại. Vui lòng thử lại sau.');
+                        }
+                    } catch(e) {
+                        alert('Không thể kết nối máy chủ.');
+                    } finally {
+                        resendBtn.disabled = false;
+                        resendBtn.textContent = '✉️ Gửi Lại Link Xác Thực';
+                    }
+                };
+            }
+        } else {
+            funnyBox.style.display = 'flex';
+            const parent = funnyBox.closest('.funny-reminder-container');
+            if (parent) parent.style.display = 'block';
+        }
     }
 
     // Challenge trigger box (Homepage)
