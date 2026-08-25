@@ -3,15 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Trắc Nghiệm Tính Cách BD | Khám Phá Bản Thân cùng BeeDee | BD Bình Dân Học Vụ</title>
-    <meta name="description" content="Trắc nghiệm xem bạn thuộc nhóm tính cách BD nào trong B2B Sales. Lời văn hóm hỉnh, hình ảnh cú BeeDee cực sinh động và tải chứng nhận năng lực cá nhân.">
+    <title>Trắc Nghiệm Tính Cách B2B BD (MBTI) | Cú BeeDee | BD Bình Dân Học Vụ</title>
+    <meta name="description" content="Trải nghiệm game quẹt thẻ tính cách MBTI cực thú vị để đo chỉ số B2B BD của bạn. Nhận quà 50đ và tải chứng chỉ độc quyền.">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css?v=2.3.7">
-    <link rel="stylesheet" href="ai-chat.css?v=2.3.6">
-    <script src="theme-toggle.js?v=2.3.7"></script>
+    <link rel="stylesheet" href="style.css?v=2.3.8">
+    <link rel="stylesheet" href="ai-chat.css?v=2.3.7">
+    <script src="theme-toggle.js?v=2.3.8"></script>
     <style>
         .quiz-container {
-            max-width: 720px;
+            max-width: 600px;
             margin: 40px auto;
             padding: 30px;
             border-radius: 24px;
@@ -20,75 +20,160 @@
             background: var(--card-bg);
             backdrop-filter: blur(10px);
             text-align: center;
-        }
-        .progress-bar-container {
-            width: 100%;
-            height: 6px;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 3px;
-            margin-bottom: 25px;
             overflow: hidden;
         }
-        .progress-bar-fill {
+        
+        /* Tinder Card Stack Styling */
+        .card-stack {
+            position: relative;
+            width: 100%;
+            max-width: 440px;
+            height: 280px;
+            margin: 30px auto;
+        }
+        
+        .swipe-card {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
             height: 100%;
-            width: 0%;
-            background: var(--primary);
-            transition: width 0.3s ease;
-        }
-        .question-card h3 {
-            font-size: 1.25rem;
-            font-weight: 800;
-            color: var(--text-main);
-            margin-bottom: 20px;
-            line-height: 1.45;
-            text-align: left;
-        }
-        .options-list {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1.5px solid var(--border-color);
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            padding: 30px 24px;
+            box-sizing: border-box;
             display: flex;
             flex-direction: column;
-            gap: 12px;
-            margin-top: 15px;
+            justify-content: space-between;
+            align-items: center;
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.4s ease;
+            user-select: none;
+            cursor: grab;
+            transform-origin: center bottom;
+            background-color: var(--card-bg);
+            backdrop-filter: blur(20px);
         }
-        .option-item {
+        
+        .swipe-card:active {
+            cursor: grabbing;
+        }
+        
+        /* Card stack layers */
+        .swipe-card:nth-last-child(1) {
+            z-index: 3;
+            transform: scale(1) translateY(0);
+            opacity: 1;
+        }
+        
+        .swipe-card:nth-last-child(2) {
+            z-index: 2;
+            transform: scale(0.95) translateY(14px);
+            opacity: 0.85;
+        }
+        
+        .swipe-card:nth-last-child(3) {
+            z-index: 1;
+            transform: scale(0.9) translateY(28px);
+            opacity: 0.6;
+        }
+        
+        .swipe-card:nth-last-child(n+4) {
+            display: none;
+        }
+        
+        /* Slide Animations */
+        .swipe-card.swipe-left {
+            transform: translate(-180%, 40px) rotate(-35deg) !important;
+            opacity: 0 !important;
+        }
+        
+        .swipe-card.swipe-right {
+            transform: translate(180%, 40px) rotate(35deg) !important;
+            opacity: 0 !important;
+        }
+        
+        .card-body-text {
+            font-size: 1.05rem;
+            line-height: 1.6;
+            color: var(--text-main);
+            font-weight: 600;
+            text-align: center;
+            margin: auto 0;
+        }
+        
+        .card-hint {
+            font-size: 0.72rem;
+            color: var(--text-light);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: bold;
+        }
+        
+        .swipe-actions {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            align-items: center;
+            margin-top: 20px;
+        }
+        
+        .swipe-btn {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            border: 2px solid var(--border-color);
+            background: rgba(255, 255, 255, 0.02);
+            color: var(--text-main);
+            font-size: 1.3rem;
             display: flex;
             align-items: center;
-            padding: 15px 20px;
-            border-radius: 12px;
-            border: 1px solid var(--border-color);
-            background: rgba(255, 255, 255, 0.01);
-            color: var(--text-main);
+            justify-content: center;
             cursor: pointer;
             transition: all 0.2s ease;
-            text-align: left;
-            font-size: 0.9rem;
-            line-height: 1.4;
-            font-weight: 500;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
         }
-        .option-item:hover {
-            border-color: var(--primary);
-            background: rgba(243, 168, 59, 0.05);
-            transform: translateY(-2px);
+        
+        .swipe-btn.disagree:hover {
+            border-color: #ef4444;
+            background: rgba(239, 68, 68, 0.1);
+            color: #ef4444;
+            transform: scale(1.1);
         }
-        .option-item.selected {
-            border-color: var(--primary);
-            background: rgba(243, 168, 59, 0.1);
-            box-shadow: 0 0 10px rgba(243, 168, 59, 0.15);
+        
+        .swipe-btn.agree:hover {
+            border-color: #10b981;
+            background: rgba(16, 185, 129, 0.1);
+            color: #10b981;
+            transform: scale(1.1);
         }
-        .option-prefix {
-            font-weight: bold;
-            color: var(--primary);
-            margin-right: 12px;
-            font-size: 1rem;
-            flex-shrink: 0;
+        
+        .keyboard-info {
+            margin-top: 18px;
+            font-size: 0.75rem;
+            color: var(--text-light);
         }
+        
+        .keyboard-key {
+            display: inline-block;
+            padding: 2px 6px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            font-family: monospace;
+            border: 1px solid var(--border-color);
+            margin: 0 3px;
+        }
+        
+        /* Result Screen */
         .mascot-result-box {
-            width: 160px;
-            height: 160px;
-            border-radius: 24px;
+            width: 150px;
+            height: 150px;
+            border-radius: 20px;
             overflow: hidden;
             border: 2px solid var(--primary);
             margin: 20px auto;
-            box-shadow: 0 8px 24px rgba(243, 168, 59, 0.15);
+            box-shadow: 0 8px 24px rgba(243, 168, 59, 0.2);
         }
         .mascot-result-box img {
             width: 100%;
@@ -96,7 +181,7 @@
             object-fit: cover;
         }
         .result-title {
-            font-size: 1.8rem;
+            font-size: 1.6rem;
             font-weight: 800;
             margin: 15px 0 5px 0;
             background: linear-gradient(135deg, var(--text-main) 0%, var(--primary) 100%);
@@ -104,7 +189,7 @@
             -webkit-text-fill-color: transparent;
         }
         .result-compatibility {
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             font-weight: 800;
             color: var(--primary);
             margin-bottom: 20px;
@@ -112,12 +197,12 @@
             text-transform: uppercase;
         }
         .result-description {
-            font-size: 0.92rem;
-            line-height: 1.65;
+            font-size: 0.9rem;
+            line-height: 1.6;
             color: var(--text-light);
             text-align: left;
             background: rgba(255, 255, 255, 0.02);
-            padding: 20px;
+            padding: 18px;
             border-radius: 16px;
             border: 1px solid var(--border-color);
             margin-bottom: 25px;
@@ -125,7 +210,7 @@
         .reward-badge-panel {
             background: linear-gradient(135deg, rgba(243,168,59,0.12) 0%, rgba(239,68,68,0.06) 100%);
             border: 1.5px dashed var(--primary);
-            padding: 15px 20px;
+            padding: 15px;
             border-radius: 12px;
             margin-bottom: 25px;
             text-align: center;
@@ -143,7 +228,7 @@
             <nav class="nav-links" id="nav-menu">
                 <a href="index.html" class="">Homepage</a>
                 <a href="library.html" class="">Thư Viện <span class="nav-badge hot">HOT</span></a>
-                <div class="nav-dropdown active">
+                <div class="nav-dropdown">
                     <button class="nav-dropdown-toggle">Bộ Công Cụ BD <span class="dropdown-arrow">▾</span></button>
                     <div class="nav-dropdown-menu">
                         <a href="finder.html" class="" style="display: none !important;">B2B PIC Finder <span class="nav-badge pro">Pro</span></a>
@@ -152,7 +237,6 @@
                         <a href="kpi-estimation.html" class="">Ma Trận KPI BD <span class="nav-badge new">📊 NEW</span></a>
                         <a href="salary.html" class="">Tính Lương Gross - Net</a>
                         <a href="labor-law.html" class="">Tra Cứu Luật Lao Động</a>
-                        <a href="personality-test.html" class="active">Trắc Nghiệm BD Match <span class="nav-badge new">📊 FUN</span></a>
                     </div>
                 </div>
                 <a href="index.html#minigame-section">B2B Challenge <span class="nav-badge new">New</span></a>
@@ -169,27 +253,26 @@
         <!-- Banner Title -->
         <section style="text-align: center; margin-bottom: 30px;">
             <span class="hero-badge" style="background: rgba(243, 168, 59, 0.15); color: var(--primary); padding: 6px 16px; border-radius: 20px; font-size: 0.8rem; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; display: inline-block; margin-bottom: 12px; border: 1px solid rgba(243, 168, 59, 0.3);">
-                BD Match Game
+                BD Match &bull; MBTI Edition
             </span>
             <h1 style="font-size: 2.2rem; font-weight: 800; margin: 0 0 10px 0; background: linear-gradient(135deg, var(--text-main) 0%, var(--primary) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-transform: uppercase;">
-                Tính Cách Bạn Hợp Với BD B2B Đến Mức Nào?
+                QUẸT THẺ ĐO CHỈ SỐ BD CỦA BẠN 🦉
             </h1>
-            <p style="font-size: 1rem; color: var(--text-light); max-width: 600px; margin: 0 auto; line-height: 1.55;">
-                Nhấp chuột trả lời 5 câu hỏi tình huống thực chiến hóc búa, vui nhộn để Cú BeeDee phân tích nhóm tính cách và trao tặng "Chứng nhận BD" riêng biệt!
+            <p style="font-size: 0.98rem; color: var(--text-light); max-width: 580px; margin: 0 auto; line-height: 1.55;">
+                Quẹt thẻ sang <b>Phải (Đồng ý)</b> hoặc <b>Trái (Không đồng ý)</b> để BeeDee kiểm tra tính cách MBTI thực chiến của bác và tặng quà BD-Points nhé!
             </p>
         </section>
 
-        <!-- Quiz Panel Box -->
+        <!-- Quiz Container -->
         <div class="quiz-container glass-panel" id="quiz-root-box">
-            <!-- Dynamic quiz screens will render here -->
             <div id="start-screen">
-                <div style="font-size: 3rem; margin-bottom: 15px; line-height: 1;">🦉⚔️</div>
-                <h2 style="font-size: 1.35rem; font-weight: 800; color: var(--text-main); margin: 0 0 15px 0;">SẴN SÀNG KHÁM PHÁ BẢN THÂN?</h2>
-                <p style="font-size: 0.88rem; color: var(--text-light); line-height: 1.6; max-width: 480px; margin: 0 auto 25px auto;">
-                    Bác là Thợ săn hung hãn chốt deal siêu tốc, Nông dân chiến lược gieo mầm quan hệ bền chặt, hay là Chiến thần công nghệ có AI gánh tạ? Hãy để BeeDee làm giám khảo!
+                <div style="font-size: 3rem; margin-bottom: 15px; line-height: 1;">🗂️🦉</div>
+                <h2 style="font-size: 1.3rem; font-weight: 800; color: var(--text-main); margin: 0 0 12px 0;">BẮT ĐẦU TRÒ CHƠI QUẸT THẺ</h2>
+                <p style="font-size: 0.88rem; color: var(--text-light); line-height: 1.6; max-width: 440px; margin: 0 auto 25px auto;">
+                    Đứng trước 8 quan điểm thực chiến trong ngành BD B2B, bạn sẽ lựa chọn thế nào? Hãy thể hiện quan điểm thật của mình để phân định phong cách.
                 </p>
-                <button onclick="startQuiz()" class="btn btn-primary" style="padding: 12px 30px; font-size: 0.95rem; font-weight: bold; border-radius: 12px;">
-                    🚀 Bắt Đầu Trắc Nghiệm Ngay
+                <button onclick="startQuiz()" class="btn btn-primary" style="padding: 12px 30px; font-size: 0.95rem; font-weight: bold; border-radius: 12px; border: none; cursor: pointer;">
+                    🚀 Vào Trận Quẹt Thẻ Ngay
                 </button>
             </div>
         </div>
@@ -199,7 +282,7 @@
     <footer class="footer">
         <div class="container text-center">
             <blockquote class="final-quote">
-                "Hiểu người là thông thái, hiểu mình là trí tuệ. Trong B2B, hiểu cả hai là chiến thắng."
+                "Thấu hiểu bản thân để định vị phong cách - Chìa khóa nâng tầm kỹ năng chốt sale B2B."
             </blockquote>
             <p class="author-name">B2B BD Tips Portal &copy; 2026</p>
         </div>
@@ -208,154 +291,282 @@
     <!-- Chatbot -->
     <div id="ai-chat-root"></div>
 
-    <script src="script.js?v=2.3.7"></script>
-    <script src="ai-chat.js?v=2.3.7"></script>
-    
-    <!-- Game Engine Script -->
+    <script src="script.js?v=2.3.8"></script>
+    <script src="ai-chat.js?v=2.3.8"></script>
+
     <script>
-        const QUESTIONS = [
-            {
-                text: "Gặp PIC (Người phụ trách) mua hàng lạnh lùng từ chối cuộc gọi đầu tiên, phản xạ của bác là gì?",
-                options: [
-                    { label: "A", text: "Gọi lại ngay bằng số khác, đóng vai 'khách hàng gọi nhầm' để bắt chuyện tìm sơ hở. Mặt dày mới ăn tiền!", type: "hunter" },
-                    { label: "B", text: "Lên LinkedIn dò la sở thích của PIC, thấy họ thích nuôi mèo liền gửi bài viết 'Cách nuôi mèo mập' để tiếp cận tự nhiên.", type: "farmer" },
-                    { label: "C", text: "Quét email của PIC qua Finder, soạn 3 mẫu email follow-up cá nhân hóa bằng Gemini và lên lịch gửi tự động.", type: "tech" },
-                    { label: "D", text: "Ghi chép vào sổ tay, thở dài một tiếng rồi tự nhủ 'chắc hôm nay ngày xấu, mai gọi lại sau vậy'.", type: "rookie" }
-                ]
-            },
-            {
-                text: "Sếp giao chỉ tiêu KPI tăng doanh số B2B lên 300% trong quý tới. Phản ứng đầu tiên của bác là:",
-                options: [
-                    { label: "A", text: "'Được sếp ơi, để em đi săn mấy dự án Enterprise lớn luôn!' (Chưa biết săn được không nhưng máu cái đã!).", type: "hunter" },
-                    { label: "B", text: "Lấy file Excel 'Ma Trận KPI', ngồi phân tích dung lượng thị trường và lập kế hoạch tiếp cận 50 đối tác chiến lược.", type: "farmer" },
-                    { label: "C", text: "Lập tức setup công cụ cào leads tự động, tối ưu pipeline bằng AI để scale-up phễu khách hàng lập tức.", type: "tech" },
-                    { label: "D", text: "Lên group 'BD Bình Dân Học Vụ' đăng bài: 'Làm sao đạt KPI 300% mà không bị trầm cảm cứu em với các bác!'", type: "rookie" }
-                ]
-            },
-            {
-                text: "Khách hàng nhăn mặt chê: 'Bên em giá đắt quá, bên đối thủ rẻ hơn 30%!' Bác sẽ làm sao?",
-                options: [
-                    { label: "A", text: "'Đắt xắt ra miếng bác ơi! Bên em hỗ trợ 24/7, đối thủ rẻ nhưng đêm bác gọi họ có nghe máy không?' (Đập tan đối thủ).", type: "hunter" },
-                    { label: "B", text: "Rủ khách đi cafe, phân tích bài toán ROI (Tỉ suất hoàn vốn) và tổng chi phí sở hữu (TCO) dài hạn để chứng minh giá trị.", type: "farmer" },
-                    { label: "C", text: "Dùng AI viết ngay một bản so sánh tính năng chi tiết (Feature Matrix) gửi khách hàng để chứng minh chất lượng.", type: "tech" },
-                    { label: "D", text: "Khóc thầm trong lòng, rồi chạy về xin sếp giảm giá kịch sàn để giữ chân khách bằng mọi giá.", type: "rookie" }
-                ]
-            },
-            {
-                text: "Khi đi pitching (thuyết trình) trước Hội đồng Quản trị của khách hàng lớn, vũ khí bí mật của bác là gì?",
-                options: [
-                    { label: "A", text: "Kỹ năng ăn nói hoạt ngôn, đối đáp trôi chảy và khả năng 'đọc vị' tâm lý các sếp ngay tại bàn họp.", type: "hunter" },
-                    { label: "B", text: "Một slide pitch deck thiết kế tối giản, chuyên nghiệp với số liệu nghiên cứu thị trường cực kỳ sâu sắc.", type: "farmer" },
-                    { label: "C", text: "Bản demo sản phẩm tương tác trực quan chạy cực mượt mà kèm video giới thiệu do AI lồng tiếng thuyết minh.", type: "tech" },
-                    { label: "D", text: "Sự chân thành, nụ cười tỏa nắng và lời cầu nguyện 'hy vọng các sếp thương tình ký duyệt'.", type: "rookie" }
-                ]
-            },
-            {
-                text: "Sau khi ký thành công hợp đồng lớn, bác sẽ ăn mừng bằng cách nào?",
-                options: [
-                    { label: "A", text: "Nhấc điện thoại lên gọi tiếp cho lead mới. Sắt đang nóng phải rèn ngay, không được nghỉ ngơi!", type: "hunter" },
-                    { label: "B", text: "Viết email cảm ơn chi tiết gửi toàn bộ team hỗ trợ phía sau và lên lịch đi ăn tối tri ân đối tác.", type: "farmer" },
-                    { label: "C", text: "Cập nhật trạng thái CRM lên 'Closed Won', kích hoạt quy trình bàn giao cho CS và ngồi xem AI thống kê hoa hồng.", type: "tech" },
-                    { label: "D", text: "Chụp ảnh màn hình hợp đồng đăng Story: 'BD khó có Peter lo, cuối cùng cũng sống sót qua tháng này!'", type: "rookie" }
-                ]
-            }
+        // 8 statements corresponding to the 4 MBTI dimensions: E vs I, S vs N, T vs F, J vs P
+        const STATEMENTS = [
+            { id: 1, text: "Bác thích tụ tập giao lưu, mở rộng mối quan hệ tại các sự kiện B2B lớn hơn là ngồi nghiên cứu một mình thông tin doanh nghiệp.", dimension: "EI", active: "E" },
+            { id: 2, text: "Khi tiếp cận khách hàng mới, bác tin tưởng vào quy trình chuẩn mực và số liệu khảo sát hơn là trực giác cá nhân.", dimension: "SN", active: "S" },
+            { id: 3, text: "Đối với bác, cách thuyết phục khách tốt nhất là chứng minh chỉ số ROI và các tính năng cụ thể vượt trội, chứ không phải nói chuyện tình cảm.", dimension: "TF", active: "T" },
+            { id: 4, text: "Bác luôn lập kế hoạch chi tiết cho tuần làm việc, cập nhật CRM đều đặn và ghét việc bị phá vỡ kế hoạch ban đầu.", dimension: "JP", active: "J" },
+            { id: 5, text: "Khi gặp khó khăn về KPI, phản xạ đầu tiên của bác là tìm đồng nghiệp hoặc nhóm đối tác để thảo luận, thay vì tự suy ngẫm giải pháp.", dimension: "EI", active: "E" },
+            { id: 6, text: "Bác thích nhìn bức tranh toàn cảnh và tìm kiếm các mô hình hợp tác mới mẻ, đột phá hơn là tối ưu hóa những quy trình cũ có sẵn.", dimension: "SN", active: "N" },
+            { id: 7, text: "Khi khách hàng gặp sự cố, bác ưu tiên giải quyết cảm xúc và xoa dịu tinh thần của họ trước khi đi vào phân tích kỹ thuật hay đền bù.", dimension: "TF", active: "F" },
+            { id: 8, text: "Bác cảm thấy thoải mái hơn khi chốt các deal linh hoạt, ứng biến theo tính cách của khách hàng thay vì bám sát kịch bản pitching.", dimension: "JP", active: "P" }
         ];
 
         const PERSONAS = {
-            hunter: {
-                title: "Thợ Săn Thiện Chiến (The Aggressive Hunter)",
+            commander: {
+                title: "Tổng Tư Lệnh Săn Deal (The B2B Commander)",
                 compatibility: "Độ phù hợp BD: 95% 🪙",
-                mascot: "mascot_pitching.jpg?v=2.3.7",
-                description: "Bác sở hữu bản năng của một thợ săn B2B thực thụ! Máu lửa, kiên trì, không sợ bị từ chối và luôn hướng về mục tiêu đóng deal. Bác nói chuyện sắc bén, chốt sale nhanh gọn nhưng nhớ chú ý chăm sóc khách hàng sau bán hàng kỹ lưỡng hơn để tạo doanh số bền vững nhé!",
-                advice: "Lời khuyên từ Peter Vo: Hãy phối hợp với các đồng nghiệp làm Operations/CS để giữ chân khách tốt hơn sau khi ký hợp đồng."
+                mascot: "mascot_pitching.jpg?v=2.3.8",
+                description: "Bác sở hữu phong cách lý trí, quyết đoán và hoạt ngôn mạnh mẽ! Bác tin vào hiệu quả công việc, số liệu và chốt hợp đồng nhanh chóng. Bác là thợ săn đầu phễu cực kỳ uy lực, đầy bản lĩnh trên bàn thương thảo B2B.",
+                advice: "Lời khuyên từ Peter Vo: Hãy lưu ý phối hợp nhịp nhàng với đội ngũ kỹ thuật/CS phía sau để hỗ trợ khách tốt nhất sau khi ký nhé!"
+            },
+            architect: {
+                title: "Kiến Trúc Sư Công Nghệ (The Tech BD Architect)",
+                compatibility: "Độ phù hợp BD: 92% 🪙",
+                mascot: "mascot_email.jpg?v=2.3.8",
+                description: "Bác là nhà làm BD của thời đại mới! Thích nghiên cứu sâu, tận dụng tối đa sức mạnh của AI và các công cụ tự động hóa để gieo hạt, tìm leads. Bác tư duy logic, làm việc độc lập và tối ưu hóa hệ thống để đạt hiệu quả tối đa.",
+                advice: "Lời khuyên từ Peter Vo: Đôi khi các khách hàng B2B lớn vẫn thích những buổi cafe gặp mặt trực tiếp hơn là email hay tin nhắn tự động đấy bác!"
+            },
+            champion: {
+                title: "Đại Sứ Khách Hàng (The Client Champion)",
+                compatibility: "Độ phù hợp BD: 88% 🪙",
+                mascot: "beedee_mid_autumn.jpg?v=2.3.8",
+                description: "Bác là nguồn năng lượng tuyệt vời và tạo niềm tin tuyệt đối với khách hàng! Bác giao tiếp bằng sự đồng cảm, kết nối cảm xúc xuất sắc và luôn ưu tiên giải quyết nỗi đau của khách hàng. Đối tác chọn bác vì họ tin con người bác.",
+                advice: "Lời khuyên từ Peter Vo: Hãy nhớ bám sát bài toán kinh tế (ROI) của doanh nghiệp để chứng minh giá trị sản phẩm rõ ràng hơn nữa."
             },
             farmer: {
-                title: "Chiến Lược Gia Thực Thảo (The Strategic Farmer)",
+                title: "Nông Dân Chiến Lược (The Strategic Farmer)",
                 compatibility: "Độ phù hợp BD: 90% 🪙",
-                mascot: "mascot_quests.jpg?v=2.3.7",
-                description: "Bác là bậc thầy về xây dựng quan hệ và lập kế hoạch dài hạn. Bác không chốt sale vội vã mà tập trung tạo dựng lòng tin, phân tích ROI cực kỹ và đi sâu vào giải quyết nỗi đau của khách hàng. Đối tác luôn yêu quý bác vì sự chuyên nghiệp và chân thành.",
-                advice: "Lời khuyên từ Peter Vo: Đôi khi bác cần dứt khoát đẩy nhanh tiến độ chốt deal để tránh chu kỳ bán hàng (sales cycle) bị kéo dài quá mức."
-            },
-            tech: {
-                title: "Chiến Thần BD Công Nghệ (The Tech-Savvy BD)",
-                compatibility: "Độ phù hợp BD: 92% 🪙",
-                mascot: "mascot_email.jpg?v=2.3.7",
-                description: "Bác là BD thời đại mới - làm việc thông minh bằng công nghệ! Thay vì chạy bằng cơm, bác dùng AI để tìm lead, viết mail cá nhân hóa và quản lý phễu tự động. Năng suất của bác bằng cả một team cộng lại!",
-                advice: "Lời khuyên từ Peter Vo: Đừng để công nghệ che mờ sự tương tác cá nhân. Khách hàng B2B lớn vẫn thích những buổi gặp mặt nói chuyện trực tiếp hơn là email tự động."
-            },
-            rookie: {
-                title: "Tân Binh Tò Mò (The Eager Rookie)",
-                compatibility: "Độ phù hợp BD: 75% (Tiềm năng vô hạn!) 🪙",
-                mascot: "beedee_mid_autumn.jpg?v=2.3.7",
-                description: "Bác là một chú cú non đầy nhiệt huyết và tò mò với thế giới B2B BD! Đôi khi bác còn bỡ ngỡ trước khách hàng khó tính hay chỉ tiêu KPI khủng, nhưng tinh thần ham học hỏi sẽ giúp bác tiến rất xa.",
-                advice: "Lời khuyên từ Peter Vo: Hãy ghé qua 'Thư Viện Thực Chiến' mỗi ngày và tích cực trao đổi trên 'Cộng Đồng' để học hỏi kinh nghiệm thực tế."
+                mascot: "mascot_quests.jpg?v=2.3.8",
+                description: "Bác là nhà làm nông nghiệp B2B bền bỉ, có tính kỷ luật cao! Bác làm việc có kế hoạch, tập trung xây dựng lòng trung thành dài hạn và tối ưu hóa giá trị vòng đời khách hàng (LTV). Sự kiên trì của bác mang lại các deal chất lượng.",
+                advice: "Lời khuyên từ Peter Vo: Hãy quyết đoán hơn ở khâu chốt deal để rút ngắn thời gian đàm phán kéo dài."
             }
         };
 
-        let currentQuestionIdx = 0;
-        let userAnswers = [];
+        let currentIdx = 0;
+        let scores = { E: 0, I: 0, S: 0, N: 0, T: 0, F: 0, J: 0, P: 0 };
+        
+        let isDragging = false;
+        let startX = 0;
+        let currentX = 0;
 
         function startQuiz() {
-            currentQuestionIdx = 0;
-            userAnswers = [];
-            renderQuestion();
+            currentIdx = 0;
+            scores = { E: 0, I: 0, S: 0, N: 0, T: 0, F: 0, J: 0, P: 0 };
+            renderStack();
+            bindDragEvents();
+            bindKeyboardEvents();
         }
 
-        function renderQuestion() {
+        function renderStack() {
             const root = document.getElementById('quiz-root-box');
-            const q = QUESTIONS[currentQuestionIdx];
-            const progress = (currentQuestionIdx / QUESTIONS.length) * 100;
             
+            // Build the card stack HTML
+            let cardsHtml = '';
+            for (let i = currentIdx; i < STATEMENTS.length; i++) {
+                const s = STATEMENTS[i];
+                cardsHtml += `
+                    <div class="swipe-card" data-idx="${i}">
+                        <div class="card-hint">🦉 QUAN ĐIỂM THỰC CHIẾN</div>
+                        <div class="card-body-text">"${s.text}"</div>
+                        <div style="font-size: 0.75rem; color: var(--text-light);">
+                            Thẻ số ${i + 1}/${STATEMENTS.length}
+                        </div>
+                    </div>
+                `;
+            }
+
             root.innerHTML = `
                 <div class="progress-bar-container">
-                    <div class="progress-bar-fill" style="width: ${progress}%"></div>
+                    <div class="progress-bar-fill" style="width: ${(currentIdx / STATEMENTS.length) * 100}%"></div>
                 </div>
-                <div style="font-size: 0.8rem; font-weight: bold; color: var(--text-light); text-transform: uppercase; margin-bottom: 8px; text-align: left;">
-                    Câu hỏi ${currentQuestionIdx + 1}/${QUESTIONS.length}
+                
+                <div class="card-stack" id="card-stack-element">
+                    ${cardsHtml || '<div style="margin: 50px 0;">Đang xử lý kết quả...</div>'}
                 </div>
-                <div class="question-card">
-                    <h3>${q.text}</h3>
-                    <div class="options-list">
-                        ${q.options.map((opt, idx) => `
-                            <div class="option-item" onclick="selectOption('${opt.type}')">
-                                <span class="option-prefix">${opt.label}</span>
-                                <span>${opt.text}</span>
-                            </div>
-                        `).join('')}
-                    </div>
+                
+                <div class="swipe-actions">
+                    <button onclick="handleBtnSwipe(false)" class="swipe-btn disagree" title="Không đồng ý / Swipe Left">❌</button>
+                    <span style="font-size: 0.82rem; color: var(--text-light); font-weight: bold;">ĐỒNG Ý QUẸT PHẢI &bull; GHÉT QUẸT TRÁI</span>
+                    <button onclick="handleBtnSwipe(true)" class="swipe-btn agree" title="Đồng ý / Swipe Right">✅</button>
+                </div>
+                
+                <div class="keyboard-info">
+                    Mẹo: Nhấn phím <span class="keyboard-key">←</span> để Không đồng ý, phím <span class="keyboard-key">→</span> để Đồng ý.
                 </div>
             `;
         }
 
-        function selectOption(type) {
-            userAnswers.push(type);
-            currentQuestionIdx++;
-            if (currentQuestionIdx < QUESTIONS.length) {
-                renderQuestion();
+        function handleBtnSwipe(isAgree) {
+            const stack = document.getElementById('card-stack-element');
+            if (!stack) return;
+            const topCard = stack.querySelector('.swipe-card:nth-last-child(1)');
+            if (!topCard) return;
+            
+            if (isAgree) {
+                topCard.classList.add('swipe-right');
+                recordVote(true);
             } else {
+                topCard.classList.add('swipe-left');
+                recordVote(false);
+            }
+            
+            setTimeout(() => {
+                topCard.remove();
+                nextStep();
+            }, 350);
+        }
+
+        function recordVote(isAgree) {
+            const currentStatement = STATEMENTS[currentIdx];
+            const dim = currentStatement.dimension; // e.g. "EI"
+            const active = currentStatement.active; // e.g. "E"
+            const opposite = dim.replace(active, ''); // e.g. "I"
+            
+            if (isAgree) {
+                scores[active]++;
+            } else {
+                scores[opposite]++;
+            }
+        }
+
+        function nextStep() {
+            currentIdx++;
+            if (currentIdx < STATEMENTS.length) {
+                renderStack();
+                bindDragEvents();
+            } else {
+                // Remove keyboard listener
+                document.onkeydown = null;
                 showResult();
             }
         }
 
-        function calculateResult() {
-            const counts = {};
-            let maxType = 'rookie';
-            let maxCount = 0;
-            
-            userAnswers.forEach(ans => {
-                counts[ans] = (counts[ans] || 0) + 1;
-                if (counts[ans] > maxCount) {
-                    maxCount = counts[ans];
-                    maxType = ans;
+        // Keyboard Controls
+        function bindKeyboardEvents() {
+            document.onkeydown = function(e) {
+                if (e.key === "ArrowLeft") {
+                    handleBtnSwipe(false);
+                } else if (e.key === "ArrowRight") {
+                    handleBtnSwipe(true);
                 }
-            });
+            };
+        }
+
+        // Drag & Drop Swiping Implementation
+        function bindDragEvents() {
+            const stack = document.getElementById('card-stack-element');
+            if (!stack) return;
+            const topCard = stack.querySelector('.swipe-card:nth-last-child(1)');
+            if (!topCard) return;
             
-            return maxType;
+            topCard.addEventListener('mousedown', startDrag);
+            topCard.addEventListener('touchstart', startDrag, { passive: true });
+            
+            document.addEventListener('mousemove', drag);
+            document.addEventListener('touchmove', drag, { passive: false });
+            
+            document.addEventListener('mouseup', endDrag);
+            document.addEventListener('touchend', endDrag);
+        }
+
+        function startDrag(e) {
+            const stack = document.getElementById('card-stack-element');
+            if (!stack) return;
+            const topCard = stack.querySelector('.swipe-card:nth-last-child(1)');
+            if (!topCard || e.target.closest('.swipe-btn')) return;
+            
+            isDragging = true;
+            startX = e.type === 'touchstart' ? e.touches[0].clientX : e.clientX;
+            topCard.style.transition = 'none';
+        }
+
+        function drag(e) {
+            if (!isDragging) return;
+            const stack = document.getElementById('card-stack-element');
+            if (!stack) return;
+            const topCard = stack.querySelector('.swipe-card:nth-last-child(1)');
+            if (!topCard) return;
+            
+            currentX = e.type === 'touchmove' ? e.touches[0].clientX : e.clientX;
+            const diffX = currentX - startX;
+            const rotation = diffX / 18;
+            
+            topCard.style.transform = `translate(${diffX}px, ${Math.abs(diffX) * 0.05}px) rotate(${rotation}deg)`;
+            
+            // Prevent scrolling on mobile
+            if (e.type === 'touchmove') e.preventDefault();
+        }
+
+        function endDrag() {
+            if (!isDragging) return;
+            isDragging = false;
+            
+            const stack = document.getElementById('card-stack-element');
+            if (!stack) return;
+            const topCard = stack.querySelector('.swipe-card:nth-last-child(1)');
+            if (!topCard) return;
+            
+            topCard.style.transition = 'transform 0.3s ease, opacity 0.3s ease';
+            const diffX = currentX - startX;
+            const threshold = 130;
+            
+            if (diffX > threshold) {
+                // Swipe Right
+                topCard.classList.add('swipe-right');
+                recordVote(true);
+                setTimeout(() => {
+                    topCard.remove();
+                    nextStep();
+                }, 300);
+            } else if (diffX < -threshold) {
+                // Swipe Left
+                topCard.classList.add('swipe-left');
+                recordVote(false);
+                setTimeout(() => {
+                    topCard.remove();
+                    nextStep();
+                }, 300);
+            } else {
+                // Reset card
+                topCard.style.transform = 'scale(1) translateY(0) rotate(0deg)';
+            }
+            
+            // Cleanup event listeners
+            document.removeEventListener('mousemove', drag);
+            document.removeEventListener('mouseup', endDrag);
+        }
+
+        function calculateMBTIResult() {
+            // E vs I
+            const E = scores.E;
+            const I = scores.I;
+            
+            // S vs N
+            const S = scores.S;
+            const N = scores.N;
+            
+            // T vs F
+            const T = scores.T;
+            const F = scores.F;
+            
+            // J vs P
+            const J = scores.J;
+            const P = scores.P;
+
+            // Determine dominant archetype
+            const isExtravert = E >= I;
+            const isThinking = T >= F;
+            
+            if (isExtravert && isThinking) {
+                return 'commander'; // ExTx
+            } else if (!isExtravert && !isThinking) {
+                return 'farmer'; // IxxJ or passive relationship builder
+            } else if (isExtravert && !isThinking) {
+                return 'champion'; // ExFx
+            } else {
+                return 'architect'; // IxxP
+            }
         }
 
         function showResult() {
             const root = document.getElementById('quiz-root-box');
-            const resultType = calculateResult();
+            const resultType = calculateMBTIResult();
             const p = PERSONAS[resultType];
             
             root.innerHTML = `
@@ -363,7 +574,7 @@
                     <div class="progress-bar-fill" style="width: 100%"></div>
                 </div>
                 <div style="font-size: 0.8rem; font-weight: bold; color: #10b981; text-transform: uppercase; margin-bottom: 5px;">
-                    🎉 ĐÃ HOÀN THÀNH TRẮC NGHIỆM!
+                    🎉 KẾT QUẢ PHÂN TÍCH TÍNH CÁCH MBTI B2B
                 </div>
                 
                 <div class="mascot-result-box">
@@ -551,14 +762,14 @@
     <div class="cert-container">
         <div class="cert-header">B2B BD Tips Portal &bull; Gamification</div>
         <div class="cert-logo">🦉📜</div>
-        <div class="cert-title">Chứng Chỉ Tính Cách BD</div>
+        <div class="cert-title">Chứng Chỉ Tính Cách BD (MBTI)</div>
         <div class="cert-subtitle">Hệ thống Đánh giá Năng lực B2B Thực Chiến</div>
         
         <div class="cert-awardee">Trao tặng cho Chiến thần</div>
         <div class="cert-name">${name}</div>
         
         <div class="cert-statement">
-            Qua quá trình kiểm tra và phân tích 5 tình huống thực chiến hóc búa, Cú BeeDee đã xác định bác thuộc nhóm tính cách: <b>${p.title}</b>. Bác sở hữu các phẩm chất ưu tú của một chuyên gia phát triển thị trường B2B xuất sắc. Chúc bác tiếp tục săn deal thành công rực rỡ!
+            Qua quá trình kiểm định 8 quan điểm thực chiến bằng công cụ quẹt thẻ thông minh, Cú BeeDee đã xác thực bác thuộc nhóm tính cách: <b>${p.title}</b>. Bác sở hữu các tố chất nổi trội, phù hợp định hình phong cách đàm phán B2B bền vững. Chúc bác đóng deal mỏi tay!
         </div>
         
         <div class="cert-footer">
