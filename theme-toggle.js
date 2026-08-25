@@ -175,6 +175,9 @@ const initThemeToggle = () => {
                     localStorage.setItem('b2b_points_balance', data.user.points.toString());
                     localStorage.setItem('b2b_user_verified', 'true');
                     if (data.user.avatar) localStorage.setItem('b2b_custom_avatar', data.user.avatar);
+                    if (data.user.experience) localStorage.setItem('profile_experience', data.user.experience);
+                    if (data.user.industry) localStorage.setItem('profile_industry', data.user.industry);
+                    if (data.user.skill) localStorage.setItem('profile_skill', data.user.skill);
                     
                     sessionStorage.setItem('bd_session_welcomed', 'true');
                     updateNavbarUserHUD();
@@ -530,6 +533,9 @@ async function checkIPAutoLogin() {
             localStorage.setItem('b2b_points_balance', user.points.toString());
             localStorage.setItem('b2b_user_verified', 'true');
             if (user.avatar) localStorage.setItem('b2b_custom_avatar', user.avatar);
+            if (user.experience) localStorage.setItem('profile_experience', user.experience);
+            if (user.industry) localStorage.setItem('profile_industry', user.industry);
+            if (user.skill) localStorage.setItem('profile_skill', user.skill);
             
             // Mark as auto-logged in via IP (needs password verification for sensitive actions)
             localStorage.setItem('b2b_ip_autologin', 'true');
@@ -1022,6 +1028,9 @@ window.showGlobalLoginModal = function() {
                     localStorage.setItem('b2b_user_verified', 'true');
                     localStorage.removeItem('b2b_ip_autologin');
                     if (user.avatar) localStorage.setItem('b2b_custom_avatar', user.avatar);
+                    if (user.experience) localStorage.setItem('profile_experience', user.experience);
+                    if (user.industry) localStorage.setItem('profile_industry', user.industry);
+                    if (user.skill) localStorage.setItem('profile_skill', user.skill);
                     
                     overlay.classList.remove('active');
                     updateNavbarUserHUD();
@@ -3180,5 +3189,171 @@ window.testEmailReminder = async function() {
             btn.textContent = originalText;
         }
     }
+};
+
+window.showSubtleProfileModal = function({ title, subtitle, options, fieldName, callback }) {
+    if (localStorage.getItem(`profile_${fieldName}`)) {
+        if (callback) callback();
+        return;
+    }
+
+    const overlay = document.createElement('div');
+    overlay.style.position = 'fixed';
+    overlay.style.top = '0';
+    overlay.style.left = '0';
+    overlay.style.width = '100vw';
+    overlay.style.height = '100vh';
+    overlay.style.backgroundColor = 'rgba(10, 11, 18, 0.75)';
+    overlay.style.backdropFilter = 'blur(12px)';
+    overlay.style.webkitBackdropFilter = 'blur(12px)';
+    overlay.style.zIndex = '10000';
+    overlay.style.display = 'flex';
+    overlay.style.alignItems = 'center';
+    overlay.style.justifyContent = 'center';
+    overlay.style.padding = '20px';
+    overlay.style.boxSizing = 'border-box';
+    overlay.style.opacity = '0';
+    overlay.style.transition = 'opacity 0.3s ease';
+
+    const container = document.createElement('div');
+    container.className = 'glass-panel';
+    container.style.maxWidth = '460px';
+    container.style.width = '100%';
+    container.style.padding = '30px 24px';
+    container.style.borderRadius = '20px';
+    container.style.border = '1px solid var(--primary)';
+    container.style.background = '#12131c';
+    container.style.textAlign = 'center';
+    container.style.boxShadow = '0 20px 50px rgba(0, 0, 0, 0.4)';
+    container.style.transform = 'scale(0.9)';
+    container.style.transition = 'transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)';
+
+    const iconEl = document.createElement('div');
+    iconEl.style.fontSize = '2.5rem';
+    iconEl.style.marginBottom = '15px';
+    iconEl.innerHTML = '🦉';
+
+    const titleEl = document.createElement('h3');
+    titleEl.style.margin = '0 0 10px 0';
+    titleEl.style.fontSize = '1.25rem';
+    titleEl.style.fontWeight = '800';
+    titleEl.style.color = '#ffffff';
+    titleEl.innerText = title;
+
+    const subEl = document.createElement('p');
+    subEl.style.margin = '0 0 24px 0';
+    subEl.style.fontSize = '0.85rem';
+    subEl.style.color = 'var(--text-light)';
+    subEl.style.lineHeight = '1.5';
+    subEl.innerText = subtitle;
+
+    const optionsContainer = document.createElement('div');
+    optionsContainer.style.display = 'flex';
+    optionsContainer.style.flexDirection = 'column';
+    optionsContainer.style.gap = '10px';
+
+    options.forEach(opt => {
+        const btn = document.createElement('button');
+        btn.style.width = '100%';
+        btn.style.padding = '12px 16px';
+        btn.style.fontSize = '0.88rem';
+        btn.style.fontWeight = 'bold';
+        btn.style.color = 'var(--text-main)';
+        btn.style.background = 'rgba(255, 255, 255, 0.03)';
+        btn.style.border = '1px solid var(--border-color)';
+        btn.style.borderRadius = '10px';
+        btn.style.cursor = 'pointer';
+        btn.style.textAlign = 'left';
+        btn.style.transition = 'all 0.2s ease';
+        
+        btn.innerHTML = opt;
+
+        btn.onmouseenter = () => {
+            btn.style.background = 'rgba(243, 168, 59, 0.08)';
+            btn.style.borderColor = 'var(--primary)';
+            btn.style.color = 'var(--primary)';
+            btn.style.transform = 'translateX(4px)';
+        };
+        btn.onmouseleave = () => {
+            btn.style.background = 'rgba(255, 255, 255, 0.03)';
+            btn.style.borderColor = 'var(--border-color)';
+            btn.style.color = 'var(--text-main)';
+            btn.style.transform = 'none';
+        };
+
+        btn.onclick = async () => {
+            const allBtns = optionsContainer.querySelectorAll('button');
+            allBtns.forEach(b => b.disabled = true);
+            btn.innerHTML = `${opt} <span style="float: right;">⏳</span>`;
+
+            localStorage.setItem(`profile_${fieldName}`, opt);
+
+            const email = localStorage.getItem('streak_email');
+            const active = localStorage.getItem('streak_active') === 'true';
+
+            if (active && email) {
+                try {
+                    const res = await fetch('/api/log-email', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            action: 'updateProfile',
+                            email: email,
+                            field: fieldName,
+                            value: opt
+                        })
+                    });
+                    if (res.ok) {
+                        const data = await res.json();
+                        if (data.success && data.points !== undefined) {
+                            localStorage.setItem('b2b_points_balance', data.points.toString());
+                            if (window.updateNavbarUserHUD) window.updateNavbarUserHUD();
+                            
+                            if (window.showGlobalNotification) {
+                                window.showGlobalNotification(
+                                    '🎉 Nhận Điểm Thưởng!',
+                                    `Cú BeeDee tặng bác <strong>+10 BD-Points</strong> vì đã cập nhật thông tin profile!<br><br>Số dư hiện tại: <strong>${data.points} BD-Points</strong>`
+                                );
+                            } else {
+                                alert(`Cú BeeDee tặng bác +10 BD-Points! Số dư: ${data.points}`);
+                            }
+                        }
+                    }
+                } catch (e) {
+                    console.error('Failed to update profile webhook:', e);
+                }
+            } else {
+                const balance = parseInt(localStorage.getItem('b2b_points_balance') || '25', 10);
+                localStorage.setItem('b2b_points_balance', (balance + 10).toString());
+                if (window.showGlobalNotification) {
+                    window.showGlobalNotification(
+                        '⚡ Lưu Thông Tin Thành Công!',
+                        `Đã ghi nhận câu trả lời của bác. Hệ thống đã tích lũy tạm thời <strong>+10 BD-Points</strong>. Đăng ký email để nhận điểm chính thức nhé!`
+                    );
+                }
+            }
+
+            overlay.style.opacity = '0';
+            container.style.transform = 'scale(0.9)';
+            setTimeout(() => {
+                overlay.remove();
+                if (callback) callback();
+            }, 300);
+        };
+
+        optionsContainer.appendChild(btn);
+    });
+
+    container.appendChild(iconEl);
+    container.appendChild(titleEl);
+    container.appendChild(subEl);
+    container.appendChild(optionsContainer);
+    overlay.appendChild(container);
+    document.body.appendChild(overlay);
+
+    setTimeout(() => {
+        overlay.style.opacity = '1';
+        container.style.transform = 'scale(1)';
+    }, 10);
 };
 

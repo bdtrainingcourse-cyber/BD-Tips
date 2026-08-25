@@ -262,7 +262,7 @@ module.exports = async (req, res) => {
   }
 
   const params = req.method === 'GET' ? req.query : req.body;
-  const { action, email, tool, name, phone, company, experience, ebookTitle, downloadLink, points, userId, password } = params;
+  const { action, email, tool, name, phone, company, experience, ebookTitle, downloadLink, points, userId, password, field, value, industry, skill } = params;
   
   if (!email || !email.includes('@')) {
     return res.status(400).json({ error: 'Email không hợp lệ!' });
@@ -339,6 +339,9 @@ module.exports = async (req, res) => {
           points: (result.user.points !== null && result.user.points !== undefined) ? Number(result.user.points) : 25,
           verified: !!result.user.verified,
           password: result.user.password || result.user.passwordHash || '',
+          experience: result.user.experience || '',
+          industry: result.user.industry || '',
+          skill: result.user.skill || '',
           lastIp: clientIp,
           lastActive: timestamp
         };
@@ -418,6 +421,9 @@ module.exports = async (req, res) => {
       points: points !== undefined ? points : (localUser ? localUser.points : 25),
       verified: localUser ? localUser.verified : false,
       password: password ? crypto.createHash('sha256').update(password).digest('hex') : (localUser && localUser.password ? localUser.password : ''),
+      experience: experience || (localUser ? localUser.experience : ''),
+      industry: industry || (localUser ? localUser.industry : ''),
+      skill: skill || (localUser ? localUser.skill : ''),
       lastIp: clientIp,
       lastActive: timestamp
     };
@@ -583,6 +589,33 @@ module.exports = async (req, res) => {
       return res.status(200).json({ success: true, message: 'Password reset successfully!' });
     }
     return res.status(400).json({ error: 'Người dùng không tồn tại!' });
+  } else if (action === 'updateProfile') {
+    if (localUser) {
+      if (field === 'experience') localUser.experience = value;
+      else if (field === 'industry') localUser.industry = value;
+      else if (field === 'skill') localUser.skill = value;
+      
+      localUser.points = (localUser.points || 0) + 10;
+      localUser.lastActive = timestamp;
+      localUser.lastIp = clientIp;
+      writeUsers(users);
+      
+      if (webhookUrl) {
+        try {
+          await httpPost(webhookUrl, {
+            action: 'updateProfile',
+            email: cleanEmail,
+            field: field,
+            value: value,
+            points: localUser.points
+          });
+        } catch (err) {
+          console.warn('[SHEETS_SYNC_WARN] Failed to sync profile update to sheets:', err.message);
+        }
+      }
+      return res.status(200).json({ success: true, points: localUser.points });
+    }
+    return res.status(400).json({ error: 'Người dùng không tồn tại!' });
   } else {
     // General lead tracking (ebook downloads, minigame registrations, etc.)
     if (!localUser) {
@@ -593,6 +626,9 @@ module.exports = async (req, res) => {
         name: name || 'Học viên',
         points: points !== undefined ? points : 25,
         password: password ? crypto.createHash('sha256').update(password).digest('hex') : '',
+        experience: experience || '',
+        industry: industry || '',
+        skill: skill || '',
         lastIp: clientIp,
         lastActive: timestamp
       };
@@ -603,6 +639,9 @@ module.exports = async (req, res) => {
       if (name && name !== 'Học viên') localUser.name = name;
       if (points !== undefined) localUser.points = points;
       if (password) localUser.password = crypto.createHash('sha256').update(password).digest('hex');
+      if (experience) localUser.experience = experience;
+      if (industry) localUser.industry = industry;
+      if (skill) localUser.skill = skill;
       localUser.lastIp = clientIp;
       localUser.lastActive = timestamp;
       writeUsers(users);
@@ -636,7 +675,10 @@ module.exports = async (req, res) => {
         points: points !== undefined ? points : 25,
         device: deviceType,
         date: timestamp,
-        password: localUser.password || ''
+        password: localUser.password || '',
+        experience: localUser.experience || '',
+        industry: localUser.industry || '',
+        skill: localUser.skill || ''
       };
     } else if (action === 'updatePoints') {
       payload = { action, email, userId: localUser.id, points, device: deviceType };
