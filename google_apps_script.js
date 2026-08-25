@@ -66,7 +66,7 @@ function doPost(e) {
 // 1. ACTION: checkEmail (Checks if user exists, returns profile)
 // ------------------------------------------------------------------
 function checkEmail(email, name) {
-  const sheet = getOrCreateSheet("Leads");
+  const sheet = getOrCreateSheet("Học Viên Đăng Ký");
   const data = sheet.getDataRange().getValues();
   const headers = data[0].map(h => h.toString().toLowerCase().trim());
   
@@ -110,7 +110,7 @@ function checkEmail(email, name) {
 // 2. ACTION: syncUser (Registers a new user, sends verification link)
 // ------------------------------------------------------------------
 function syncUser(data) {
-  const sheet = getOrCreateSheet("Leads");
+  const sheet = getOrCreateSheet("Học Viên Đăng Ký");
   const email = data.email.toLowerCase().trim();
   const name = data.name || "Học viên";
   const points = data.points !== undefined ? Number(data.points) : 25;
@@ -174,7 +174,7 @@ function syncUser(data) {
 // 3. ACTION: verifyUser (Verifies email, awards 15 extra points)
 // ------------------------------------------------------------------
 function verifyUser(email, points) {
-  const sheet = getOrCreateSheet("Leads");
+  const sheet = getOrCreateSheet("Học Viên Đăng Ký");
   const sheetData = sheet.getDataRange().getValues();
   const headers = sheetData[0].map(h => h.toString().toLowerCase().trim());
   
@@ -203,7 +203,7 @@ function verifyUser(email, points) {
 // 4. ACTION: updatePoints (Syncs active points balance)
 // ------------------------------------------------------------------
 function updatePoints(email, points) {
-  const sheet = getOrCreateSheet("Leads");
+  const sheet = getOrCreateSheet("Học Viên Đăng Ký");
   const sheetData = sheet.getDataRange().getValues();
   const headers = sheetData[0].map(h => h.toString().toLowerCase().trim());
   
@@ -225,7 +225,7 @@ function updatePoints(email, points) {
 // 4b. ACTION: updateProfile (Updates user experience, industry or skill and awards points)
 // ------------------------------------------------------------------
 function updateProfile(email, field, value, points) {
-  const sheet = getOrCreateSheet("Leads");
+  const sheet = getOrCreateSheet("Học Viên Đăng Ký");
   const data = sheet.getDataRange().getValues();
   const rowIndex = findUserRowIndex(data, email);
   if (rowIndex === -1) return createJsonResponse({ success: false, error: "User not found." });
@@ -260,6 +260,8 @@ function writeProfileFieldToRow(sheet, rowIndex, field, value) {
   if (field === "experience") colName = "Kinh nghiệm";
   else if (field === "industry") colName = "Lĩnh vực";
   else if (field === "skill") colName = "Kỹ năng mong muốn";
+  else if (field === "phone") colName = "Số điện thoại";
+  else if (field === "company") colName = "Công ty";
   else return;
 
   let colIdx = headers.indexOf(colName.toLowerCase().trim());
@@ -315,7 +317,7 @@ function sendQueuedEmails() {
   // Self-cleanup: delete trigger once fired
   deleteTriggerByName("sendQueuedEmails");
   
-  const sheet = getOrCreateSheet("Leads");
+  const sheet = getOrCreateSheet("Học Viên Đăng Ký");
   const data = sheet.getDataRange().getValues();
   const headers = data[0].map(h => h.toString().toLowerCase().trim());
   
@@ -413,34 +415,108 @@ function sendForgotPasswordEmail(email, name, resetToken) {
 // 8. OTHER ACTIONS: course-registration & logGeneralLead
 // ------------------------------------------------------------------
 function handleCourseRegistration(data) {
-  const sheet = getOrCreateSheet("CourseReg");
-  sheet.appendRow([
-    data.userId || "UID_COURSE",
-    data.name,
-    data.email,
-    data.phone || "",
-    data.company || "",
-    data.device || "Desktop",
-    data.date || new Date().toISOString()
-  ]);
-  return createJsonResponse({ success: true, message: "Course registration saved successfully." });
+  const sheet = getOrCreateSheet("Học Viên Đăng Ký");
+  const email = data.email ? data.email.toLowerCase().trim() : "";
+  const name = data.name || "Học viên";
+  const userId = data.userId || "UID_COURSE";
+  const device = data.device || "Desktop";
+  const date = data.date || new Date().toISOString();
+  
+  const sheetData = sheet.getDataRange().getValues();
+  let rowIndex = findUserRowIndex(sheetData, email);
+  
+  if (rowIndex === -1) {
+    sheet.appendRow([
+      userId,
+      name,
+      email,
+      25, // default points
+      false, // verified
+      "", // password
+      date,
+      device,
+      "course-registration"
+    ]);
+    rowIndex = sheet.getLastRow();
+  }
+  
+  if (data.phone) writeProfileFieldToRow(sheet, rowIndex, "phone", data.phone);
+  if (data.company) writeProfileFieldToRow(sheet, rowIndex, "company", data.company);
+  
+  return createJsonResponse({ success: true, message: "Course registration logged." });
 }
 
 function logGeneralLead(data) {
-  const sheet = getOrCreateSheet("GeneralLeads");
+  const sheet = getOrCreateSheet("Nhật Ký Tương Tác");
+  
+  let dateVal = data.date ? formatTimestamp(data.date) : formatTimestamp(new Date().toISOString());
+  let emailVal = data.email || "";
+  let mainFeature = "Tương tác";
+  let subFeature = data.tool || "General Log";
+  let detailAction = "Xem trang";
+  let additionalInfo = data.detail || "";
+  let deviceVal = data.device || "Desktop";
+  let userIdVal = data.userId || "UID_LEAD";
+  
+  // Translate tool events into natural Vietnamese text
+  const tool = data.tool;
+  if (tool === "page_view") {
+    mainFeature = "Duyệt trang";
+    subFeature = "Đọc bài / Di chuyển";
+    detailAction = "Xem trang";
+  } else if (tool === "ebook_download") {
+    mainFeature = "Thư viện";
+    subFeature = "Tải tài liệu";
+    detailAction = "Tải Ebook";
+  } else if (tool === "minigame_start" || tool === "arcade_start") {
+    mainFeature = "Arcade Game";
+    subFeature = "Bắt đầu chơi";
+    detailAction = "Khởi chạy ải";
+  } else if (tool === "minigame_play" || tool === "arcade_play") {
+    mainFeature = "Arcade Game";
+    subFeature = "Chơi game";
+    detailAction = "Hoàn thành ải";
+  } else if (tool === "email_generate") {
+    mainFeature = "Trợ lý Email";
+    subFeature = "Viết email AI";
+    detailAction = "Soạn thảo";
+  } else if (tool === "labor_case_view" || tool === "labor_search") {
+    mainFeature = "Tra cứu Luật";
+    subFeature = "Xem tình huống";
+    detailAction = "Tra cứu";
+  } else if (tool === "salary_calculate") {
+    mainFeature = "Tính lương";
+    subFeature = "Ước tính";
+    detailAction = "Tính toán";
+  }
+  
   sheet.appendRow([
-    data.userId || "UID_LEAD",
-    data.name || "Khách",
-    data.email,
-    data.tool || "General Log",
-    data.experience || "",
-    data.ebookTitle || "",
-    data.downloadLink || "",
-    data.points !== undefined ? data.points : 25,
-    data.device || "Desktop",
-    data.date || new Date().toISOString()
+    dateVal,
+    emailVal,
+    mainFeature,
+    subFeature,
+    detailAction,
+    additionalInfo,
+    deviceVal,
+    userIdVal
   ]);
+  
   return createJsonResponse({ success: true });
+}
+
+function formatTimestamp(isoString) {
+  try {
+    const d = new Date(isoString);
+    const yr = d.getFullYear();
+    const mo = ('0' + (d.getMonth() + 1)).slice(-2);
+    const day = ('0' + d.getDate()).slice(-2);
+    const hr = ('0' + d.getHours()).slice(-2);
+    const min = ('0' + d.getMinutes()).slice(-2);
+    const sec = ('0' + d.getSeconds()).slice(-2);
+    return yr + '-' + mo + '-' + day + ' ' + hr + ':' + min + ':' + sec;
+  } catch (e) {
+    return isoString;
+  }
 }
 
 // ------------------------------------------------------------------
@@ -448,17 +524,25 @@ function logGeneralLead(data) {
 // ------------------------------------------------------------------
 function getOrCreateSheet(sheetName) {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
-  let sheet = ss.getSheetByName(sheetName);
+  
+  // Redirect old/alternative sheet names to keep only 2 sheets!
+  let targetSheetName = sheetName;
+  if (sheetName === "Leads" || sheetName === "CourseReg" || sheetName === "Học Viên Đăng Ký") {
+    targetSheetName = "Học Viên Đăng Ký";
+  } else {
+    targetSheetName = "Nhật Ký Tương Tác";
+  }
+  
+  let sheet = ss.getSheetByName(targetSheetName);
   if (!sheet) {
-    sheet = ss.insertSheet(sheetName);
+    sheet = ss.insertSheet(targetSheetName);
     
     // Create standard headers
-    if (sheetName === "Leads") {
+    if (targetSheetName === "Học Viên Đăng Ký") {
       sheet.appendRow(["UserID", "Name", "Email", "Points", "Verified", "Password", "Date", "Device", "Tool"]);
-    } else if (sheetName === "CourseReg") {
-      sheet.appendRow(["UserID", "Name", "Email", "Phone", "Company", "Device", "Date"]);
     } else {
-      sheet.appendRow(["UserID", "Name", "Email", "Tool", "Experience", "EbookTitle", "DownloadLink", "Points", "Device", "Date"]);
+      // "Nhật Ký Tương Tác"
+      sheet.appendRow(["Thời gian ghi nhận", "Email người dùng", "Tính năng chính", "Tiểu mục / Tên Game", "Hành động chi tiết", "Thông tin bổ sung", "Thiết bị", "User ID"]);
     }
   }
   return sheet;
