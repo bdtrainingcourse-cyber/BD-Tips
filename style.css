@@ -66,11 +66,10 @@ body.dark-theme .app-nav {
     border-radius: 12px;
     font-weight: 700;
     letter-spacing: 0.2px;
-    margin-top: 3px;
     white-space: nowrap;
-    display: inline-block;
+    display: block;
     width: fit-content;
-    align-self: center;
+    margin: 3px auto 0 auto !important;
     text-align: center;
 }
 
