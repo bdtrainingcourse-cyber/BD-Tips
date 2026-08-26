@@ -88,6 +88,13 @@ document.addEventListener('DOMContentLoaded', () => {
     renderAdminScenarios();
     updateSidebarGamification();
     initSpeechRecognition();
+
+    // Show admin button if admin flag is present in URL or local storage
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('admin') === 'true' || localStorage.getItem('b2b_admin') === 'true') {
+        const adminBtn = document.getElementById('menu-btn-admin');
+        if (adminBtn) adminBtn.style.display = 'flex';
+    }
 });
 
 // Database Initialization (LocalStorage)
@@ -621,8 +628,16 @@ function updateCoachHint(text) {
 function toggleCoachPanel() {
     const checked = document.getElementById('coach-toggle-checkbox').checked;
     const sidebar = document.querySelector('.coach-sidebar');
-    if (sidebar) {
-        sidebar.style.opacity = checked ? '1' : '0.5';
+    const layout = document.querySelector('.simulator-layout');
+    
+    if (sidebar && layout) {
+        if (checked) {
+            sidebar.style.display = 'flex';
+            layout.style.gridTemplateColumns = '1fr 280px';
+        } else {
+            sidebar.style.display = 'none';
+            layout.style.gridTemplateColumns = '1fr';
+        }
     }
 }
 
