@@ -423,7 +423,10 @@ function startChatSimulation() {
     const textLayout = document.getElementById('text-simulator-layout');
     const voiceLayout = document.getElementById('voice-simulator-layout');
 
+    const stepHeader = document.getElementById('simulator-step-header');
+
     if (interactionMode === 'voice') {
+        if (stepHeader) stepHeader.classList.add('hidden');
         if (textLayout) textLayout.classList.add('hidden');
         if (voiceLayout) voiceLayout.classList.remove('hidden');
         if (textInputRow) textInputRow.classList.add('hidden');
@@ -446,6 +449,7 @@ function startChatSimulation() {
 
         startVoiceCallTimer();
     } else {
+        if (stepHeader) stepHeader.classList.remove('hidden');
         if (textLayout) textLayout.classList.remove('hidden');
         if (voiceLayout) voiceLayout.classList.add('hidden');
         if (textInputRow) textInputRow.classList.remove('hidden');
@@ -1558,55 +1562,61 @@ async function speakStakeholderResponse(text) {
 function speakViaWebSpeechAPI(cleanText, lang) {
     if (!window.speechSynthesis) return;
 
+    // Stop any running speech synthesis
+    try {
+        window.speechSynthesis.cancel();
+    } catch (e) {}
+
     const utterance = new SpeechSynthesisUtterance(cleanText);
     const gender = (currentConfig && currentConfig.voiceGender) ? currentConfig.voiceGender : 'female';
     const personality = (currentConfig && currentConfig.personality) ? currentConfig.personality : 'Friendly';
 
-    // Compute personality speed modifiers
+    // Compute personality speed & pitch modifiers for maximum context realism
     let speedRate = 1.0;
+    let pitchVal = 1.0;
+    
     if (personality === 'Busy') {
-        speedRate = 1.15;
+        speedRate = 1.12;
+        pitchVal = 1.04;
     } else if (personality === 'Aggressive') {
-        speedRate = 1.08;
+        speedRate = 1.06;
+        pitchVal = 0.95;
     } else if (personality === 'Analytical') {
         speedRate = 0.92;
+        pitchVal = 0.98;
     } else if (personality === 'Skeptical') {
-        speedRate = 0.95;
+        speedRate = 0.94;
+        pitchVal = 0.95;
     } else if (personality === 'CEO') {
         speedRate = 0.90;
+        pitchVal = 0.96;
+    } else if (personality === 'Friendly') {
+        speedRate = 0.98;
+        pitchVal = 1.02;
+    }
+
+    // Detect sentence-level emotion for pitch/speed variation (dynamic naturalness)
+    let emotionRate = 1.0;
+    let emotionPitch = 1.0;
+    const normalizedText = cleanText.toLowerCase();
+    
+    if (normalizedText.includes('tuyệt') || normalizedText.includes('hấp dẫn') || normalizedText.includes('rất tốt') || normalizedText.includes('đồng ý') || normalizedText.includes('ok') || normalizedText.includes('😊') || normalizedText.includes('!')) {
+        emotionRate = 1.03;
+        emotionPitch = 1.04;
+    } else if (normalizedText.includes('tại sao') || normalizedText.includes('nhưng') || normalizedText.includes('thế nào') || normalizedText.includes('chưa') || normalizedText.includes('?') || normalizedText.includes('cơ sở') || normalizedText.includes('chứng minh')) {
+        emotionRate = 0.94;
+        emotionPitch = 0.97;
+    } else if (normalizedText.includes('gấp') || normalizedText.includes('nhanh') || normalizedText.includes('bận') || normalizedText.includes('ngắn gọn')) {
+        emotionRate = 1.10;
+        emotionPitch = 1.02;
+    } else if (normalizedText.includes('đắt') || normalizedText.includes('ép') || normalizedText.includes('giảm') || normalizedText.includes('không') || normalizedText.includes('hủy')) {
+        emotionRate = 1.02;
+        emotionPitch = 0.94;
     }
 
     utterance.lang = lang === 'en' ? 'en-US' : 'vi-VN';
     
-    // Apply speed modifiers
-    if (lang === 'en') {
-        utterance.rate = 0.95 * speedRate;
-    } else {
-        utterance.rate = (gender === 'male' ? 0.85 : 0.90) * speedRate;
-    }
-
-    // Deepen pitch if male is selected to simulate masculine voice
-    if (gender === 'male') {
-        utterance.pitch = 0.75;
-    } else {
-        utterance.pitch = 1.0;
-    }
-
-    utterance.onstart = () => {
-        clearInactivityTimer();
-        setSpeakerActive('ai', true);
-    };
-
-    utterance.onend = () => {
-        setSpeakerActive('ai', false);
-        startInactivityTimer();
-    };
-
-    utterance.onerror = () => {
-        setSpeakerActive('ai', false);
-        startInactivityTimer();
-    };
-
+    // Select the best voice from loaded voices
     const voices = loadedVoices.length > 0 ? loadedVoices : window.speechSynthesis.getVoices();
     let selectedVoice = null;
 
@@ -1629,9 +1639,7 @@ function speakViaWebSpeechAPI(cleanText, lang) {
                 return name.includes('david') || name.includes('mark') || name.includes('george') || name.includes('male') || name.includes('siri') || name.includes('google');
             });
         }
-        if (!selectedVoice && enVoices.length > 0) {
-            selectedVoice = enVoices[0];
-        }
+        if (!selectedVoice && enVoices.length > 0) selectedVoice = enVoices[0];
     } else {
         const viVoices = voices.filter(v => v.lang.toLowerCase().includes('vi'));
         if (gender === 'female') {
@@ -1640,7 +1648,7 @@ function speakViaWebSpeechAPI(cleanText, lang) {
                 return name.includes('online') && (name.includes('hoaimy') || name.includes('huyen') || name.includes('linh') || name.includes('female') || name.includes('natural') || name.includes('google'));
             }) || viVoices.find(v => {
                 const name = v.name.toLowerCase();
-                return name.includes('hoaimy') || name.includes('huyen') || name.includes('linh') || name.includes('female') || name.includes('google');
+                return name.includes('hoaimy') || name.includes('huyen') || name.includes('linh') || name.includes('female') || name.includes('google') || name.includes('apple') || name.includes('siri');
             });
         } else {
             selectedVoice = viVoices.find(v => {
@@ -1651,14 +1659,46 @@ function speakViaWebSpeechAPI(cleanText, lang) {
                 return name.includes('nam') || name.includes('an') || name.includes('phong') || name.includes('male') || name.includes('google');
             });
         }
-        if (!selectedVoice && viVoices.length > 0) {
-            selectedVoice = viVoices[0];
-        }
+        if (!selectedVoice && viVoices.length > 0) selectedVoice = viVoices[0];
     }
 
     if (selectedVoice) {
         utterance.voice = selectedVoice;
     }
+
+    // iOS Safari requires standard pitch=1.0 & rate=1.0 to trigger high-quality neural voice Linh/Siri
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+    if (isIOS) {
+        utterance.pitch = 1.0;
+        utterance.rate = 1.0;
+    } else {
+        if (lang === 'en') {
+            utterance.rate = 0.95 * speedRate * emotionRate;
+        } else {
+            utterance.rate = (gender === 'male' ? 0.86 : 0.92) * speedRate * emotionRate;
+        }
+        let basePitch = gender === 'male' ? 0.76 : 1.0;
+        utterance.pitch = basePitch * pitchVal * emotionPitch;
+    }
+
+    // Cap boundaries to avoid synthetic voice errors
+    utterance.pitch = Math.max(0.5, Math.min(2.0, utterance.pitch));
+    utterance.rate = Math.max(0.5, Math.min(2.0, utterance.rate));
+
+    utterance.onstart = () => {
+        clearInactivityTimer();
+        setSpeakerActive('ai', true);
+    };
+
+    utterance.onend = () => {
+        setSpeakerActive('ai', false);
+        startInactivityTimer();
+    };
+
+    utterance.onerror = () => {
+        setSpeakerActive('ai', false);
+        startInactivityTimer();
+    };
 
     window.speechSynthesis.speak(utterance);
 }
