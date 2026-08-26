@@ -640,7 +640,10 @@ function formatTimestamp(isoString) {
 // UTILITY FUNCTIONS: Helpers for Sheets and HTML
 // ------------------------------------------------------------------
 function getHeaderIndices(headers) {
-  const h = headers.map(val => val.toString().toLowerCase().trim());
+  if (!headers || !Array.isArray(headers)) {
+    return { email: -1, name: -1, points: -1, verified: -1, password: -1, id: -1, date: -1, lastActivity: -1, experience: -1, industry: -1, skill: -1, phone: -1, company: -1 };
+  }
+  const h = headers.map(val => val !== undefined && val !== null ? val.toString().toLowerCase().trim() : "");
   
   function findIdx(names) {
     for (let name of names) {
