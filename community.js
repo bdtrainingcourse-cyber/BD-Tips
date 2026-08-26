@@ -1186,6 +1186,18 @@ document.addEventListener('DOMContentLoaded', () => {
             const proceedOpen = () => {
                 const registeredName = localStorage.getItem('streak_name');
                 composerAuthorDisplay.textContent = registeredName || 'Thành viên mới';
+                
+                // Update dynamic composer avatar
+                const composerAvatarContainer = document.getElementById('composer-author-avatar-container');
+                if (composerAvatarContainer) {
+                    const customAvatar = localStorage.getItem('b2b_custom_avatar');
+                    if (customAvatar) {
+                        composerAvatarContainer.innerHTML = `<img src="${customAvatar}" style="width: 42px; height: 42px; border-radius: 50%; object-fit: cover; border: 1.5px solid var(--primary);">`;
+                    } else {
+                        composerAvatarContainer.innerHTML = `<div class="beedee-owl-mascot" style="font-size: 1.8rem; background: rgba(243, 168, 59, 0.1); width: 42px; height: 42px; display: flex; align-items: center; justify-content: center; border-radius: 50%; border: 1.5px solid var(--primary);">🦉</div>`;
+                    }
+                }
+                
                 createPostModal.classList.add('active');
             };
 
@@ -1403,6 +1415,16 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         if (profileModalAvatarPreview) {
             profileModalAvatarPreview.src = customAvatar || 'bd_mascot.png';
+        }
+        
+        // Update dynamic composer avatar
+        const composerAvatarContainer = document.getElementById('composer-author-avatar-container');
+        if (composerAvatarContainer) {
+            if (customAvatar) {
+                composerAvatarContainer.innerHTML = `<img src="${customAvatar}" style="width: 42px; height: 42px; border-radius: 50%; object-fit: cover; border: 1.5px solid var(--primary);">`;
+            } else {
+                composerAvatarContainer.innerHTML = `<div class="beedee-owl-mascot" style="font-size: 1.8rem; background: rgba(243, 168, 59, 0.1); width: 42px; height: 42px; display: flex; align-items: center; justify-content: center; border-radius: 50%; border: 1.5px solid var(--primary);">🦉</div>`;
+            }
         }
     }
 
