@@ -370,16 +370,41 @@ module.exports = async (req, res) => {
   const days = ["Chủ Nhật", "Thứ Hai", "Thứ Ba", "Thứ Tư", "Thứ Năm", "Thứ Sáu", "Thứ Bảy"];
   const dayName = days[dayOfWeek];
 
-  // 1. Fetch weather in Vietnam (TP HCM) using VnExpress crawler API, fallback to Open-Meteo if blocked
+  // 1 & 2. Fetch weather and news in parallel with strict timeout to prevent Vercel execution limits
   let temp = 28;
   let weatherDesc = "Trời dịu mát";
   let weatherCode = 0;
+  let newsTitle = "Thị trường kinh doanh sôi động";
 
-  async function fallbackToOpenMeteo() {
+  const weatherPromise = (async () => {
     try {
-      const weatherRes = await httpGet("https://api.open-meteo.com/v1/forecast?latitude=10.823&longitude=106.63&current_weather=true");
+      const weatherRes = await httpGet("https://api3.vnexpress.net/api/crawler?type=get_data&key=weather_dot_com&province=79&app_id=d9b81e");
       if (weatherRes.ok) {
         const data = await weatherRes.json();
+        if (data && data.error === 0 && data.data && data.data.value) {
+          const parsedValue = JSON.parse(data.data.value);
+          const hcmWeather = parsedValue["TP HCM"];
+          if (hcmWeather) {
+            temp = parseInt(hcmWeather.temperature, 10) || 28;
+            weatherDesc = hcmWeather.phrase || hcmWeather.cloud_status || "Trời dịu mát";
+            
+            const phraseLower = weatherDesc.toLowerCase();
+            if (phraseLower.includes("giông") || phraseLower.includes("bão") || phraseLower.includes("storm") || phraseLower.includes("thunder")) {
+              weatherCode = 95;
+            } else if (phraseLower.includes("mưa") || phraseLower.includes("drizzle") || phraseLower.includes("shower") || phraseLower.includes("rain")) {
+              weatherCode = 61;
+            } else if (phraseLower.includes("sương")) {
+              weatherCode = 45;
+            }
+            return; // Success!
+          }
+        }
+      }
+      
+      // Open-Meteo fallback
+      const fallbackRes = await httpGet("https://api.open-meteo.com/v1/forecast?latitude=10.823&longitude=106.63&current_weather=true");
+      if (fallbackRes.ok) {
+        const data = await fallbackRes.json();
         if (data.current_weather) {
           temp = Math.round(data.current_weather.temperature);
           const weatherCodeRaw = data.current_weather.weathercode;
@@ -399,57 +424,30 @@ module.exports = async (req, res) => {
         }
       }
     } catch (err) {
-      console.error("Failed to fetch weather from Open-Meteo fallback:", err.message);
+      console.warn("Weather fetch error, using defaults:", err.message);
     }
-  }
+  })();
 
-  try {
-    const weatherRes = await httpGet("https://api3.vnexpress.net/api/crawler?type=get_data&key=weather_dot_com&province=79&app_id=d9b81e");
-    if (weatherRes.ok) {
-      const data = await weatherRes.json();
-      if (data && data.error === 0 && data.data && data.data.value) {
-        const parsedValue = JSON.parse(data.data.value);
-        const hcmWeather = parsedValue["TP HCM"];
-        if (hcmWeather) {
-          temp = parseInt(hcmWeather.temperature, 10) || 28;
-          weatherDesc = hcmWeather.phrase || hcmWeather.cloud_status || "Trời dịu mát";
-          
-          const phraseLower = weatherDesc.toLowerCase();
-          if (phraseLower.includes("giông") || phraseLower.includes("bão") || phraseLower.includes("storm") || phraseLower.includes("thunder")) {
-            weatherCode = 95; // Storm
-          } else if (phraseLower.includes("mưa") || phraseLower.includes("drizzle") || phraseLower.includes("shower") || phraseLower.includes("rain")) {
-            weatherCode = 61; // Rain
-          } else if (phraseLower.includes("sương")) {
-            weatherCode = 45; // Fog
-          }
-        } else {
-          await fallbackToOpenMeteo();
+  const newsPromise = (async () => {
+    try {
+      const rssRes = await httpGet("https://vnexpress.net/rss/kinh-doanh.rss");
+      if (rssRes.ok) {
+        const xml = await rssRes.text();
+        const titleMatch = xml.match(/<item>[\s\S]*?<title><!\[CDATA\[([\s\S]*?)\]\]><\/title>/);
+        if (titleMatch && titleMatch[1]) {
+          newsTitle = titleMatch[1].trim();
         }
-      } else {
-        await fallbackToOpenMeteo();
       }
-    } else {
-      await fallbackToOpenMeteo();
+    } catch (e) {
+      console.warn("News RSS fetch error, using defaults:", e.message);
     }
-  } catch (e) {
-    console.error("Failed to fetch weather from VnExpress API, using Open-Meteo fallback:", e.message);
-    await fallbackToOpenMeteo();
-  }
+  })();
 
-  // 2. Fetch latest economic news from VnExpress Business RSS Feed
-  let newsTitle = "Thị trường kinh doanh sôi động";
-  try {
-    const rssRes = await httpGet("https://vnexpress.net/rss/kinh-doanh.rss");
-    if (rssRes.ok) {
-      const xml = await rssRes.text();
-      const titleMatch = xml.match(/<item>[\s\S]*?<title><!\[CDATA\[([\s\S]*?)\]\]><\/title>/);
-      if (titleMatch && titleMatch[1]) {
-        newsTitle = titleMatch[1].trim();
-      }
-    }
-  } catch (e) {
-    console.error("Failed to fetch news RSS:", e.message);
-  }
+  // Guarantee that parallel requests do not block the function for more than 2.2 seconds
+  await Promise.all([
+    Promise.race([weatherPromise, new Promise(resolve => setTimeout(resolve, 2200))]),
+    Promise.race([newsPromise, new Promise(resolve => setTimeout(resolve, 2200))])
+  ]);
 
   // 3. Match Mascot based on context
   let selectedMascot = "https://bd-tips.vercel.app/mascot_mascot.jpg";
