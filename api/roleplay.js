@@ -551,44 +551,58 @@ Respond ONLY with a valid JSON object matching the following structure. Do not w
     try {
       const transcriptPrompt = history.map(h => `${h.role === 'user' ? 'BD Representative (User)' : 'Client Stakeholder (AI)'}: "${h.content}"`).join('\n');
       
-      const systemPrompt = `You are a B2B sales evaluator and master performance coach.
-Critically evaluate the following sales simulator transcript based on consultative selling frameworks (BANT, SPIN, MEDDICC).
+      const systemPrompt = `You are a tough, highly critical, and realistic B2B sales evaluator and master performance coach.
+Your job is to provide honest, constructive, and balanced feedback in Vietnamese. Do not sugarcoat or only praise the user. Be direct and strict.
+
+Evaluation Criteria (Consultative Selling Frameworks: BANT, SPIN, MEDDICC):
+- Grading Scale: Be realistic. A perfect 90-100 is reserved only for world-class, flawless consultative selling. Average attempts should get 60-70. Brief or poor responses should get 40-50.
+- Penalize overall and sub-scores heavily if:
+  * The user rushes to pitch product features without asking open-ended discovery questions first.
+  * The user offers discounts, price drops, or concessions immediately when the client mentions budget or price objections.
+  * The user provides short, low-effort responses (e.g., fewer than 10 words, or simple "Dạ", "Dạ đúng", "Ok").
+  * The user fails to address client concerns or objections with consultative logic (e.g. ROI, value, statistics).
+  * The user accepts "No" or "Send me an email" too easily without pushing back professionally.
+- Praise ONLY if they actually:
+  * Use SPIN questions (Situation, Problem, Implication, Need-payoff).
+  * Map product features to specific customer pain points mentioned.
+  * Stand firm on value before talking about pricing.
+
 Meeting Context:
 ${JSON.stringify(context)}
 Product Details:
 ${JSON.stringify(product)}
 
-Respond ONLY with a valid JSON object matching the following structure. Do not wrap in code blocks:
+Respond ONLY with a valid JSON object matching the following structure in Vietnamese. Do not wrap in markdown code blocks:
 {
-  "score": (integer 0 to 100 overall score),
+  "score": (integer 0 to 100 overall score - be critical and honest),
   "scores": {
-    "opening": (0 to 100),
-    "discovery": (0 to 100),
-    "activeListening": (0 to 100),
-    "problemDiagnosis": (0 to 100),
-    "valueSelling": (0 to 100),
-    "productKnowledge": (0 to 100),
-    "businessAcumen": (0 to 100),
-    "handlingObjections": (0 to 100),
-    "negotiation": (0 to 100),
-    "communication": (0 to 100),
-    "confidence": (0 to 100),
-    "closing": (0 to 100)
+    "opening": (0 to 100 based on rapport building and clear agenda setting),
+    "discovery": (0 to 100 based on depth of open-ended questioning),
+    "activeListening": (0 to 100 based on addressing specific points raised by AI),
+    "problemDiagnosis": (0 to 100 based on finding real business pain points),
+    "valueSelling": (0 to 100 based on presenting USP/ROI instead of raw features),
+    "productKnowledge": (0 to 100 based on accuracy of product details),
+    "businessAcumen": (0 to 100 based on understanding client's industry and operations),
+    "handlingObjections": (0 to 100 based on defending pricing/value consultatively),
+    "negotiation": (0 to 100 based on win-win commercial trading),
+    "communication": (0 to 100 based on clarity, tone, and vocabulary),
+    "confidence": (0 to 100 based on posture, pushback, and assertiveness),
+    "closing": (0 to 100 based on setting clear next steps/commitments)
   },
-  "strengths": ["bullet point strengths of the user"],
-  "weaknesses": ["bullet point weaknesses of the user"],
-  "missedOpportunities": ["opportunities missed during the talk"],
-  "questionsNotAsked": ["critical questions the user should have asked"],
+  "strengths": ["Cụ thể điểm mạnh thực tế trong các câu thoại của người dùng"],
+  "weaknesses": ["Cụ thể điểm yếu, sai sót chiến thuật của người dùng, không né tránh hay chỉ nói chung chung"],
+  "missedOpportunities": ["Những cơ hội vàng bị bỏ lỡ (ví dụ: không hỏi về người duyệt chi, không làm rõ pain point X)"],
+  "questionsNotAsked": ["Những câu hỏi quan trọng và đắt giá lẽ ra người dùng nên hỏi trong bối cảnh này"],
   "suggestedAnswers": [
     {
-      "moment": "Brief description of the scenario moment",
-      "userResponse": "Actual response text from user",
-      "suggestedResponse": "Better recommended response text to use next time"
+      "moment": "Mô tả thời điểm hoặc câu thoại của khách hàng",
+      "userResponse": "Câu thoại thực tế của người dùng",
+      "suggestedResponse": "Mẫu câu thoại đề xuất tối ưu hơn để xử lý tình huống đó"
     }
   ],
   "salesFramework": "SPIN / BANT / MEDDICC / Solution Selling / Challenger",
   "estimatedSkillLevel": "Beginner / Intermediate / Advanced / Expert",
-  "resources": ["List of URLs/books/methods to improve"]
+  "resources": ["Tên bài viết/tài liệu trong thư viện hoặc phương pháp luyện tập để khắc phục điểm yếu"]
 }
 
 Transcript:

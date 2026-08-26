@@ -1292,19 +1292,41 @@ function initSpeechRecognition() {
             if (statusLabel) statusLabel.textContent = '⏳ Đang xử lý âm thanh...';
         };
 
-        recognition.onresult = (event) => {
-            const transcript = event.results[0][0].transcript;
-            const transPreview = document.getElementById('voice-transcription-preview');
-            if (transPreview) transPreview.textContent = `Nhận diện được: "${transcript}"`;
-            
-            const subtitlesEl = document.getElementById('voice-subtitles-text');
-            if (subtitlesEl) subtitlesEl.textContent = `Bạn nói: "${transcript}"`;
+        recognition.interimResults = true;
 
-            setTimeout(() => {
-                if (isSimulationActive) {
-                    sendSimulatorMessageFromText(transcript);
+        recognition.onresult = (event) => {
+            let interimTranscript = '';
+            let finalTranscript = '';
+            
+            for (let i = event.resultIndex; i < event.results.length; ++i) {
+                if (event.results[i].isFinal) {
+                    finalTranscript += event.results[i][0].transcript;
+                } else {
+                    interimTranscript += event.results[i][0].transcript;
                 }
-            }, 800);
+            }
+
+            const transPreview = document.getElementById('voice-transcription-preview');
+            const subtitlesEl = document.getElementById('voice-subtitles-text');
+
+            if (interimTranscript) {
+                if (transPreview) transPreview.textContent = `Đang nghe: "${interimTranscript}..."`;
+                if (subtitlesEl) subtitlesEl.textContent = `Đang nói: "${interimTranscript}..."`;
+            }
+
+            if (finalTranscript && finalTranscript.trim().length > 0) {
+                if (transPreview) transPreview.textContent = `Nhận diện được: "${finalTranscript}"`;
+                if (subtitlesEl) subtitlesEl.textContent = `Bạn nói: "${finalTranscript}"`;
+                
+                // Clear any previous submit timeout
+                if (window.submitVoiceTimeout) clearTimeout(window.submitVoiceTimeout);
+                
+                window.submitVoiceTimeout = setTimeout(() => {
+                    if (isSimulationActive) {
+                        sendSimulatorMessageFromText(finalTranscript);
+                    }
+                }, 1000);
+            }
         };
 
         recognition.onerror = (event) => {
