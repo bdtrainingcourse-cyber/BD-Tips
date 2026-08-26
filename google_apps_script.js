@@ -317,7 +317,6 @@ function queueDailyEmails(data) {
   }
 }
 
-// The background worker function that executes asynchronously
 function sendQueuedEmails() {
   const props = PropertiesService.getScriptProperties();
   const subject = props.getProperty("QUEUED_SUBJECT");
@@ -333,18 +332,15 @@ function sendQueuedEmails() {
   
   const sheet = getOrCreateSheet("Học Viên Đăng Ký");
   const data = sheet.getDataRange().getValues();
-  const headers = data[0].map(h => h.toString().toLowerCase().trim());
+  const headers = data[0];
+  const idx = getHeaderIndices(headers);
   
-  const emailIdx = headers.indexOf("email");
-  const nameIdx = headers.indexOf("name");
-  const verifiedIdx = headers.indexOf("verified");
-  
-  if (emailIdx === -1) return;
+  if (idx.email === -1) return;
   
   for (let i = 1; i < data.length; i++) {
-    const email = data[i][emailIdx].toString().toLowerCase().trim();
-    const name = nameIdx !== -1 ? data[i][nameIdx] : "Học viên";
-    const verified = verifiedIdx !== -1 ? (data[i][verifiedIdx] === true || data[i][verifiedIdx].toString().toUpperCase() === "TRUE") : false;
+    const email = data[i][idx.email].toString().toLowerCase().trim();
+    const name = idx.name !== -1 ? data[i][idx.name] : "Học viên";
+    const verified = idx.verified !== -1 ? (data[i][idx.verified] === true || data[i][idx.verified].toString().toUpperCase() === "TRUE" || data[i][idx.verified].toString().trim() === "Đã xác thực") : false;
     
     if (email && email.includes("@") && verified) {
       try {
