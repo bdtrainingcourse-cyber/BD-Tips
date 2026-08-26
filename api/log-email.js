@@ -666,12 +666,13 @@ module.exports = async (req, res) => {
   try {
     // Forward to Google Sheets Webhook
     let payload = {};
-    if (action === 'syncUser') {
+    if (action === 'syncUser' || tool === 'daily-points' || tool === 'exit-intent-ebook') {
       payload = {
+        action: 'syncUser',
         userId: localUser.id,
         name: name || localUser.name,
         email,
-        tool: 'daily-reminder',
+        tool: tool || 'daily-reminder',
         points: points !== undefined ? points : 25,
         device: deviceType,
         date: timestamp,
