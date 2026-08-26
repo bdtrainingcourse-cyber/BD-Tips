@@ -483,6 +483,66 @@ function logGeneralLead(data) {
   let deviceVal = data.device || "Desktop";
   let userIdVal = data.userId || "UID_LEAD";
   
+  // 1. Cross-reference against "Học Viên Đăng Ký"
+  const regSheet = getOrCreateSheet("Học Viên Đăng Ký");
+  const regData = regSheet.getDataRange().getValues();
+  const regHeaders = regData[0];
+  const regIdx = getHeaderIndices(regHeaders);
+  
+  let matchedRowIndex = -1;
+  let registeredUserId = "";
+  let registeredEmail = "";
+
+  const cleanEmail = emailVal.toLowerCase().trim();
+  if (cleanEmail && cleanEmail !== "guest@petervo.vn" && !cleanEmail.startsWith("guest@")) {
+    for (let i = 1; i < regData.length; i++) {
+      if (regIdx.email !== -1 && regData[i][regIdx.email].toString().toLowerCase().trim() === cleanEmail) {
+        matchedRowIndex = i + 1;
+        registeredUserId = regIdx.id !== -1 ? regData[i][regIdx.id].toString().trim() : "";
+        registeredEmail = cleanEmail;
+        break;
+      }
+    }
+  }
+
+  if (matchedRowIndex === -1 && userIdVal && !userIdVal.startsWith("GK_") && userIdVal !== "UID_LEAD" && userIdVal !== "") {
+    for (let i = 1; i < regData.length; i++) {
+      if (regIdx.id !== -1 && regData[i][regIdx.id].toString().trim() === userIdVal) {
+        matchedRowIndex = i + 1;
+        registeredUserId = userIdVal;
+        registeredEmail = regIdx.email !== -1 ? regData[i][regIdx.email].toString().toLowerCase().trim() : "";
+        break;
+      }
+    }
+  }
+
+  // 2. Handle values based on whether user is registered or guest
+  let finalEmailColumn = "";
+  let finalUserIdColumn = "";
+
+  if (matchedRowIndex !== -1) {
+    // Registered user: map to registered values
+    finalEmailColumn = registeredEmail;
+    finalUserIdColumn = registeredUserId;
+    
+    // Record last activity timestamp in "Học Viên Đăng Ký"
+    if (regIdx.lastActivity !== -1) {
+      regSheet.getRange(matchedRowIndex, regIdx.lastActivity + 1).setValue(dateVal);
+    }
+  } else {
+    // Unregistered guest: assign/retrieve guestxxxx ID and leave User ID blank
+    let guestId = "";
+    if (userIdVal && userIdVal.startsWith("GK_")) {
+      guestId = getOrCreateGuestId(userIdVal);
+    } else {
+      // Fallback for missing keys
+      const tempKey = "GK_TEMP_" + Math.random().toString(36).substr(2, 9).toUpperCase();
+      guestId = getOrCreateGuestId(tempKey);
+    }
+    finalEmailColumn = guestId;
+    finalUserIdColumn = ""; // No User ID for guest
+  }
+
   // Translate tool events into natural Vietnamese text
   const tool = data.tool;
   if (tool === "page_view") {
@@ -513,17 +573,49 @@ function logGeneralLead(data) {
     mainFeature = "Tính lương";
     subFeature = "Ước tính";
     detailAction = "Tính toán";
+  } else if (tool === "pic_search") {
+    mainFeature = "PIC Finder";
+    subFeature = "Tìm kiếm sếp mua hàng";
+    detailAction = "Tra cứu";
+  } else if (tool === "community_post") {
+    mainFeature = "Cộng đồng";
+    subFeature = "Đăng bài viết mới";
+    detailAction = "Đăng thảo luận";
+  } else if (tool === "community_comment") {
+    mainFeature = "Cộng đồng";
+    subFeature = "Bình luận đóng góp";
+    detailAction = "Viết phản hồi";
+  } else if (tool === "article_read") {
+    mainFeature = "Thư viện";
+    subFeature = "Đọc cẩm nang";
+    detailAction = "Đọc bài viết";
+  } else if (tool === "search_query") {
+    mainFeature = "Tìm kiếm";
+    subFeature = "Tra cứu chung";
+    detailAction = "Gửi truy vấn";
+  } else if (tool === "pitching_scenario_select") {
+    mainFeature = "Pitching AI";
+    subFeature = "Luyện thuyết trình";
+    detailAction = "Chọn kịch bản";
+  } else if (tool === "pitching_complete") {
+    mainFeature = "Pitching AI";
+    subFeature = "Hoàn thành bài pitch";
+    detailAction = "Nhận đánh giá";
+  } else if (tool === "claim_reward" || tool === "claim-reward") {
+    mainFeature = "Đổi quà";
+    subFeature = "Cửa hàng quà tặng";
+    detailAction = "Nhận phần thưởng";
   }
   
   sheet.appendRow([
     dateVal,
-    emailVal,
+    finalEmailColumn,
     mainFeature,
     subFeature,
     detailAction,
     additionalInfo,
     deviceVal,
-    userIdVal
+    finalUserIdColumn
   ]);
   
   return createJsonResponse({ success: true });
@@ -566,7 +658,7 @@ function getHeaderIndices(headers) {
     password: findIdx(["password", "mật khẩu"]),
     id: findIdx(["id", "userid", "user id", "mã học viên"]),
     date: findIdx(["thời gian đăng ký", "date", "ngày đăng ký", "thời gian"]),
-    lastActivity: findIdx(["hoạt động cuối", "last activity", "last_activity"]),
+    lastActivity: findIdx(["hoạt động cuối cùng", "hoạt động cuối", "last activity", "last_activity"]),
     experience: findIdx(["kinh nghiệm", "experience", "experience_years"]),
     industry: findIdx(["lĩnh vực", "industry", "lĩnh vực hoạt động"]),
     skill: findIdx(["kỹ năng mong muốn", "skill", "kỹ năng"]),
@@ -575,13 +667,44 @@ function getHeaderIndices(headers) {
   };
 }
 
+function getOrCreateGuestId(guestKey) {
+  const sheet = getOrCreateSheet("Guest Mapping");
+  const data = sheet.getDataRange().getValues();
+  
+  for (let i = 1; i < data.length; i++) {
+    if (data[i][0] === guestKey) {
+      return data[i][1];
+    }
+  }
+  
+  // Not found: generate new guest ID
+  let maxNum = 0;
+  for (let i = 1; i < data.length; i++) {
+    const val = data[i][1].toString(); // e.g. "guest0015"
+    if (val.startsWith("guest")) {
+      const num = parseInt(val.substring(5), 10);
+      if (!isNaN(num) && num > maxNum) {
+        maxNum = num;
+      }
+    }
+  }
+  
+  const newNum = maxNum + 1;
+  const newGuestId = "guest" + String(newNum).padStart(4, '0');
+  
+  sheet.appendRow([guestKey, newGuestId, new Date().toISOString()]);
+  return newGuestId;
+}
+
 function getOrCreateSheet(sheetName) {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
   
-  // Redirect old/alternative sheet names to keep only 2 sheets!
+  // Redirect old/alternative sheet names to keep only standard sheets!
   let targetSheetName = sheetName;
   if (sheetName === "Leads" || sheetName === "CourseReg" || sheetName === "Học Viên Đăng Ký") {
     targetSheetName = "Học Viên Đăng Ký";
+  } else if (sheetName === "Guest Mapping") {
+    targetSheetName = "Guest Mapping";
   } else {
     targetSheetName = "Nhật Ký Tương Tác";
   }
@@ -592,7 +715,9 @@ function getOrCreateSheet(sheetName) {
     
     // Create standard headers
     if (targetSheetName === "Học Viên Đăng Ký") {
-      sheet.appendRow(["UserID", "Name", "Email", "Points", "Verified", "Password", "Date", "Device", "Tool"]);
+      sheet.appendRow(["UserID", "Name", "Email", "Points", "Verified", "Password", "Date", "Last Activity", "Device", "Tool"]);
+    } else if (targetSheetName === "Guest Mapping") {
+      sheet.appendRow(["Guest Key", "Guest ID", "Date Created"]);
     } else {
       // "Nhật Ký Tương Tác"
       sheet.appendRow(["Thời gian ghi nhận", "Email người dùng", "Tính năng chính", "Tiểu mục / Tên Game", "Hành động chi tiết", "Thông tin bổ sung", "Thiết bị", "User ID"]);

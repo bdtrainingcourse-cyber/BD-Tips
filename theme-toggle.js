@@ -2177,9 +2177,20 @@ function initGlobalComponents() {
 }
 
 window.trackUserBehavior = function(action, detail) {
-    const email = localStorage.getItem('streak_email') || 'guest@petervo.vn';
-    const userId = localStorage.getItem('streak_user_id') || '';
-    const name = localStorage.getItem('streak_name') || 'Khách';
+    let email = localStorage.getItem('streak_email') || '';
+    let userId = localStorage.getItem('streak_user_id') || '';
+    let name = localStorage.getItem('streak_name') || 'Khách';
+
+    if (!email) {
+        let guestKey = localStorage.getItem('b2b_guest_key');
+        if (!guestKey) {
+            guestKey = 'GK_' + Math.random().toString(36).substr(2, 9).toUpperCase() + '_' + Date.now();
+            localStorage.setItem('b2b_guest_key', guestKey);
+        }
+        email = 'guest@petervo.vn'; // Fallback guest email for api validation
+        userId = guestKey;
+        name = 'Guest';
+    }
     
     // Check if on community page to match its categories or general categories
     let category = 'general';
