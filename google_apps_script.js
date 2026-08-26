@@ -496,9 +496,9 @@ function logGeneralLead(data) {
   const cleanEmail = emailVal.toLowerCase().trim();
   if (cleanEmail && cleanEmail !== "guest@petervo.vn" && !cleanEmail.startsWith("guest@")) {
     for (let i = 1; i < regData.length; i++) {
-      if (regIdx.email !== -1 && regData[i][regIdx.email].toString().toLowerCase().trim() === cleanEmail) {
+      if (regIdx.email !== -1 && regData[i] && regData[i][regIdx.email] !== undefined && regData[i][regIdx.email] !== null && regData[i][regIdx.email].toString().toLowerCase().trim() === cleanEmail) {
         matchedRowIndex = i + 1;
-        registeredUserId = regIdx.id !== -1 ? regData[i][regIdx.id].toString().trim() : "";
+        registeredUserId = regIdx.id !== -1 && regData[i][regIdx.id] ? regData[i][regIdx.id].toString().trim() : "";
         registeredEmail = cleanEmail;
         break;
       }
@@ -507,10 +507,10 @@ function logGeneralLead(data) {
 
   if (matchedRowIndex === -1 && userIdVal && !userIdVal.startsWith("GK_") && userIdVal !== "UID_LEAD" && userIdVal !== "") {
     for (let i = 1; i < regData.length; i++) {
-      if (regIdx.id !== -1 && regData[i][regIdx.id].toString().trim() === userIdVal) {
+      if (regIdx.id !== -1 && regData[i] && regData[i][regIdx.id] !== undefined && regData[i][regIdx.id] !== null && regData[i][regIdx.id].toString().trim() === userIdVal) {
         matchedRowIndex = i + 1;
         registeredUserId = userIdVal;
-        registeredEmail = regIdx.email !== -1 ? regData[i][regIdx.email].toString().toLowerCase().trim() : "";
+        registeredEmail = regIdx.email !== -1 && regData[i][regIdx.email] ? regData[i][regIdx.email].toString().toLowerCase().trim() : "";
         break;
       }
     }
@@ -672,7 +672,7 @@ function getOrCreateGuestId(guestKey) {
   const data = sheet.getDataRange().getValues();
   
   for (let i = 1; i < data.length; i++) {
-    if (data[i][0] === guestKey) {
+    if (data[i] && data[i][0] === guestKey) {
       return data[i][1];
     }
   }
@@ -680,11 +680,13 @@ function getOrCreateGuestId(guestKey) {
   // Not found: generate new guest ID
   let maxNum = 0;
   for (let i = 1; i < data.length; i++) {
-    const val = data[i][1].toString(); // e.g. "guest0015"
-    if (val.startsWith("guest")) {
-      const num = parseInt(val.substring(5), 10);
-      if (!isNaN(num) && num > maxNum) {
-        maxNum = num;
+    if (data[i] && data[i][1] !== undefined && data[i][1] !== null) {
+      const val = data[i][1].toString(); // e.g. "guest0015"
+      if (val.startsWith("guest")) {
+        const num = parseInt(val.substring(5), 10);
+        if (!isNaN(num) && num > maxNum) {
+          maxNum = num;
+        }
       }
     }
   }
