@@ -1,7 +1,7 @@
 const https = require('https');
 const { readLogs, writeLogs, readUsers, writeUsers } = require('./_db-helper');
 
-// Native HTTPS POST helper with redirect-following
+// B2B BD TIPS PORTAL - BEHAVIOR TRACKER API - FORCE DEPLOY 1787759700
 function httpPost(url, body, maxRedirects = 5) {
   if (url.includes('script.google.com') && process.env.B2B_SECRET_KEY) {
     if (typeof body === 'object' && body !== null) {
