@@ -70,6 +70,8 @@ body.dark-theme .app-nav {
     white-space: nowrap;
     display: inline-block;
     width: fit-content;
+    align-self: center;
+    text-align: center;
 }
 
 body.dark-theme .nav-logo .logo-sub {

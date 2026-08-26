@@ -425,7 +425,7 @@ const QUEST_CONFIG = {
     check_in: { points: 5, limit: 1, name: '☕ Cú Đêm Dậy Sớm Làm BD', period: 'daily' },
     game_complete: { points: 10, limit: 2, name: '🎮 Cãi Khách Hàng Để Chốt Deal', period: 'daily' },
     perfect_game: { points: 5, limit: 2, name: '⭐ Chốt Deal Xuất Sắc (Game 5/5)', period: 'daily' },
-    pic_search: { points: 5, limit: 3, name: '🎤 Luyện Thuyết Trình & Pitching AI', period: 'daily' },
+    pic_search: { points: 5, limit: 3, name: '🧠 Khám Phá Nhóm Test Tính Cách B2B', period: 'daily' },
     ai_email: { points: 5, limit: 3, name: '✍️ Viết Thư Tình Cho Doanh Nghiệp', period: 'daily' },
     share_click: { points: 5, limit: 2, name: '📢 Rủ Đồng Bọn Cùng Xuống Hố', period: 'daily' },
     arcade_level_clear: { points: 15, limit: 2, name: '⚔️ Vượt Ải B2B Arcade Cấp 6+', period: 'daily' },
@@ -442,8 +442,8 @@ const QUEST_CONFIG = {
 const CAMPAIGNS_CONFIG = {
     campaign_outreach: {
         id: 'campaign_outreach',
-        title: 'Tuyệt Kỹ "Mặt Dày" Inbox Khách Hàng Enterprise ✉️',
-        desc: 'Tích cực tạo Pitching AI, soạn Cold Email và share để chinh phục Enterprise lead.',
+        title: 'Thấu Hiểu Tính Cách & Soạn Email B2B Sắc Bén ✉️',
+        desc: 'Làm trắc nghiệm tính cách B2B để hiểu đối tác, soạn Cold Email chuyên nghiệp và rủ bạn bè cùng luyện tập.',
         bonus: 50,
         requirements: {
             pic_search: 3,
@@ -479,6 +479,17 @@ const CAMPAIGNS_CONFIG = {
         requirements: {
             arcade_level_clear: 5,
             perfect_game: 2
+        }
+    },
+    campaign_influencer: {
+        id: 'campaign_influencer',
+        title: 'Chiến Thần Kết Nối & Chia Sẻ Cộng Đồng 🔗',
+        desc: 'Lan tỏa cổng thông tin hữu ích, tham gia thảo luận sôi nổi và đóng góp kinh nghiệm trên diễn đàn BD.',
+        bonus: 60,
+        requirements: {
+            forum_post: 1,
+            forum_comment: 3,
+            share_click: 2
         }
     }
 };
