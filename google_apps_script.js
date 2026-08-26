@@ -339,10 +339,13 @@ function sendQueuedEmails() {
   
   for (let i = 1; i < data.length; i++) {
     const email = data[i][idx.email].toString().toLowerCase().trim();
+    if (!email || !email.includes("@")) continue;
+    
     const name = idx.name !== -1 ? data[i][idx.name] : "Học viên";
     const verified = idx.verified !== -1 ? (data[i][idx.verified] === true || data[i][idx.verified].toString().toUpperCase() === "TRUE" || data[i][idx.verified].toString().trim() === "Đã xác thực") : false;
     
-    if (email && email.includes("@") && verified) {
+    if (verified) {
+      // Flow for Verified Users: Send normal daily reminder
       try {
         const bodyHtml = getHtmlEmailTemplate(message, buttonText, buttonUrl, mascot, name);
         MailApp.sendEmail({
@@ -354,7 +357,26 @@ function sendQueuedEmails() {
         // Pause 1 second between email dispatches to comply with Google SMTP rate limits
         Utilities.sleep(1000); 
       } catch (err) {
-        Logger.log("Failed to send email to " + email + ": " + err.message);
+        Logger.log("Failed to send daily email to " + email + ": " + err.message);
+      }
+    } else {
+      // Flow for Unverified Users: Send verification reminder email
+      try {
+        const verificationUrl = "https://bd-tips.vercel.app/?verify_email=" + encodeURIComponent(email);
+        const unverifiedSubject = "🦉 Nhắc nhở: Xác thực tài khoản B2B BD & Nhận ngay 15đ tích lũy";
+        const unverifiedMessage = "Chào bác <b>" + name + "</b>,<br><br>Cú BeeDee thấy tài khoản của bác vẫn chưa được kích hoạt. Hãy nhấn vào nút bên dưới để xác thực địa chỉ email. Tài khoản kích hoạt thành công sẽ được tặng thêm ngay <b>15đ ⚡</b> và mở khóa toàn bộ kho tài liệu thực chiến nhé!";
+        
+        const bodyHtml = getHtmlEmailTemplate(unverifiedMessage, "Kích hoạt & Nhận 15đ", verificationUrl, "https://bd-tips.vercel.app/mascot_quests.jpg", name);
+        MailApp.sendEmail({
+          to: email,
+          subject: unverifiedSubject,
+          htmlBody: bodyHtml
+        });
+        
+        // Pause 1 second between email dispatches to comply with Google SMTP rate limits
+        Utilities.sleep(1000); 
+      } catch (err) {
+        Logger.log("Failed to send verification reminder to " + email + ": " + err.message);
       }
     }
   }
