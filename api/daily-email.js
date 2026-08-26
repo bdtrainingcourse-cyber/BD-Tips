@@ -473,11 +473,11 @@ module.exports = async (req, res) => {
       mascot: "https://bd-tips.vercel.app/mascot_ghost.jpg"
     },
     {
-      subject: `Nắng nóng ${temp}°C làm deal bốc hơi? ☀️`,
-      message: `Trời hôm nay đang nắng nóng gay gắt (${temp}°C) dễ làm tụt năng lượng. Tin nóng: "${newsTitle}". Đừng để deal bị bốc hơi, hãy cày ngay kịch bản pitching thuyết phục cùng <b>Pitching AI</b>!`,
-      buttonText: "🎤 Pitching AI Ngay",
-      buttonUrl: "https://bd-tips.vercel.app/pitching.html",
-      mascot: "https://bd-tips.vercel.app/mascot_hot.jpg"
+      subject: `Nắng nóng ${temp}°C làm bạn quá tải? ☀️`,
+      message: `Trời hôm nay đang nắng nóng gay gắt (${temp}°C) dễ làm tụt năng lượng. Tin nóng: "${newsTitle}". Hãy tạm nghỉ tay, thư giãn và khám phá phong cách sales của mình với trắc nghiệm <b>Test Tính Cách BD</b> nhé!`,
+      buttonText: "📊 Test Tính Cách Ngay",
+      buttonUrl: "https://bd-tips.vercel.app/personality-test.html",
+      mascot: "https://bd-tips.vercel.app/mascot_architect.jpg"
     },
     {
       subject: `Trời mưa rả rích, làm sao để lead không ghost? 🌧️`,
@@ -516,10 +516,9 @@ DANH SÁCH TÍNH NĂNG/CÔNG CỤ CỦA WEBSITE ĐỂ ĐIỀU HƯỚNG:
 2. Cộng Đồng B2B (https://bd-tips.vercel.app/community.html) -> Nơi chia sẻ bài viết, kết nối chiến thần B2B và thảo luận sôi nổi.
 3. Test Tính Cách BD (https://bd-tips.vercel.app/personality-test.html) -> Làm trắc nghiệm tính cách BD chuyên sâu để khám phá điểm mạnh/yếu thực chiến và nhận diện phong cách sales.
 4. AI Email Assistant (https://bd-tips.vercel.app/email-assistant.html) -> Viết Cold Email B2B bứt phá tỷ lệ chuyển đổi.
-5. Pitching AI (https://bd-tips.vercel.app/pitching.html) -> Luyện tập phản xạ thuyết trình và pitching B2B với AI.
-6. Thư Viện BD (https://bd-tips.vercel.app/library.html) -> Các case study và bài viết chiều sâu từ anh Peter Vo.
-7. KPI & Phễu (https://bd-tips.vercel.app/kpi-estimation.html) -> Lập kế hoạch B2B và tính toán tỷ lệ chuyển đổi phễu.
-8. Lương Gross-Net (https://bd-tips.vercel.app/salary.html) -> Công cụ tính lương Gross/Net chi tiết và tra cứu Luật Lao Động.
+5. Thư Viện BD (https://bd-tips.vercel.app/library.html) -> Các case study và bài viết chiều sâu từ anh Peter Vo.
+6. KPI & Phễu (https://bd-tips.vercel.app/kpi-estimation.html) -> Lập kế hoạch B2B và tính toán tỷ lệ chuyển đổi phễu.
+7. Lương Gross-Net (https://bd-tips.vercel.app/salary.html) -> Công cụ tính lương Gross/Net chi tiết và tra cứu Luật Lao Động.
 
 YÊU CẦU NỘI DUNG & PHONG CÁCH:
 1. Độ dài: CỰC KỲ NGẮN GỌN (tối đa 2 đến 3 câu ngắn).
@@ -532,7 +531,7 @@ YÊU CẦU NỘI DUNG & PHONG CÁCH:
    - "Mini Game B2B Challenge" (Tích điểm đổi quà)
    - "Cộng Đồng B2B" (Thảo luận kết nối)
    - "Test Tính Cách BD" (Khám phá bản thân)
-   Hạn chế nhắc đến Pitching AI, AI Email Assistant, Lương Gross-Net hay các tính năng khác trừ khi có thời tiết/tin tức cực kỳ liên quan trực tiếp.
+   TUYỆT ĐỐI KHÔNG giới thiệu hay dẫn link đến tính năng "Pitching AI" (không dùng link pitching.html). Hạn chế nhắc đến AI Email Assistant, Lương Gross-Net hay các tính năng khác trừ khi có thời tiết/tin tức cực kỳ liên quan trực tiếp.
 6. Chọn Mascot phù hợp: Lựa chọn linh hoạt loại biểu cảm mascot phản ánh đúng tâm lý/nội dung email đó để chú cú hiển thị sinh động và đa dạng (ví dụ: dùng ghost khi bị khách ghost, wrong khi deal tạch, milktea khi đổi quà/thưởng, relax khi cuối tuần/thả lỏng, hot/rain/storm tương ứng thời tiết hoặc áp lực KPI).
 
 ĐỊNH DẠNG ĐẦU RA: Trả về duy nhất một chuỗi JSON hợp lệ (không bọc trong tag code markdown) có cấu trúc như sau:
