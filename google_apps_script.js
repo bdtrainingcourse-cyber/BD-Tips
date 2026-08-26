@@ -43,7 +43,7 @@ function doPost(e) {
     } else if (action === "sendForgotPasswordEmail") {
       return sendForgotPasswordEmail(email, name, postData.resetToken);
     } else if (action === "sendDailyEmails") {
-      return queueDailyEmails(postData);
+      return sendDailyEmailsSynchronously(postData);
     } else if (action === "sendSingleEmail") {
       return sendSingleEmail(postData);
     } else if (action === "sendVerificationReminder") {
@@ -290,97 +290,70 @@ function writeProfileFieldToRow(sheet, rowIndex, field, value, idx) {
 }
 
 // ------------------------------------------------------------------
-// 5. ASYNC DAILY EMAIL DISPATCH QUEUER (Prevents Vercel 60s Timeouts)
+// 5. SYNCHRONOUS DAILY EMAIL DISPATCHER (Resolves Google Apps Script programmatic trigger permissions)
 // ------------------------------------------------------------------
-function queueDailyEmails(data) {
+function sendDailyEmailsSynchronously(data) {
   try {
-    const props = PropertiesService.getScriptProperties();
-    props.setProperty("QUEUED_SUBJECT", data.subject);
-    props.setProperty("QUEUED_MESSAGE", data.message);
-    props.setProperty("QUEUED_BUTTON_TEXT", data.buttonText);
-    props.setProperty("QUEUED_BUTTON_URL", data.buttonUrl);
-    props.setProperty("QUEUED_MASCOT", data.mascot);
+    const subject = data.subject;
+    const message = data.message;
+    const buttonText = data.buttonText;
+    const buttonUrl = data.buttonUrl;
+    const mascot = data.mascot;
     
-    // Clear any existing background triggers for sendQueuedEmails to avoid double dispatches
-    deleteTriggerByName("sendQueuedEmails");
+    if (!subject || !message) return createJsonResponse({ success: false, error: "Subject or message missing" });
     
-    // Schedule the trigger to run asynchronously in 1 second
-    ScriptApp.newTrigger("sendQueuedEmails")
-             .timeBased()
-             .after(1000)
-             .create();
-             
-    return createJsonResponse({ 
-      success: true, 
-      message: "Daily emails queued successfully. Execution will run asynchronously in Google's background thread." 
-    });
-  } catch (err) {
-    return createJsonResponse({ success: false, error: err.message });
-  }
-}
-
-function sendQueuedEmails() {
-  const props = PropertiesService.getScriptProperties();
-  const subject = props.getProperty("QUEUED_SUBJECT");
-  const message = props.getProperty("QUEUED_MESSAGE");
-  const buttonText = props.getProperty("QUEUED_BUTTON_TEXT");
-  const buttonUrl = props.getProperty("QUEUED_BUTTON_URL");
-  const mascot = props.getProperty("QUEUED_MASCOT");
-  
-  if (!subject || !message) return;
-  
-  // Self-cleanup: delete trigger once fired
-  deleteTriggerByName("sendQueuedEmails");
-  
-  const sheet = getOrCreateSheet("Học Viên Đăng Ký");
-  const data = sheet.getDataRange().getValues();
-  const headers = data[0];
-  const idx = getHeaderIndices(headers);
-  
-  if (idx.email === -1) return;
-  
-  for (let i = 1; i < data.length; i++) {
-    const email = data[i][idx.email].toString().toLowerCase().trim();
-    if (!email || !email.includes("@")) continue;
+    const sheet = getOrCreateSheet("Học Viên Đăng Ký");
+    const sheetData = sheet.getDataRange().getValues();
+    const headers = sheetData[0];
+    const idx = getHeaderIndices(headers);
     
-    const name = idx.name !== -1 ? data[i][idx.name] : "Học viên";
-    const verified = idx.verified !== -1 ? (data[i][idx.verified] === true || data[i][idx.verified].toString().toUpperCase() === "TRUE" || data[i][idx.verified].toString().trim() === "Đã xác thực") : false;
+    if (idx.email === -1) return createJsonResponse({ success: false, error: "Email column not found." });
     
-    if (verified) {
-      // Flow for Verified Users: Send normal daily reminder
-      try {
-        const bodyHtml = getHtmlEmailTemplate(message, buttonText, buttonUrl, mascot, name);
-        MailApp.sendEmail({
-          to: email,
-          subject: subject,
-          htmlBody: bodyHtml
-        });
-        
-        // Pause 1 second between email dispatches to comply with Google SMTP rate limits
-        Utilities.sleep(1000); 
-      } catch (err) {
-        Logger.log("Failed to send daily email to " + email + ": " + err.message);
-      }
-    } else {
-      // Flow for Unverified Users: Send verification reminder email
-      try {
-        const verificationUrl = "https://bd-tips.vercel.app/?verify_email=" + encodeURIComponent(email);
-        const unverifiedSubject = "🦉 Nhắc nhở: Xác thực tài khoản B2B BD & Nhận ngay 15đ tích lũy";
-        const unverifiedMessage = "Chào bác <b>" + name + "</b>,<br><br>Cú BeeDee thấy tài khoản của bác vẫn chưa được kích hoạt. Hãy nhấn vào nút bên dưới để xác thực địa chỉ email. Tài khoản kích hoạt thành công sẽ được tặng thêm ngay <b>15đ ⚡</b> và mở khóa toàn bộ kho tài liệu thực chiến nhé!";
-        
-        const bodyHtml = getHtmlEmailTemplate(unverifiedMessage, "Kích hoạt & Nhận 15đ", verificationUrl, "https://bd-tips.vercel.app/mascot_quests.jpg", name);
-        MailApp.sendEmail({
-          to: email,
-          subject: unverifiedSubject,
-          htmlBody: bodyHtml
-        });
-        
-        // Pause 1 second between email dispatches to comply with Google SMTP rate limits
-        Utilities.sleep(1000); 
-      } catch (err) {
-        Logger.log("Failed to send verification reminder to " + email + ": " + err.message);
+    let sentCount = 0;
+    for (let i = 1; i < sheetData.length; i++) {
+      const email = sheetData[i][idx.email].toString().toLowerCase().trim();
+      if (!email || !email.includes("@")) continue;
+      
+      const name = idx.name !== -1 ? sheetData[i][idx.name] : "Học viên";
+      const verified = idx.verified !== -1 ? (sheetData[i][idx.verified] === true || sheetData[i][idx.verified].toString().toUpperCase() === "TRUE" || sheetData[i][idx.verified].toString().trim() === "Đã xác thực") : false;
+      
+      if (verified) {
+        // Flow for Verified Users: Send normal daily reminder
+        try {
+          const bodyHtml = getHtmlEmailTemplate(message, buttonText, buttonUrl, mascot, name);
+          MailApp.sendEmail({
+            to: email,
+            subject: subject,
+            htmlBody: bodyHtml
+          });
+          sentCount++;
+          Utilities.sleep(1000); 
+        } catch (err) {
+          Logger.log("Failed to send daily email to " + email + ": " + err.message);
+        }
+      } else {
+        // Flow for Unverified Users: Send verification reminder email
+        try {
+          const verificationUrl = "https://bd-tips.vercel.app/?verify_email=" + encodeURIComponent(email);
+          const unverifiedSubject = "🦉 Nhắc nhở: Xác thực tài khoản B2B BD & Nhận ngay 15đ tích lũy";
+          const unverifiedMessage = "Chào bác <b>" + name + "</b>,<br><br>Cú BeeDee thấy tài khoản của bác vẫn chưa được kích hoạt. Hãy nhấn vào nút bên dưới để xác thực địa chỉ email. Tài khoản kích hoạt thành công sẽ được tặng thêm ngay <b>15đ ⚡</b> và mở khóa toàn bộ kho tài liệu thực chiến nhé!";
+          
+          const bodyHtml = getHtmlEmailTemplate(unverifiedMessage, "Kích hoạt & Nhận 15đ", verificationUrl, "https://bd-tips.vercel.app/mascot_quests.jpg", name);
+          MailApp.sendEmail({
+            to: email,
+            subject: unverifiedSubject,
+            htmlBody: bodyHtml
+          });
+          sentCount++;
+          Utilities.sleep(1000); 
+        } catch (err) {
+          Logger.log("Failed to send verification reminder to " + email + ": " + err.message);
+        }
       }
     }
+    return createJsonResponse({ success: true, message: "Campaign sent to " + sentCount + " users successfully." });
+  } catch (err) {
+    return createJsonResponse({ success: false, error: err.message });
   }
 }
 
