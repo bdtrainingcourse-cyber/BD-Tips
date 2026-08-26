@@ -288,38 +288,40 @@ const initThemeToggle = () => {
         midAutumnBadge = document.createElement('div');
         midAutumnBadge.id = 'floating-mid-autumn-badge';
         midAutumnBadge.style.position = 'fixed';
-        midAutumnBadge.style.bottom = '20px';
+        midAutumnBadge.style.top = '85px';
         midAutumnBadge.style.left = '20px';
         midAutumnBadge.style.zIndex = '99999';
         midAutumnBadge.style.cursor = 'pointer';
         midAutumnBadge.style.display = 'flex';
         midAutumnBadge.style.alignItems = 'center';
-        midAutumnBadge.style.gap = '8px';
+        midAutumnBadge.style.justifyContent = 'center';
         midAutumnBadge.style.background = 'linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%)';
         midAutumnBadge.style.border = '1.5px solid #d97706';
-        midAutumnBadge.style.padding = '8px 14px';
-        midAutumnBadge.style.borderRadius = '30px';
-        midAutumnBadge.style.boxShadow = '0 6px 20px rgba(217, 119, 6, 0.4)';
+        midAutumnBadge.style.width = '42px';
+        midAutumnBadge.style.height = '42px';
+        midAutumnBadge.style.borderRadius = '50%';
+        midAutumnBadge.style.boxShadow = '0 4px 15px rgba(217, 119, 6, 0.4)';
         midAutumnBadge.style.transition = 'all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
-        midAutumnBadge.style.color = '#78350f';
         
-        // Add floating animation styling inline
+        // Add swinging animation styling inline to look like a festive hanging lantern
         const styleSheet = document.createElement("style");
         styleSheet.innerText = `
-            @keyframes pulseGlow {
-                0% { transform: scale(1); box-shadow: 0 6px 20px rgba(217, 119, 6, 0.4); }
-                50% { transform: scale(1.05); box-shadow: 0 6px 25px rgba(217, 119, 6, 0.6), 0 0 10px rgba(245, 158, 11, 0.4); }
-                100% { transform: scale(1); box-shadow: 0 6px 20px rgba(217, 119, 6, 0.4); }
+            @keyframes swingLantern {
+                0% { transform: rotate(-6deg); }
+                50% { transform: rotate(6deg); }
+                100% { transform: rotate(-6deg); }
             }
-            .pulse-badge { animation: pulseGlow 2.5s infinite ease-in-out; }
-            .pulse-badge:hover { transform: scale(1.1) !important; filter: brightness(1.05); }
+            .swing-badge { 
+                animation: swingLantern 2.5s infinite ease-in-out; 
+                transform-origin: top center;
+            }
+            .swing-badge:hover { transform: scale(1.1) rotate(0deg) !important; filter: brightness(1.05); }
         `;
         document.head.appendChild(styleSheet);
         
-        midAutumnBadge.className = 'pulse-badge';
+        midAutumnBadge.className = 'swing-badge';
         midAutumnBadge.innerHTML = `
-            <span style="font-size: 1.15rem;">🥮</span>
-            <span style="font-size: 0.74rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; text-shadow: 0 1px 2px rgba(255,255,255,0.2);">Trăng Rằm Launching</span>
+            <span style="font-size: 1.45rem; line-height: 1; display: inline-block; transform: translateY(-1px);">🏮</span>
         `;
         document.body.appendChild(midAutumnBadge);
 
