@@ -6,13 +6,5 @@
       "path": "/api/daily-email",
       "schedule": "40 1 * * *"
     }
-  ],
-  "functions": {
-    "api/daily-email.js": { "maxDuration": 60 },
-    "api/chat.js": { "maxDuration": 60 },
-    "api/email-assistant.js": { "maxDuration": 60 },
-    "api/enrich.js": { "maxDuration": 60 },
-    "api/roleplay.js": { "maxDuration": 60 },
-    "api/search.js": { "maxDuration": 60 }
-  }
+  ]
 }
