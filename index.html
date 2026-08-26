@@ -60,7 +60,7 @@
         <div class="glass-panel" style="padding: 24px; border-radius: 24px; border: 1.5px solid var(--primary); background: var(--card-bg); display: flex; gap: 24px; align-items: center; box-shadow: var(--shadow); flex-wrap: wrap;">
             <!-- Left: Mascot Image -->
             <div style="width: 140px; height: 140px; border-radius: 20px; overflow: hidden; border: 1px solid var(--border-color); flex-shrink: 0; position: relative; margin: 0 auto;">
-                <img id="beedee-homepage-mascot" src="beedee_mid_autumn.jpg?v=2.3.14" style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s ease;" alt="BeeDee Mascot">
+                <img id="beedee-homepage-mascot" src="beedee_mid_autumn.jpg?v=2.3.24" style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s ease;" alt="BeeDee Mascot">
             </div>
             <!-- Right: Speech bubble & Text -->
             <div style="flex: 1; text-align: left; min-width: 280px; display: flex; flex-direction: column; gap: 8px;">
@@ -102,10 +102,13 @@
                 const balance = parseInt(localStorage.getItem('b2b_points_balance') || '0', 10);
                 const userName = localStorage.getItem('streak_name') || '';
                 
+                const customAvatar = localStorage.getItem('b2b_custom_avatar');
+                const avatarHtml = customAvatar ? `<img src="${customAvatar}" style="width: 28px; height: 28px; border-radius: 50%; object-fit: cover; border: 1.5px solid var(--primary); display: inline-block; vertical-align: middle; margin-right: 6px;">` : '';
+
                 if (isRegistered && userName && userName !== 'Khách' && userName !== 'Học viên') {
-                    greetingTitle.innerHTML = 'Xin chào bác <strong>' + userName + '</strong>!';
+                    greetingTitle.innerHTML = avatarHtml + 'Xin chào bác <strong>' + userName + '</strong>!';
                 } else {
-                    greetingTitle.innerHTML = 'Xin chào bác!';
+                    greetingTitle.innerHTML = avatarHtml + 'Xin chào bác!';
                 }
                 
                 if (greetingText && (greetingText.innerHTML.includes('Đang chuẩn bị') || greetingText.innerHTML === '')) {
@@ -150,7 +153,7 @@
     </script>
 
     <section class="intro container">
-        <div class="intro-grid" style="display: grid; grid-template-columns: 1.2fr 1fr; gap: 30px; align-items: stretch;">
+        <div class="intro-grid">
             <div class="intro-card glass-effect" style="margin: 0; text-align: left; height: 100%; box-sizing: border-box; display: flex; flex-direction: column; justify-content: center; padding: 35px;">
                 <h2 style="margin-top: 0; font-size: 1.8rem; font-weight: 800; color: var(--text-main);">BD B2B không đơn thuần là bán sản phẩm.</h2>
                 <div class="formula-container" style="margin: 22px 0;">
