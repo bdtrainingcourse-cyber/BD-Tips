@@ -35,7 +35,7 @@ function httpPost(url, body, maxRedirects = 5) {
             resolve({ ok: false, status: 500, text: () => Promise.resolve('Too many redirects') });
             return;
           }
-          httpGet(res.headers.location, maxRedirects - 1).then(resolve);
+          httpPost(res.headers.location, body, maxRedirects - 1).then(resolve);
           return;
         }
 
