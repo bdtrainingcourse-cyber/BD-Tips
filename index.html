@@ -86,6 +86,69 @@
         </div>
     </section>
 
+    <!-- Inline script to guarantee immediate, cache-free personalized mascot greeting update -->
+    <script>
+        (function() {
+            function updateHomepageGreeting() {
+                const greetingTitle = document.getElementById('beedee-greeting-title');
+                const greetingText = document.getElementById('beedee-greeting-text');
+                const mascotImg = document.getElementById('beedee-homepage-mascot');
+                if (!greetingTitle) return;
+                
+                const email = localStorage.getItem('streak_email');
+                const streakActive = localStorage.getItem('streak_active') === 'true';
+                const isRegistered = streakActive || (email && email.includes('@'));
+                const isVerified = localStorage.getItem('b2b_user_verified') === 'true';
+                const balance = parseInt(localStorage.getItem('b2b_points_balance') || '0', 10);
+                const userName = localStorage.getItem('streak_name') || '';
+                
+                if (isRegistered && userName && userName !== 'Khách' && userName !== 'Học viên') {
+                    greetingTitle.innerHTML = 'Xin chào bác <strong>' + userName + '</strong>!';
+                } else {
+                    greetingTitle.innerHTML = 'Xin chào bác!';
+                }
+                
+                if (greetingText && (greetingText.innerHTML.includes('Đang chuẩn bị') || greetingText.innerHTML === '')) {
+                    if (!isRegistered) {
+                        greetingText.innerHTML = 'Bác chưa đăng ký tích điểm kìa! Mau bật nhắc nhở để tui gửi bí kíp BD và tặng ngay 25 BD-Points nha!';
+                    } else if (isRegistered && !isVerified) {
+                        greetingText.innerHTML = 'Bác tích được <strong>' + balance + ' BD-Points</strong> rồi đó, nhưng chưa cài mật khẩu. Cài ngay kẻo ví điểm bay màu nha!';
+                    } else {
+                        const day = new Date().getDay();
+                        let mascotSrc = 'mascot_quests.jpg';
+                        let msg = 'Bác đang có <strong>' + balance + ' BD-Points</strong> trong ví. Hãy trau dồi thêm kỹ năng BD cùng tui nha!';
+                        if (day === 1) {
+                            mascotSrc = 'mascot_commander.jpg';
+                            msg = 'Đầu tuần năng lượng lên bác ơi! Mục tiêu tuần này của bác là săn thêm bao nhiêu Deal đây? Mau vô mở kho tàng B2B thực chiến cùng tui nào!';
+                        } else if (day === 2) {
+                            mascotSrc = 'mascot_architect.jpg';
+                            msg = 'Thứ ba là ngày thiết lập hệ thống! Hãy để tui giúp bác lên kịch bản email tiếp cận lead tự động chuẩn chỉnh nhé!';
+                        } else if (day === 3) {
+                            mascotSrc = 'mascot_kpi.jpg';
+                            msg = 'Giữa tuần rồi bác ơi, KPI tuần này đã chạy được nửa chặng đường chưa? Mau vô ước tính KPI hoặc làm vài nhiệm vụ lấy điểm tích lũy thôi!';
+                        } else if (day === 4) {
+                            mascotSrc = 'mascot_salary.jpg';
+                            msg = 'Thứ năm rồi, cuối tuần cận kề rồi! Deal nào còn dang dở thì chốt nhanh để cuối tháng lượm hoa hồng ngập ví nha bác!';
+                        } else if (day === 5) {
+                            mascotSrc = 'mascot_champion.jpg';
+                            msg = 'Thứ sáu cuối tuần rồi bác ơi! Gác lại áp lực, hãy cùng khách hàng xây dựng chemistry thật tốt rồi tận hưởng ngày nghỉ cuối tuần nhé!';
+                        } else {
+                            mascotSrc = 'mascot_farmer.jpg';
+                        }
+                        if (mascotImg) mascotImg.src = mascotSrc;
+                        greetingText.innerHTML = msg;
+                    }
+                }
+            }
+            
+            // Execute in stages to ensure elements are ready
+            updateHomepageGreeting();
+            setTimeout(updateHomepageGreeting, 50);
+            document.addEventListener('DOMContentLoaded', updateHomepageGreeting);
+            window.addEventListener('load', updateHomepageGreeting);
+        })();
+    </script>
+
     <section class="intro container">
         <div class="intro-grid" style="display: grid; grid-template-columns: 1.2fr 1fr; gap: 30px; align-items: stretch;">
             <div class="intro-card glass-effect" style="margin: 0; text-align: left; height: 100%; box-sizing: border-box; display: flex; flex-direction: column; justify-content: center; padding: 35px;">
