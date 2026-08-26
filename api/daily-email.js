@@ -512,25 +512,28 @@ BỐI CẢNH THỰC TẾ TRONG NGÀY:
 - Tin tức kinh tế tiêu điểm trên VnExpress: "${newsTitle}"
 
 DANH SÁCH TÍNH NĂNG/CÔNG CỤ CỦA WEBSITE ĐỂ ĐIỀU HƯỚNG:
-1. Cộng Đồng B2B (https://bd-tips.vercel.app/community.html) -> Nơi chia sẻ bài viết, kết nối chiến thần B2B và thảo luận sôi nổi.
-2. Challenge Game (https://bd-tips.vercel.app/#minigame-section) -> Chơi game xử lý từ chối B2B thực chiến để tích lũy BD-Points đổi quà.
-3. Pitching AI (https://bd-tips.vercel.app/pitching.html) -> Luyện tập phản xạ thuyết trình và pitching B2B với AI.
+1. Mini Game B2B Challenge (https://bd-tips.vercel.app/quests.html hoặc https://bd-tips.vercel.app/#minigame-section) -> Chơi game xử lý từ chối B2B thực chiến để tích lũy BD-Points đổi quà.
+2. Cộng Đồng B2B (https://bd-tips.vercel.app/community.html) -> Nơi chia sẻ bài viết, kết nối chiến thần B2B và thảo luận sôi nổi.
+3. Test Tính Cách BD (https://bd-tips.vercel.app/personality-test.html) -> Làm trắc nghiệm tính cách BD chuyên sâu để khám phá điểm mạnh/yếu thực chiến và nhận diện phong cách sales.
 4. AI Email Assistant (https://bd-tips.vercel.app/email-assistant.html) -> Viết Cold Email B2B bứt phá tỷ lệ chuyển đổi.
-5. Lương Gross-Net (https://bd-tips.vercel.app/salary.html) -> Công cụ tính lương Gross/Net chi tiết.
-6. Luật Lao Động (https://bd-tips.vercel.app/salary.html#law-section) -> Tra cứu nhanh luật lao động mới nhất.
+5. Pitching AI (https://bd-tips.vercel.app/pitching.html) -> Luyện tập phản xạ thuyết trình và pitching B2B với AI.
+6. Thư Viện BD (https://bd-tips.vercel.app/library.html) -> Các case study và bài viết chiều sâu từ anh Peter Vo.
 7. KPI & Phễu (https://bd-tips.vercel.app/kpi-estimation.html) -> Lập kế hoạch B2B và tính toán tỷ lệ chuyển đổi phễu.
-8. Sự Kiện B2B (https://bd-tips.vercel.app/events.html) -> Lịch sự kiện giao lưu thực chiến.
-9. Thư Viện BD (https://bd-tips.vercel.app/library.html) -> Các case study và bài viết chiều sâu từ anh Peter Vo.
+8. Lương Gross-Net (https://bd-tips.vercel.app/salary.html) -> Công cụ tính lương Gross/Net chi tiết và tra cứu Luật Lao Động.
 
 YÊU CẦU NỘI DUNG & PHONG CÁCH:
 1. Độ dài: CỰC KỲ NGẮN GỌN (tối đa 2 đến 3 câu ngắn).
 2. Tinh thần sáng tạo: Viết theo phong cách hài hước (funny), hóm hỉnh đặc trưng của dân Sales/BD thực chiến (ví dụ: cày KPI, chốt deal, pipeline, lead bị ghost, chốt PIC, sếp dí...).
 3. Cách lồng ghép tin tức & thời tiết:
-   - Hãy lấy tiêu đề VnExpress "${newsTitle}" làm nguồn cảm hứng để tạo ra một câu đùa ẩn dụ hài hước kết nối trực tiếp với cuộc sống Sales/BD (Ví dụ: So sánh vàng tăng giá với deal tăng giá trị, hoặc thị trường chứng khoán rung lắc như tâm trạng khách hàng lúc ký hợp đồng...).
-   - Lồng ghép khéo léo yếu tố thời tiết "${weatherDesc} (${temp}°C)" làm gia vị phụ họa hài hước (Ví dụ: Thời tiết mưa lạnh thế này mà pipeline trống trơn thì càng lạnh hơn, hoặc nắng nóng gay gắt thế này mà deal còn bị "bốc hơi"...).
+   - Hãy lấy tiêu đề VnExpress "${newsTitle}" làm nguồn cảm hứng để tạo ra một câu đùa ẩn dụ hài hước kết nối trực tiếp với cuộc sống Sales/BD.
+   - Lồng ghép khéo léo yếu tố thời tiết "${weatherDesc} (${temp}°C)" làm gia vị phụ họa hài hước.
 4. TUYỆT ĐỐI KHÔNG chào hỏi bằng các câu sáo rỗng như "Chào Peter", "Chào bạn", "Chào Chiến thần B2B", "Xin chào" ở đầu email vì hệ thống đã tự động chèn lời chào rồi. Hãy đi thẳng ngay vào câu đùa/nội dung chính ở câu đầu tiên.
-5. Kêu gọi hành động: Dẫn dắt hóm hỉnh sang 1 tính năng tương ứng của website để học viên nhấp vào sử dụng (Đặc biệt luân phiên quảng bá các tính năng khác nhau như Cộng đồng B2B, Challenge Game để nhận BD-Points đổi trà sữa, Pitching AI, Cold Email AI...).
-6. Chọn Mascot phù hợp: Lựa chọn linh hoạt loại biểu cảm mascot phản ánh đúng tâm lý/nội dung email đó để chú cú hiển thị sinh động và đa dạng (ví dụ: dùng ghost khi nói về lead biến mất, wrong khi nói về deal tạch, milktea khi nói về nhận quà, relax khi nói về cuối tuần/thư giãn, hot/rain/storm tương ứng thời tiết hoặc áp lực KPI).
+5. SỰ ƯU TIÊN VỀ TÍNH NĂNG (QUAN TRỌNG): Hãy tập trung cao độ (khoảng 80% số ngày) xoay quanh và dẫn dắt người dùng click vào 3 tính năng trọng tâm sau:
+   - "Mini Game B2B Challenge" (Tích điểm đổi quà)
+   - "Cộng Đồng B2B" (Thảo luận kết nối)
+   - "Test Tính Cách BD" (Khám phá bản thân)
+   Hạn chế nhắc đến Pitching AI, AI Email Assistant, Lương Gross-Net hay các tính năng khác trừ khi có thời tiết/tin tức cực kỳ liên quan trực tiếp.
+6. Chọn Mascot phù hợp: Lựa chọn linh hoạt loại biểu cảm mascot phản ánh đúng tâm lý/nội dung email đó để chú cú hiển thị sinh động và đa dạng (ví dụ: dùng ghost khi bị khách ghost, wrong khi deal tạch, milktea khi đổi quà/thưởng, relax khi cuối tuần/thả lỏng, hot/rain/storm tương ứng thời tiết hoặc áp lực KPI).
 
 ĐỊNH DẠNG ĐẦU RA: Trả về duy nhất một chuỗi JSON hợp lệ (không bọc trong tag code markdown) có cấu trúc như sau:
 {
