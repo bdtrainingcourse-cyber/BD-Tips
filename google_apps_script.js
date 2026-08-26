@@ -46,6 +46,8 @@ function doPost(e) {
       return queueDailyEmails(postData);
     } else if (action === "sendSingleEmail") {
       return sendSingleEmail(postData);
+    } else if (action === "sendVerificationReminder") {
+      return sendVerificationReminder(email, name);
     } else if (action === "updateProfile") {
       return updateProfile(email, postData.field, postData.value, postData.points);
     } else if (postData.tool === "course-registration") {
@@ -398,6 +400,24 @@ function sendSingleEmail(data) {
     });
     
     return createJsonResponse({ success: true, message: "Test email dispatched successfully to " + email });
+  } catch (err) {
+    return createJsonResponse({ success: false, error: err.message });
+  }
+}
+
+function sendVerificationReminder(email, name) {
+  try {
+    const verificationUrl = "https://bd-tips.vercel.app/?verify_email=" + encodeURIComponent(email);
+    const unverifiedSubject = "🦉 Nhắc nhở: Xác thực tài khoản B2B BD & Nhận ngay 15đ tích lũy";
+    const unverifiedMessage = "Chào bác <b>" + name + "</b>,<br><br>Cú BeeDee thấy tài khoản của bác vẫn chưa được kích hoạt. Hãy nhấn vào nút bên dưới để xác thực địa chỉ email. Tài khoản kích hoạt thành công sẽ được tặng thêm ngay <b>15đ ⚡</b> và mở khóa toàn bộ kho tài liệu thực chiến nhé!";
+    
+    const bodyHtml = getHtmlEmailTemplate(unverifiedMessage, "Kích hoạt & Nhận 15đ", verificationUrl, "https://bd-tips.vercel.app/mascot_quests.jpg", name);
+    MailApp.sendEmail({
+      to: email,
+      subject: unverifiedSubject,
+      htmlBody: bodyHtml
+    });
+    return createJsonResponse({ success: true, message: "Verification reminder email sent." });
   } catch (err) {
     return createJsonResponse({ success: false, error: err.message });
   }

@@ -607,23 +607,34 @@ YÊU CẦU NỘI DUNG:
 
   // If overriding for testing via ?email=...
   if (req.query.email) {
-    console.log(`[DAILY_EMAIL_CRON] Test mode. Sending single email to ${req.query.email}...`);
+    const isUnverified = req.query.verified === 'false';
+    console.log(`[DAILY_EMAIL_CRON] Test mode. Sending email to ${req.query.email}...`);
     if (webhookUrl) {
       try {
-        const emailRes = await httpPost(webhookUrl, {
-          action: 'sendSingleEmail',
-          to: req.query.email,
-          name: req.query.name || 'Chiến thần B2B',
-          subject: subject,
-          message: template.message,
-          buttonText: template.buttonText,
-          buttonUrl: template.buttonUrl,
-          mascot: template.mascot
-        });
+        let payload;
+        if (isUnverified) {
+          payload = {
+            action: 'sendVerificationReminder',
+            email: req.query.email,
+            name: req.query.name || 'Chiến thần B2B'
+          };
+        } else {
+          payload = {
+            action: 'sendSingleEmail',
+            to: req.query.email,
+            name: req.query.name || 'Chiến thần B2B',
+            subject: subject,
+            message: template.message,
+            buttonText: template.buttonText,
+            buttonUrl: template.buttonUrl,
+            mascot: template.mascot
+          };
+        }
+        const emailRes = await httpPost(webhookUrl, payload);
         const resText = await emailRes.text();
         return res.status(200).json({
           success: true,
-          message: `Test email sent to ${req.query.email}`,
+          message: `Test email (${isUnverified ? 'unverified flow' : 'verified flow'}) sent to ${req.query.email}`,
           sheetResponse: resText,
           context: { temp, weatherDesc, newsTitle, mascot: template.mascot }
         });
