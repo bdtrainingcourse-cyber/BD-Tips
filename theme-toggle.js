@@ -3443,3 +3443,57 @@ window.showSubtleProfileModal = function({ title, subtitle, options, fieldName, 
     }, 10);
 };
 
+window.triggerProfileOnboarding = function(callback) {
+    // 1. Check Experience
+    if (!localStorage.getItem('profile_experience')) {
+        window.showSubtleProfileModal({
+            title: '🦉 Tinh chỉnh độ khó AI',
+            subtitle: 'Chào bác! Để Cú BeeDee chuẩn bị bộ câu hỏi và kịch bản thực chiến phù hợp nhất với trình độ, bác làm B2B Sales/BD được mấy năm rồi?',
+            options: [
+                'Dưới 2 năm (Tân binh)',
+                'Từ 2-4 năm (Thực chiến)',
+                '4 năm trở lên (Lão làng)'
+            ],
+            fieldName: 'experience',
+            callback: () => window.triggerProfileOnboarding(callback)
+        });
+        return;
+    }
+
+    // 2. Check Industry
+    if (!localStorage.getItem('profile_industry')) {
+        window.showSubtleProfileModal({
+            title: '💼 Lĩnh vực hoạt động',
+            subtitle: 'Bác đang phụ trách phát triển thị trường (BD) trong lĩnh vực/ngành nghề nào?',
+            options: [
+                'Công nghệ / Phần mềm (SaaS)',
+                'Sản xuất / Logistics / Bán sỉ',
+                'Dịch vụ doanh nghiệp / Agency',
+                'Tài chính / Bất động sản / Khác'
+            ],
+            fieldName: 'industry',
+            callback: () => window.triggerProfileOnboarding(callback)
+        });
+        return;
+    }
+
+    // 3. Check Skill
+    if (!localStorage.getItem('profile_skill')) {
+        window.showSubtleProfileModal({
+            title: '🎯 Kỹ năng muốn rèn luyện',
+            subtitle: 'Kỹ năng BD nào bác đang muốn tập trung cải thiện nhất trong thời gian này?',
+            options: [
+                'Tìm kiếm khách hàng & Tiếp cận (Cold reach)',
+                'Thuyết trình & Pitching giải pháp',
+                'Đàm phán thương lượng & Chốt hợp đồng',
+                'Xây dựng mối quan hệ bền vững (KAM)'
+            ],
+            fieldName: 'skill',
+            callback: () => window.triggerProfileOnboarding(callback)
+        });
+        return;
+    }
+
+    if (callback) callback();
+};
+
