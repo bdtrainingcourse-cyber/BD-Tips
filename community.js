@@ -103,6 +103,23 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // Trigger Industry survey after 3 seconds on page load
+    setTimeout(() => {
+        if (window.showSubtleProfileModal && !localStorage.getItem('profile_industry')) {
+            window.showSubtleProfileModal({
+                title: '💼 Lĩnh vực hoạt động',
+                subtitle: 'Chào bác! Hãy chia sẻ lĩnh vực bác đang phát triển để Cú lọc các bài thảo luận phù hợp nhất với ngành của bác:',
+                options: [
+                    'Công nghệ / Phần mềm (SaaS)',
+                    'Sản xuất / Logistics / Bán sỉ',
+                    'Dịch vụ doanh nghiệp / Agency',
+                    'Tài chính / Bất động sản / Khác'
+                ],
+                fieldName: 'industry'
+            });
+        }
+    }, 3000);
+
     // Notification center DOM Elements
     const btnNotiBell = document.getElementById('btn-noti-bell');
     const notiDropdown = document.getElementById('noti-dropdown');
