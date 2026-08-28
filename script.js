@@ -6358,104 +6358,109 @@ if (document.readyState === 'loading') {
     }
 
     window.challengeOnlineUser = function(userId) {
-        const usr = MOCK_ONLINE_USERS.find(u => u.id === userId);
-        if (!usr) return;
-        
-        const gameTitle = usr.gameId === 'puzzle-negotiation' ? 'Ải 1: Đàm phán B2B' : usr.gameId === 'puzzle-kpi' ? 'Ải 2: KPI Master' : 'Ải 3: Luật Lao Động';
-        const userScore = localStorage.getItem(`high_score_${usr.gameId}`);
-        const finalUserScore = userScore ? parseInt(userScore, 10) : null;
-        
-        const overlay = document.createElement('div');
-        overlay.className = 'pvp-select-overlay';
-        overlay.style.position = 'fixed';
-        overlay.style.top = '0';
-        overlay.style.left = '0';
-        overlay.style.width = '100vw';
-        overlay.style.height = '100vh';
-        overlay.style.backgroundColor = 'rgba(10, 11, 18, 0.85)';
-        overlay.style.backdropFilter = 'blur(10px)';
-        overlay.style.webkitBackdropFilter = 'blur(10px)';
-        overlay.style.zIndex = '21000';
-        overlay.style.display = 'flex';
-        overlay.style.alignItems = 'center';
-        overlay.style.justifyContent = 'center';
-        overlay.style.padding = '20px';
-        overlay.style.boxSizing = 'border-box';
-        
-        const box = document.createElement('div');
-        box.style.maxWidth = '420px';
-        box.style.width = '100%';
-        box.style.padding = '30px 25px';
-        box.style.borderRadius = '24px';
-        box.style.border = '1px solid rgba(239, 68, 68, 0.2)';
-        box.style.background = 'var(--card-bg)';
-        box.style.color = 'var(--text-main)';
-        box.style.textAlign = 'center';
-        box.style.boxShadow = '0 20px 50px rgba(0,0,0,0.3)';
-        
-        const scoreDisplay = finalUserScore !== null ? `<strong>${finalUserScore} điểm</strong>` : `<span style="color: var(--text-light); font-style: italic;">Chưa có điểm kỷ lục</span>`;
-        
-        let actionButtons = '';
-        if (finalUserScore !== null) {
-            actionButtons = `
-                <button id="btn-pvp-compare" class="pvp-btn-challenge" style="width: 100%; padding: 12px; margin-bottom: 8px;">So Kèo Ngay (Dùng Điểm Kỷ Lục)</button>
-                <button id="btn-pvp-replay" class="btn btn-secondary" style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--border-color); background: rgba(255,255,255,0.05); color: var(--text-main); font-weight: bold; cursor: pointer;">Đấu Lại (Chơi Game Mới)</button>
+        try {
+            const usr = MOCK_ONLINE_USERS.find(u => u.id === userId);
+            if (!usr) return;
+            
+            const gameTitle = usr.gameId === 'puzzle-negotiation' ? 'Ải 1: Đàm phán B2B' : usr.gameId === 'puzzle-kpi' ? 'Ải 2: KPI Master' : 'Ải 3: Luật Lao Động';
+            const userScore = localStorage.getItem(`high_score_${usr.gameId}`);
+            const finalUserScore = userScore ? parseInt(userScore, 10) : null;
+            
+            const overlay = document.createElement('div');
+            overlay.className = 'pvp-select-overlay';
+            overlay.style.position = 'fixed';
+            overlay.style.top = '0';
+            overlay.style.left = '0';
+            overlay.style.width = '100vw';
+            overlay.style.height = '100vh';
+            overlay.style.backgroundColor = 'rgba(10, 11, 18, 0.85)';
+            overlay.style.backdropFilter = 'blur(10px)';
+            overlay.style.webkitBackdropFilter = 'blur(10px)';
+            overlay.style.zIndex = '21000';
+            overlay.style.display = 'flex';
+            overlay.style.alignItems = 'center';
+            overlay.style.justifyContent = 'center';
+            overlay.style.padding = '20px';
+            overlay.style.boxSizing = 'border-box';
+            
+            const box = document.createElement('div');
+            box.style.maxWidth = '420px';
+            box.style.width = '100%';
+            box.style.padding = '30px 25px';
+            box.style.borderRadius = '24px';
+            box.style.border = '1px solid rgba(239, 68, 68, 0.2)';
+            box.style.background = 'var(--card-bg)';
+            box.style.color = 'var(--text-main)';
+            box.style.textAlign = 'center';
+            box.style.boxShadow = '0 20px 50px rgba(0,0,0,0.3)';
+            
+            const scoreDisplay = finalUserScore !== null ? `<strong>${finalUserScore} điểm</strong>` : `<span style="color: var(--text-light); font-style: italic;">Chưa có điểm kỷ lục</span>`;
+            
+            let actionButtons = '';
+            if (finalUserScore !== null) {
+                actionButtons = `
+                    <button id="btn-pvp-compare" class="pvp-btn-challenge" style="width: 100%; padding: 12px; margin-bottom: 8px;">So Kèo Ngay (Dùng Điểm Kỷ Lục)</button>
+                    <button id="btn-pvp-replay" class="btn btn-secondary" style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--border-color); background: rgba(255,255,255,0.05); color: var(--text-main); font-weight: bold; cursor: pointer;">Đấu Lại (Chơi Game Mới)</button>
+                `;
+            } else {
+                actionButtons = `
+                    <button id="btn-pvp-replay" class="pvp-btn-challenge" style="width: 100%; padding: 12px; margin-bottom: 8px;">Quyết Chiến Ngay (Chơi Lấy Điểm)</button>
+                    <p style="font-size: 0.72rem; color: var(--text-light); margin-top: 6px; line-height: 1.3;">
+                        Bác chưa chơi ải này. Hãy quyết chiến ngay để thiết lập điểm số đấu với ${usr.name}!
+                    </p>
+                `;
+            }
+            
+            box.innerHTML = `
+                <div style="font-size: 3rem; margin-bottom: 12px;">⚔️</div>
+                <h3 style="margin: 0 0 12px 0; font-size: 1.25rem; font-weight: 900; color: var(--text-main); letter-spacing: 0.5px; text-transform: uppercase;">KHIÊU CHIẾN: ${usr.name}</h3>
+                
+                <div style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); border-radius: 12px; padding: 15px; margin-bottom: 20px; position: relative;">
+                    <img src="mascot_challenge.jpg" style="width: 44px; height: 44px; border-radius: 50%; position: absolute; top: -15px; right: 15px; border: 1.5px solid var(--primary);" alt="BeeDee Owl">
+                    <p style="margin: 0; font-size: 0.8rem; color: var(--text-light); line-height: 1.5; font-style: italic; text-align: left; padding-right: 40px;">
+                        "${usr.quote}"
+                    </p>
+                </div>
+                
+                <div style="background: rgba(255,255,255,0.01); border: 1px solid var(--border-color); border-radius: 12px; padding: 12px; margin-bottom: 20px; font-size: 0.82rem; text-align: left; display: flex; flex-direction: column; gap: 6px;">
+                    <div style="display: flex; justify-content: space-between;">
+                        <span style="color: var(--text-light);">Thử thách tại:</span>
+                        <strong style="color: var(--primary);">${gameTitle}</strong>
+                    </div>
+                    <div style="display: flex; justify-content: space-between;">
+                        <span style="color: var(--text-light);">Điểm đối thủ:</span>
+                        <strong style="color: var(--text-main);">${usr.points} điểm</strong>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; border-top: 1px dashed rgba(255,255,255,0.08); padding-top: 6px; margin-top: 4px;">
+                        <span style="color: var(--text-light);">Kỷ lục của bác:</span>
+                        <span>${scoreDisplay}</span>
+                    </div>
+                </div>
+                
+                <div style="display: flex; flex-direction: column; gap: 8px;">
+                    ${actionButtons}
+                    <button onclick="this.closest('.pvp-select-overlay').remove()" class="btn btn-secondary" style="padding: 8px; font-size: 0.78rem; font-weight: bold; border: none; background: transparent; color: var(--text-light); cursor: pointer; margin-top: 5px;">Hủy bỏ</button>
+                </div>
             `;
-        } else {
-            actionButtons = `
-                <button id="btn-pvp-replay" class="pvp-btn-challenge" style="width: 100%; padding: 12px; margin-bottom: 8px;">Quyết Chiến Ngay (Chơi Lấy Điểm)</button>
-                <p style="font-size: 0.72rem; color: var(--text-light); margin-top: 6px; line-height: 1.3;">
-                    Bác chưa chơi ải này. Hãy quyết chiến ngay để thiết lập điểm số đấu với ${usr.name}!
-                </p>
-            `;
-        }
-        
-        box.innerHTML = `
-            <div style="font-size: 3rem; margin-bottom: 12px;">⚔️</div>
-            <h3 style="margin: 0 0 12px 0; font-size: 1.25rem; font-weight: 900; color: var(--text-main); letter-spacing: 0.5px; text-transform: uppercase;">KHIÊU CHIẾN: ${usr.name}</h3>
             
-            <div style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); border-radius: 12px; padding: 15px; margin-bottom: 20px; position: relative;">
-                <img src="mascot_challenge.jpg" style="width: 44px; height: 44px; border-radius: 50%; position: absolute; top: -15px; right: 15px; border: 1.5px solid var(--primary);" alt="BeeDee Owl">
-                <p style="margin: 0; font-size: 0.8rem; color: var(--text-light); line-height: 1.5; font-style: italic; text-align: left; padding-right: 40px;">
-                    "${usr.quote}"
-                </p>
-            </div>
+            overlay.appendChild(box);
+            document.body.appendChild(overlay);
             
-            <div style="background: rgba(255,255,255,0.01); border: 1px solid var(--border-color); border-radius: 12px; padding: 12px; margin-bottom: 20px; font-size: 0.82rem; text-align: left; display: flex; flex-direction: column; gap: 6px;">
-                <div style="display: flex; justify-content: space-between;">
-                    <span style="color: var(--text-light);">Thử thách tại:</span>
-                    <strong style="color: var(--primary);">${gameTitle}</strong>
-                </div>
-                <div style="display: flex; justify-content: space-between;">
-                    <span style="color: var(--text-light);">Điểm đối thủ:</span>
-                    <strong style="color: var(--text-main);">${usr.points} điểm</strong>
-                </div>
-                <div style="display: flex; justify-content: space-between; border-top: 1px dashed rgba(255,255,255,0.08); padding-top: 6px; margin-top: 4px;">
-                    <span style="color: var(--text-light);">Kỷ lục của bác:</span>
-                    <span>${scoreDisplay}</span>
-                </div>
-            </div>
+            if (finalUserScore !== null) {
+                box.querySelector('#btn-pvp-compare').addEventListener('click', () => {
+                    overlay.remove();
+                    executePvpComparison(usr, finalUserScore);
+                });
+            }
             
-            <div style="display: flex; flex-direction: column; gap: 8px;">
-                ${actionButtons}
-                <button onclick="this.closest('.pvp-select-overlay').remove()" class="btn btn-secondary" style="padding: 8px; font-size: 0.78rem; font-weight: bold; border: none; background: transparent; color: var(--text-light); cursor: pointer; margin-top: 5px;">Hủy bỏ</button>
-            </div>
-        `;
-        
-        overlay.appendChild(box);
-        document.body.appendChild(overlay);
-        
-        if (finalUserScore !== null) {
-            box.querySelector('#btn-pvp-compare').addEventListener('click', () => {
+            box.querySelector('#btn-pvp-replay').addEventListener('click', () => {
                 overlay.remove();
-                executePvpComparison(usr, finalUserScore);
+                redirectToPvpGame(usr);
             });
+        } catch (err) {
+            console.error("Error in challengeOnlineUser:", err);
+            alert("Lỗi khi khiêu chiến: " + err.message);
         }
-        
-        box.querySelector('#btn-pvp-replay').addEventListener('click', () => {
-            overlay.remove();
-            redirectToPvpGame(usr);
-        });
     };
 
     function redirectToPvpGame(usr) {
