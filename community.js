@@ -249,6 +249,36 @@ document.addEventListener('DOMContentLoaded', () => {
     // Default preloaded posts if localstorage is empty
     const defaultPosts = [
         {
+            id: 'challenge-peter',
+            category: 'challenge',
+            title: '⚔️ KHIÊU CHIẾN: Ai tự tin đàm phán giỏi hơn sếp Peter Võ? (Ải 1 Đàm Phán B2B)',
+            content: 'Chào các bác! Tôi là Peter Võ (Tổng Tư Lệnh). Tôi vừa hoàn thành Ải Đàm phán thương lượng B2B trong Đấu trường Thực chiến và đạt mức điểm 85. Bác nào tự tin đàm phán giỏi, hãy click nút <b>Nhận lời thách đấu</b> bên dưới để thử tài vượt qua điểm số của tôi. Thắng nhận ngay <b>+50 BD-Points</b> từ Cú BeeDee!',
+            author: 'Peter Võ (Tổng Tư Lệnh)',
+            email: 'peter.vo@pvacademy.vn',
+            date: 'Hôm nay',
+            upvotes: 112,
+            upvoted: false,
+            isChallenge: true,
+            challengeGameId: 'puzzle-negotiation',
+            challengeScore: 85,
+            comments: []
+        },
+        {
+            id: 'challenge-minh',
+            category: 'challenge',
+            title: '⚔️ KHIÊU CHIẾN: Thử tài thiết lập KPI B2B cùng chuyên gia MinhBD (Ải 2 KPI Master)',
+            content: 'Chào các đồng nghiệp! Mình là MinhBD (Kiến Trúc Sư). Mình thách đấu toàn bộ cộng đồng vượt qua mức điểm 80 tại Ải Cân não thiết lập KPI B2B. Hãy click <b>Nhận lời thách đấu</b> để xem bác hay mình có tư duy quản trị số liệu sắc bén hơn nhé! Thắng nhận <b>+50 BD-Points</b> thưởng nóng!',
+            author: 'MinhBD (Kiến Trúc Sư)',
+            email: 'minh.bd@kpiarchitect.com',
+            date: 'Hôm nay',
+            upvotes: 75,
+            upvoted: false,
+            isChallenge: true,
+            challengeGameId: 'puzzle-kpi',
+            challengeScore: 80,
+            comments: []
+        },
+        {
             id: 'post-1',
             category: 'pic',
             title: 'Cần xin contact PIC bộ phận Procurement (Thu mua) tại PNJ chi nhánh Miền Nam',
@@ -360,8 +390,8 @@ document.addEventListener('DOMContentLoaded', () => {
             const card = document.createElement('div');
             card.className = 'post-card';
             
-            const badgeClass = post.category === 'qna' ? 'badge-qna' : post.category === 'pic' ? 'badge-pic' : 'badge-story';
-            const badgeLabel = post.category === 'qna' ? 'Hỏi Đáp' : post.category === 'pic' ? 'Tìm PIC' : 'Câu Chuyện';
+            const badgeClass = post.category === 'qna' ? 'badge-qna' : post.category === 'pic' ? 'badge-pic' : post.category === 'challenge' ? 'badge-challenge' : 'badge-story';
+            const badgeLabel = post.category === 'qna' ? 'Hỏi Đáp' : post.category === 'pic' ? 'Tìm PIC' : post.category === 'challenge' ? 'Quyết Chiến' : 'Câu Chuyện';
 
             const verifiedBadgeHtml = post.email ? `<span class="verified-badge">✔ Verified BD</span>` : '';
 
@@ -420,6 +450,28 @@ document.addEventListener('DOMContentLoaded', () => {
             `;
             reactionsHtml += `</div>`;
 
+            let challengeBoxHtml = '';
+            if (post.isChallenge) {
+                const challengeBeaten = localStorage.getItem(`challenge_beaten_${post.id}`) === 'true';
+                if (challengeBeaten) {
+                    challengeBoxHtml = `
+                        <div style="background: rgba(16, 185, 129, 0.08); border: 1.5px dashed #10b981; padding: 12px; border-radius: 12px; margin: 15px 0; text-align: center; font-size: 0.85rem; font-weight: bold; color: #10b981;">
+                            🎉 ĐÃ CHIẾN THẮNG! Bạn đã vượt qua điểm số thách đấu này. (+50đ)
+                        </div>
+                    `;
+                } else {
+                    challengeBoxHtml = `
+                        <div style="background: rgba(239, 68, 68, 0.05); border: 1.5px dashed #ef4444; padding: 16px; border-radius: 12px; margin: 15px 0; display: flex; flex-direction: column; gap: 10px; align-items: center; text-align: center;">
+                            <div style="font-size: 0.8rem; font-weight: bold; color: #ef4444; text-transform: uppercase; letter-spacing: 0.5px;">⚔️ ĐẤU TRƯỜNG PVP CHUYÊN GIA</div>
+                            <div style="font-size: 0.85rem; color: var(--text-main); font-weight: bold;">Mục tiêu cần đạt: <strong style="color: #fbbf24; font-size: 1rem;">${post.challengeScore} điểm</strong></div>
+                            <button onclick="event.stopPropagation(); acceptCommunityChallenge('${post.challengeGameId}', ${post.challengeScore}, '${post.author}', '${post.id}')" class="btn btn-primary" style="padding: 8px 24px; font-size: 0.82rem; font-weight: bold; border-radius: 8px; border: none; cursor: pointer; background: #ef4444;">
+                                ⚔️ Nhận Lời Quyết Chiến
+                            </button>
+                        </div>
+                    `;
+                }
+            }
+
             card.innerHTML = `
                 <div class="vote-box ${post.upvoted ? 'upvoted' : ''}" data-id="${post.id}">
                     <span class="vote-icon">▲</span>
@@ -435,6 +487,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     </div>
                     <h4 class="post-title">${post.title}</h4>
                     <p class="post-excerpt">${post.content.length > 160 ? post.content.substring(0, 160) + '...' : post.content}</p>
+                    ${challengeBoxHtml}
                     ${mediaHtml}
                     ${reactionsHtml}
                         <span>Đăng bởi: <strong onclick="event.stopPropagation(); window.openDirectMessage('${post.author}')" style="cursor: pointer; color: var(--accent); text-decoration: underline;" title="Nhấp để Chat riêng với ${post.author}">${post.author} 💬</strong> ${verifiedBadgeHtml}</span>
@@ -1589,4 +1642,28 @@ document.addEventListener('DOMContentLoaded', () => {
             showPostDetails(postParam);
         }, 150);
     }
+
+    // --- COMMUNITY CHALLENGE SYSTEM HELPER ---
+    window.acceptCommunityChallenge = function(gameId, score, author, postId) {
+        sessionStorage.setItem('pvp_active', 'true');
+        sessionStorage.setItem('pvp_challenger', author);
+        sessionStorage.setItem('pvp_mascot', 'Chuyên Gia BD');
+        sessionStorage.setItem('pvp_score_to_beat', score.toString());
+        sessionStorage.setItem('pvp_game_id', gameId);
+        sessionStorage.setItem('pvp_post_id', postId);
+        
+        alert(`⚔️ NHẬN THÁCH ĐẤU TỪ CỘNG ĐỒNG!\n\nHệ thống sẽ đưa bác tới Minigame "${gameId === 'puzzle-negotiation' ? 'Đàm phán B2B' : gameId === 'puzzle-kpi' ? 'KPI Master' : 'Luật Lao Động'}". Vượt qua mốc ${score} điểm của ${author} để nhận +50 BD-Points nhé!`);
+        window.location.href = `index.html?challenge=true&challenger=${encodeURIComponent(author)}&mascot=Expert&score=${score}&gameId=${gameId}&postId=${postId}`;
+    };
+
+    // Inject styles for badge-challenge
+    const style = document.createElement('style');
+    style.innerHTML = `
+        .badge-challenge {
+            background: rgba(239, 68, 68, 0.15) !important;
+            color: #ef4444 !important;
+            border: 1px solid rgba(239, 68, 68, 0.3) !important;
+        }
+    `;
+    document.head.appendChild(style);
 });

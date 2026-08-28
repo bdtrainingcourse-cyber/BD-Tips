@@ -6,7 +6,7 @@
     <title>Trắc Nghiệm Tính Cách B2B BD | Cú BeeDee | BD Bình Dân Học Vụ</title>
     <meta name="description" content="Trải nghiệm game quẹt thẻ tính cách BD cực thú vị để đo chỉ số B2B BD của bạn. Nhận quà 50đ và tải chứng chỉ độc quyền.">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css?v=2.3.32">
+    <link rel="stylesheet" href="style.css?v=2.3.40">
     <link rel="stylesheet" href="ai-chat.css?v=2.3.8">
     <script src="theme-toggle.js?v=2.3.32"></script>
     <style>
@@ -329,7 +329,7 @@
     <!-- Chatbot -->
     <div id="ai-chat-root"></div>
 
-    <script src="script.js?v=2.3.32"></script>
+    <script src="script.js?v=2.3.42"></script>
     <script src="ai-chat.js?v=2.3.24"></script>
 
     <script>
@@ -732,6 +732,55 @@
                         <button onclick="copyCode()" class="btn btn-secondary" style="padding: 6px 12px; font-size: 0.72rem; font-weight: bold; border-radius: 6px; cursor: pointer; border: 1px solid var(--border-color); background: rgba(255,255,255,0.05); color: var(--text-main);">Sao Chép</button>
                     </div>
                 </div>
+
+                <!-- Personal Code Card -->
+                <div style="margin: 20px 0; background: rgba(0,0,0,0.15); border: 1.5px solid var(--border-color); border-radius: 16px; padding: 16px; text-align: center;">
+                    <div style="font-size: 0.72rem; font-weight: bold; color: var(--text-light); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px;">
+                        🔑 MÃ SỐ TÍNH CÁCH CỦA BẠN (DÙNG ĐỂ SO KÈO):
+                    </div>
+                    <div style="display: flex; gap: 8px; justify-content: center; align-items: center;">
+                        <span id="personal-personality-code" style="font-family: monospace; font-size: 1.1rem; font-weight: 800; color: #f59e0b; background: rgba(0,0,0,0.2); padding: 6px 14px; border-radius: 6px; border: 1px dashed var(--primary); letter-spacing: 1px;"></span>
+                        <button onclick="copyPersonalCode()" class="btn btn-secondary" style="padding: 6px 12px; font-size: 0.72rem; font-weight: bold; border-radius: 6px; cursor: pointer; border: 1px solid var(--border-color); background: rgba(255,255,255,0.05); color: var(--text-main);">Sao Chép Mã</button>
+                    </div>
+                </div>
+
+                <!-- So Kèo Hợp Tác Section -->
+                <div style="margin: 25px 0; background: rgba(255,255,255,0.02); border: 1px solid var(--border-color); border-radius: 16px; padding: 20px; text-align: left;">
+                    <h3 style="margin: 0 0 10px 0; font-size: 1.05rem; font-weight: 800; color: var(--primary); display: flex; align-items: center; gap: 8px;">
+                        ⚔️ SO KÈO HỢP TÁC B2B
+                    </h3>
+                    <p style="margin: 0 0 15px 0; font-size: 0.78rem; color: var(--text-light); line-height: 1.45;">
+                        Nhập Mã tính cách của đối tác (hoặc chọn nhanh Mascot đại diện của họ) để kiểm tra độ ăn ý và nhận chiến thuật làm việc nhóm từ Peter Võ.
+                    </p>
+                    
+                    <div style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 15px;">
+                        <div>
+                            <label style="display: block; font-size: 0.75rem; font-weight: bold; color: var(--text-main); margin-bottom: 4px;">Cách 1: Nhập Mã tính cách của đối tác</label>
+                            <div style="display: flex; gap: 8px;">
+                                <input type="text" id="partner-code-input" placeholder="Ví dụ: ARC-1234" style="flex: 1; padding: 10px 12px; font-size: 0.85rem; border-radius: 8px; border: 1px solid var(--border-color); background: rgba(0,0,0,0.1); color: #fff; text-transform: uppercase;">
+                                <button onclick="matchPartnerByCode()" class="btn btn-primary" style="padding: 10px 18px; font-size: 0.82rem; font-weight: bold; border-radius: 8px; border: none; cursor: pointer;">So Kèo</button>
+                            </div>
+                        </div>
+                        
+                        <div style="text-align: center; font-size: 0.72rem; font-weight: bold; color: var(--text-light); margin: 2px 0;">— HOẶC —</div>
+                        
+                        <div>
+                            <label style="display: block; font-size: 0.75rem; font-weight: bold; color: var(--text-main); margin-bottom: 4px;">Cách 2: Chọn nhanh Mascot phỏng đoán của họ</label>
+                            <select id="partner-mascot-select" onchange="matchPartnerByMascot(this.value)" style="width: 100%; padding: 10px 12px; font-size: 0.85rem; border-radius: 8px; border: 1px solid var(--border-color); background: var(--card-bg); color: var(--text-main);">
+                                <option value="">-- Chọn Mascot đối tác --</option>
+                                <option value="commander">Tổng Tư Lệnh Săn Deal (Commander)</option>
+                                <option value="architect">Kiến Trúc Sư Công Nghệ (Architect)</option>
+                                <option value="champion">Đại Sứ Khách Hàng (Champion)</option>
+                                <option value="farmer">Nông Dân Chiến Lược (Farmer)</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <!-- Match Result Container (Hidden initially) -->
+                    <div id="match-result-container" class="hidden" style="margin-top: 15px; border-top: 1px solid var(--border-color); padding-top: 15px;">
+                        <!-- Content dynamically rendered -->
+                    </div>
+                </div>
                 
                 <!-- Social Sharing Actions -->
                 <div style="margin-top: 15px;">
@@ -756,6 +805,9 @@
                     <button onclick="downloadCertificate('${resultType}')" class="btn btn-primary" style="padding: 12px 28px; font-size: 0.85rem; font-weight: bold; border-radius: 8px; border: none; cursor: pointer;">
                         📥 Tải Chứng Chỉ Tính Cách
                     </button>
+                    <button onclick="openChallengeModal()" class="btn btn-secondary" style="padding: 12px 28px; font-size: 0.85rem; font-weight: bold; border-radius: 8px; border: 1.5px solid var(--primary); background: rgba(243,168,59,0.08); color: var(--primary); cursor: pointer; display: flex; align-items: center; gap: 6px;">
+                        ⚔️ Thách Đấu PvP 1v1
+                    </button>
                 </div>
 
                 <!-- Tiny Retry Link -->
@@ -765,6 +817,15 @@
                     </a>
                 </div>
             `;
+
+            // Generate/load personal code
+            let myCode = localStorage.getItem('b2b_personal_personality_code');
+            if (!myCode) {
+                myCode = generatePersonalCode(resultType);
+                localStorage.setItem('b2b_personal_personality_code', myCode);
+            }
+            const codeBadge = document.getElementById('personal-personality-code');
+            if (codeBadge) codeBadge.innerText = myCode;
 
             // Trigger global points notification if possible
             if (window.showPointToast) {
@@ -975,6 +1036,284 @@
             link.download = `Chung_Nhan_BD_BeeDee_${name.replace(/\s+/g, '_')}.html`;
             link.click();
         }
+
+        // --- B2B MATCHMAKING & CHALLENGE SYSTEM JS HELPERS ---
+        const CODE_PREFIXES = {
+            'CMD': 'commander',
+            'ARC': 'architect',
+            'CHA': 'champion',
+            'FAR': 'farmer'
+        };
+
+        const CODE_REVERSE = {
+            'commander': 'CMD',
+            'architect': 'ARC',
+            'champion': 'CHA',
+            'farmer': 'FAR'
+        };
+
+        function generatePersonalCode(mascotType) {
+            const prefix = CODE_REVERSE[mascotType] || 'BD';
+            const randomNum = Math.floor(1000 + Math.random() * 9000);
+            return `${prefix}-${randomNum}`;
+        }
+
+        const MATCH_DATA = {
+            'commander_commander': {
+                score: 70,
+                synergy: "Hai Chiến thần Săn Deal đi cùng nhau sẽ tạo ra sức ép cực lớn, ép khách chốt nhanh.",
+                blindSpot: "Cả hai đều cái tôi cực lớn, dễ giành giật spotlight hoặc xung đột ý kiến nội bộ.",
+                advice: "Hãy phân định rõ ràng ai là Lead đàm phán chính, ai là người hỗ trợ ghi chú và đối ứng kỹ thuật."
+            },
+            'commander_architect': {
+                score: 85,
+                synergy: "Cặp bài trùng hoàn hảo. Một người tiến ra tiền tuyến chốt deal (Commander), một người ngồi hậu phương thiết kế giải pháp (Architect).",
+                blindSpot: "Commander nóng vội muốn ký sớm, Architect thì quá chi tiết, kỹ lưỡng làm chậm tốc độ.",
+                advice: "Commander cần kiên nhẫn nghe tư vấn kỹ thuật, Architect cần lược bớt chi tiết thừa khi pitching."
+            },
+            'commander_champion': {
+                score: 90,
+                synergy: "Đồng đội siêu phàm. Champion lấy cảm xúc, xây dựng lòng tin tuyệt đối; Commander chốt hạ các điều khoản thương mại.",
+                blindSpot: "Champion dễ nhượng bộ khách vì cả nể, trong khi Commander dễ quá cứng nhắc làm mất lòng.",
+                advice: "Champion phụ trách kết nối và xây dựng chemistry ban đầu, Commander lo phần deal giá và chốt hợp đồng."
+            },
+            'commander_farmer': {
+                score: 80,
+                synergy: "Sự kết hợp bền vững. Commander đem deal lớn về phễu, Farmer chăm sóc, gia hạn và tăng trưởng doanh thu (upsell).",
+                blindSpot: "Thiếu sự kết nối ở khâu chuyển giao (Handover) khách hàng giữa khâu Săn (Hunt) và Nuôi (Farm).",
+                advice: "Xây dựng quy trình bàn giao chi tiết (SLA) để Farmer nắm bắt trọn vẹn mong đợi của khách hàng sau khi Commander ký xong."
+            },
+            'architect_architect': {
+                score: 65,
+                synergy: "Rất logic và am hiểu sâu sắc kỹ thuật. Giải pháp đưa ra luôn đạt độ chính xác cao.",
+                blindSpot: "Cực kỳ chậm chạp trong khâu ra quyết định, quá thiên về lý thuyết và thiếu đột phá đàm phán.",
+                advice: "Cần đặt deadline cứng cho mỗi buổi họp đàm phán, tránh sa đà tranh luận lý thuyết."
+            },
+            'architect_champion': {
+                score: 88,
+                synergy: "Một người giỏi EQ (Champion) kết hợp với một người giỏi IQ (Architect). Khách hàng vừa tin tưởng năng lực kỹ thuật, vừa mến tính cách.",
+                blindSpot: "Champion cảm xúc lấn át dễ bỏ qua lỗ hổng điều khoản, Architect lý trí khô khan dễ làm hỏng không khí đối thoại.",
+                advice: "Để Champion dẫn dắt không khí cuộc họp, Architect đóng vai trò chuyên gia tư vấn giải pháp sâu."
+            },
+            'architect_farmer': {
+                score: 75,
+                synergy: "Quy trình làm việc có hệ thống, dữ liệu rõ ràng, khách hàng cực kỳ yên tâm về vận hành lâu dài.",
+                blindSpot: "Cả hai đều thuộc nhóm hướng nội, thiếu người chủ động đột phá tìm lead mới và chốt deal gấp.",
+                advice: "Nên dành 20% quỹ thời gian để thử nghiệm các kênh tiếp cận mới thay vì chỉ tập trung vào tệp khách hàng cũ."
+            },
+            'champion_champion': {
+                score: 75,
+                synergy: "Năng lượng tràn trề, tạo mối quan hệ xã giao cực tốt với nhiều khách hàng lớn.",
+                blindSpot: "Dễ hứa hẹn vượt quá năng lực thực tế của sản phẩm (over-promise) và thiếu quản trị số liệu cụ thể.",
+                advice: "Bắt buộc phải có một công cụ theo dõi quy chuẩn (CRM) và quy trình kiểm duyệt kỹ thuật trước khi cam kết với đối tác."
+            },
+            'champion_farmer': {
+                score: 85,
+                synergy: "Mối quan hệ khách hàng xuất sắc. Giữ chân khách hàng đạt tỷ lệ tối đa nhờ sự chu đáo và thấu hiểu cảm xúc.",
+                blindSpot: "Gặp khó khăn khi đàm phán thương lượng giảm giá hoặc xử lý tranh chấp hợp đồng cần cứng rắn.",
+                advice: "Hãy chuẩn bị sẵn kịch bản đàm phán dựa trên giá trị (Value-based negotiation) để bảo vệ lợi nhuận biên."
+            },
+            'farmer_farmer': {
+                score: 70,
+                synergy: "Kỷ luật, an toàn và cực kỳ trung thành. Thích hợp cho các dự án duy trì vận hành lớn.",
+                blindSpot: "Tốc độ săn deal mới gần như bằng không. Dễ bị động khi thị trường thay đổi nhanh chóng.",
+                advice: "Nên dành 20% quỹ thời gian để thử nghiệm các kênh tiếp cận mới thay vì chỉ tập trung vào tệp khách hàng cũ."
+            }
+        };
+
+        function copyPersonalCode() {
+            const code = document.getElementById('personal-personality-code').innerText;
+            if (code) {
+                navigator.clipboard.writeText(code).then(() => {
+                    alert(`Đã sao chép mã tính cách cá nhân: ${code}! Hãy gửi cho đối tác/đồng nghiệp để so kèo ăn ý nhé bác.`);
+                });
+            }
+        }
+
+        function getMatchResult(mascot1, mascot2) {
+            const key1 = `${mascot1}_${mascot2}`;
+            const key2 = `${mascot2}_${mascot1}`;
+            return MATCH_DATA[key1] || MATCH_DATA[key2] || {
+                score: 75,
+                synergy: "Phối hợp làm việc ổn định, cần trao đổi thẳng thắn hơn.",
+                blindSpot: "Thiếu tương tác sâu dễ dẫn đến hiểu lầm ý đồ đàm phán.",
+                advice: "Lên lịch họp hàng tuần để đồng bộ phễu cơ hội."
+            };
+        }
+
+        function matchPartnerByCode() {
+            const input = document.getElementById('partner-code-input').value.toUpperCase().trim();
+            if (!input) {
+                alert('Vui lòng nhập Mã tính cách của đối tác!');
+                return;
+            }
+            const parts = input.split('-');
+            const prefix = parts[0];
+            const partnerMascot = CODE_PREFIXES[prefix];
+            if (!partnerMascot) {
+                alert('Mã tính cách không hợp lệ! Mã chuẩn có dạng như CMD-1234, ARC-5678, CHA-9012, FAR-3456.');
+                return;
+            }
+            renderMatchResult(partnerMascot, input);
+        }
+
+        function matchPartnerByMascot(mascotVal) {
+            if (!mascotVal) return;
+            const titleMap = {
+                'commander': 'Tổng Tư Lệnh Săn Deal',
+                'architect': 'Kiến Trúc Sư Công Nghệ',
+                'champion': 'Đại Sứ Khách Hàng',
+                'farmer': 'Nông Dân Chiến Lược'
+            };
+            renderMatchResult(mascotVal, titleMap[mascotVal]);
+        }
+
+        function renderMatchResult(partnerMascot, partnerName) {
+            const myMascot = calculateBDResult();
+            const match = getMatchResult(myMascot, partnerMascot);
+            const container = document.getElementById('match-result-container');
+            if (!container) return;
+            
+            const myTitle = PERSONAS[myMascot].title.split(' (')[0];
+            const partnerTitle = PERSONAS[partnerMascot].title.split(' (')[0];
+            
+            container.innerHTML = `
+                <div style="text-align: center; margin-bottom: 15px;">
+                    <div style="font-size: 0.72rem; font-weight: bold; color: var(--primary); text-transform: uppercase;">KẾT QUẢ SO KÈO</div>
+                    <div style="font-size: 1.8rem; font-weight: 800; color: #10b981; margin: 5px 0;">${match.score}% ĂN Ý</div>
+                    <div style="font-size: 0.8rem; font-weight: bold; color: var(--text-main);">${myTitle} & 🤝 & ${partnerTitle}</div>
+                </div>
+                
+                <div style="display: flex; flex-direction: column; gap: 12px; font-size: 0.82rem; line-height: 1.5;">
+                    <div style="background: rgba(16, 185, 129, 0.05); border: 1px solid rgba(16, 185, 129, 0.15); padding: 12px; border-radius: 8px;">
+                        <strong style="color: #10b981; display: block; margin-bottom: 4px;">🤝 SONG KIẾM HỢP BÍCH:</strong>
+                        ${match.synergy}
+                    </div>
+                    
+                    <div style="background: rgba(239, 68, 68, 0.05); border: 1px solid rgba(239, 68, 68, 0.15); padding: 12px; border-radius: 8px;">
+                        <strong style="color: #ef4444; display: block; margin-bottom: 4px;">⚠️ ĐIỂM MÙ & XUNG ĐỘT:</strong>
+                        ${match.blindSpot}
+                    </div>
+                    
+                    <div style="background: rgba(243, 168, 59, 0.05); border: 1px solid rgba(243, 168, 59, 0.15); padding: 12px; border-radius: 8px;">
+                        <strong style="color: var(--primary); display: block; margin-bottom: 4px;">🦉 LỜI KHUYÊN TỪ PETER VÕ:</strong>
+                        ${match.advice}
+                    </div>
+                </div>
+                
+                <div style="margin-top: 15px; text-align: center;">
+                    <button onclick="shareMatchResult(${match.score}, '${partnerName}')" class="btn btn-secondary" style="padding: 8px 16px; font-size: 0.76rem; font-weight: bold; border-radius: 6px; border: 1px solid var(--border-color); background: rgba(255,255,255,0.05); color: var(--text-main); cursor: pointer;">
+                        🔗 Chia Sẻ Kèo Hợp Tác Này
+                    </button>
+                </div>
+            `;
+            container.classList.remove('hidden');
+        }
+        
+        function shareMatchResult(score, partnerName) {
+            const url = 'https://bd-tips.vercel.app/personality-test.html';
+            navigator.clipboard.writeText(`Độ ăn ý hợp tác B2B của mình và đối tác ${partnerName} đạt ${score}% trên B2B Portal! Thử tài đàm phán cùng mình tại: ${url}`).then(() => {
+                alert('Đã sao chép liên kết kèo hợp tác! Hãy gửi cho đối tác/đồng nghiệp qua Zalo nhé bác.');
+            });
+        }
+
+        function openChallengeModal() {
+            const modal = document.getElementById('challenge-select-modal');
+            const list = document.getElementById('challenge-games-list');
+            if (!modal || !list) return;
+            
+            const games = [
+                { id: 'puzzle-negotiation', name: 'Ải 1: Đàm phán thương lượng B2B' },
+                { id: 'puzzle-kpi', name: 'Ải 2: Cân não thiết lập KPI' },
+                { id: 'puzzle-law', name: 'Ải 3: Bản lĩnh Luật lao động B2B' }
+            ];
+            
+            let listHtml = '';
+            games.forEach(g => {
+                const userScore = localStorage.getItem(`high_score_${g.id}`) || null;
+                const scoreDisplay = userScore ? `${userScore} điểm` : 'Chưa chơi';
+                
+                listHtml += `
+                    <div style="background: rgba(255,255,255,0.02); border: 1px solid var(--border-color); border-radius: 10px; padding: 12px; display: flex; justify-content: space-between; align-items: center; text-align: left; gap: 10px;">
+                        <div>
+                            <div style="font-size: 0.82rem; font-weight: bold; color: var(--text-main);">${g.name}</div>
+                            <div style="font-size: 0.72rem; color: var(--text-light);">Điểm của bác: <strong>${scoreDisplay}</strong></div>
+                        </div>
+                        <div>
+                            <button onclick="launchPvPChallenge('${g.id}', ${userScore})" class="btn btn-primary" style="padding: 6px 12px; font-size: 0.72rem; font-weight: bold; border-radius: 6px; border: none; cursor: pointer; white-space: nowrap;">
+                                ${userScore ? 'Khiêu Chiến' : 'Chơi Lấy Điểm'}
+                            </button>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            list.innerHTML = listHtml;
+            modal.classList.remove('hidden');
+            setTimeout(() => modal.style.opacity = '1', 10);
+        }
+
+        function closeChallengeModal() {
+            const modal = document.getElementById('challenge-select-modal');
+            if (!modal) return;
+            modal.style.opacity = '0';
+            setTimeout(() => modal.classList.add('hidden'), 300);
+        }
+
+        function launchPvPChallenge(gameId, userScore) {
+            if (!userScore) {
+                alert('Bác chưa chơi ải này! Hệ thống sẽ chuyển bác sang trang chủ để chơi game lấy điểm trước khi thách đấu nhé.');
+                window.location.href = `index.html?init_challenge=true&gameId=${gameId}`;
+                return;
+            }
+            
+            const myMascot = calculateBDResult();
+            const myName = localStorage.getItem('streak_name') || 'Chiến thần BD';
+            const challengeUrl = `${window.location.origin}/index.html?challenge=true&challenger=${encodeURIComponent(myName)}&mascot=${myMascot}&score=${userScore}&gameId=${gameId}`;
+            
+            navigator.clipboard.writeText(`Tôi thách đấu bác vượt qua mốc điểm ${userScore} tại minigame "${gameId === 'puzzle-negotiation' ? 'Đàm phán B2B' : gameId === 'puzzle-kpi' ? 'KPI Master' : 'Luật Lao Động'}" của tôi! Nhận lời khiêu chiến tại đây: ${challengeUrl}`).then(() => {
+                alert('🎉 ĐÃ TẠO LINK KHIÊU CHIẾN PVP!\n\nĐường link thách đấu đã được sao chép vào bộ nhớ tạm. Bác hãy gửi nó cho bạn bè/đồng nghiệp qua Zalo nhé!');
+                closeChallengeModal();
+            });
+        }
+
+        // Auto-load result screen if already tested
+        window.addEventListener('DOMContentLoaded', () => {
+            const myCode = localStorage.getItem('b2b_personal_personality_code');
+            if (myCode) {
+                const prefix = myCode.split('-')[0];
+                const mascot = CODE_PREFIXES[prefix];
+                if (mascot) {
+                    if (mascot === 'commander') {
+                        scores = { E: 3, I: 0, S: 2, N: 1, T: 3, F: 0, J: 3, P: 0 };
+                    } else if (mascot === 'farmer') {
+                        scores = { E: 0, I: 3, S: 3, N: 0, T: 0, F: 3, J: 3, P: 0 };
+                    } else if (mascot === 'champion') {
+                        scores = { E: 3, I: 0, S: 1, N: 2, T: 0, F: 3, J: 0, P: 3 };
+                    } else if (mascot === 'architect') {
+                        scores = { E: 0, I: 3, S: 0, N: 3, T: 3, F: 0, J: 3, P: 0 };
+                    }
+                    showResult();
+                }
+            }
+        });
     </script>
+
+    <!-- Challenge Game Selection Modal -->
+    <div id="challenge-select-modal" class="hidden" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(10,11,18,0.75); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); z-index: 11000; display: flex; align-items: center; justify-content: center; padding: 20px; box-sizing: border-box; opacity: 0; transition: opacity 0.3s ease;">
+        <div style="background: var(--card-bg); border: 1px solid var(--border-color); max-width: 440px; width: 100%; border-radius: 20px; padding: 25px; text-align: center; box-shadow: var(--shadow);">
+            <div style="font-size: 2.5rem; margin-bottom: 10px;">⚔️🦉</div>
+            <h3 style="margin: 0 0 10px 0; font-size: 1.2rem; font-weight: 800; color: var(--text-main);">CHỌN ẢI THÁCH ĐẤU PVP</h3>
+            <p style="margin: 0 0 20px 0; font-size: 0.8rem; color: var(--text-light); line-height: 1.45;">
+                Chọn một minigame dưới đây để chơi lấy điểm cao và tự động tạo link khiêu chiến gửi đối thủ của bác!
+            </p>
+            
+            <div style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px;" id="challenge-games-list">
+                <!-- Game items rendered dynamically -->
+            </div>
+            
+            <button onclick="closeChallengeModal()" class="btn btn-secondary" style="width: 100%; padding: 10px; font-weight: bold; border-radius: 8px; border: 1px solid var(--border-color); background: rgba(255,255,255,0.05); color: var(--text-main); cursor: pointer;">Đóng</button>
+        </div>
+    </div>
 </body>
 </html>
