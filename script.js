@@ -6625,10 +6625,15 @@ if (document.readyState === 'loading') {
                         sec.scrollIntoView({ behavior: 'smooth' });
                     }
                     
+                    const targetGameIdx = games.findIndex(g => g.id === gameId);
+                    if (targetGameIdx !== -1) {
+                        selectGame(targetGameIdx);
+                    }
+                    
                     if (window.showGlobalNotification) {
                         window.showGlobalNotification(
                             '⚔️ NHẬN LỜI KHIÊU CHIẾN PVP!',
-                            `Bác đã nhận lời thách đấu từ <strong>${challenger || 'Đối thủ'}</strong> (${mascot || 'BD'})!<br><br>Hãy chọn ải game tương ứng bên dưới để quyết chiến và vượt qua mốc <strong>${scoreToBeat} điểm</strong> nhé!`
+                            `Bác đã nhận lời thách đấu từ <strong>${challenger || 'Đối thủ'}</strong> (${mascot || 'BD'})!<br><br>Hãy nhấn <strong>Bắt Đầu Chơi</strong> để quyết chiến và vượt qua mốc <strong>${scoreToBeat} điểm</strong> nhé!`
                         );
                     } else {
                         alert(`⚔️ LỜI KHIÊU CHIẾN PVP: Bác nhận được lời thách đấu từ ${challenger || 'Đối thủ'} (${mascot || 'BD'}). Vượt qua mốc ${scoreToBeat} điểm nhé bác!`);
