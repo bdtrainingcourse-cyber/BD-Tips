@@ -1464,12 +1464,30 @@ const initB2BApp = () => {
 
     if(startBtn) {
         startBtn.addEventListener('click', () => {
-            try {
-                if (audioCtx && audioCtx.state === 'suspended') {
-                    audioCtx.resume();
-                }
-            } catch (e) {}
-            startGame();
+            const proceedStart = () => {
+                try {
+                    if (audioCtx && audioCtx.state === 'suspended') {
+                        audioCtx.resume();
+                    }
+                } catch (e) {}
+                startGame();
+            };
+
+            if (window.showSubtleProfileModal && !localStorage.getItem('profile_experience')) {
+                window.showSubtleProfileModal({
+                    title: '🦉 Tinh chỉnh độ khó AI',
+                    subtitle: 'Chào bác! Để Cú BeeDee chuẩn bị bộ câu hỏi và kịch bản thực chiến phù hợp nhất với trình độ, bác làm B2B Sales/BD được mấy năm rồi?',
+                    options: [
+                        'Dưới 2 năm (Tân binh)',
+                        'Từ 2-4 năm (Thực chiến)',
+                        '4 năm trở lên (Lão làng)'
+                    ],
+                    fieldName: 'experience',
+                    callback: proceedStart
+                });
+            } else {
+                proceedStart();
+            }
         });
         nextBtn.addEventListener('click', loadNextQuestion);
         restartBtn.addEventListener('click', () => {
@@ -1490,7 +1508,43 @@ const initB2BApp = () => {
         clearInterval(puzzleTimerInterval);
         currentPuzzleStage = 1;
         
+        // PvP Banner Injection
+        try {
+            const pvpActive = sessionStorage.getItem('pvp_active') === 'true';
+            const pvpGameId = sessionStorage.getItem('pvp_game_id');
+            const activeGame = games[activeGameIndex];
+            let pvpHeader = document.getElementById('pvp-challenge-header');
+            if (!pvpHeader && gamePlay) {
+                pvpHeader = document.createElement('div');
+                pvpHeader.id = 'pvp-challenge-header';
+                gamePlay.insertBefore(pvpHeader, gamePlay.firstChild);
+            }
+            if (pvpHeader) {
+                const isMatch = pvpGameId === activeGame.id || 
+                                (activeGame.id === 'puzzle-negotiation' && pvpGameId.includes('negotiation')) ||
+                                (activeGame.id === 'puzzle-kpi' && pvpGameId.includes('kpi')) ||
+                                (activeGame.id === 'puzzle-law' && pvpGameId.includes('law'));
+                if (pvpActive && isMatch) {
+                    const challenger = sessionStorage.getItem('pvp_challenger');
+                    const scoreToBeat = sessionStorage.getItem('pvp_score_to_beat');
+                    pvpHeader.innerHTML = `
+                        <div style="background: linear-gradient(135deg, #ef4444 0%, #b91c1c 100%); color: #fff; padding: 10px; border-radius: 12px; margin-bottom: 15px; font-size: 0.82rem; font-weight: bold; text-align: center; border: 1.5px solid rgba(255,255,255,0.15); box-shadow: 0 4px 12px rgba(0,0,0,0.15); display: flex; align-items: center; justify-content: center; gap: 8px;">
+                            <span>⚔️ ĐANG QUYẾT CHIẾN VỚI: <strong>${challenger}</strong> | ĐIỂM CẦN VƯỢT: <strong style="font-size: 0.95rem; color: #fbbf24;">${scoreToBeat}đ</strong></span>
+                        </div>
+                    `;
+                    pvpHeader.classList.remove('hidden');
+                } else {
+                    pvpHeader.classList.add('hidden');
+                }
+            }
+        } catch (e) {
+            console.error("Error in pvpHeader UI:", e);
+        }
+
         const activeGame = games[activeGameIndex];
+        if (window.trackUserBehavior && activeGame) {
+            window.trackUserBehavior('minigame_start', `Mã game: ${activeGame.id}`);
+        }
         // Shuffle questions for this session to mix order
         activeGame.shuffledQuestions = [...activeGame.questions].sort(() => Math.random() - 0.5);
 
@@ -1514,10 +1568,25 @@ const initB2BApp = () => {
             localStorage.setItem('completed_games', JSON.stringify(completedGames));
         }
 
+        // Save high score
+        const existingHighScore = parseInt(localStorage.getItem(`high_score_${activeGame.id}`) || '0', 10);
+        if (pointsToAdd > existingHighScore) {
+            localStorage.setItem(`high_score_${activeGame.id}`, pointsToAdd.toString());
+        }
+
+        if (window.trackUserBehavior && activeGame) {
+            window.trackUserBehavior('minigame_play', `Mã game: ${activeGame.id} | Điểm cộng: ${pointsToAdd}`);
+        }
+
         const currentPoints = parseInt(localStorage.getItem('b2b_points_balance') || '0', 10);
         localStorage.setItem('b2b_points_balance', (currentPoints + pointsToAdd).toString());
         if (window.updateNavbarUserHUD) window.updateNavbarUserHUD();
         if (window.showPointToast) window.showPointToast(pointsToAdd, `Giải đố thành công!`);
+
+        // Check and resolve PvP Challenge
+        if (typeof resolvePvPChallenge === 'function') {
+            resolvePvPChallenge(pointsToAdd);
+        }
 
         gamePlay.classList.add('hidden');
         gameResult.classList.remove('hidden');
@@ -2726,10 +2795,25 @@ const initB2BApp = () => {
             }
             updateTabCounts();
 
+            if (window.trackUserBehavior && activeGame) {
+                window.trackUserBehavior('minigame_play', `Mã game: ${activeGame.id} | Điểm số: ${score}/${totalQ}`);
+            }
+
             // Trigger action-based quest/point increase
             if (window.registerUserAction) {
                 window.registerUserAction('game_complete', { perfect: score === totalQ });
             }
+        }
+
+        // Save high score
+        const existingHighScore = parseInt(localStorage.getItem(`high_score_${activeGame.id}`) || '0', 10);
+        if (score > existingHighScore) {
+            localStorage.setItem(`high_score_${activeGame.id}`, score.toString());
+        }
+
+        // Check and resolve PvP Challenge
+        if (typeof resolvePvPChallenge === 'function') {
+            resolvePvPChallenge(score);
         }
 
         gamePlay.classList.add('hidden');
@@ -3637,6 +3721,10 @@ const initB2BApp = () => {
         const key = gameId.replace('game-', '');
         arcadeCurrentLevel = parseInt(localStorage.getItem(`b2b_arcade_level_${key}`) || '1', 10);
 
+        if (window.trackUserBehavior) {
+            window.trackUserBehavior('arcade_start', `Trò chơi: ${gameId} | Cấp độ hiện tại: ${arcadeCurrentLevel}`);
+        }
+
         if (arcadeCurrentLevel > 12) {
             showArcadeVictoryScreen(gameId);
             return;
@@ -3786,6 +3874,9 @@ const initB2BApp = () => {
 
     function handleArcadeSolved(gameId, pointsToAdd) {
         clearInterval(arcadeTimerInterval);
+        if (window.trackUserBehavior) {
+            window.trackUserBehavior('arcade_play', `Trò chơi: ${gameId} | Cấp độ: ${arcadeCurrentLevel} | Điểm cộng: ${pointsToAdd}`);
+        }
         const key = gameId.replace('game-', '');
         
         // Save level progress
@@ -4831,6 +4922,9 @@ if (document.readyState === 'loading') {
                         localStorage.setItem('streak_email', email);
                         localStorage.setItem('b2b_points_balance', (checkData.user.points || 0).toString());
                         if (checkData.user.avatar) localStorage.setItem('b2b_custom_avatar', checkData.user.avatar);
+                        if (checkData.user.experience) localStorage.setItem('profile_experience', checkData.user.experience);
+                        if (checkData.user.industry) localStorage.setItem('profile_industry', checkData.user.industry);
+                        if (checkData.user.skill) localStorage.setItem('profile_skill', checkData.user.skill);
                     }
                     
                     nameInput.value = '';
@@ -4850,7 +4944,14 @@ if (document.readyState === 'loading') {
                 const response = await fetch('/api/log-email', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ name, email, tool: 'daily-points' })
+                    body: JSON.stringify({ 
+                        name, 
+                        email, 
+                        tool: 'daily-points',
+                        experience: localStorage.getItem('profile_experience') || '',
+                        industry: localStorage.getItem('profile_industry') || '',
+                        skill: localStorage.getItem('profile_skill') || ''
+                    })
                 });
                 
                 const data = await response.json();
@@ -4930,13 +5031,13 @@ if (document.readyState === 'loading') {
                 display: none !important;
             }
             .exit-modal-content {
-                background: var(--bg-card, #1e1e24);
-                border: 2px solid var(--primary, #f3a83b);
+                background: var(--card-bg, #ffffff) !important;
+                border: 2px solid var(--accent, #f3a83b) !important;
                 border-radius: 20px;
                 width: 92%; max-width: 680px;
                 position: relative;
-                box-shadow: 0 20px 50px rgba(0,0,0,0.6);
-                color: var(--text-main, #ffffff);
+                box-shadow: 0 20px 50px rgba(0,0,0,0.25) !important;
+                color: var(--text-main, #2b2d42) !important;
                 display: flex;
                 overflow: hidden;
                 height: 420px;
@@ -4944,8 +5045,8 @@ if (document.readyState === 'loading') {
             }
             .exit-modal-left-nav {
                 width: 180px;
-                background: rgba(255, 255, 255, 0.02);
-                border-right: 1px solid var(--border-color, #2d3748);
+                background: rgba(0, 0, 0, 0.02) !important;
+                border-right: 1px solid var(--border-color, rgba(0, 0, 0, 0.08)) !important;
                 display: flex;
                 flex-direction: column;
                 padding: 30px 12px;
@@ -4958,7 +5059,7 @@ if (document.readyState === 'loading') {
                 border: none;
                 padding: 12px 14px;
                 border-radius: 8px;
-                color: var(--text-light, #a0aec0);
+                color: var(--text-light, #475569) !important;
                 font-size: 0.85rem;
                 font-weight: 700;
                 text-align: left;
@@ -4967,13 +5068,13 @@ if (document.readyState === 'loading') {
                 font-family: inherit;
             }
             .exit-nav-tab:hover {
-                background: rgba(255, 255, 255, 0.05);
-                color: var(--text-main, #fff);
+                background: rgba(0, 0, 0, 0.04) !important;
+                color: var(--text-main, #2b2d42) !important;
             }
             .exit-nav-tab.active {
-                background: rgba(243, 168, 59, 0.15);
-                color: var(--primary, #f3a83b);
-                border-left: 3px solid var(--primary, #f3a83b);
+                background: rgba(243, 168, 59, 0.12) !important;
+                color: var(--accent, #f3a83b) !important;
+                border-left: 3px solid var(--accent, #f3a83b) !important;
             }
             .exit-modal-right-body {
                 flex: 1;
@@ -4990,17 +5091,17 @@ if (document.readyState === 'loading') {
                 position: absolute;
                 top: 15px; right: 20px;
                 background: none; border: none;
-                font-size: 2rem; color: var(--text-light, #a0aec0);
+                font-size: 2rem; color: var(--text-light, #475569) !important;
                 cursor: pointer;
                 line-height: 1;
                 z-index: 10;
             }
             .exit-close-btn:hover {
-                color: var(--primary, #f3a83b);
+                color: var(--accent, #f3a83b) !important;
             }
             .exit-badge {
-                background: rgba(243, 168, 59, 0.15);
-                color: var(--primary, #f3a83b);
+                background: rgba(243, 168, 59, 0.12) !important;
+                color: var(--accent, #f3a83b) !important;
                 padding: 4px 12px;
                 border-radius: 12px;
                 font-size: 0.72rem;
@@ -5023,13 +5124,14 @@ if (document.readyState === 'loading') {
                 margin: 12px 0 8px 0;
                 font-weight: 800;
                 line-height: 1.3;
-                color: var(--text-main);
+                color: var(--text-main, #2b2d42) !important;
             }
             .exit-book-box {
                 display: flex;
                 align-items: center;
                 gap: 15px;
-                background: rgba(255, 255, 255, 0.04);
+                background: rgba(243, 168, 59, 0.05) !important;
+                border: 1px solid rgba(243, 168, 59, 0.15) !important;
                 border-radius: 12px;
                 padding: 12px 15px;
                 margin: 12px 0 18px 0;
@@ -5041,7 +5143,7 @@ if (document.readyState === 'loading') {
             .exit-book-box p {
                 margin: 0;
                 font-size: 0.8rem;
-                color: var(--text-light);
+                color: var(--text-main, #2b2d42) !important;
                 line-height: 1.45;
             }
             .exit-form-group {
@@ -5051,45 +5153,45 @@ if (document.readyState === 'loading') {
                 width: 100%;
                 padding: 11px;
                 border-radius: 8px;
-                border: 1px solid var(--border-color, #2d3748);
-                background: var(--bg, #1a202c);
-                color: var(--text-main, #ffffff);
+                border: 1px solid var(--border-color, rgba(0, 0, 0, 0.08)) !important;
+                background: var(--card-bg, #ffffff) !important;
+                color: var(--text-main, #2b2d42) !important;
                 font-size: 0.85rem;
                 outline: none;
                 box-sizing: border-box;
                 font-family: inherit;
             }
             .exit-form-group input:focus {
-                border-color: var(--primary, #f3a83b);
+                border-color: var(--accent, #f3a83b) !important;
             }
             .exit-submit-btn {
                 width: 100%;
                 padding: 12px;
                 border-radius: 8px;
-                background: linear-gradient(135deg, var(--primary, #f3a83b), #e29022);
-                color: #1a202c;
+                background: linear-gradient(135deg, var(--accent, #f3a83b), #e29022) !important;
+                color: #ffffff !important;
                 font-weight: 700;
                 border: none;
                 cursor: pointer;
                 font-size: 0.9rem;
                 margin-top: 5px;
                 transition: all 0.2s;
-                box-shadow: 0 4px 15px rgba(243, 168, 59, 0.3);
+                box-shadow: 0 4px 15px rgba(243, 168, 59, 0.3) !important;
                 font-family: inherit;
             }
             .exit-submit-btn:hover {
                 transform: translateY(-2px);
-                box-shadow: 0 6px 20px rgba(243, 168, 59, 0.4);
+                box-shadow: 0 6px 20px rgba(243, 168, 59, 0.4) !important;
             }
             .exit-submit-btn:disabled {
-                background: #4a5568;
+                background: #4a5568 !important;
                 cursor: not-allowed;
                 box-shadow: none;
-                color: #a0aec0;
+                color: #a0aec0 !important;
             }
             .exit-decline-btn {
                 background: none; border: none;
-                color: var(--text-light, #a0aec0);
+                color: var(--text-light, #475569) !important;
                 font-size: 0.8rem;
                 margin-top: 15px;
                 cursor: pointer;
@@ -5098,18 +5200,18 @@ if (document.readyState === 'loading') {
                 font-family: inherit;
             }
             .exit-decline-btn:hover {
-                color: var(--danger, #fc8181);
+                color: var(--danger, #fc8181) !important;
             }
             .exit-scenario-preview {
-                background: rgba(255, 255, 255, 0.03);
-                border-left: 3px solid var(--primary);
+                background: rgba(243, 168, 59, 0.04) !important;
+                border-left: 3px solid var(--accent) !important;
                 padding: 12px 15px;
                 border-radius: 4px;
                 margin: 15px 0 20px 0;
             }
             .exit-scenario-preview strong {
                 font-size: 0.72rem;
-                color: var(--primary);
+                color: var(--accent, #f3a83b) !important;
                 text-transform: uppercase;
                 letter-spacing: 0.5px;
                 display: block;
@@ -5119,27 +5221,27 @@ if (document.readyState === 'loading') {
                 margin: 0;
                 font-size: 0.85rem;
                 font-style: italic;
-                color: var(--text-main);
+                color: var(--text-main, #2b2d42) !important;
                 line-height: 1.4;
             }
             .exit-action-btn {
                 width: 100%;
                 padding: 12px;
                 border-radius: 8px;
-                background: linear-gradient(135deg, var(--primary, #f3a83b), #e29022);
-                color: #1a202c;
+                background: linear-gradient(135deg, var(--accent, #f3a83b), #e29022) !important;
+                color: #ffffff !important;
                 font-weight: 700;
                 border: none;
                 cursor: pointer;
                 font-size: 0.9rem;
                 transition: all 0.2s;
-                box-shadow: 0 4px 15px rgba(243, 168, 59, 0.3);
+                box-shadow: 0 4px 15px rgba(243, 168, 59, 0.3) !important;
                 font-family: inherit;
                 text-align: center;
             }
             .exit-action-btn:hover {
                 transform: translateY(-2px);
-                box-shadow: 0 6px 20px rgba(243, 168, 59, 0.4);
+                box-shadow: 0 6px 20px rgba(243, 168, 59, 0.4) !important;
             }
             .exit-tools-list {
                 display: flex;
@@ -5148,7 +5250,7 @@ if (document.readyState === 'loading') {
                 margin: 15px 0 20px 0;
             }
             .exit-tool-item {
-                background: rgba(255, 255, 255, 0.03);
+                background: rgba(0, 0, 0, 0.02) !important;
                 padding: 10px 14px;
                 border-radius: 8px;
                 font-size: 0.78rem;
@@ -5158,11 +5260,11 @@ if (document.readyState === 'loading') {
                 line-height: 1.4;
             }
             .exit-tool-item:hover {
-                border-color: var(--primary);
-                background: rgba(243, 168, 59, 0.05);
+                border-color: var(--accent, #f3a83b) !important;
+                background: rgba(243, 168, 59, 0.04) !important;
             }
             .exit-tool-item strong {
-                color: var(--primary);
+                color: var(--accent, #f3a83b) !important;
             }
             .exit-community-preview {
                 display: flex;
@@ -5171,14 +5273,14 @@ if (document.readyState === 'loading') {
                 margin: 15px 0 20px 0;
             }
             .exit-news-item {
-                background: rgba(255, 255, 255, 0.03);
+                background: rgba(0, 0, 0, 0.02) !important;
                 padding: 12px;
                 border-radius: 8px;
                 font-size: 0.75rem;
                 line-height: 1.45;
             }
             .exit-news-item strong {
-                color: var(--accent);
+                color: var(--accent, #f3a83b) !important;
             }
             @keyframes exitFadeIn {
                 from { opacity: 0; }
@@ -5443,63 +5545,78 @@ if (document.readyState === 'loading') {
             }
 
             // Deduct points
-            const newBalance = points - reqVal;
-            localStorage.setItem('b2b_points_balance', newBalance.toString());
+            const proceedWithClaim = async () => {
+                const newBalance = points - reqVal;
+                localStorage.setItem('b2b_points_balance', newBalance.toString());
 
-            if (reqVal === 350) {
-                // Ebook unlock: Local activation
-                const currentCredits = parseInt(localStorage.getItem('b2b_unlocked_ebook_credits') || '0', 10);
-                localStorage.setItem('b2b_unlocked_ebook_credits', (currentCredits + 1).toString());
-                localStorage.setItem('b2b_streak_unlocked_ebook', 'true');
-                btn.style.background = 'rgba(255,255,255,0.05)';
-                btn.style.borderColor = 'var(--border-color)';
-                btn.style.color = '#34d399';
-                btn.textContent = 'Đã Mở Khóa';
+                if (reqVal === 500) {
+                    // Ebook unlock: Local activation
+                    const currentCredits = parseInt(localStorage.getItem('b2b_unlocked_ebook_credits') || '0', 10);
+                    localStorage.setItem('b2b_unlocked_ebook_credits', (currentCredits + 1).toString());
+                    localStorage.setItem('b2b_streak_unlocked_ebook', 'true');
+                    btn.style.background = 'rgba(255,255,255,0.05)';
+                    btn.style.borderColor = 'var(--border-color)';
+                    btn.style.color = '#34d399';
+                    btn.textContent = 'Đã Mở Khóa';
+                    btn.disabled = true;
+
+                    // Log to spreadsheet
+                    try {
+                        await fetch('/api/log-email', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ name, email, tool: 'claim-reward', reward: reward, streak: points })
+                        });
+                    } catch(e) {}
+
+                    alert(`🎉 Chúc mừng! Bạn đã đổi thành công quyền tải 01 Ebook BD Hiệu Quả (-500 BD-Points). Bạn có thể tải ngay 01 cuốn tài liệu thực chiến trên Thư viện!`);
+                    if (typeof updateUIElements === 'function') updateUIElements();
+                    return;
+                }
+
+                // For higher point thresholds: claim via email request or Zalo chat
                 btn.disabled = true;
+                btn.textContent = 'Đang đăng ký...';
 
-                // Log to spreadsheet
                 try {
+                    // Log to spreadsheet for backup
                     await fetch('/api/log-email', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ name, email, tool: 'claim-reward', reward: reward, streak: points })
                     });
-                } catch(e) {}
 
-                alert(`🎉 Chúc mừng! Bạn đã đổi thành công quyền tải 01 Ebook BD Hiệu Quả (-350 BD-Points). Bạn có thể tải ngay 01 cuốn tài liệu thực chiến trên Thư viện!`);
-                if (typeof updateUIElements === 'function') updateUIElements();
-                return;
-            }
+                    alert(`🎉 Đủ điều kiện đổi quà! Nhấn OK trong hộp thoại tiếp theo để mở hòm thư gửi đăng ký tới: bdtraining@bdbinhdanhocvu.com, hoặc nhấn Cancel để mở Zalo chat trực tiếp với anh Peter Võ (0931.100.569) để xác nhận nhận quà nhé!`);
 
-            // For >=600 points: claim via email request
-            btn.disabled = true;
-            btn.textContent = 'Đang đăng ký...';
+                    const openEmail = confirm(`Bác muốn gửi Email đăng ký nhận quà tới bdtraining@bdbinhdanhocvu.com?\n\n- Nhấn OK: Gửi Email tự động soạn sẵn.\n- Nhấn Cancel: Mở Zalo Chat trực tiếp với anh Peter Võ.`);
+                    
+                    if (openEmail) {
+                        // Open mailto client
+                        const mailtoSubject = `[Đổi Quà Tích Điểm] Đăng ký nhận: ${reward}`;
+                        const mailtoBody = `Chào anh Peter Võ,\n\nTên tôi là: ${name}\nEmail của tôi: ${email}\n\nTôi muốn đổi phần quà mốc ${reqVal} BD-Points: ${reward}.\nDưới đây là ảnh chụp màn hình số Điểm & Nhiệm vụ của tôi trên portal.\n\nCảm ơn anh!`;
+                        const mailtoUrl = `mailto:bdtraining@bdbinhdanhocvu.com?subject=${encodeURIComponent(mailtoSubject)}&body=${encodeURIComponent(mailtoBody)}`;
+                        window.location.href = mailtoUrl;
+                    } else {
+                        // Open Zalo
+                        window.open('https://zalo.me/0931100569', '_blank');
+                    }
 
-            try {
-                // Log to spreadsheet for backup
-                await fetch('/api/log-email', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ name, email, tool: 'claim-reward', reward: reward, streak: points })
-                });
+                    btn.textContent = 'Mở Khóa Quà';
+                    btn.disabled = false;
+                    if (typeof updateUIElements === 'function') updateUIElements();
+                } catch(err) {
+                    console.error(err);
+                    alert('Lỗi kết nối máy chủ, nhưng bạn vẫn có thể gửi email thủ công về bdtraining@bdbinhdanhocvu.com hoặc nhắn Zalo 0931.100.569 để đổi quà!');
+                    btn.textContent = 'Mở Khóa Quà';
+                    btn.disabled = false;
+                    if (typeof updateUIElements === 'function') updateUIElements();
+                }
+            };
 
-                alert(`🎉 Đủ điều kiện đổi quà! Để nhận món quà "${reward}", bạn vui lòng gửi email về: bdtrainingcourse@gmail.com kèm ảnh chụp màn hình số Điểm của bạn để anh Peter xác nhận và trao quà nhé! (Hệ thống sẽ tự động mở hòm thư soạn sẵn cho bạn bây giờ).`);
-
-                // Open mailto client
-                const mailtoSubject = `[Đổi Quà Tích Điểm] Đăng ký nhận: ${reward}`;
-                const mailtoBody = `Chào anh Peter Võ,\n\nTên tôi là: ${name}\nEmail của tôi: ${email}\n\nTôi muốn đổi phần quà mốc ${reqVal} BD-Points: ${reward}.\nDưới đây là ảnh chụp màn hình số Điểm & Nhiệm vụ của tôi trên portal.\n\nCảm ơn anh!`;
-                const mailtoUrl = `mailto:bdtrainingcourse@gmail.com?subject=${encodeURIComponent(mailtoSubject)}&body=${encodeURIComponent(mailtoBody)}`;
-                window.location.href = mailtoUrl;
-
-                btn.textContent = 'Mở Khóa Quà';
-                btn.disabled = false;
-                if (typeof updateUIElements === 'function') updateUIElements();
-            } catch(err) {
-                console.error(err);
-                alert('Lỗi kết nối máy chủ, nhưng bạn vẫn có thể gửi email thủ công về bdtrainingcourse@gmail.com để đổi quà!');
-                btn.textContent = 'Mở Khóa Quà';
-                btn.disabled = false;
-                if (typeof updateUIElements === 'function') updateUIElements();
+            if (typeof window.verifyUserPasswordChallenge === 'function') {
+                window.verifyUserPasswordChallenge(proceedWithClaim);
+            } else {
+                await proceedWithClaim();
             }
         });
     });
@@ -5536,9 +5653,9 @@ if (document.readyState === 'loading') {
     }
 
     const CAMPAIGN_NAMES = {
-        pic_search: '🎙️ Luyện Pitching AI',
+        pic_search: '🧠 Test Tính Cách B2B',
         ai_email: '✍️ Soạn Cold Email AI',
-        share_click: '📢 Chia sẻ template',
+        share_click: '📢 Chia sẻ cổng thông tin',
         labor_read: '⚖️ Nghiên cứu Luật',
         salary_calc: '💸 Tính hoa hồng BD',
         library_read: '📖 Đọc Thư viện',
@@ -5608,9 +5725,9 @@ if (document.readyState === 'loading') {
                 check_in: '#personalized-welcome-banner',
                 game_complete: '#minigame-section',
                 perfect_game: '#minigame-section',
-                pic_search: 'pitching.html',
+                pic_search: 'personality-test.html',
                 ai_email: 'email-assistant.html',
-                share_click: 'email-assistant.html',
+                share_click: 'quests.html#quests-section',
                 labor_read: 'labor-law.html',
                 salary_calc: 'salary.html',
                 library_read: 'library.html',
@@ -5660,9 +5777,9 @@ if (document.readyState === 'loading') {
                 check_in: '#personalized-welcome-banner',
                 game_complete: '#minigame-section',
                 perfect_game: '#minigame-section',
-                pic_search: 'pitching.html',
+                pic_search: 'personality-test.html',
                 ai_email: 'email-assistant.html',
-                share_click: 'email-assistant.html',
+                share_click: 'quests.html#quests-section',
                 labor_read: 'labor-law.html',
                 salary_calc: 'salary.html',
                 library_read: 'library.html',
@@ -5679,24 +5796,24 @@ if (document.readyState === 'loading') {
                 const dest = destMap[key] || '#';
 
                 checklistHtml += `
-                    <div style="display: flex; align-items: center; justify-content: space-between; font-size: 0.7rem; color: var(--text-light); cursor: pointer; padding: 3px 6px; border-radius: 4px; transition: background 0.2s;" class="campaign-req-item" onclick="if ('${dest}'.startsWith('#')) { const t = document.getElementById('${dest.substring(1)}'); if (t) t.scrollIntoView({behavior:'smooth'}); } else { window.location.href='${dest}'; }">
-                        <span style="${isTaskDone ? 'text-decoration: line-through; opacity: 0.7;' : ''}">${isTaskDone ? '🔹' : '🔸'} ${displayName}</span>
-                        <span style="font-weight: bold; color: ${isTaskDone ? '#10b981' : 'inherit'};">${current}/${req}</span>
+                    <div style="display: flex; align-items: center; justify-content: space-between; font-size: 0.72rem; color: var(--text-light); cursor: pointer; padding: 6px 10px; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); border-radius: 6px; margin-bottom: 5px; transition: all 0.2s;" class="campaign-req-item" onclick="if ('${dest}'.startsWith('#')) { const t = document.getElementById('${dest.substring(1)}'); if (t) t.scrollIntoView({behavior:'smooth'}); } else { window.location.href='${dest}'; }">
+                        <span style="${isTaskDone ? 'text-decoration: line-through; opacity: 0.6;' : 'font-weight: 500;'}">${isTaskDone ? '✅' : '⏳'} ${displayName}</span>
+                        <span style="font-weight: 800; color: ${isTaskDone ? '#34d399' : 'var(--primary)'};">${current}/${req}</span>
                     </div>
                 `;
             }
 
             const campaignCard = document.createElement('div');
-            campaignCard.style.cssText = 'background: rgba(243, 168, 59, 0.03); border: 1px dashed var(--primary); border-radius: 8px; padding: 12px; display: flex; flex-direction: column; gap: 8px; margin-bottom: 8px;';
+            campaignCard.style.cssText = 'background: linear-gradient(135deg, rgba(243, 168, 59, 0.08) 0%, rgba(243, 168, 59, 0.02) 100%); border: 1.5px solid var(--primary); border-radius: 12px; padding: 16px; display: flex; flex-direction: column; gap: 10px; margin-bottom: 12px; box-shadow: 0 4px 15px rgba(243, 168, 59, 0.08); transition: all 0.3s ease; position: relative; overflow: hidden;';
             campaignCard.innerHTML = `
-                <div style="font-size: 0.78rem; font-weight: bold; color: var(--primary); margin-bottom: 2px;">${campaign.title}</div>
-                <div style="font-size: 0.65rem; color: var(--text-light); line-height: 1.3; margin-bottom: 8px;">${campaign.desc}</div>
-                <div style="display: flex; flex-direction: column; gap: 6px; border-top: 1px solid rgba(243, 168, 59, 0.15); padding-top: 8px; margin-bottom: 10px;">
+                <div style="font-size: 0.85rem; font-weight: 800; color: var(--primary); margin-bottom: 2px;">${campaign.title}</div>
+                <div style="font-size: 0.7rem; color: var(--text-light); line-height: 1.4; margin-bottom: 6px;">${campaign.desc}</div>
+                <div style="display: flex; flex-direction: column; gap: 4px; border-top: 1px solid rgba(243, 168, 59, 0.15); padding-top: 8px; margin-bottom: 6px;">
                     ${checklistHtml}
                 </div>
                 <div style="display: flex; align-items: center; justify-content: space-between; border-top: 1px dashed rgba(243, 168, 59, 0.2); padding-top: 8px;">
-                    <span style="font-size: 0.65rem; color: #34d399; font-weight: bold;">Thưởng: +${campaign.bonus}đ bonus</span>
-                    <span style="font-size: 0.65rem; background: ${isCompleted ? '#10b981' : '#4b5563'}; color: #fff; padding: 2px 6px; border-radius: 4px; font-weight: bold;">
+                    <span style="font-size: 0.72rem; color: #34d399; font-weight: 800; text-transform: uppercase;">🎁 +${campaign.bonus}đ BONUS</span>
+                    <span style="font-size: 0.68rem; background: ${isCompleted ? '#10b981' : '#4b5563'}; color: #fff; padding: 3px 8px; border-radius: 6px; font-weight: 800;">
                         ${isCompleted ? 'Đã xong 🏆' : 'Đang chạy ⚡'}
                     </span>
                 </div>
@@ -5905,10 +6022,10 @@ if (document.readyState === 'loading') {
     function updateRewardShopUI(points) {
         const claimBtns = document.querySelectorAll('.btn-claim');
         claimBtns.forEach(btn => {
-            const reqVal = parseInt(btn.getAttribute('data-requirement') || '350', 10);
+            const reqVal = parseInt(btn.getAttribute('data-requirement') || '500', 10);
             const reward = btn.getAttribute('data-reward');
 
-            if (reqVal === 350 && localStorage.getItem('b2b_streak_unlocked_ebook') === 'true') {
+            if (reqVal === 500 && localStorage.getItem('b2b_streak_unlocked_ebook') === 'true') {
                 btn.style.background = 'rgba(255,255,255,0.05)';
                 btn.style.borderColor = 'var(--border-color)';
                 btn.style.color = '#34d399';
@@ -5932,54 +6049,258 @@ if (document.readyState === 'loading') {
         });
     }
 
-    function initPointsAndTracking() {
-        const streakActive = localStorage.getItem('streak_active') === 'true';
-        const regBox = document.getElementById('streak-registration-box');
-        const questBox = document.getElementById('quests-dashboard-box');
+    function initGiftCodeHandler() {
+        const claimBtn = document.getElementById('btn-claim-gift-code');
+        const codeInput = document.getElementById('gift-code-input');
+        if (!claimBtn || !codeInput) return;
 
-        if (streakActive) {
-            if (regBox) regBox.classList.add('hidden');
-            if (questBox) questBox.classList.remove('hidden');
-
-            if (localStorage.getItem('b2b_points_converted') !== 'true') {
-                const streakVal = parseInt(localStorage.getItem('streak_days') || '0', 10);
-                const initialPoints = Math.max(25, streakVal * 25);
-                localStorage.setItem('b2b_points_balance', initialPoints.toString());
-                localStorage.setItem('b2b_points_converted', 'true');
+        claimBtn.addEventListener('click', async () => {
+            const code = codeInput.value.trim().toUpperCase();
+            if (!code) {
+                alert('Vui lòng nhập mã quà tặng!');
+                return;
             }
 
-            if (typeof window.renderQuestBoard === 'function') window.renderQuestBoard();
-            if (typeof window.renderCampaignBoard === 'function') window.renderCampaignBoard();
+            const email = localStorage.getItem('streak_email');
+            if (!email) {
+                alert('Vui lòng kích hoạt tài khoản tích lũy điểm trước khi đổi quà!');
+                return;
+            }
+
+            if (code === 'TRANGRAM2026') {
+                const claimKey = 'b2b_promo_trangram_claimed';
+                if (localStorage.getItem(claimKey) === 'true') {
+                    alert('Mã quà tặng này đã được bạn nhận trước đó rồi!');
+                    return;
+                }
+
+                claimBtn.disabled = true;
+                claimBtn.textContent = 'Đang nhận...';
+
+                try {
+                    const currentPoints = parseInt(localStorage.getItem('b2b_points_balance') || '25', 10);
+                    const newPoints = currentPoints + 50;
+
+                    // Call API to update points in Sheets Webhook
+                    const res = await fetch('/api/log-email', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            action: 'updatePoints',
+                            email: email,
+                            points: newPoints,
+                            device: 'Desktop',
+                            userId: localStorage.getItem('streak_user_id') || ''
+                        })
+                    });
+
+                    const data = await res.json();
+                    if (data.success) {
+                        localStorage.setItem('b2b_points_balance', newPoints.toString());
+                        localStorage.setItem(claimKey, 'true');
+                        
+                        // Update HUD UI
+                        const hudPoints = document.getElementById('hud-points-val');
+                        if (hudPoints) hudPoints.textContent = `${newPoints} BD-Points`;
+                        
+                        const welcomeBannerVal = document.getElementById('welcome-points-val');
+                        if (welcomeBannerVal) welcomeBannerVal.textContent = newPoints.toString();
+
+                        if (typeof updateRewardShopUI === 'function') updateRewardShopUI(newPoints);
+                        
+                        // Append to points history locally if possible
+                        const historyList = document.getElementById('points-history-list');
+                        if (historyList) {
+                            const dateStr = new Date().toLocaleDateString('vi-VN');
+                            const historyItem = document.createElement('div');
+                            historyItem.className = 'history-item';
+                            historyItem.style.display = 'flex';
+                            historyItem.style.justifyContent = 'space-between';
+                            historyItem.style.padding = '8px 12px';
+                            historyItem.style.borderRadius = '8px';
+                            historyItem.style.background = 'rgba(16, 185, 129, 0.08)';
+                            historyItem.style.border = '1px solid rgba(16, 185, 129, 0.2)';
+                            historyItem.style.fontSize = '0.78rem';
+                            historyItem.style.marginBottom = '6px';
+                            historyItem.innerHTML = `
+                                <span>🎉 Nhận quà Launching Trung Thu (+50đ)</span>
+                                <span style="font-weight: 700; color: #10b981;">${dateStr}</span>
+                            `;
+                            historyList.insertBefore(historyItem, historyList.firstChild);
+                        }
+
+                        alert('🥮 Chúc mừng bác đã đổi quà thành công! Đã cộng +50đ BD-Points vào ví.');
+                        codeInput.value = '';
+                    } else {
+                        alert(data.error || 'Có lỗi xảy ra khi đổi quà.');
+                    }
+                } catch(e) {
+                    console.error(e);
+                    alert('Lỗi kết nối máy chủ.');
+                } finally {
+                    claimBtn.disabled = false;
+                    claimBtn.textContent = 'Đổi Mã';
+                }
+            } else {
+                alert('Mã quà tặng không hợp lệ hoặc đã hết hạn!');
+            }
+        });
+    }
+
+    function initHomepageBeeDeeMascot() {
+        const mascotImg = document.getElementById('beedee-homepage-mascot');
+        const greetingTitle = document.getElementById('beedee-greeting-title');
+        const greetingText = document.getElementById('beedee-greeting-text');
+        if (!mascotImg || !greetingTitle || !greetingText) return;
+
+        const email = localStorage.getItem('streak_email');
+        const streakActive = localStorage.getItem('streak_active') === 'true';
+        const isRegistered = streakActive || (email && email.includes('@'));
+        const isVerified = localStorage.getItem('b2b_user_verified') === 'true';
+        const balance = parseInt(localStorage.getItem('b2b_points_balance') || '0', 10);
+        const userName = localStorage.getItem('streak_name') || '';
+        
+        let greeting = '';
+        if (isRegistered && userName && userName !== 'Khách' && userName !== 'Học viên') {
+            greeting = `Xin chào bác <strong>${userName}</strong>!`;
         } else {
-            if (regBox) regBox.classList.remove('hidden');
-            if (questBox) questBox.classList.add('hidden');
+            greeting = `Xin chào bác!`;
         }
 
-        const balance = parseInt(localStorage.getItem('b2b_points_balance') || '0', 10);
-        updateWelcomeBanner(balance);
-        updateRewardShopUI(balance);
+        greetingTitle.innerHTML = greeting;
+
+        if (!isRegistered) {
+            // New User
+            mascotImg.src = 'beedee_mid_autumn.jpg?v=2.3.13';
+            greetingText.innerHTML = `Bác chưa đăng ký tích điểm kìa! Mau bật nhắc nhở để tui gửi bí kíp BD và tặng ngay 25 BD-Points nha!`;
+        } else if (isRegistered && !isVerified) {
+            // Registered but not verified
+            mascotImg.src = 'mascot_email.jpg?v=2.3.13';
+            greetingText.innerHTML = `Bác tích được <strong>${balance} BD-Points</strong> rồi đó, nhưng chưa cài mật khẩu. Cài ngay kẻo ví điểm bay màu nha!`;
+        } else {
+            // Verified User -> Day of the week specific mascot and messages!
+            const day = new Date().getDay(); // 0 = CN, 1 = T2, 2 = T3, 3 = T4, 4 = T5, 5 = T6, 6 = T7
+            let mascotSrc = 'mascot_quests.jpg?v=2.3.13';
+            let msg = '';
+            
+            switch(day) {
+                case 1: // Monday
+                    mascotSrc = 'mascot_commander.jpg?v=2.3.13';
+                    msg = `Đầu tuần năng lượng lên bác ơi! Mục tiêu tuần này của bác là săn thêm bao nhiêu Deal đây? Mau vô mở kho tàng B2B thực chiến cùng tui nào!`;
+                    break;
+                case 2: // Tuesday
+                    mascotSrc = 'mascot_architect.jpg?v=2.3.13';
+                    msg = `Thứ ba là ngày thiết lập hệ thống! Hãy để tui giúp bác lên kịch bản email tiếp cận lead tự động chuẩn chỉnh nhé!`;
+                    break;
+                case 3: // Wednesday
+                    mascotSrc = 'mascot_kpi.jpg?v=2.3.13';
+                    msg = `Giữa tuần rồi bác ơi, KPI tuần này đã chạy được nửa chặng đường chưa? Mau vô ước tính KPI hoặc làm vài nhiệm vụ lấy điểm tích lũy thôi!`;
+                    break;
+                case 4: // Thursday
+                    mascotSrc = 'mascot_salary.jpg?v=2.3.13';
+                    msg = `Thứ năm rồi, cuối tuần cận kề rồi! Deal nào còn dang dở thì chốt nhanh để cuối tháng lượm hoa hồng ngập ví nha bác!`;
+                    break;
+                case 5: // Friday
+                    mascotSrc = 'mascot_champion.jpg?v=2.3.13';
+                    msg = `Thứ sáu cuối tuần rồi bác ơi! Gác lại áp lực, hãy cùng khách hàng xây dựng chemistry thật tốt rồi tận hưởng ngày nghỉ cuối tuần nhé!`;
+                    break;
+                default: // Weekend (6 = Sat, 0 = Sun)
+                    mascotSrc = 'mascot_farmer.jpg?v=2.3.13';
+                    msg = `Bác đang có <strong>${balance} BD-Points</strong> trong ví. Cuối tuần rồi, hãy sạc lại năng lượng và trau dồi thêm kỹ năng BD cùng tui nha!`;
+                    break;
+            }
+            mascotImg.src = mascotSrc;
+            greetingText.innerHTML = msg;
+        }
+    }
+
+    function initPointsAndTracking() {
+        try {
+            const streakActive = localStorage.getItem('streak_active') === 'true';
+            const regBox = document.getElementById('streak-registration-box');
+            const questBox = document.getElementById('quests-dashboard-box');
+
+            if (streakActive) {
+                if (regBox) regBox.classList.add('hidden');
+                if (questBox) questBox.classList.remove('hidden');
+
+                if (localStorage.getItem('b2b_points_converted') !== 'true') {
+                    const streakVal = parseInt(localStorage.getItem('streak_days') || '0', 10);
+                    const initialPoints = Math.max(25, streakVal * 25);
+                    localStorage.setItem('b2b_points_balance', initialPoints.toString());
+                    localStorage.setItem('b2b_points_converted', 'true');
+                }
+
+                if (typeof window.renderQuestBoard === 'function') window.renderQuestBoard();
+                if (typeof window.renderCampaignBoard === 'function') window.renderCampaignBoard();
+
+                if (document.getElementById('quests-dashboard-box') && window.showSubtleProfileModal && !localStorage.getItem('profile_skill')) {
+                    setTimeout(() => {
+                        window.showSubtleProfileModal({
+                            title: '🎯 Gợi ý Lộ trình rèn luyện',
+                            subtitle: 'Chào bác! Để Cú BeeDee gợi ý lộ trình nhiệm vụ thực chiến và tài liệu rèn luyện sát sườn nhất với bác, bác đang mong muốn tập trung phát triển kỹ năng nào nhất?',
+                            options: [
+                                'Kỹ năng Giao Tiếp',
+                                'Kỹ năng Presentation',
+                                'Kỹ năng Đặt Câu Hỏi',
+                                'Kỹ năng Cold Calling',
+                                'Kỹ năng Kiếm Outbound Lead'
+                            ],
+                            fieldName: 'skill',
+                            callback: () => {
+                                if (typeof window.renderQuestBoard === 'function') window.renderQuestBoard();
+                            }
+                        });
+                    }, 600);
+                }
+            } else {
+                if (regBox) regBox.classList.remove('hidden');
+                if (questBox) questBox.classList.add('hidden');
+            }
+
+            const balance = parseInt(localStorage.getItem('b2b_points_balance') || '0', 10);
+            updateWelcomeBanner(balance);
+            updateRewardShopUI(balance);
+            initGiftCodeHandler();
+        } catch (e) {
+            console.error("Error in initPointsAndTracking core:", e);
+        }
+
+        try {
+            initHomepageBeeDeeMascot();
+        } catch (e) {
+            console.error("Error in initHomepageBeeDeeMascot:", e);
+        }
     }
 
     let exitIntentTriggered = false;
+    function isRegisteredUser() {
+        const active = localStorage.getItem('streak_active') === 'true';
+        const email = localStorage.getItem('streak_email');
+        const verified = localStorage.getItem('b2b_user_verified') === 'true';
+        return active || (email && email.includes('@')) || verified;
+    }
+
     function initExitIntent() {
-        if (localStorage.getItem('streak_active') === 'true' || localStorage.getItem('exit_intent_dismissed') === 'true') return;
+        if (isRegisteredUser() || localStorage.getItem('exit_intent_dismissed') === 'true') return;
 
         // Desktop mouseleave exit intent
         document.addEventListener('mouseleave', (e) => {
-            if (e.clientY < 50 && !exitIntentTriggered && localStorage.getItem('streak_active') !== 'true' && localStorage.getItem('exit_intent_dismissed') !== 'true') {
+            if (e.clientY < 50 && !exitIntentTriggered && !isRegisteredUser() && localStorage.getItem('exit_intent_dismissed') !== 'true') {
                 showExitIntentPopup();
             }
         });
 
         // Mobile timer exit intent fallback
         setTimeout(() => {
-            if (!exitIntentTriggered && localStorage.getItem('streak_active') !== 'true' && localStorage.getItem('exit_intent_dismissed') !== 'true') {
+            if (!exitIntentTriggered && !isRegisteredUser() && localStorage.getItem('exit_intent_dismissed') !== 'true') {
                 showExitIntentPopup();
             }
         }, 40000);
     }
 
     function showExitIntentPopup() {
+        if (isRegisteredUser()) return;
         const modal = document.getElementById('exit-intent-modal');
         if (modal) {
             modal.classList.remove('hidden');
@@ -5987,11 +6308,454 @@ if (document.readyState === 'loading') {
         }
     }
 
+    // --- ONLINE PVP MATCHMAKER MECHANICS ---
+    const MOCK_ONLINE_USERS = [
+        { id: 'usr-1', name: 'Hào Nguyễn', mascot: 'Architect', status: '🟢 Đang ở Ải 1', points: 80, gameId: 'puzzle-negotiation' },
+        { id: 'usr-2', name: 'SaasWarrior', mascot: 'Commander', status: '🟢 Đang ở Ải 2', points: 85, gameId: 'puzzle-kpi' },
+        { id: 'usr-3', name: 'ChuaTeChotDeal', mascot: 'Champion', status: '🟢 Vừa thắng Ải 3', points: 90, gameId: 'puzzle-law' },
+        { id: 'usr-4', name: 'Bob Growth', mascot: 'Farmer', status: '🟢 Đang online', points: 75, gameId: 'puzzle-negotiation' }
+    ];
+
+    function renderOnlineUsersList() {
+        const container = document.getElementById('online-users-list');
+        if (!container) return;
+        
+        let listHtml = '';
+        MOCK_ONLINE_USERS.forEach(usr => {
+            const isBeaten = localStorage.getItem(`online_pvp_beaten_${usr.id}`) === 'true' || 
+                             localStorage.getItem(`challenge_beaten_online_pvp_beaten_${usr.id}`) === 'true';
+            const actionBtn = isBeaten
+                ? `<span style="font-size: 0.72rem; color: #10b981; font-weight: bold; background: rgba(16, 185, 129, 0.1); padding: 4px 8px; border-radius: 6px;">🏆 Đã Thắng</span>`
+                : `<button onclick="challengeOnlineUser('${usr.id}')" class="btn btn-primary" style="padding: 6px 12px; font-size: 0.7rem; font-weight: bold; border-radius: 6px; border: none; cursor: pointer; background: #ef4444;">Khiêu Chiến</button>`;
+            
+            listHtml += `
+                <div style="background: rgba(255,255,255,0.02); border: 1px solid var(--border-color); border-radius: 12px; padding: 12px; display: flex; align-items: center; justify-content: space-between; gap: 10px;">
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <div style="font-size: 1.5rem;">🦉</div>
+                        <div>
+                            <div style="font-size: 0.82rem; font-weight: bold; color: var(--text-main); display: flex; align-items: center; gap: 4px;">
+                                ${usr.name}
+                                <span style="font-size: 0.65rem; font-weight: 500; color: var(--text-light); background: rgba(255,255,255,0.05); padding: 1px 4px; border-radius: 4px;">${usr.mascot}</span>
+                            </div>
+                            <div style="font-size: 0.7rem; color: #10b981; font-weight: 500;">${usr.status}</div>
+                        </div>
+                    </div>
+                    <div>
+                        ${actionBtn}
+                    </div>
+                </div>
+            `;
+        });
+        
+        container.innerHTML = listHtml;
+    }
+
+    window.challengeOnlineUser = function(userId) {
+        const usr = MOCK_ONLINE_USERS.find(u => u.id === userId);
+        if (!usr) return;
+        
+        const gameTitle = usr.gameId === 'puzzle-negotiation' ? 'Ải 1: Đàm phán B2B' : usr.gameId === 'puzzle-kpi' ? 'Ải 2: KPI Master' : 'Ải 3: Luật Lao Động';
+        const userScore = localStorage.getItem(`high_score_${usr.gameId}`);
+        
+        if (userScore) {
+            const finalUserScore = parseInt(userScore, 10);
+            const overlay = document.createElement('div');
+            overlay.className = 'pvp-select-overlay';
+            overlay.style.position = 'fixed';
+            overlay.style.top = '0';
+            overlay.style.left = '0';
+            overlay.style.width = '100vw';
+            overlay.style.height = '100vh';
+            overlay.style.backgroundColor = 'rgba(10, 11, 18, 0.8)';
+            overlay.style.backdropFilter = 'blur(10px)';
+            overlay.style.webkitBackdropFilter = 'blur(10px)';
+            overlay.style.zIndex = '21000';
+            overlay.style.display = 'flex';
+            overlay.style.alignItems = 'center';
+            overlay.style.justifyContent = 'center';
+            overlay.style.padding = '20px';
+            overlay.style.boxSizing = 'border-box';
+            
+            const box = document.createElement('div');
+            box.style.maxWidth = '400px';
+            box.style.width = '100%';
+            box.style.padding = '25px';
+            box.style.borderRadius = '20px';
+            box.style.border = '1px solid var(--border-color)';
+            box.style.background = 'var(--card-bg)';
+            box.style.color = 'var(--text-main)';
+            box.style.textAlign = 'center';
+            
+            box.innerHTML = `
+                <div style="font-size: 2.5rem; margin-bottom: 10px;">⚔️</div>
+                <h3 style="margin: 0 0 10px 0; font-size: 1.15rem; font-weight: 800; color: var(--text-main);">KHIÊU CHIẾN: ${usr.name}</h3>
+                <p style="margin: 0 0 20px 0; font-size: 0.8rem; color: var(--text-light); line-height: 1.45;">
+                    Thử thách tại <strong>${gameTitle}</strong>.<br>
+                    Điểm đối thủ: <strong>${usr.points} điểm</strong>.<br>
+                    Điểm kỷ lục của bác: <strong>${finalUserScore} điểm</strong>.
+                </p>
+                <div style="display: flex; flex-direction: column; gap: 8px;">
+                    <button id="btn-pvp-compare" class="btn btn-primary" style="padding: 10px; font-weight: bold; border-radius: 8px; border: none; cursor: pointer;">So Kèo Ngay (Dùng Điểm Kỷ Lục)</button>
+                    <button id="btn-pvp-replay" class="btn btn-secondary" style="padding: 10px; font-weight: bold; border-radius: 8px; border: 1px solid var(--border-color); background: rgba(255,255,255,0.05); color: var(--text-main); cursor: pointer;">Đấu Lại (Chơi Game Mới)</button>
+                    <button onclick="this.closest('.pvp-select-overlay').remove()" class="btn btn-secondary" style="padding: 8px; font-size: 0.78rem; font-weight: bold; border: none; background: transparent; color: var(--text-light); cursor: pointer; margin-top: 5px;">Hủy bỏ</button>
+                </div>
+            `;
+            
+            overlay.appendChild(box);
+            document.body.appendChild(overlay);
+            
+            box.querySelector('#btn-pvp-compare').addEventListener('click', () => {
+                overlay.remove();
+                executePvpComparison(usr, finalUserScore);
+            });
+            
+            box.querySelector('#btn-pvp-replay').addEventListener('click', () => {
+                overlay.remove();
+                redirectToPvpGame(usr);
+            });
+        } else {
+            alert(`Bác chưa có điểm kỷ lục ở game này!\n\nHệ thống sẽ đưa bác vào chơi game ngay để so điểm trực diện với ${usr.name} (${usr.points} điểm). Cố lên bác nhé!`);
+            redirectToPvpGame(usr);
+        }
+    };
+
+    function redirectToPvpGame(usr) {
+        sessionStorage.setItem('pvp_active', 'true');
+        sessionStorage.setItem('pvp_challenger', usr.name);
+        sessionStorage.setItem('pvp_mascot', usr.mascot);
+        sessionStorage.setItem('pvp_score_to_beat', usr.points.toString());
+        sessionStorage.setItem('pvp_game_id', usr.gameId);
+        sessionStorage.setItem('pvp_post_id', `online_pvp_beaten_${usr.id}`);
+        
+        window.location.href = `index.html?challenge=true&challenger=${encodeURIComponent(usr.name)}&mascot=${usr.mascot}&score=${usr.points}&gameId=${usr.gameId}&postId=online_pvp_beaten_${usr.id}#minigame-section`;
+        
+        // Force reload if we are already on index.html
+        if (window.location.pathname.endsWith('index.html') || window.location.pathname === '/') {
+            window.location.reload();
+        }
+    }
+
+    async function executePvpComparison(usr, userScore) {
+        const isWin = userScore > usr.points;
+        const rewardPoints = 50;
+        
+        const overlay = document.createElement('div');
+        overlay.className = 'pvp-overlay';
+        overlay.style.position = 'fixed';
+        overlay.style.top = '0';
+        overlay.style.left = '0';
+        overlay.style.width = '100vw';
+        overlay.style.height = '100vh';
+        overlay.style.backgroundColor = 'rgba(10, 11, 18, 0.85)';
+        overlay.style.backdropFilter = 'blur(10px)';
+        overlay.style.webkitBackdropFilter = 'blur(10px)';
+        overlay.style.zIndex = '20000';
+        overlay.style.display = 'flex';
+        overlay.style.alignItems = 'center';
+        overlay.style.justifyContent = 'center';
+        overlay.style.padding = '20px';
+        overlay.style.boxSizing = 'border-box';
+        
+        const box = document.createElement('div');
+        box.style.maxWidth = '440px';
+        box.style.width = '100%';
+        box.style.padding = '30px 24px';
+        box.style.borderRadius = '20px';
+        box.style.border = '1px solid var(--border-color)';
+        box.style.background = 'var(--card-bg)';
+        box.style.color = 'var(--text-main)';
+        box.style.textAlign = 'center';
+        box.style.boxShadow = '0 20px 40px rgba(0, 0, 0, 0.3)';
+        
+        if (isWin) {
+            localStorage.setItem(`online_pvp_beaten_${usr.id}`, 'true');
+            renderOnlineUsersList();
+            
+            const balance = parseInt(localStorage.getItem('b2b_points_balance') || '0', 10);
+            const newPoints = balance + rewardPoints;
+            localStorage.setItem('b2b_points_balance', newPoints.toString());
+            if (window.updateNavbarUserHUD) window.updateNavbarUserHUD();
+            
+            const email = localStorage.getItem('streak_email');
+            if (email) {
+                try {
+                    await fetch('/api/log-email', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            action: 'updatePoints',
+                            email: email,
+                            points: newPoints
+                        })
+                    });
+                } catch (e) {
+                    console.error('Failed to sync PvP points:', e);
+                }
+            }
+            
+            box.innerHTML = `
+                <div style="font-size: 3.5rem; margin-bottom: 15px;">🏆🎉</div>
+                <h3 style="margin: 0 0 10px 0; font-size: 1.3rem; font-weight: 800; color: #10b981; text-transform: uppercase;">CHIẾN THẮNG RỰC RỠ!</h3>
+                <p style="margin: 0 0 20px 0; font-size: 0.88rem; color: var(--text-light); line-height: 1.5;">
+                    Tuyệt vời! Điểm kỷ lục của bác là <strong>${userScore} điểm</strong>, đè bẹp mốc <strong>${usr.points} điểm</strong> của đối thủ <strong>${usr.name}</strong>!
+                </p>
+                <div style="background: rgba(16, 185, 129, 0.08); border: 1.5px dashed #10b981; padding: 12px; border-radius: 12px; margin-bottom: 20px; font-weight: bold; color: #10b981; font-size: 0.9rem;">
+                    🎁 PHẦN THƯỞNG SONG ĐẤU: +50 BD-Points!
+                </div>
+                <button onclick="this.closest('.pvp-overlay').remove()" class="btn btn-primary" style="width: 100%; padding: 12px; font-weight: bold; border-radius: 8px; border: none; cursor: pointer;">Nhận Thưởng & Đóng</button>
+            `;
+        } else {
+            box.innerHTML = `
+                <div style="font-size: 3.5rem; margin-bottom: 15px;">⚔️🦉</div>
+                <h3 style="margin: 0 0 10px 0; font-size: 1.3rem; font-weight: 800; color: #ef4444; text-transform: uppercase;">BẠN ĐÃ BẠI TRẬN!</h3>
+                <p style="margin: 0 0 20px 0; font-size: 0.88rem; color: var(--text-light); line-height: 1.5;">
+                    Rất tiếc! Điểm số <strong>${userScore} điểm</strong> của bác không đủ vượt qua mốc <strong>${usr.points} điểm</strong> của đối thủ <strong>${usr.name}</strong>.
+                </p>
+                <div style="background: rgba(239, 68, 68, 0.08); border: 1.5px dashed #ef4444; padding: 12px; border-radius: 12px; margin-bottom: 20px; font-weight: bold; color: #ef4444; font-size: 0.85rem;">
+                    Bác hãy chọn nút "Đấu Lại" để chơi game cải thiện điểm số nhé!
+                </div>
+                <button onclick="this.closest('.pvp-overlay').remove()" class="btn btn-secondary" style="width: 100%; padding: 12px; font-weight: bold; border-radius: 8px; border: 1px solid var(--border-color); background: rgba(255,255,255,0.05); color: var(--text-main); cursor: pointer;">Đóng</button>
+            `;
+        }
+        
+        overlay.appendChild(box);
+        document.body.appendChild(overlay);
+    }
+
     // Run initializations on startup
-    initPointsAndTracking();
-    initExitIntent();
-    if (typeof window.initWelcomeBackPopup === 'function') {
-        window.initWelcomeBackPopup();
+    function checkPvPChallenge() {
+        try {
+            const urlParams = new URLSearchParams(window.location.search);
+            const isChallenge = urlParams.get('challenge') === 'true';
+            if (isChallenge) {
+                const challenger = urlParams.get('challenger');
+                const mascot = urlParams.get('mascot');
+                const scoreToBeat = parseInt(urlParams.get('score') || '0', 10);
+                const gameId = urlParams.get('gameId');
+                
+                sessionStorage.setItem('pvp_active', 'true');
+                sessionStorage.setItem('pvp_challenger', challenger || 'Đối thủ');
+                sessionStorage.setItem('pvp_mascot', mascot || '');
+                sessionStorage.setItem('pvp_score_to_beat', scoreToBeat.toString());
+                sessionStorage.setItem('pvp_game_id', gameId || '');
+                
+                setTimeout(() => {
+                    const sec = document.getElementById('minigame-section');
+                    if (sec) {
+                        sec.scrollIntoView({ behavior: 'smooth' });
+                    }
+                    
+                    if (window.showGlobalNotification) {
+                        window.showGlobalNotification(
+                            '⚔️ NHẬN LỜI KHIÊU CHIẾN PVP!',
+                            `Bác đã nhận lời thách đấu từ <strong>${challenger || 'Đối thủ'}</strong> (${mascot || 'BD'})!<br><br>Hãy chọn ải game tương ứng bên dưới để quyết chiến và vượt qua mốc <strong>${scoreToBeat} điểm</strong> nhé!`
+                        );
+                    } else {
+                        alert(`⚔️ LỜI KHIÊU CHIẾN PVP: Bác nhận được lời thách đấu từ ${challenger || 'Đối thủ'} (${mascot || 'BD'}). Vượt qua mốc ${scoreToBeat} điểm nhé bác!`);
+                    }
+                }, 1500);
+            }
+            
+            const isInitChallenge = urlParams.get('init_challenge') === 'true';
+            if (isInitChallenge) {
+                const gameId = urlParams.get('gameId');
+                setTimeout(() => {
+                    const sec = document.getElementById('minigame-section');
+                    if (sec) {
+                        sec.scrollIntoView({ behavior: 'smooth' });
+                    }
+                    
+                    const targetEl = document.getElementById(gameId);
+                    if (targetEl) {
+                        targetEl.style.outline = '3px solid var(--primary)';
+                        targetEl.style.outlineOffset = '4px';
+                        targetEl.style.borderRadius = '12px';
+                    }
+                    
+                    if (window.showGlobalNotification) {
+                        window.showGlobalNotification(
+                            '⚔️ CHUẨN BỊ KHIÊU CHIẾN!',
+                            `Bác hãy chơi ải game này đạt điểm số kỷ lục, hệ thống sẽ lưu điểm và tự động tạo link thách đấu để bác gửi bạn bè/đồng nghiệp nhé!`
+                        );
+                    } else {
+                        alert('⚔️ CHUẨN BỊ KHIÊU CHIẾN: Bác hãy chơi ải này để lấy điểm cao và tạo link thách đấu nhé!');
+                    }
+                }, 1500);
+            }
+        } catch (e) {
+            console.error("Error in checkPvPChallenge:", e);
+        }
+    }
+
+    async function resolvePvPChallenge(finalScore) {
+        try {
+            const pvpActive = sessionStorage.getItem('pvp_active') === 'true';
+            if (!pvpActive) return;
+            
+            const pvpGameId = sessionStorage.getItem('pvp_game_id');
+            const activeGame = games[activeGameIndex];
+            
+            // Loose comparison for negotiation game ID
+            const isMatch = pvpGameId === activeGame.id || 
+                            (activeGame.id === 'puzzle-negotiation' && pvpGameId.includes('negotiation')) ||
+                            (activeGame.id === 'puzzle-kpi' && pvpGameId.includes('kpi')) ||
+                            (activeGame.id === 'puzzle-law' && pvpGameId.includes('law'));
+                            
+            if (isMatch) {
+                const challenger = sessionStorage.getItem('pvp_challenger');
+                const scoreToBeat = parseInt(sessionStorage.getItem('pvp_score_to_beat') || '0', 10);
+                
+                sessionStorage.removeItem('pvp_active');
+                sessionStorage.removeItem('pvp_challenger');
+                sessionStorage.removeItem('pvp_mascot');
+                sessionStorage.removeItem('pvp_score_to_beat');
+                sessionStorage.removeItem('pvp_game_id');
+                
+                const isWin = finalScore > scoreToBeat;
+                
+                const overlay = document.createElement('div');
+                overlay.className = 'pvp-overlay';
+                overlay.style.position = 'fixed';
+                overlay.style.top = '0';
+                overlay.style.left = '0';
+                overlay.style.width = '100vw';
+                overlay.style.height = '100vh';
+                overlay.style.backgroundColor = 'rgba(10, 11, 18, 0.85)';
+                overlay.style.backdropFilter = 'blur(10px)';
+                overlay.style.webkitBackdropFilter = 'blur(10px)';
+                overlay.style.zIndex = '20000';
+                overlay.style.display = 'flex';
+                overlay.style.alignItems = 'center';
+                overlay.style.justifyContent = 'center';
+                overlay.style.padding = '20px';
+                overlay.style.boxSizing = 'border-box';
+                
+                const box = document.createElement('div');
+                box.style.maxWidth = '440px';
+                box.style.width = '100%';
+                box.style.padding = '30px 24px';
+                box.style.borderRadius = '20px';
+                box.style.border = '1px solid var(--border-color)';
+                box.style.background = 'var(--card-bg)';
+                box.style.color = 'var(--text-main)';
+                box.style.textAlign = 'center';
+                box.style.boxShadow = '0 20px 40px rgba(0, 0, 0, 0.3)';
+                
+                if (isWin) {
+                    const rewardPoints = 50;
+                    const email = localStorage.getItem('streak_email');
+                    const name = localStorage.getItem('streak_name') || 'Học viên';
+                    
+                    const balance = parseInt(localStorage.getItem('b2b_points_balance') || '0', 10);
+                    const newPoints = balance + rewardPoints;
+                    localStorage.setItem('b2b_points_balance', newPoints.toString());
+                    if (window.updateNavbarUserHUD) window.updateNavbarUserHUD();
+                    
+                    if (email) {
+                        try {
+                            await fetch('/api/log-email', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({
+                                    action: 'updatePoints',
+                                    email: email,
+                                    points: newPoints
+                                })
+                            });
+                        } catch (e) {
+                            console.error('Failed to sync PvP points:', e);
+                        }
+                    }
+                    
+                    box.innerHTML = `
+                        <div style="font-size: 3.5rem; margin-bottom: 15px;">🏆🎉</div>
+                        <h3 style="margin: 0 0 10px 0; font-size: 1.3rem; font-weight: 800; color: #10b981; text-transform: uppercase;">CHIẾN THẮNG RỰC RỠ!</h3>
+                        <p style="margin: 0 0 20px 0; font-size: 0.88rem; color: var(--text-light); line-height: 1.5;">
+                            Chúc mừng bác! Bác đạt <strong>${finalScore} điểm</strong>, xuất sắc đánh bại mốc <strong>${scoreToBeat} điểm</strong> của <strong>${challenger}</strong>!
+                        </p>
+                        <div style="background: rgba(16, 185, 129, 0.08); border: 1.5px dashed #10b981; padding: 12px; border-radius: 12px; margin-bottom: 20px; font-weight: bold; color: #10b981; font-size: 0.9rem;">
+                            🎁 THƯỞNG CHIẾN THẮNG: +50 BD-Points!
+                        </div>
+                        <button onclick="this.closest('.pvp-overlay').remove()" class="btn btn-primary" style="width: 100%; padding: 12px; font-weight: bold; border-radius: 8px; border: none; cursor: pointer;">Nhận Thưởng & Đóng</button>
+                    `;
+                } else {
+                    box.innerHTML = `
+                        <div style="font-size: 3.5rem; margin-bottom: 15px;">⚔️🦉</div>
+                        <h3 style="margin: 0 0 10px 0; font-size: 1.3rem; font-weight: 800; color: #ef4444; text-transform: uppercase;">BẠN ĐÃ BẠI TRẬN!</h3>
+                        <p style="margin: 0 0 20px 0; font-size: 0.88rem; color: var(--text-light); line-height: 1.5;">
+                            Rất tiếc! Điểm số <strong>${finalScore} điểm</strong> của bác chưa đủ để vượt qua mốc <strong>${scoreToBeat} điểm</strong> của <strong>${challenger}</strong>.
+                        </p>
+                        <div style="background: rgba(239, 68, 68, 0.08); border: 1.5px dashed #ef4444; padding: 12px; border-radius: 12px; margin-bottom: 20px; font-weight: bold; color: #ef4444; font-size: 0.85rem;">
+                            Hãy rèn luyện thêm kỹ năng để phục thù sau nhé bác!
+                        </div>
+                        <button onclick="this.closest('.pvp-overlay').remove()" class="btn btn-secondary" style="width: 100%; padding: 12px; font-weight: bold; border-radius: 8px; border: 1px solid var(--border-color); background: rgba(255,255,255,0.05); color: var(--text-main); cursor: pointer;">Đóng</button>
+                    `;
+                }
+                overlay.appendChild(box);
+                document.body.appendChild(overlay);
+            }
+        } catch (e) {
+            console.error("Error in resolvePvPChallenge:", e);
+        }
+    }
+
+    function runInit() {
+        try {
+            renderOnlineUsersList();
+        } catch (e) {
+            console.error("Error in renderOnlineUsersList hook:", e);
+        }
+        try {
+            checkPvPChallenge();
+        } catch (e) {
+            console.error("Error in checkPvPChallenge hook:", e);
+        }
+        try {
+            initHomepageBeeDeeMascot();
+        } catch (e) {
+            console.error("Error in initHomepageBeeDeeMascot:", e);
+        }
+        try {
+            initPointsAndTracking();
+        } catch (e) {
+            console.error("Error in initPointsAndTracking core:", e);
+        }
+        try {
+            initExitIntent();
+        } catch (e) {
+            console.error("Error in initExitIntent:", e);
+        }
+        try {
+            if (typeof window.initWelcomeBackPopup === 'function') {
+                window.initWelcomeBackPopup();
+            }
+        } catch (e) {
+            console.error("Error in initWelcomeBackPopup:", e);
+        }
+        try {
+            const pathName = window.location.pathname;
+            const isTargetPage = pathName.endsWith('index.html') || 
+                                 pathName.endsWith('quests.html') || 
+                                 pathName.endsWith('library.html') || 
+                                 pathName.endsWith('/') ||
+                                 pathName === '/' || 
+                                 pathName === '';
+            if (isTargetPage) {
+                setTimeout(() => {
+                    if (typeof window.triggerProfileOnboarding === 'function') {
+                        window.triggerProfileOnboarding();
+                    }
+                }, 3000);
+            }
+        } catch (e) {
+            console.error("Error in triggerProfileOnboarding onboarding:", e);
+        }
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', runInit);
+    } else {
+        runInit();
     }
 
     function renderReviewAnswers(container, activeGame, userAnswers) {
@@ -6054,4 +6818,17 @@ if (document.readyState === 'loading') {
             }
         }
     });
+
+    window.openAIChatBot = function() {
+        if (typeof window.toggleAIChatWidget === 'function') {
+            window.toggleAIChatWidget();
+        } else {
+            const launcher = document.getElementById('ai-chat-launcher') || document.querySelector('.ai-chat-launcher');
+            if (launcher) {
+                launcher.click();
+            } else {
+                console.error("ai-chat-launcher not found!");
+            }
+        }
+    };
 
