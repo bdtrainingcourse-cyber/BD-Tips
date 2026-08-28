@@ -553,11 +553,171 @@
             </div>
 
             <!-- Online PvP Matchmaker Widget (Moved to B2B Arcade Section) -->
-            <div style="margin-top: 30px; border-top: 1.5px dashed var(--border-color); padding-top: 25px;" id="online-pvp-card">
-                <h3 style="font-size: 1.25rem; font-weight: 800; text-align: center; margin-bottom: 6px; color: var(--text-main); display: flex; align-items: center; justify-content: center; gap: 8px;">
+            <style>
+                .pvp-card-container {
+                    background: linear-gradient(135deg, rgba(239, 68, 68, 0.04) 0%, rgba(139, 92, 246, 0.04) 100%);
+                    border: 1px solid rgba(239, 68, 68, 0.2);
+                    border-radius: 20px;
+                    padding: 30px 20px;
+                    margin-top: 35px;
+                    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2), inset 0 0 20px rgba(239, 68, 68, 0.06);
+                    position: relative;
+                    overflow: hidden;
+                    box-sizing: border-box;
+                }
+                .pvp-card-container::before {
+                    content: '';
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 4px;
+                    background: linear-gradient(90deg, #ef4444, #8b5cf6, #3b82f6);
+                }
+                .pvp-header-title {
+                    font-size: 1.4rem;
+                    font-weight: 900;
+                    text-align: center;
+                    margin: 0 0 6px 0;
+                    color: var(--text-main);
+                    text-shadow: 0 0 10px rgba(239, 68, 68, 0.3);
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    gap: 10px;
+                    letter-spacing: 0.5px;
+                }
+                .pvp-header-subtitle {
+                    font-size: 0.82rem;
+                    text-align: center;
+                    color: var(--text-light);
+                    margin: 0 0 25px 0;
+                    line-height: 1.5;
+                    max-width: 500px;
+                    margin-left: auto;
+                    margin-right: auto;
+                }
+                .pvp-user-row {
+                    background: rgba(255, 255, 255, 0.02);
+                    border: 1px solid rgba(255, 255, 255, 0.05);
+                    border-radius: 16px;
+                    padding: 16px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between;
+                    gap: 12px;
+                    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+                    position: relative;
+                    box-sizing: border-box;
+                }
+                .pvp-user-row:hover {
+                    background: rgba(255, 255, 255, 0.04);
+                    border-color: rgba(239, 68, 68, 0.35);
+                    transform: translateY(-3px);
+                    box-shadow: 0 6px 20px rgba(239, 68, 68, 0.12);
+                }
+                .pvp-avatar-wrapper {
+                    position: relative;
+                    width: 48px;
+                    height: 48px;
+                    border-radius: 50%;
+                    background: rgba(255, 255, 255, 0.05);
+                    border: 1.5px solid rgba(255, 255, 255, 0.1);
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    flex-shrink: 0;
+                }
+                .pvp-avatar-img {
+                    width: 36px;
+                    height: 36px;
+                    border-radius: 50%;
+                    object-fit: cover;
+                }
+                .pvp-status-dot {
+                    position: absolute;
+                    bottom: 0px;
+                    right: 0px;
+                    width: 10px;
+                    height: 10px;
+                    border-radius: 50%;
+                    background: #10b981;
+                    border: 2px solid #111219;
+                    box-shadow: 0 0 6px #10b981;
+                    animation: pulse-green 2s infinite;
+                }
+                .pvp-status-dot.idle {
+                    background: #f59e0b;
+                    box-shadow: 0 0 6px #f59e0b;
+                    animation: pulse-orange 2s infinite;
+                }
+                @keyframes pulse-green {
+                    0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+                    70% { box-shadow: 0 0 0 6px rgba(16, 185, 129, 0); }
+                    100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+                }
+                @keyframes pulse-orange {
+                    0% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.7); }
+                    70% { box-shadow: 0 0 0 6px rgba(245, 158, 11, 0); }
+                    100% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0); }
+                }
+                .pvp-badge-mascot {
+                    font-size: 0.65rem;
+                    font-weight: 800;
+                    padding: 2px 6px;
+                    border-radius: 6px;
+                    text-transform: uppercase;
+                    letter-spacing: 0.3px;
+                    display: inline-block;
+                    margin-top: 3px;
+                }
+                .pvp-badge-mascot.commander {
+                    background: rgba(239, 68, 68, 0.12);
+                    color: #f87171;
+                    border: 1px solid rgba(239, 68, 68, 0.2);
+                }
+                .pvp-badge-mascot.architect {
+                    background: rgba(59, 130, 246, 0.12);
+                    color: #60a5fa;
+                    border: 1px solid rgba(59, 130, 246, 0.2);
+                }
+                .pvp-badge-mascot.champion {
+                    background: rgba(245, 158, 11, 0.12);
+                    color: #fbbf24;
+                    border: 1px solid rgba(245, 158, 11, 0.2);
+                }
+                .pvp-badge-mascot.farmer {
+                    background: rgba(16, 185, 129, 0.12);
+                    color: #34d399;
+                    border: 1px solid rgba(16, 185, 129, 0.2);
+                }
+                .pvp-btn-challenge {
+                    padding: 8px 16px;
+                    font-size: 0.72rem;
+                    font-weight: 800;
+                    border-radius: 8px;
+                    border: none;
+                    cursor: pointer;
+                    background: linear-gradient(135deg, #ef4444 0%, #b91c1c 100%);
+                    color: #fff;
+                    box-shadow: 0 4px 10px rgba(239, 68, 68, 0.2);
+                    transition: all 0.2s ease;
+                    text-transform: uppercase;
+                    letter-spacing: 0.5px;
+                    white-space: nowrap;
+                }
+                .pvp-btn-challenge:hover {
+                    transform: scale(1.06);
+                    box-shadow: 0 4px 15px rgba(239, 68, 68, 0.45);
+                    background: linear-gradient(135deg, #ff4d4d 0%, #d32f2f 100%);
+                }
+            </style>
+
+            <div class="pvp-card-container" id="online-pvp-card">
+                <h3 class="pvp-header-title">
                     ⚔️ ĐẤU TRƯỜNG PVP ONLINE
                 </h3>
-                <p style="font-size: 0.8rem; text-align: center; color: var(--text-light); margin-bottom: 20px; line-height: 1.4; max-width: 480px; margin-left: auto; margin-right: auto;">
+                <p class="pvp-header-subtitle">
                     Chiến thần BD đang online thực chiến. Bấm khiêu chiến để đấu điểm trực tiếp!
                 </p>
                 <div id="online-users-list" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 15px; max-width: 1000px; margin: 0 auto;">
@@ -746,8 +906,8 @@
         </div>
     </div>
 
-    <script src="script.js?v=2.3.43"></script>
+    <script src="script.js?v=2.3.44"></script>
     <script src="ai-chat.js?v=2.3.24"></script>
-    <script defer src="/_vercel/insights/script.js?v=2.3.43"></script>
+    <script defer src="/_vercel/insights/script.js?v=2.3.44"></script>
 </body>
 </html>

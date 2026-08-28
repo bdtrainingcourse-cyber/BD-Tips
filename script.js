@@ -6324,20 +6324,27 @@ if (document.readyState === 'loading') {
         MOCK_ONLINE_USERS.forEach(usr => {
             const isBeaten = localStorage.getItem(`online_pvp_beaten_${usr.id}`) === 'true' || 
                              localStorage.getItem(`challenge_beaten_online_pvp_beaten_${usr.id}`) === 'true';
+            
             const actionBtn = isBeaten
-                ? `<span style="font-size: 0.72rem; color: #10b981; font-weight: bold; background: rgba(16, 185, 129, 0.1); padding: 4px 8px; border-radius: 6px;">🏆 Đã Thắng</span>`
-                : `<button onclick="challengeOnlineUser('${usr.id}')" class="btn btn-primary" style="padding: 6px 12px; font-size: 0.7rem; font-weight: bold; border-radius: 6px; border: none; cursor: pointer; background: #ef4444;">Khiêu Chiến</button>`;
+                ? `<span style="font-size: 0.72rem; color: #10b981; font-weight: bold; background: rgba(16, 185, 129, 0.1); padding: 6px 12px; border-radius: 8px; border: 1px solid rgba(16,185,129,0.2); text-transform: uppercase;">🏆 Đã Thắng</span>`
+                : `<button onclick="challengeOnlineUser('${usr.id}')" class="pvp-btn-challenge">Khiêu Chiến</button>`;
+            
+            const mascotLower = usr.mascot.toLowerCase();
+            const statusClass = (usr.status.includes('online') || usr.status.includes('Ải')) ? '' : 'idle';
             
             listHtml += `
-                <div style="background: rgba(255,255,255,0.02); border: 1px solid var(--border-color); border-radius: 12px; padding: 12px; display: flex; align-items: center; justify-content: space-between; gap: 10px;">
-                    <div style="display: flex; align-items: center; gap: 8px;">
-                        <div style="font-size: 1.5rem;">🦉</div>
+                <div class="pvp-user-row">
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                        <div class="pvp-avatar-wrapper">
+                            <img src="mascot_challenge.jpg" class="pvp-avatar-img" alt="BeeDee Owl">
+                            <span class="pvp-status-dot ${statusClass}"></span>
+                        </div>
                         <div>
-                            <div style="font-size: 0.82rem; font-weight: bold; color: var(--text-main); display: flex; align-items: center; gap: 4px;">
-                                ${usr.name}
-                                <span style="font-size: 0.65rem; font-weight: 500; color: var(--text-light); background: rgba(255,255,255,0.05); padding: 1px 4px; border-radius: 4px;">${usr.mascot}</span>
+                            <div style="font-size: 0.88rem; font-weight: 800; color: var(--text-main); display: flex; flex-direction: column; align-items: flex-start; gap: 2px;">
+                                <span>${usr.name}</span>
+                                <span class="pvp-badge-mascot ${mascotLower}">${usr.mascot}</span>
                             </div>
-                            <div style="font-size: 0.7rem; color: #10b981; font-weight: 500;">${usr.status}</div>
+                            <div style="font-size: 0.72rem; color: #10b981; font-weight: 500; margin-top: 4px;">${usr.status}</div>
                         </div>
                     </div>
                     <div>
@@ -6356,70 +6363,99 @@ if (document.readyState === 'loading') {
         
         const gameTitle = usr.gameId === 'puzzle-negotiation' ? 'Ải 1: Đàm phán B2B' : usr.gameId === 'puzzle-kpi' ? 'Ải 2: KPI Master' : 'Ải 3: Luật Lao Động';
         const userScore = localStorage.getItem(`high_score_${usr.gameId}`);
+        const finalUserScore = userScore ? parseInt(userScore, 10) : null;
         
-        if (userScore) {
-            const finalUserScore = parseInt(userScore, 10);
-            const overlay = document.createElement('div');
-            overlay.className = 'pvp-select-overlay';
-            overlay.style.position = 'fixed';
-            overlay.style.top = '0';
-            overlay.style.left = '0';
-            overlay.style.width = '100vw';
-            overlay.style.height = '100vh';
-            overlay.style.backgroundColor = 'rgba(10, 11, 18, 0.8)';
-            overlay.style.backdropFilter = 'blur(10px)';
-            overlay.style.webkitBackdropFilter = 'blur(10px)';
-            overlay.style.zIndex = '21000';
-            overlay.style.display = 'flex';
-            overlay.style.alignItems = 'center';
-            overlay.style.justifyContent = 'center';
-            overlay.style.padding = '20px';
-            overlay.style.boxSizing = 'border-box';
+        const overlay = document.createElement('div');
+        overlay.className = 'pvp-select-overlay';
+        overlay.style.position = 'fixed';
+        overlay.style.top = '0';
+        overlay.style.left = '0';
+        overlay.style.width = '100vw';
+        overlay.style.height = '100vh';
+        overlay.style.backgroundColor = 'rgba(10, 11, 18, 0.85)';
+        overlay.style.backdropFilter = 'blur(10px)';
+        overlay.style.webkitBackdropFilter = 'blur(10px)';
+        overlay.style.zIndex = '21000';
+        overlay.style.display = 'flex';
+        overlay.style.alignItems = 'center';
+        overlay.style.justifyContent = 'center';
+        overlay.style.padding = '20px';
+        overlay.style.boxSizing = 'border-box';
+        
+        const box = document.createElement('div');
+        box.style.maxWidth = '420px';
+        box.style.width = '100%';
+        box.style.padding = '30px 25px';
+        box.style.borderRadius = '24px';
+        box.style.border = '1px solid rgba(239, 68, 68, 0.2)';
+        box.style.background = 'var(--card-bg)';
+        box.style.color = 'var(--text-main)';
+        box.style.textAlign = 'center';
+        box.style.boxShadow = '0 20px 50px rgba(0,0,0,0.3)';
+        
+        const scoreDisplay = finalUserScore !== null ? `<strong>${finalUserScore} điểm</strong>` : `<span style="color: var(--text-light); font-style: italic;">Chưa có điểm kỷ lục</span>`;
+        
+        let actionButtons = '';
+        if (finalUserScore !== null) {
+            actionButtons = `
+                <button id="btn-pvp-compare" class="pvp-btn-challenge" style="width: 100%; padding: 12px; margin-bottom: 8px;">So Kèo Ngay (Dùng Điểm Kỷ Lục)</button>
+                <button id="btn-pvp-replay" class="btn btn-secondary" style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--border-color); background: rgba(255,255,255,0.05); color: var(--text-main); font-weight: bold; cursor: pointer;">Đấu Lại (Chơi Game Mới)</button>
+            `;
+        } else {
+            actionButtons = `
+                <button id="btn-pvp-replay" class="pvp-btn-challenge" style="width: 100%; padding: 12px; margin-bottom: 8px;">Quyết Chiến Ngay (Chơi Lấy Điểm)</button>
+                <p style="font-size: 0.72rem; color: var(--text-light); margin-top: 6px; line-height: 1.3;">
+                    Bác chưa chơi ải này. Hãy quyết chiến ngay để thiết lập điểm số đấu với ${usr.name}!
+                </p>
+            `;
+        }
+        
+        box.innerHTML = `
+            <div style="font-size: 3rem; margin-bottom: 12px;">⚔️</div>
+            <h3 style="margin: 0 0 12px 0; font-size: 1.25rem; font-weight: 900; color: var(--text-main); letter-spacing: 0.5px; text-transform: uppercase;">KHIÊU CHIẾN: ${usr.name}</h3>
             
-            const box = document.createElement('div');
-            box.style.maxWidth = '400px';
-            box.style.width = '100%';
-            box.style.padding = '25px';
-            box.style.borderRadius = '20px';
-            box.style.border = '1px solid var(--border-color)';
-            box.style.background = 'var(--card-bg)';
-            box.style.color = 'var(--text-main)';
-            box.style.textAlign = 'center';
-            
-            box.innerHTML = `
-                <div style="font-size: 2.5rem; margin-bottom: 10px;">⚔️</div>
-                <h3 style="margin: 0 0 10px 0; font-size: 1.15rem; font-weight: 800; color: var(--text-main);">KHIÊU CHIẾN: ${usr.name}</h3>
-                <p style="margin: 0 0 15px 0; font-size: 0.8rem; color: var(--text-light); line-height: 1.45; font-style: italic; background: rgba(255,255,255,0.02); padding: 10px; border-radius: 8px; border-left: 3px solid var(--primary); text-align: left;">
+            <div style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); border-radius: 12px; padding: 15px; margin-bottom: 20px; position: relative;">
+                <img src="mascot_challenge.jpg" style="width: 44px; height: 44px; border-radius: 50%; position: absolute; top: -15px; right: 15px; border: 1.5px solid var(--primary);" alt="BeeDee Owl">
+                <p style="margin: 0; font-size: 0.8rem; color: var(--text-light); line-height: 1.5; font-style: italic; text-align: left; padding-right: 40px;">
                     "${usr.quote}"
                 </p>
-                <p style="margin: 0 0 20px 0; font-size: 0.8rem; color: var(--text-light); line-height: 1.45;">
-                    Thử thách tại <strong>${gameTitle}</strong>.<br>
-                    Điểm đối thủ: <strong>${usr.points} điểm</strong>.<br>
-                    Điểm kỷ lục của bác: <strong>${finalUserScore} điểm</strong>.
-                </p>
-                <div style="display: flex; flex-direction: column; gap: 8px;">
-                    <button id="btn-pvp-compare" class="btn btn-primary" style="padding: 10px; font-weight: bold; border-radius: 8px; border: none; cursor: pointer;">So Kèo Ngay (Dùng Điểm Kỷ Lục)</button>
-                    <button id="btn-pvp-replay" class="btn btn-secondary" style="padding: 10px; font-weight: bold; border-radius: 8px; border: 1px solid var(--border-color); background: rgba(255,255,255,0.05); color: var(--text-main); cursor: pointer;">Đấu Lại (Chơi Game Mới)</button>
-                    <button onclick="this.closest('.pvp-select-overlay').remove()" class="btn btn-secondary" style="padding: 8px; font-size: 0.78rem; font-weight: bold; border: none; background: transparent; color: var(--text-light); cursor: pointer; margin-top: 5px;">Hủy bỏ</button>
+            </div>
+            
+            <div style="background: rgba(255,255,255,0.01); border: 1px solid var(--border-color); border-radius: 12px; padding: 12px; margin-bottom: 20px; font-size: 0.82rem; text-align: left; display: flex; flex-direction: column; gap: 6px;">
+                <div style="display: flex; justify-content: space-between;">
+                    <span style="color: var(--text-light);">Thử thách tại:</span>
+                    <strong style="color: var(--primary);">${gameTitle}</strong>
                 </div>
-            `;
+                <div style="display: flex; justify-content: space-between;">
+                    <span style="color: var(--text-light);">Điểm đối thủ:</span>
+                    <strong style="color: var(--text-main);">${usr.points} điểm</strong>
+                </div>
+                <div style="display: flex; justify-content: space-between; border-top: 1px dashed rgba(255,255,255,0.08); padding-top: 6px; margin-top: 4px;">
+                    <span style="color: var(--text-light);">Kỷ lục của bác:</span>
+                    <span>${scoreDisplay}</span>
+                </div>
+            </div>
             
-            overlay.appendChild(box);
-            document.body.appendChild(overlay);
-            
+            <div style="display: flex; flex-direction: column; gap: 8px;">
+                ${actionButtons}
+                <button onclick="this.closest('.pvp-select-overlay').remove()" class="btn btn-secondary" style="padding: 8px; font-size: 0.78rem; font-weight: bold; border: none; background: transparent; color: var(--text-light); cursor: pointer; margin-top: 5px;">Hủy bỏ</button>
+            </div>
+        `;
+        
+        overlay.appendChild(box);
+        document.body.appendChild(overlay);
+        
+        if (finalUserScore !== null) {
             box.querySelector('#btn-pvp-compare').addEventListener('click', () => {
                 overlay.remove();
                 executePvpComparison(usr, finalUserScore);
             });
-            
-            box.querySelector('#btn-pvp-replay').addEventListener('click', () => {
-                overlay.remove();
-                redirectToPvpGame(usr);
-            });
-        } else {
-            alert(`Bác chưa có điểm kỷ lục ở game này!\n\nHệ thống sẽ đưa bác vào chơi game ngay để so điểm trực diện với ${usr.name} (${usr.points} điểm). Cố lên bác nhé!`);
-            redirectToPvpGame(usr);
         }
+        
+        box.querySelector('#btn-pvp-replay').addEventListener('click', () => {
+            overlay.remove();
+            redirectToPvpGame(usr);
+        });
     };
 
     function redirectToPvpGame(usr) {
