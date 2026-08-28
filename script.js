@@ -6471,11 +6471,13 @@ if (document.readyState === 'loading') {
         sessionStorage.setItem('pvp_game_id', usr.gameId);
         sessionStorage.setItem('pvp_post_id', `online_pvp_beaten_${usr.id}`);
         
-        window.location.href = `index.html?challenge=true&challenger=${encodeURIComponent(usr.name)}&mascot=${usr.mascot}&score=${usr.points}&gameId=${usr.gameId}&postId=online_pvp_beaten_${usr.id}#minigame-section`;
+        const targetUrl = `index.html?challenge=true&challenger=${encodeURIComponent(usr.name)}&mascot=${usr.mascot}&score=${usr.points}&gameId=${usr.gameId}&postId=online_pvp_beaten_${usr.id}#minigame-section`;
         
-        // Force reload if we are already on index.html
-        if (window.location.pathname.endsWith('index.html') || window.location.pathname === '/') {
-            window.location.reload();
+        if (window.location.pathname.endsWith('index.html') || window.location.pathname === '/' || window.location.pathname.endsWith('/')) {
+            window.history.pushState({}, '', targetUrl);
+            checkPvPChallenge();
+        } else {
+            window.location.href = targetUrl;
         }
     }
 
@@ -6650,11 +6652,9 @@ if (document.readyState === 'loading') {
                         sec.scrollIntoView({ behavior: 'smooth' });
                     }
                     
-                    const targetEl = document.getElementById(gameId);
-                    if (targetEl) {
-                        targetEl.style.outline = '3px solid var(--primary)';
-                        targetEl.style.outlineOffset = '4px';
-                        targetEl.style.borderRadius = '12px';
+                    const targetGameIdx = games.findIndex(g => g.id === gameId);
+                    if (targetGameIdx !== -1) {
+                        selectGame(targetGameIdx);
                     }
                     
                     if (window.showGlobalNotification) {
