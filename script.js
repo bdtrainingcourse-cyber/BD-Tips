@@ -6310,10 +6310,10 @@ if (document.readyState === 'loading') {
 
     // --- ONLINE PVP MATCHMAKER MECHANICS ---
     const MOCK_ONLINE_USERS = [
-        { id: 'usr-1', name: 'Hào Nguyễn', mascot: 'Architect', status: '🟢 Đang ở Ải 1', points: 80, gameId: 'puzzle-negotiation' },
-        { id: 'usr-2', name: 'SaasWarrior', mascot: 'Commander', status: '🟢 Đang ở Ải 2', points: 85, gameId: 'puzzle-kpi' },
-        { id: 'usr-3', name: 'ChuaTeChotDeal', mascot: 'Champion', status: '🟢 Vừa thắng Ải 3', points: 90, gameId: 'puzzle-law' },
-        { id: 'usr-4', name: 'Bob Growth', mascot: 'Farmer', status: '🟢 Đang online', points: 75, gameId: 'puzzle-negotiation' }
+        { id: 'usr-1', name: 'Hào Nguyễn', mascot: 'Architect', status: '🟢 Đang ở Ải 1', points: 80, gameId: 'puzzle-negotiation', quote: 'Tôi đã tối ưu hóa logic phễu Ải 1 đạt 80 điểm. Bác thử xem có tìm ra điểm nghẽn nào trong cách đi deal của tôi không?' },
+        { id: 'usr-2', name: 'SaasWarrior', mascot: 'Commander', status: '🟢 Đang ở Ải 2', points: 85, gameId: 'puzzle-kpi', quote: 'Ải KPI này tôi thiết lập trong 5 phút. Thách bác vượt qua 85 điểm của tôi đấy! Dám chơi không?' },
+        { id: 'usr-3', name: 'ChuaTeChotDeal', mascot: 'Champion', status: '🟢 Vừa thắng Ải 3', points: 90, gameId: 'puzzle-law', quote: 'Lòng tin khách hàng là tuyệt đối, tôi quẹt thẻ Ải 3 đạt 90 điểm dễ như trở bàn tay. Bác thử sức xem!' },
+        { id: 'usr-4', name: 'Bob Growth', mascot: 'Farmer', status: '🟢 Đang online', points: 75, gameId: 'puzzle-negotiation', quote: 'Tôi làm chậm mà chắc, tích lũy 75 điểm Ải 1 làm vốn. Bác đấu thử xem ai kiên trì hơn?' }
     ];
 
     function renderOnlineUsersList() {
@@ -6389,6 +6389,9 @@ if (document.readyState === 'loading') {
             box.innerHTML = `
                 <div style="font-size: 2.5rem; margin-bottom: 10px;">⚔️</div>
                 <h3 style="margin: 0 0 10px 0; font-size: 1.15rem; font-weight: 800; color: var(--text-main);">KHIÊU CHIẾN: ${usr.name}</h3>
+                <p style="margin: 0 0 15px 0; font-size: 0.8rem; color: var(--text-light); line-height: 1.45; font-style: italic; background: rgba(255,255,255,0.02); padding: 10px; border-radius: 8px; border-left: 3px solid var(--primary); text-align: left;">
+                    "${usr.quote}"
+                </p>
                 <p style="margin: 0 0 20px 0; font-size: 0.8rem; color: var(--text-light); line-height: 1.45;">
                     Thử thách tại <strong>${gameTitle}</strong>.<br>
                     Điểm đối thủ: <strong>${usr.points} điểm</strong>.<br>
@@ -6520,6 +6523,42 @@ if (document.readyState === 'loading') {
         
         overlay.appendChild(box);
         document.body.appendChild(overlay);
+    }
+
+    function initOnlineUsersStatusRotation() {
+        const statuses = [
+            '🟢 Đang online',
+            '🟢 Đang ở Ải 1',
+            '🟢 Đang ở Ải 2',
+            '🟢 Đang ở Ải 3',
+            '🟢 Vừa thắng Ải 1',
+            '🟢 Vừa thắng Ải 2',
+            '🟢 Vừa thắng Ải 3',
+            '🟡 Đang nghiên cứu Ebook',
+            '🟡 Đang đọc Thư viện',
+            '🟡 Đang chuẩn bị Pitching'
+        ];
+        
+        setInterval(() => {
+            try {
+                // Pick a random user
+                const randomUserIdx = Math.floor(Math.random() * MOCK_ONLINE_USERS.length);
+                const usr = MOCK_ONLINE_USERS[randomUserIdx];
+                
+                // Pick a random status
+                const randomStatus = statuses[Math.floor(Math.random() * statuses.length)];
+                usr.status = randomStatus;
+                
+                // Slightly fluctuate points (+- 5 points)
+                const pointFluctuation = (Math.random() > 0.5 ? 5 : -5);
+                usr.points = Math.max(60, Math.min(100, usr.points + pointFluctuation));
+                
+                // Re-render the list if we are on index.html
+                renderOnlineUsersList();
+            } catch (e) {
+                console.error("Error in status rotation:", e);
+            }
+        }, 30000);
     }
 
     // Run initializations on startup
@@ -6704,6 +6743,11 @@ if (document.readyState === 'loading') {
             renderOnlineUsersList();
         } catch (e) {
             console.error("Error in renderOnlineUsersList hook:", e);
+        }
+        try {
+            initOnlineUsersStatusRotation();
+        } catch (e) {
+            console.error("Error in initOnlineUsersStatusRotation hook:", e);
         }
         try {
             checkPvPChallenge();
