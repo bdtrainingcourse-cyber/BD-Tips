@@ -655,6 +655,17 @@ module.exports = async (req, res) => {
     return res.status(200).json({ 
       success: true, 
       userId: localUser.id,
+      verified: !!isVerified,
+      allowDirectDownload: !!isVerified,
+      points: localUser.points,
+      user: {
+        id: localUser.id,
+        email: localUser.email,
+        name: localUser.name,
+        points: localUser.points,
+        avatar: localUser.avatar || '',
+        verified: !!localUser.verified
+      },
       warning: 'Webhook URL not configured, but local save completed.' 
     });
   }
@@ -666,7 +677,25 @@ module.exports = async (req, res) => {
   try {
     // Forward to Google Sheets Webhook
     let payload = {};
-    if (action === 'syncUser' || tool === 'daily-points' || tool === 'exit-intent-ebook' || tool === 'ebook-download') {
+    if (action === 'sendEbookVerificationEmail' || tool === 'ebook-download') {
+      payload = {
+        action: isVerified ? 'syncUser' : 'sendEbookVerificationEmail',
+        userId: localUser.id,
+        name: name || localUser.name,
+        email,
+        tool: 'ebook-download',
+        points: points !== undefined ? points : (localUser ? localUser.points : 25),
+        device: deviceType,
+        date: timestamp,
+        password: localUser.password || '',
+        experience: localUser.experience || '',
+        industry: localUser.industry || '',
+        skill: localUser.skill || '',
+        ebookTitle: ebookTitle || '',
+        fileUrl: params.fileUrl || downloadLink || '',
+        downloadLink: downloadLink || ''
+      };
+    } else if (action === 'syncUser' || tool === 'daily-points' || tool === 'exit-intent-ebook') {
       payload = {
         action: 'syncUser',
         userId: localUser.id,
@@ -708,6 +737,24 @@ module.exports = async (req, res) => {
     const response = await httpPost(webhookUrl, payload);
     const resText = await response.text();
     console.log(`[SHEETS_SYNC] Success. Webhook response: ${resText}`);
+
+    if (action === 'sendEbookVerificationEmail' || tool === 'ebook-download') {
+      return res.status(200).json({
+        success: true,
+        verified: !!isVerified,
+        allowDirectDownload: !!isVerified,
+        userId: localUser.id,
+        points: localUser.points,
+        user: {
+          id: localUser.id,
+          email: localUser.email,
+          name: localUser.name,
+          points: localUser.points,
+          avatar: localUser.avatar || '',
+          verified: !!localUser.verified
+        }
+      });
+    }
 
     if (action === 'syncUser') {
       try {

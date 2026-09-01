@@ -603,13 +603,42 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
 
-        const registered = localStorage.getItem('b2b_user_registration');
-        if (registered) {
+        const currentEmail = localStorage.getItem('streak_email');
+        const isVerifiedLocal = localStorage.getItem('b2b_user_verified') === 'true';
+
+        // 1. User đã đăng ký VÀ email đã xác thực -> Vẫn giữ flow cũ là ebook tải trực tiếp về máy
+        if (currentEmail && isVerifiedLocal) {
             triggerDownload(ebook);
-        } else {
-            downloadEbookTitle.textContent = ebook.title;
-            downloadModal.classList.remove('hidden');
+            return;
         }
+
+        // 2. User đã đăng ký (email chưa xác thực) HOẶC User mới vào mục này lần đầu -> Bắt buộc gửi ebook qua email để tự tải về & xác thực email
+        currentSelectedEbook = ebook;
+        downloadEbookTitle.textContent = ebook.title;
+
+        const modalTitleEl = document.querySelector('#download-modal .modal-title');
+        const modalNoticeEl = document.getElementById('download-modal-notice');
+        const submitBtn = downloadForm ? downloadForm.querySelector('button[type="submit"]') : null;
+
+        if (currentEmail) {
+            // User đã đăng ký nhưng chưa xác thực
+            regEmail.value = currentEmail;
+            regFirstName.value = localStorage.getItem('streak_name') || '';
+            regEmail.readOnly = true;
+            if (modalTitleEl) modalTitleEl.textContent = "Nhận Ebook & Kích Hoạt Tài Khoản";
+            if (modalNoticeEl) modalNoticeEl.innerHTML = `💡 Email <strong>${currentEmail}</strong> chưa được xác thực. Cú BeeDee sẽ gửi link tải Ebook trực tiếp qua email của bạn kèm link kích hoạt (+15đ ⚡).`;
+            if (submitBtn) submitBtn.textContent = "📨 Gửi Ebook Đến Email Của Tôi ➔";
+        } else {
+            // User mới lần đầu
+            regEmail.value = '';
+            regFirstName.value = '';
+            regEmail.readOnly = false;
+            if (modalTitleEl) modalTitleEl.textContent = "Đăng Ký Nhận Ebook Qua Email";
+            if (modalNoticeEl) modalNoticeEl.innerHTML = `💡 Ebook sẽ được gửi tự động qua email của bạn kèm link xác thực kích hoạt tài khoản (+15đ ⚡).`;
+            if (submitBtn) submitBtn.textContent = "📨 Gửi Ebook Đến Email & Xác Thực ➔";
+        }
+
+        downloadModal.classList.remove('hidden');
     }
 
     function triggerDownload(ebook) {
@@ -740,17 +769,18 @@ document.addEventListener('DOMContentLoaded', () => {
             submitBtn.textContent = 'Đang kiểm tra...';
         }
 
-        // Sync lead name, email & metadata to Google Sheets backend endpoint
+        // Sync lead and send ebook verification email via backend
         fetch('/api/log-email', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-                action: 'syncUser',
+                action: 'sendEbookVerificationEmail',
                 name: firstName,
                 email: email,
                 tool: 'ebook-download',
                 experience: experience,
                 ebookTitle: ebookTitle,
+                fileUrl: currentSelectedEbook ? currentSelectedEbook.fileUrl : 'ebooks/Quy trình hưởng trợ cấp thất nghiệp.pdf',
                 downloadLink: downloadLink
             })
         })
@@ -758,7 +788,7 @@ document.addEventListener('DOMContentLoaded', () => {
         .then(data => {
             if (submitBtn) {
                 submitBtn.disabled = false;
-                submitBtn.textContent = 'Đăng Ký & Tải Xuống';
+                submitBtn.textContent = '📨 Gửi Ebook Đến Email Của Tôi ➔';
             }
             if (data.error === 'email_already_used') {
                 alert('Email này đã được dùng để tải Ebook trước đây. Bạn cần tham gia Mini Game hoặc Cộng đồng BD để tích điểm mở khóa Ebook mới!');
@@ -774,48 +804,62 @@ document.addEventListener('DOMContentLoaded', () => {
                     limitModalDesc.textContent = "Email này đã nhận Ebook chào mừng. Để tải Ebook tiếp theo, vui lòng tham gia Mini Game hoặc Cộng Đồng BD để tích lũy điểm mở khóa nhé!";
                 }
                 limitModal.classList.remove('hidden');
-            } else {
-                // Success: Register user locally and establish session
-                const uid = data.userId || (data.user && data.user.id) || 'UID_' + Math.random().toString(36).substr(2, 9).toUpperCase();
-                const userName = firstName || (data.user && data.user.name) || 'Học viên';
-                const userPoints = (data.user && data.user.points) || data.points || 25;
-                
-                localStorage.setItem('streak_email', email);
-                localStorage.setItem('streak_name', userName);
-                localStorage.setItem('streak_user_id', uid);
-                localStorage.setItem('b2b_points_balance', userPoints.toString());
-                if (data.user && data.user.verified) {
-                    localStorage.setItem('b2b_user_verified', 'true');
-                }
-                
-                const registrationData = {
-                    firstName: userName,
-                    email,
-                    experience: experience,
-                    registeredAt: new Date().toISOString()
-                };
-                localStorage.setItem('b2b_user_registration', JSON.stringify(registrationData));
+                return;
+            }
+
+            const uid = data.userId || (data.user && data.user.id) || 'UID_' + Math.random().toString(36).substr(2, 9).toUpperCase();
+            const userName = firstName || (data.user && data.user.name) || 'Học viên';
+            const userPoints = (data.user && data.user.points) || data.points || 25;
+            const isVerified = data.verified || (data.user && data.user.verified) || data.allowDirectDownload;
+
+            localStorage.setItem('streak_email', email);
+            localStorage.setItem('streak_name', userName);
+            localStorage.setItem('streak_user_id', uid);
+            localStorage.setItem('b2b_points_balance', userPoints.toString());
+
+            const registrationData = {
+                firstName: userName,
+                email,
+                experience: experience,
+                registeredAt: new Date().toISOString()
+            };
+            localStorage.setItem('b2b_user_registration', JSON.stringify(registrationData));
+
+            if (isVerified) {
+                // User is already verified: allow direct browser download immediately
+                localStorage.setItem('b2b_user_verified', 'true');
                 localStorage.setItem('b2b_has_downloaded_before', 'true');
-                
                 if (window.updateNavbarUserHUD) {
                     window.updateNavbarUserHUD();
                 }
-                if (window.trackUserBehavior) {
-                    window.trackUserBehavior('ebook_lead_download', `Ebook: ${ebookTitle} | Email: ${email}`);
-                }
-                
                 closeDownloadModal();
                 if (currentSelectedEbook) {
                     triggerDownload(currentSelectedEbook);
                 }
-                showToast(`🎉 Đăng ký thành công! Đang tải cuốn "${ebookTitle}" về máy.`);
+                showToast(`🎉 Tài khoản đã xác thực! Đang tải cuốn "${ebookTitle}" về máy.`);
+            } else {
+                // User is unverified or new: do NOT direct download, send via email
+                localStorage.setItem('b2b_user_verified', 'false');
+                if (window.updateNavbarUserHUD) {
+                    window.updateNavbarUserHUD();
+                }
+                if (window.trackUserBehavior) {
+                    window.trackUserBehavior('ebook_sent_to_email', `Ebook: ${ebookTitle} | Email: ${email}`);
+                }
+                closeDownloadModal();
+
+                // Show clear instruction modal
+                window.showGlobalNotification(
+                    '✉️ Ebook Đang Đến Hộp Thư Của Bạn!',
+                    `Cú BeeDee vừa gửi cuốn <strong>${ebookTitle}</strong> đến địa chỉ email <strong>${email}</strong>.<br><br>👉 <strong>Bước tiếp theo:</strong> Vui lòng mở hộp thư email (hoặc mục <em>Spam / Thư rác</em>) và nhấn nút <strong>"Xác Thực & Tải Ebook"</strong> trong thư để kích hoạt tài khoản (+<strong>15đ ⚡</strong>) và tự động tải Ebook về máy nhé!`
+                );
             }
         })
         .catch(err => {
             console.error(err);
             if (submitBtn) {
                 submitBtn.disabled = false;
-                submitBtn.textContent = 'Đăng Ký & Tải Xuống';
+                submitBtn.textContent = '📨 Gửi Ebook Đến Email Của Tôi ➔';
             }
             // Fallback success
             localStorage.setItem('streak_email', email);
@@ -827,14 +871,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 registeredAt: new Date().toISOString()
             };
             localStorage.setItem('b2b_user_registration', JSON.stringify(registrationData));
-            localStorage.setItem('b2b_has_downloaded_before', 'true');
             if (window.updateNavbarUserHUD) {
                 window.updateNavbarUserHUD();
             }
             closeDownloadModal();
-            if (currentSelectedEbook) {
-                triggerDownload(currentSelectedEbook);
-            }
+            window.showGlobalNotification(
+                '✉️ Ebook Đang Đến Hộp Thư Của Bạn!',
+                `Cú BeeDee đã ghi nhận thông tin và gửi cuốn <strong>${ebookTitle}</strong> đến địa chỉ email <strong>${email}</strong>.<br><br>👉 Vui lòng mở hộp thư email để xác thực tài khoản và tải Ebook về máy nhé!`
+            );
         });
     });
 

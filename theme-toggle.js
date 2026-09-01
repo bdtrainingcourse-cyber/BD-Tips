@@ -1597,6 +1597,9 @@ function initEmailRegistrations() {
 async function checkEmailVerification() {
     const urlParams = new URLSearchParams(window.location.search);
     const verifyEmail = urlParams.get('verify_email');
+    const downloadFile = urlParams.get('download_file');
+    const ebookTitle = urlParams.get('ebook_title');
+
     if (verifyEmail) {
         try {
             const res = await fetch(`/api/log-email?action=verifyUser&email=${encodeURIComponent(verifyEmail)}`);
@@ -1608,12 +1611,32 @@ async function checkEmailVerification() {
                 localStorage.setItem('streak_email', verifyEmail);
                 localStorage.setItem('b2b_points_balance', data.points.toString());
                 localStorage.setItem('b2b_user_verified', 'true');
+                localStorage.setItem('b2b_has_downloaded_before', 'true');
                 
-                // Show notification modal
-                window.showGlobalNotification(
-                    '🎉 Xác Thực Thành Công!',
-                    `Cảm ơn bạn đã xác nhận tham gia! Email <strong>${verifyEmail}</strong> của bạn đã được kích hoạt chính thức.<br><br>Cú BeeDee vừa cộng thêm <strong>15đ ⚡</strong> vào tài khoản tích lũy của bạn.`
-                );
+                // If this verification came from an Ebook download link
+                if (downloadFile) {
+                    const decodedTitle = ebookTitle ? decodeURIComponent(ebookTitle) : 'Ebook B2B BD';
+                    window.showGlobalNotification(
+                        '🎉 Xác Thực Thành Công & Tải Ebook!',
+                        `Cảm ơn bạn! Email <strong>${verifyEmail}</strong> của bạn đã được xác thực chính thức (+<strong>15đ ⚡</strong>).<br><br>Cuốn Ebook <strong>${decodedTitle}</strong> đang được tự động tải về thiết bị của bạn!`
+                    );
+
+                    // Trigger automatic browser file download
+                    setTimeout(() => {
+                        const link = document.createElement('a');
+                        link.href = downloadFile;
+                        link.download = downloadFile.split('/').pop();
+                        document.body.appendChild(link);
+                        link.click();
+                        document.body.removeChild(link);
+                    }, 1000);
+                } else {
+                    // Show standard verification notification modal
+                    window.showGlobalNotification(
+                        '🎉 Xác Thực Thành Công!',
+                        `Cảm ơn bạn đã xác nhận tham gia! Email <strong>${verifyEmail}</strong> của bạn đã được kích hoạt chính thức.<br><br>Cú BeeDee vừa cộng thêm <strong>15đ ⚡</strong> vào tài khoản tích lũy của bạn.`
+                    );
+                }
                 
                 // Trigger points toast
                 if (window.showPointToast) {
@@ -1628,8 +1651,10 @@ async function checkEmailVerification() {
         } catch (e) {
             console.error('Lỗi xác thực email:', e);
         } finally {
-            // Remove verify_email query param from URL without reloading
+            // Remove verification query params from URL without reloading
             urlParams.delete('verify_email');
+            urlParams.delete('download_file');
+            urlParams.delete('ebook_title');
             const newQuery = urlParams.toString();
             const newUrl = window.location.pathname + (newQuery ? '?' + newQuery : '') + window.location.hash;
             window.history.replaceState(null, null, newUrl);

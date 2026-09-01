@@ -34,8 +34,11 @@ function doPost(e) {
     // Route actions
     if (action === "checkEmail") {
       return checkEmail(email, name);
-    } else if (action === "syncUser" || postData.tool === "daily-reminder" || postData.tool === "ebook-download" || postData.tool === "exit-intent-ebook") {
+    } else if (action === "syncUser" || postData.tool === "daily-reminder" || postData.tool === "exit-intent-ebook") {
       return syncUser(postData);
+    } else if (action === "sendEbookVerificationEmail" || postData.tool === "ebook-download") {
+      syncUser(postData);
+      return sendEbookVerificationEmail(email, name, postData.ebookTitle, postData.fileUrl || postData.downloadLink);
     } else if (action === "verifyUser" || postData.tool === "email-verification") {
       return verifyUser(email, postData.points);
     } else if (action === "updatePoints") {
@@ -436,6 +439,28 @@ function sendForgotPasswordEmail(email, name, resetToken) {
     });
     return createJsonResponse({ success: true });
   } catch (err) {
+    return createJsonResponse({ success: false, error: err.message });
+  }
+}
+
+function sendEbookVerificationEmail(email, name, ebookTitle, fileUrl) {
+  try {
+    const title = ebookTitle || "Cẩm nang B2B BD Thực Chiến";
+    const downloadPath = fileUrl || "ebooks/Quy trình hưởng trợ cấp thất nghiệp.pdf";
+    const verificationUrl = "https://bd-tips.vercel.app/library.html?verify_email=" + encodeURIComponent(email) + "&download_file=" + encodeURIComponent(downloadPath) + "&ebook_title=" + encodeURIComponent(title);
+    const subject = "📚 [Ebook BD] " + title + " & Kích hoạt nhận 15đ tích lũy";
+    const message = "Chào bác <b>" + name + "</b>,<br><br>Cú BeeDee gửi bác cuốn tài liệu/Ebook thực chiến: <b>" + title + "</b>.<br><br>Vui lòng nhấp vào nút bên dưới để <b>Xác thực tài khoản (+15đ ⚡)</b> và <b>Tự động tải Ebook về máy</b> của bác ngay nhé:";
+    
+    const bodyHtml = getHtmlEmailTemplate(message, "Xác Thực & Tải Ebook Ngay", verificationUrl, "https://bd-tips.vercel.app/mascot_quests.jpg", name);
+    
+    MailApp.sendEmail({
+      to: email,
+      subject: subject,
+      htmlBody: bodyHtml
+    });
+    return createJsonResponse({ success: true, message: "Ebook verification email sent to " + email });
+  } catch (err) {
+    Logger.log("Failed to send ebook verification email: " + err.message);
     return createJsonResponse({ success: false, error: err.message });
   }
 }
