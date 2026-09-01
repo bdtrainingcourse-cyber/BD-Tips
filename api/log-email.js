@@ -680,7 +680,7 @@ module.exports = async (req, res) => {
     let payload = {};
     if (action === 'sendEbookVerificationEmail' || tool === 'ebook-download') {
       payload = {
-        action: 'sendEbookVerificationEmail',
+        action: 'syncUser',
         userId: localUser.id,
         name: name || localUser.name,
         email,
@@ -747,6 +747,7 @@ module.exports = async (req, res) => {
         emailSent: true,
         userId: localUser.id,
         points: localUser.points,
+        sheetsResponse: resText,
         user: {
           id: localUser.id,
           email: localUser.email,

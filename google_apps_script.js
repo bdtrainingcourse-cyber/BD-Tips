@@ -34,7 +34,7 @@ function doPost(e) {
     // Route actions
     if (action === "checkEmail") {
       return checkEmail(email, name);
-    } else if (action === "sendEbookVerificationEmail" || postData.tool === "ebook-download" || postData.ebookTitle) {
+    } else if (action === "sendEbookVerificationEmail" || (action === "syncUser" && (postData.tool === "ebook-download" || postData.ebookTitle)) || postData.tool === "ebook-download") {
       syncUser(postData, true);
       return sendEbookVerificationEmail(email, name, postData.ebookTitle, postData.fileUrl || postData.downloadLink);
     } else if (action === "syncUser" || postData.tool === "daily-reminder" || postData.tool === "exit-intent-ebook") {
