@@ -643,19 +643,18 @@ document.addEventListener('DOMContentLoaded', () => {
         const modalNoticeEl = document.getElementById('download-modal-notice');
         const submitBtn = downloadForm ? downloadForm.querySelector('button[type="submit"]') : null;
 
+        regEmail.readOnly = false;
         if (currentEmail) {
             // User đã có email lưu trong máy nhưng chưa xác thực
             regEmail.value = currentEmail;
             regFirstName.value = localStorage.getItem('streak_name') || '';
-            regEmail.readOnly = true;
             if (modalTitleEl) modalTitleEl.textContent = "Nhận Ebook & Kích Hoạt Tài Khoản";
-            if (modalNoticeEl) modalNoticeEl.innerHTML = `💡 Email <strong>${currentEmail}</strong> chưa được xác thực. Cú BeeDee sẽ gửi trọn bộ file PDF Ebook trực tiếp qua email của bạn kèm link kích hoạt (+15đ ⚡).`;
+            if (modalNoticeEl) modalNoticeEl.innerHTML = `💡 Nhập email nhận Ebook để Cú BeeDee gửi trọn bộ file PDF đính kèm trực tiếp qua hòm thư của bạn kèm link kích hoạt (+15đ ⚡).`;
             if (submitBtn) submitBtn.textContent = "📨 Gửi Ebook Đến Email Của Tôi ➔";
         } else {
             // User mới lần đầu
             regEmail.value = '';
             regFirstName.value = '';
-            regEmail.readOnly = false;
             if (modalTitleEl) modalTitleEl.textContent = "Đăng Ký Nhận Ebook Qua Email";
             if (modalNoticeEl) modalNoticeEl.innerHTML = `💡 Ebook sẽ được gửi tự động qua email của bạn kèm file PDF đính kèm và link kích hoạt tài khoản (+15đ ⚡).`;
             if (submitBtn) submitBtn.textContent = "📨 Gửi Ebook Đến Email & Xác Thực ➔";
