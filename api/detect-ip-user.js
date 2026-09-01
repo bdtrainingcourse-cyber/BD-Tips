@@ -1,7 +1,4 @@
-const { readUsers } = require('./_db-helper');
-
 module.exports = async (req, res) => {
-  // Set CORS headers
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
@@ -10,58 +7,6 @@ module.exports = async (req, res) => {
     return res.status(200).end();
   }
 
-  const clientIp = req.headers['x-forwarded-for'] || req.socket.remoteAddress || '';
-  const users = readUsers();
-  const userList = Object.values(users);
-
-  if (!clientIp || clientIp === '127.0.0.1' || clientIp === '::1') {
-    // For local development testing, we can optionally mock detection by pairing with the most recently logged in user
-    if (userList.length > 0) {
-      // Find the most recently active user
-      let latestUser = null;
-      let latestTime = 0;
-      for (const user of userList) {
-        const time = new Date(user.lastActive || 0).getTime();
-        if (time > latestTime) {
-          latestTime = time;
-          latestUser = user;
-        }
-      }
-      if (latestUser && latestUser.verified && (Date.now() - latestTime < 10 * 60 * 1000)) { // 10 minutes limit for local mockup testing
-        return res.status(200).json({ found: true, user: {
-          id: latestUser.id || '',
-          email: latestUser.email,
-          name: latestUser.name,
-          points: latestUser.points,
-          avatar: latestUser.avatar
-        }});
-      }
-    }
-    return res.status(200).json({ found: false });
-  }
-
-  const now = Date.now();
-  let matchedUser = null;
-
-  for (const user of userList) {
-    if (user.lastIp === clientIp && user.verified) {
-      const activeTime = new Date(user.lastActive || 0).getTime();
-      if (now - activeTime < 24 * 60 * 60 * 1000) { // 24h window
-        matchedUser = {
-          id: user.id || '',
-          email: user.email,
-          name: user.name,
-          points: user.points,
-          avatar: user.avatar
-        };
-        break;
-      }
-    }
-  }
-
-  if (matchedUser) {
-    return res.status(200).json({ found: true, user: matchedUser });
-  }
-
+  // Always return found: false to avoid stale IP auto-logins reviving deleted users
   return res.status(200).json({ found: false });
 };

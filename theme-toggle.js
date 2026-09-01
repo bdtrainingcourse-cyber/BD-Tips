@@ -145,54 +145,68 @@ const initThemeToggle = () => {
         }, 1200);
     }
 
-    // Auto Welcome Back and IP detection on load
+    // Auto Session Validation & Google Sheets SSOT Verification on load
     const currentRegEmail = localStorage.getItem('streak_email');
-    const welcomed = sessionStorage.getItem('bd_session_welcomed') === 'true';
-    
     if (currentRegEmail) {
-        if (!welcomed) {
-            sessionStorage.setItem('bd_session_welcomed', 'true');
-            const name = localStorage.getItem('streak_name') || 'Chiến thần';
-            const points = localStorage.getItem('b2b_points_balance') || '0';
-            setTimeout(() => {
-                window.showGlobalNotification(
-                    '🦉 Chào Mừng Quay Trở Lại!',
-                    `Chào mừng <strong>${name}</strong> quay trở lại với BD Bình Dân Học Vụ!<br><br>Số điểm tích lũy hiện tại của bạn: <strong>${points}đ ⚡</strong>.`
-                );
-            }, 1000);
-        }
-    } else {
-        // IP-based Device Sync Auto-Detection
-        setTimeout(async () => {
-            try {
-                const res = await fetch('/api/detect-ip-user');
-                const data = await res.json();
-                if (data.found && data.user) {
-                    // Auto login and sync under the hood
-                    localStorage.setItem('streak_active', 'true');
-                    localStorage.setItem('streak_name', data.user.name);
-                    localStorage.setItem('streak_email', data.user.email);
-                    localStorage.setItem('b2b_points_balance', data.user.points.toString());
-                    localStorage.setItem('b2b_user_verified', 'true');
-                    if (data.user.avatar) localStorage.setItem('b2b_custom_avatar', data.user.avatar);
-                    if (data.user.experience) localStorage.setItem('profile_experience', data.user.experience);
-                    if (data.user.industry) localStorage.setItem('profile_industry', data.user.industry);
-                    if (data.user.skill) localStorage.setItem('profile_skill', data.user.skill);
+        // Validate with Google Sheets via checkEmail
+        fetch(`/api/log-email?action=checkEmail&email=${encodeURIComponent(currentRegEmail)}`)
+            .then(res => res.json())
+            .then(data => {
+                if (data.exists === false) {
+                    // User was deleted from Google Sheets: Purge local session completely!
+                    localStorage.removeItem('streak_email');
+                    localStorage.removeItem('streak_name');
+                    localStorage.removeItem('streak_user_id');
+                    localStorage.removeItem('streak_active');
+                    localStorage.removeItem('b2b_user_verified');
+                    localStorage.removeItem('b2b_points_balance');
+                    localStorage.removeItem('b2b_has_downloaded_before');
+                    localStorage.removeItem('b2b_daily_downloads');
+                    localStorage.removeItem('profile_experience');
+                    localStorage.removeItem('profile_industry');
+                    localStorage.removeItem('profile_skill');
+                    localStorage.removeItem('b2b_custom_avatar');
+                    localStorage.removeItem('b2b_ip_autologin');
+                    sessionStorage.removeItem('bd_session_welcomed');
+                    if (window.updateNavbarUserHUD) {
+                        window.updateNavbarUserHUD();
+                    }
+                    if (window.updateUIElements) {
+                        window.updateUIElements();
+                    }
+                } else if (data.exists && data.user) {
+                    // Sync verified status & points from Google Sheets
+                    if (data.user.id) localStorage.setItem('streak_user_id', data.user.id);
+                    if (data.user.name && data.user.name !== 'Khách' && data.user.name !== 'Học viên') {
+                        localStorage.setItem('streak_name', data.user.name);
+                    }
+                    if (data.user.verified) {
+                        localStorage.setItem('b2b_user_verified', 'true');
+                    } else {
+                        localStorage.removeItem('b2b_user_verified');
+                    }
+                    if (data.user.points !== undefined) {
+                        localStorage.setItem('b2b_points_balance', data.user.points.toString());
+                    }
+                    if (window.updateNavbarUserHUD) {
+                        window.updateNavbarUserHUD();
+                    }
                     
-                    sessionStorage.setItem('bd_session_welcomed', 'true');
-                    updateNavbarUserHUD();
-                    updateUIElements();
-                    
-                    window.showGlobalNotification(
-                        '🔄 Chào Mừng Quay Trở Lại!',
-                        `Chào mừng <strong>${data.user.name}</strong> quay trở lại B2B BD!<br><br>Hệ thống nhận diện Wi-Fi đã tự động đồng bộ tài khoản <strong>${data.user.email}</strong> và số điểm tích lũy <strong>${data.user.points}đ ⚡</strong> của bạn.`
-                    );
-                    window.trackUserBehavior('device_sync_ip_auto', 'Auto-Sync via IP');
+                    const welcomed = sessionStorage.getItem('bd_session_welcomed') === 'true';
+                    if (!welcomed && data.user.verified) {
+                        sessionStorage.setItem('bd_session_welcomed', 'true');
+                        const name = localStorage.getItem('streak_name') || data.user.name || 'Chiến thần';
+                        const points = data.user.points || 0;
+                        setTimeout(() => {
+                            window.showGlobalNotification(
+                                '🦉 Chào Mừng Quay Trở Lại!',
+                                `Chào mừng <strong>${name}</strong> quay trở lại với BD Bình Dân Học Vụ!<br><br>Số điểm tích lũy hiện tại của bạn: <strong>${points}đ ⚡</strong>.`
+                            );
+                        }, 1000);
+                    }
                 }
-            } catch (e) {
-                console.warn('IP detect sync error:', e);
-            }
-        }, 1500);
+            })
+            .catch(err => console.warn('Session check error:', err));
     }
 
     // Mobile Hamburger Menu Toggle
@@ -533,37 +547,8 @@ function showQuestWelcomeBanner() {
 }
 
 async function checkIPAutoLogin() {
-    if (localStorage.getItem('streak_active') === 'true') return;
-    try {
-        const res = await fetch('/api/detect-ip-user');
-        const data = await res.json();
-        if (data.found && data.user) {
-            const user = data.user;
-            localStorage.setItem('streak_active', 'true');
-            if (user.id) localStorage.setItem('streak_user_id', user.id);
-            localStorage.setItem('streak_name', user.name);
-            localStorage.setItem('streak_email', user.email);
-            localStorage.setItem('b2b_points_balance', user.points.toString());
-            localStorage.setItem('b2b_user_verified', 'true');
-            if (user.avatar) localStorage.setItem('b2b_custom_avatar', user.avatar);
-            if (user.experience) localStorage.setItem('profile_experience', user.experience);
-            if (user.industry) localStorage.setItem('profile_industry', user.industry);
-            if (user.skill) localStorage.setItem('profile_skill', user.skill);
-            
-            // Mark as auto-logged in via IP (needs password verification for sensitive actions)
-            localStorage.setItem('b2b_ip_autologin', 'true');
-            
-            updateNavbarUserHUD();
-            updateUIElements();
-            
-            window.showGlobalNotification(
-                '⚡ Đăng Nhập Tự Động Thành Công',
-                `Chào mừng quay trở lại <strong>${user.name}</strong>! Cú BeeDee nhận diện thiết bị đáng tin cậy qua IP và đã tự động đồng bộ điểm tích lũy <strong>${user.points}đ ⚡</strong> cho bạn.`
-            );
-        }
-    } catch (e) {
-        console.warn('IP auto-login check failed:', e);
-    }
+    // Disabled to respect deleted user status and treat guest as new user until explicit login/registration
+    return;
 }
 
 function checkQuestsOnLoad() {
