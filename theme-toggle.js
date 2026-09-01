@@ -1599,6 +1599,9 @@ async function checkEmailVerification() {
     const verifyEmail = urlParams.get('verify_email');
     const downloadFile = urlParams.get('download_file');
     const ebookTitle = urlParams.get('ebook_title');
+    const utmSource = urlParams.get('utm_source');
+    const utmCampaign = urlParams.get('utm_campaign');
+    const utmContent = urlParams.get('utm_content');
 
     if (verifyEmail) {
         try {
@@ -1613,11 +1616,18 @@ async function checkEmailVerification() {
                 localStorage.setItem('b2b_user_verified', 'true');
                 localStorage.setItem('b2b_has_downloaded_before', 'true');
                 
+                // Track UTM attribution
+                if (utmSource || utmCampaign) {
+                    if (window.trackUserBehavior) {
+                        window.trackUserBehavior('ebook_email_button_verified', `Campaign: ${utmCampaign || 'ebook_download'} | Content: ${utmContent || ebookTitle || ''}`);
+                    }
+                }
+                
                 // If this verification came from an Ebook download link
                 if (downloadFile) {
                     const decodedTitle = ebookTitle ? decodeURIComponent(ebookTitle) : 'Ebook B2B BD';
                     window.showGlobalNotification(
-                        '🎉 Xác Thực Thành Công & Tải Ebook!',
+                        '🎉 Xác Thực Thành Công & Đang Mở Ebook!',
                         `Cảm ơn bạn! Email <strong>${verifyEmail}</strong> của bạn đã được xác thực chính thức (+<strong>15đ ⚡</strong>).<br><br>Cuốn Ebook <strong>${decodedTitle}</strong> đang được tự động tải về thiết bị của bạn!`
                     );
 
@@ -1655,6 +1665,10 @@ async function checkEmailVerification() {
             urlParams.delete('verify_email');
             urlParams.delete('download_file');
             urlParams.delete('ebook_title');
+            urlParams.delete('utm_source');
+            urlParams.delete('utm_medium');
+            urlParams.delete('utm_campaign');
+            urlParams.delete('utm_content');
             const newQuery = urlParams.toString();
             const newUrl = window.location.pathname + (newQuery ? '?' + newQuery : '') + window.location.hash;
             window.history.replaceState(null, null, newUrl);

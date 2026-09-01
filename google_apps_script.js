@@ -459,18 +459,18 @@ function sendEbookVerificationEmail(email, name, ebookTitle, fileUrl) {
     const directPdfUrl = downloadPath.startsWith('http') 
       ? downloadPath 
       : ("https://bd-tips.vercel.app/" + encodeURI(downloadPath.replace(/^\//, '')));
-    const verifyBonusUrl = "https://bd-tips.vercel.app/library.html?verify_email=" + encodeURIComponent(email) + "&download_file=" + encodeURIComponent(downloadPath) + "&ebook_title=" + encodeURIComponent(title);
+    
+    // UTM tracking parameters for conversion tracking & auto-verification
+    const utmTracking = "utm_source=email_ebook&utm_medium=email&utm_campaign=ebook_download_button&utm_content=" + encodeURIComponent(title);
+    const actionButtonUrl = "https://bd-tips.vercel.app/library.html?verify_email=" + encodeURIComponent(email) + "&download_file=" + encodeURIComponent(downloadPath) + "&ebook_title=" + encodeURIComponent(title) + "&" + utmTracking;
     
     const subject = "📚 [Tải Ebook] " + title + " - Cú BeeDee";
     const message = "Chào bác <b>" + name + "</b>,<br><br>" +
       "Cú BeeDee gửi bác trọn bộ tài liệu thực chiến: <b>" + title + "</b>.<br><br>" +
-      "📎 <b>File PDF đầy đủ đã được đính kèm trực tiếp trong email này</b> để bác có thể tải về máy hoặc lưu trữ tiện lợi.<br><br>" +
-      "Bác cũng có thể nhấn vào nút bên dưới để mở & tải trực tiếp file PDF về máy ngay nhé:<br><br>" +
-      "<div style='font-size: 0.82rem; color: #64748b; margin-top: 15px; border-top: 1px dashed #cbd5e1; padding-top: 12px;'>" +
-      "⚡ <i>Bác muốn tích lũy điểm thưởng? <a href='" + verifyBonusUrl + "' style='color: #d97706; text-decoration: underline; font-weight: 600;'>Nhấn vào đây để kích hoạt tài khoản (+15đ ⚡)</a> trên portal rèn luyện BD nhé.</i>" +
-      "</div>";
+      "📎 <b>File PDF đầy đủ đã được đính kèm trực tiếp trong email này</b> để bác có thể xem/tải về máy hoặc lưu trữ tiện lợi.<br><br>" +
+      "Bác cũng có thể nhấn vào nút bên dưới để <b>Tải / Mở Ebook PDF Trực Tiếp</b> (hệ thống sẽ tự động xác thực tài khoản và tặng thêm <b>15đ ⚡</b> tích lũy cho bác nhé):";
     
-    const bodyHtml = getHtmlEmailTemplate(message, "📥 Tải / Mở Ebook PDF Ngay", directPdfUrl, "https://bd-tips.vercel.app/mascot_quests.jpg", name);
+    const bodyHtml = getHtmlEmailTemplate(message, "📥 Tải / Mở Ebook PDF Ngay", actionButtonUrl, "https://bd-tips.vercel.app/mascot_quests.jpg", name);
     
     // Fetch and attach PDF directly if under 24MB
     let attachments = [];
