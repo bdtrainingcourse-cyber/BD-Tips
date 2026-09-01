@@ -192,9 +192,22 @@
       "fileUrl": "ebooks/Scale Up Yourself.pdf",
       "coverImage": "ebook-covers/cover-scale-up.png",
       "fileSize": "4.6 MB",
-      "badge": "New Release",
+      "badge": "Scale Up 2026",
       "icon": "🚀",
       "downloads": 128
+    },
+    {
+      "id": "ebook-tro-cap-that-nghiep",
+      "title": "Quy Trình Hưởng Trợ Cấp Thất Nghiệp",
+      "description": "Cẩm nang hướng dẫn chi tiết từng bước thủ tục, điều kiện hưởng, hồ sơ pháp lý và mốc thời gian nhận trợ cấp thất nghiệp chuẩn xác theo luật lao động.",
+      "author": "Peter Vo",
+      "date": "2026-09-01",
+      "fileUrl": "ebooks/Quy trình hưởng trợ cấp thất nghiệp.pdf",
+      "coverImage": "ebook-covers/cover-tro-cap-that-nghiep.png",
+      "fileSize": "13.9 MB",
+      "badge": "Hot New 2026",
+      "icon": "📋",
+      "downloads": 168
     }
   ],
   "glossary": [
