@@ -6475,7 +6475,28 @@ if (document.readyState === 'loading') {
         
         if (window.location.pathname.endsWith('index.html') || window.location.pathname === '/' || window.location.pathname.endsWith('/')) {
             window.history.pushState({}, '', targetUrl);
-            checkPvPChallenge();
+            
+            // Scroll to the minigame section directly
+            const sec = document.getElementById('minigame-section');
+            if (sec) {
+                sec.scrollIntoView({ behavior: 'smooth' });
+            }
+            
+            // Open the game directly
+            const targetGameIdx = games.findIndex(g => g.id === usr.gameId);
+            if (targetGameIdx !== -1) {
+                selectGame(targetGameIdx);
+            }
+            
+            // Show the notification directly
+            if (window.showGlobalNotification) {
+                window.showGlobalNotification(
+                    '⚔️ NHẬN LỜI KHIÊU CHIẾN PVP!',
+                    `Bác đã nhận lời thách đấu từ <strong>${usr.name}</strong> (${usr.mascot})!<br><br>Hãy nhấn <strong>Bắt Đầu Chơi</strong> để quyết chiến và vượt qua mốc <strong>${usr.points} điểm</strong> nhé!`
+                );
+            } else {
+                alert(`⚔️ LỜI KHIÊU CHIẾN PVP: Bác nhận được lời thách đấu từ ${usr.name} (${usr.mascot}). Vượt qua mốc ${usr.points} điểm nhé bác!`);
+            }
         } else {
             window.location.href = targetUrl;
         }
