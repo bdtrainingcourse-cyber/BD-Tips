@@ -3721,8 +3721,28 @@ const initB2BApp = () => {
         const key = gameId.replace('game-', '');
         arcadeCurrentLevel = parseInt(localStorage.getItem(`b2b_arcade_level_${key}`) || '1', 10);
 
+        const deviceType = window.innerWidth <= 768 ? 'mobile' : 'laptop/desktop';
         if (window.trackUserBehavior) {
-            window.trackUserBehavior('arcade_start', `Trò chơi: ${gameId} | Cấp độ hiện tại: ${arcadeCurrentLevel}`);
+            window.trackUserBehavior('arcade_thuc_chien_interaction', JSON.stringify({
+                utm_source: 'b2b_portal',
+                utm_medium: 'interactive_arcade',
+                utm_campaign: 'b2b_thuc_chien',
+                utm_content: gameId,
+                game_id: gameId,
+                level: arcadeCurrentLevel,
+                device: deviceType,
+                timestamp: new Date().toISOString()
+            }));
+        }
+        if (typeof window.gtag === 'function') {
+            window.gtag('event', 'arcade_thuc_chien_interaction', {
+                event_category: 'B2B_Arcade',
+                event_label: gameId,
+                device: deviceType,
+                utm_source: 'b2b_portal',
+                utm_medium: 'interactive_arcade',
+                utm_campaign: 'b2b_thuc_chien'
+            });
         }
 
         if (arcadeCurrentLevel > 12) {
@@ -6499,6 +6519,34 @@ if (document.readyState === 'loading') {
             const config = getBattleConfig(oppLevel, usr.baseSpeed);
             const playerName = localStorage.getItem('streak_name') || 'Bạn (Chiến Binh BD)';
             
+            const deviceType = window.innerWidth <= 768 ? 'mobile' : 'laptop/desktop';
+            if (window.trackUserBehavior) {
+                window.trackUserBehavior('pvp_khieu_chien_click', JSON.stringify({
+                    utm_source: 'b2b_portal',
+                    utm_medium: 'pvp_matchmaker',
+                    utm_campaign: 'khieu_chien_online',
+                    utm_content: usr.id,
+                    opponent_id: usr.id,
+                    opponent_name: usr.name,
+                    pvp_level: oppLevel,
+                    game_id: usr.gameId,
+                    device: deviceType,
+                    timestamp: new Date().toISOString()
+                }));
+            }
+            if (typeof window.gtag === 'function') {
+                window.gtag('event', 'pvp_khieu_chien_click', {
+                    event_category: 'PvP_Matchmaker',
+                    event_label: usr.name,
+                    opponent_id: usr.id,
+                    pvp_level: oppLevel,
+                    device: deviceType,
+                    utm_source: 'b2b_portal',
+                    utm_medium: 'pvp_matchmaker',
+                    utm_campaign: 'khieu_chien_online'
+                });
+            }
+            
             const quoteIdx = Math.min(oppLevel - 1, usr.quotes.length - 1);
             const currentQuote = usr.quotes[quoteIdx];
             
@@ -6623,6 +6671,20 @@ if (document.readyState === 'loading') {
         
         const oppLevel = level || getOpponentLevel(usr.id);
         const config = getBattleConfig(oppLevel, usr.baseSpeed);
+        
+        const deviceType = window.innerWidth <= 768 ? 'mobile' : 'laptop/desktop';
+        if (window.trackUserBehavior) {
+            window.trackUserBehavior('pvp_battle_start', JSON.stringify({
+                utm_source: 'b2b_portal',
+                utm_medium: 'pvp_arena',
+                utm_campaign: 'khieu_chien_online',
+                opponent_id: usr.id,
+                pvp_level: oppLevel,
+                game_id: usr.gameId,
+                device: deviceType,
+                timestamp: new Date().toISOString()
+            }));
+        }
         
         battleTimeLeft = config.timeLimit;
         playerProgress = 0;
@@ -7223,6 +7285,21 @@ if (document.readyState === 'loading') {
         if (!modal) return;
         
         const config = getBattleConfig(oppLevel, usr ? usr.baseSpeed : 9.0);
+        
+        const deviceType = window.innerWidth <= 768 ? 'mobile' : 'laptop/desktop';
+        if (window.trackUserBehavior) {
+            window.trackUserBehavior('pvp_battle_outcome', JSON.stringify({
+                utm_source: 'b2b_portal',
+                utm_medium: 'pvp_arena',
+                utm_campaign: 'khieu_chien_online',
+                outcome: isWin ? 'victory' : 'defeat',
+                opponent_id: usr ? usr.id : 'unknown',
+                pvp_level: oppLevel,
+                reward_points: isWin ? config.rewardPoints : 0,
+                device: deviceType,
+                timestamp: new Date().toISOString()
+            }));
+        }
         
         if (isWin) {
             // Level up opponent

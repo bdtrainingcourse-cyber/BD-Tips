@@ -327,7 +327,9 @@ function sendDailyEmailsSynchronously(data) {
             htmlBody: bodyHtml
           });
           sentCount++;
-          Utilities.sleep(1000); 
+          // Jitter delay between 1.5s - 3.5s to prevent Google burst spam detection
+          const jitterDelay = Math.floor(Math.random() * 2000) + 1500;
+          Utilities.sleep(jitterDelay); 
         } catch (err) {
           Logger.log("Failed to send daily email to " + email + ": " + err.message);
         }
@@ -345,7 +347,9 @@ function sendDailyEmailsSynchronously(data) {
             htmlBody: bodyHtml
           });
           sentCount++;
-          Utilities.sleep(1000); 
+          // Jitter delay between 1.5s - 3.5s to prevent Google burst spam detection
+          const jitterDelay = Math.floor(Math.random() * 2000) + 1500;
+          Utilities.sleep(jitterDelay); 
         } catch (err) {
           Logger.log("Failed to send verification reminder to " + email + ": " + err.message);
         }

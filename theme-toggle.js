@@ -2142,7 +2142,7 @@ function initGlobalComponents() {
     if (currentEmail) {
         window.trackUserBehavior('page_view', window.location.pathname);
 
-        // Verification validation check on load
+        // Verification validation check on load (Polite & Throttled)
         const isVerifiedLocal = localStorage.getItem('b2b_user_verified') === 'true';
         const hasUserId = !!localStorage.getItem('streak_user_id');
 
@@ -2159,19 +2159,28 @@ function initGlobalComponents() {
                         }
                         if (data.user.verified) {
                             localStorage.setItem('b2b_user_verified', 'true');
+                            return;
                         }
-                        // Only show notification reminder if they are actually not verified and didn't just get synced
+                        
+                        // Polite throttling: Only show reminder if not verified AND at least 24h passed since last reminder
                         if (!data.user.verified && !isVerifiedLocal) {
-                            window.showGlobalNotification(
-                                '✉️ Xác Thực Tài Khoản',
-                                `Tài khoản với email <strong>${currentEmail}</strong> của bạn chưa được xác thực.<br><br>Vui lòng kiểm tra hộp thư email (hoặc mục Thư rác/Spam) và click vào liên kết xác thực để kích hoạt tài khoản và tích lũy điểm thưởng.`
-                            );
+                            const lastShown = parseInt(localStorage.getItem('b2b_verify_prompt_last_shown') || '0', 10);
+                            const now = Date.now();
+                            const oneDayMs = 24 * 60 * 60 * 1000;
+                            
+                            if (now - lastShown > oneDayMs) {
+                                localStorage.setItem('b2b_verify_prompt_last_shown', now.toString());
+                                window.showGlobalNotification(
+                                    '✉️ Xác Thực Tài Khoản',
+                                    `Tài khoản với email <strong>${currentEmail}</strong> của bạn chưa được xác thực.<br><br>Vui lòng kiểm tra hộp thư email (hoặc mục Thư rác/Spam) và click vào liên kết xác thực để kích hoạt tài khoản và nhận ngay <strong>15đ ⚡</strong>.`
+                                );
+                            }
                         }
                     }
                 } catch (e) {
                     console.warn('Verification check failed:', e);
                 }
-            }, 2500); // 2.5 seconds delay on load
+            }, 4000); // Polite 4-second delay on load
         }
     }
 }
