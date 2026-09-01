@@ -82,13 +82,14 @@ async function validateEmail(email) {
 
 // Native HTTPS POST helper with 3s timeout
 function httpPost(url, body, maxRedirects = 5) {
-  if (url.includes('script.google.com') && process.env.B2B_SECRET_KEY) {
+  if (url.includes('script.google.com')) {
+    const secKey = process.env.B2B_SECRET_KEY || 'peters_secret_key_change_me_to_match_vercel';
     if (typeof body === 'object' && body !== null) {
-      body.secretKey = process.env.B2B_SECRET_KEY;
+      body.secretKey = secKey;
     } else if (typeof body === 'string') {
       try {
         const parsed = JSON.parse(body);
-        parsed.secretKey = process.env.B2B_SECRET_KEY;
+        parsed.secretKey = secKey;
         body = JSON.stringify(parsed);
       } catch (e) {}
     }
@@ -314,9 +315,10 @@ module.exports = async (req, res) => {
   }
 
   // If user profile is missing from Vercel's ephemeral memory, rehydrate it from Google Sheets
+  const DEFAULT_LEADS_WEBHOOK = 'https://script.google.com/macros/s/AKfycbxoedzECs5aC0eopiaQiFVqOSrLdwL-P17OBd_Vj3TDmMJ8-Q2H_MD-9dMOx0Jllpxf/exec';
   const webhookUrl = tool === 'course-registration' 
-    ? process.env.GOOGLE_SHEET_COURSE_WEBHOOK 
-    : process.env.GOOGLE_SHEET_LEADS_WEBHOOK;
+    ? (process.env.GOOGLE_SHEET_COURSE_WEBHOOK || DEFAULT_LEADS_WEBHOOK) 
+    : (process.env.GOOGLE_SHEET_LEADS_WEBHOOK || DEFAULT_LEADS_WEBHOOK);
 
   let sheetsResponseText = "";
   let debugError = "";

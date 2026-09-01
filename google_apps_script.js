@@ -10,15 +10,15 @@
  * 5. Copy the Web App URL and set it as GOOGLE_SHEET_LEADS_WEBHOOK in Vercel Environment Variables.
  */
 
-// CONFIGURATION: Set this key to match the B2B_SECRET_KEY in Vercel environment variables to secure your API.
-const B2B_SECRET_KEY = "peters_secret_key_change_me_to_match_vercel"; 
+// CONFIGURATION: Optional secret key (leave empty to allow all requests)
+const B2B_SECRET_KEY = ""; 
 
 function doPost(e) {
   try {
     const postData = JSON.parse(e.postData.contents);
     
-    // Security check
-    if (B2B_SECRET_KEY && B2B_SECRET_KEY !== "peters_secret_key_change_me_to_match_vercel") {
+    // Security check (only if explicitly configured with non-empty string)
+    if (B2B_SECRET_KEY && B2B_SECRET_KEY.trim() !== "") {
       if (postData.secretKey !== B2B_SECRET_KEY) {
         return ContentService.createTextOutput(JSON.stringify({
           success: false,
