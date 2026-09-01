@@ -456,18 +456,49 @@ function sendEbookVerificationEmail(email, name, ebookTitle, fileUrl) {
   try {
     const title = ebookTitle || "Cẩm nang B2B BD Thực Chiến";
     const downloadPath = fileUrl || "ebooks/Quy trình hưởng trợ cấp thất nghiệp.pdf";
-    const verificationUrl = "https://bd-tips.vercel.app/library.html?verify_email=" + encodeURIComponent(email) + "&download_file=" + encodeURIComponent(downloadPath) + "&ebook_title=" + encodeURIComponent(title);
-    const subject = "📚 [Ebook BD] " + title + " & Kích hoạt nhận 15đ tích lũy";
-    const message = "Chào bác <b>" + name + "</b>,<br><br>Cú BeeDee gửi bác cuốn tài liệu/Ebook thực chiến: <b>" + title + "</b>.<br><br>Vui lòng nhấp vào nút bên dưới để <b>Xác thực tài khoản (+15đ ⚡)</b> và <b>Tự động tải Ebook về máy</b> của bác ngay nhé:";
+    const directPdfUrl = downloadPath.startsWith('http') 
+      ? downloadPath 
+      : ("https://bd-tips.vercel.app/" + encodeURI(downloadPath.replace(/^\//, '')));
+    const verifyBonusUrl = "https://bd-tips.vercel.app/library.html?verify_email=" + encodeURIComponent(email) + "&download_file=" + encodeURIComponent(downloadPath) + "&ebook_title=" + encodeURIComponent(title);
     
-    const bodyHtml = getHtmlEmailTemplate(message, "Xác Thực & Tải Ebook Ngay", verificationUrl, "https://bd-tips.vercel.app/mascot_quests.jpg", name);
+    const subject = "📚 [Tải Ebook] " + title + " - Cú BeeDee";
+    const message = "Chào bác <b>" + name + "</b>,<br><br>" +
+      "Cú BeeDee gửi bác trọn bộ tài liệu thực chiến: <b>" + title + "</b>.<br><br>" +
+      "📎 <b>File PDF đầy đủ đã được đính kèm trực tiếp trong email này</b> để bác có thể tải về máy hoặc lưu trữ tiện lợi.<br><br>" +
+      "Bác cũng có thể nhấn vào nút bên dưới để mở & tải trực tiếp file PDF về máy ngay nhé:<br><br>" +
+      "<div style='font-size: 0.82rem; color: #64748b; margin-top: 15px; border-top: 1px dashed #cbd5e1; padding-top: 12px;'>" +
+      "⚡ <i>Bác muốn tích lũy điểm thưởng? <a href='" + verifyBonusUrl + "' style='color: #d97706; text-decoration: underline; font-weight: 600;'>Nhấn vào đây để kích hoạt tài khoản (+15đ ⚡)</a> trên portal rèn luyện BD nhé.</i>" +
+      "</div>";
     
-    MailApp.sendEmail({
+    const bodyHtml = getHtmlEmailTemplate(message, "📥 Tải / Mở Ebook PDF Ngay", directPdfUrl, "https://bd-tips.vercel.app/mascot_quests.jpg", name);
+    
+    // Fetch and attach PDF directly if under 24MB
+    let attachments = [];
+    try {
+      const response = UrlFetchApp.fetch(directPdfUrl, { muteHttpExceptions: true });
+      if (response.getResponseCode() === 200) {
+        const blob = response.getBlob();
+        if (blob.getBytes().length <= 24 * 1024 * 1024) {
+          const fileName = decodeURIComponent(downloadPath.split('/').pop() || (title + ".pdf"));
+          blob.setName(fileName);
+          attachments.push(blob);
+        }
+      }
+    } catch (fetchErr) {
+      Logger.log("Attachment fetch error (will use direct link button): " + fetchErr.message);
+    }
+    
+    const mailOptions = {
       to: email,
       subject: subject,
       htmlBody: bodyHtml
-    });
-    return createJsonResponse({ success: true, message: "Ebook verification email sent to " + email });
+    };
+    if (attachments.length > 0) {
+      mailOptions.attachments = attachments;
+    }
+    
+    MailApp.sendEmail(mailOptions);
+    return createJsonResponse({ success: true, message: "Ebook email with attachment sent to " + email });
   } catch (err) {
     Logger.log("Failed to send ebook verification email: " + err.message);
     return createJsonResponse({ success: false, error: err.message });

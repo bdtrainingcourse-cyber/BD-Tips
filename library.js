@@ -850,8 +850,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 // Show clear instruction modal
                 window.showGlobalNotification(
-                    '✉️ Ebook Đang Đến Hộp Thư Của Bạn!',
-                    `Cú BeeDee vừa gửi cuốn <strong>${ebookTitle}</strong> đến địa chỉ email <strong>${email}</strong>.<br><br>👉 <strong>Bước tiếp theo:</strong> Vui lòng mở hộp thư email (hoặc mục <em>Spam / Thư rác</em>) và nhấn nút <strong>"Xác Thực & Tải Ebook"</strong> trong thư để kích hoạt tài khoản (+<strong>15đ ⚡</strong>) và tự động tải Ebook về máy nhé!`
+                    '✉️ Ebook Đã Được Gửi Đến Email Của Bạn!',
+                    `Cú BeeDee vừa gửi trọn bộ cuốn <strong>${ebookTitle}</strong> (kèm file PDF đính kèm) đến địa chỉ email <strong>${email}</strong>.<br><br>👉 <strong>Bước tiếp theo:</strong> Bác hãy mở hòm thư email (hoặc mục <em>Spam / Thư rác</em>) để xem/tải trực tiếp file PDF về máy ngay nhé!`
                 );
             }
         })
@@ -876,8 +876,8 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             closeDownloadModal();
             window.showGlobalNotification(
-                '✉️ Ebook Đang Đến Hộp Thư Của Bạn!',
-                `Cú BeeDee đã ghi nhận thông tin và gửi cuốn <strong>${ebookTitle}</strong> đến địa chỉ email <strong>${email}</strong>.<br><br>👉 Vui lòng mở hộp thư email để xác thực tài khoản và tải Ebook về máy nhé!`
+                '✉️ Ebook Đã Được Gửi Đến Email Của Bạn!',
+                `Cú BeeDee đã gửi trọn bộ cuốn <strong>${ebookTitle}</strong> (kèm file PDF đính kèm) đến địa chỉ email <strong>${email}</strong>.<br><br>👉 Hãy mở hộp thư để tải và xem Ebook ngay nhé!`
             );
         });
     });
