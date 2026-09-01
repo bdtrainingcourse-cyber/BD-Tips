@@ -3280,4 +3280,12 @@ body.dark-theme .formula-example {
     color: #d1fae5;
 }
 
+/* PvP Dual Arena Mobile & Responsive Styles */
+@media (max-width: 860px) {
+    .dual-screens-grid {
+        grid-template-columns: 1fr !important;
+    }
+}
+
+
 
