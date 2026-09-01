@@ -6,7 +6,7 @@
     <title>5 Pha Chuyển Mình Về Ngôn Từ B2B | BD Bình Dân Học Vụ</title>
     <meta name="description" content="Đừng để 'Cái miệng hại cái deal' - 5 pha chuyển mình về ngôn từ dành cho B2B Business Development">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css?v=2.3.51">
+    <link rel="stylesheet" href="style.css?v=2.3.52">
     <link rel="stylesheet" href="ai-chat.css?v=2.1.2">
     <script src="theme-toggle.js?v=2.3.32"></script>
 </head>
@@ -558,12 +558,13 @@
                     background: linear-gradient(135deg, rgba(239, 68, 68, 0.04) 0%, rgba(139, 92, 246, 0.04) 100%);
                     border: 1px solid rgba(239, 68, 68, 0.2);
                     border-radius: 20px;
-                    padding: 30px 20px;
+                    padding: 28px 20px;
                     margin-top: 35px;
-                    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2), inset 0 0 20px rgba(239, 68, 68, 0.06);
+                    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
                     position: relative;
                     overflow: hidden;
                     box-sizing: border-box;
+                    width: 100%;
                 }
                 .pvp-card-container::before {
                     content: '';
@@ -580,7 +581,6 @@
                     text-align: center;
                     margin: 0 0 6px 0;
                     color: var(--text-main);
-                    text-shadow: 0 0 10px rgba(239, 68, 68, 0.3);
                     display: flex;
                     align-items: center;
                     justify-content: center;
@@ -588,20 +588,29 @@
                     letter-spacing: 0.5px;
                 }
                 .pvp-header-subtitle {
-                    font-size: 0.82rem;
+                    font-size: 0.85rem;
                     text-align: center;
                     color: var(--text-light);
                     margin: 0 0 25px 0;
                     line-height: 1.5;
-                    max-width: 500px;
+                    max-width: 550px;
                     margin-left: auto;
                     margin-right: auto;
                 }
+                #online-users-list {
+                    display: grid;
+                    grid-template-columns: repeat(2, 1fr);
+                    gap: 16px;
+                    max-width: 1050px;
+                    margin: 0 auto;
+                    width: 100%;
+                    box-sizing: border-box;
+                }
                 .pvp-user-row {
-                    background: rgba(255, 255, 255, 0.02);
-                    border: 1px solid rgba(255, 255, 255, 0.05);
+                    background: var(--card-bg, #ffffff);
+                    border: 1px solid var(--border-color, #e2e8f0);
                     border-radius: 16px;
-                    padding: 16px;
+                    padding: 14px 16px;
                     display: flex;
                     align-items: center;
                     justify-content: space-between;
@@ -609,20 +618,22 @@
                     transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
                     position: relative;
                     box-sizing: border-box;
+                    width: 100%;
+                    min-width: 0;
+                    box-shadow: 0 2px 10px rgba(0,0,0,0.03);
                 }
                 .pvp-user-row:hover {
-                    background: rgba(255, 255, 255, 0.04);
-                    border-color: rgba(239, 68, 68, 0.35);
-                    transform: translateY(-3px);
-                    box-shadow: 0 6px 20px rgba(239, 68, 68, 0.12);
+                    border-color: rgba(239, 68, 68, 0.4);
+                    transform: translateY(-2px);
+                    box-shadow: 0 6px 20px rgba(239, 68, 68, 0.1);
                 }
                 .pvp-avatar-wrapper {
                     position: relative;
-                    width: 48px;
-                    height: 48px;
+                    width: 44px;
+                    height: 44px;
                     border-radius: 50%;
                     background: rgba(255, 255, 255, 0.05);
-                    border: 1.5px solid rgba(255, 255, 255, 0.1);
+                    border: 1.5px solid rgba(239, 68, 68, 0.2);
                     display: flex;
                     align-items: center;
                     justify-content: center;
@@ -642,7 +653,7 @@
                     height: 10px;
                     border-radius: 50%;
                     background: #10b981;
-                    border: 2px solid #111219;
+                    border: 2px solid #ffffff;
                     box-shadow: 0 0 6px #10b981;
                     animation: pulse-green 2s infinite;
                 }
@@ -669,47 +680,58 @@
                     text-transform: uppercase;
                     letter-spacing: 0.3px;
                     display: inline-block;
-                    margin-top: 3px;
                 }
                 .pvp-badge-mascot.commander {
-                    background: rgba(239, 68, 68, 0.12);
-                    color: #f87171;
+                    background: rgba(239, 68, 68, 0.1);
+                    color: #ef4444;
                     border: 1px solid rgba(239, 68, 68, 0.2);
                 }
                 .pvp-badge-mascot.architect {
-                    background: rgba(59, 130, 246, 0.12);
-                    color: #60a5fa;
+                    background: rgba(59, 130, 246, 0.1);
+                    color: #3b82f6;
                     border: 1px solid rgba(59, 130, 246, 0.2);
                 }
                 .pvp-badge-mascot.champion {
-                    background: rgba(245, 158, 11, 0.12);
-                    color: #fbbf24;
+                    background: rgba(245, 158, 11, 0.1);
+                    color: #d97706;
                     border: 1px solid rgba(245, 158, 11, 0.2);
                 }
                 .pvp-badge-mascot.farmer {
-                    background: rgba(16, 185, 129, 0.12);
-                    color: #34d399;
+                    background: rgba(16, 185, 129, 0.1);
+                    color: #10b981;
                     border: 1px solid rgba(16, 185, 129, 0.2);
                 }
                 .pvp-btn-challenge {
-                    padding: 8px 16px;
-                    font-size: 0.72rem;
+                    padding: 8px 14px;
+                    font-size: 0.75rem;
                     font-weight: 800;
                     border-radius: 8px;
                     border: none;
                     cursor: pointer;
                     background: linear-gradient(135deg, #ef4444 0%, #b91c1c 100%);
                     color: #fff;
-                    box-shadow: 0 4px 10px rgba(239, 68, 68, 0.2);
+                    box-shadow: 0 4px 10px rgba(239, 68, 68, 0.25);
                     transition: all 0.2s ease;
                     text-transform: uppercase;
                     letter-spacing: 0.5px;
                     white-space: nowrap;
+                    flex-shrink: 0;
                 }
                 .pvp-btn-challenge:hover {
-                    transform: scale(1.06);
-                    box-shadow: 0 4px 15px rgba(239, 68, 68, 0.45);
-                    background: linear-gradient(135deg, #ff4d4d 0%, #d32f2f 100%);
+                    transform: scale(1.04);
+                    box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4);
+                }
+                @media (max-width: 768px) {
+                    #online-users-list {
+                        grid-template-columns: 1fr !important;
+                        gap: 12px !important;
+                    }
+                    .pvp-card-container {
+                        padding: 20px 12px !important;
+                    }
+                    .pvp-user-row {
+                        padding: 12px !important;
+                    }
                 }
             </style>
 
@@ -720,7 +742,7 @@
                 <p class="pvp-header-subtitle">
                     Chiến thần BD đang online thực chiến. Bấm khiêu chiến để đấu điểm trực tiếp!
                 </p>
-                <div id="online-users-list" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 15px; max-width: 1000px; margin: 0 auto;">
+                <div id="online-users-list">
                     <!-- Rendered dynamically by JS -->
                 </div>
             </div>
@@ -906,8 +928,8 @@
         </div>
     </div>
 
-    <script src="script.js?v=2.3.51"></script>
+    <script src="script.js?v=2.3.52"></script>
     <script src="ai-chat.js?v=2.3.24"></script>
-    <script defer src="/_vercel/insights/script.js?v=2.3.51"></script>
+    <script defer src="/_vercel/insights/script.js?v=2.3.52"></script>
 </body>
 </html>

@@ -6454,9 +6454,9 @@ if (document.readyState === 'loading') {
                                         localStorage.getItem(`online_pvp_beaten_${usr.id}`) === 'true';
             
             const actionBtn = isBeatenAtLeastOnce
-                ? `<button onclick="challengeOnlineUser('${usr.id}')" style="font-size: 0.72rem; color: ${config.badgeColor}; font-weight: bold; background: rgba(255,255,255,0.05); padding: 6px 12px; border-radius: 8px; border: 1px solid ${config.badgeColor}; text-transform: uppercase; cursor: pointer; display: flex; align-items: center; gap: 4px;">
+                ? `<button onclick="challengeOnlineUser('${usr.id}')" style="font-size: 0.72rem; color: ${config.badgeColor}; font-weight: 800; background: rgba(239,68,68,0.04); padding: 8px 12px; border-radius: 8px; border: 1px solid ${config.badgeColor}; cursor: pointer; display: flex; align-items: center; gap: 4px; white-space: nowrap; box-shadow: 0 2px 6px rgba(0,0,0,0.03);">
                     <span>⚔️ Đấu Cấp ${oppLevel}</span>
-                    <span style="font-size: 0.65rem; background: ${config.badgeColor}; color: white; padding: 1px 5px; border-radius: 6px;">+${config.rewardPoints}đ</span>
+                    <span style="font-size: 0.62rem; background: ${config.badgeColor}; color: white; padding: 1px 5px; border-radius: 6px; font-weight: 900;">+${config.rewardPoints}đ</span>
                   </button>`
                 : `<button onclick="challengeOnlineUser('${usr.id}')" class="pvp-btn-challenge">Khiêu Chiến</button>`;
             
@@ -6465,21 +6465,21 @@ if (document.readyState === 'loading') {
             
             listHtml += `
                 <div class="pvp-user-row">
-                    <div style="display: flex; align-items: center; gap: 12px;">
+                    <div style="display: flex; align-items: center; gap: 10px; min-width: 0; flex: 1;">
                         <div class="pvp-avatar-wrapper">
                             <img src="mascot_challenge.jpg" class="pvp-avatar-img" alt="BeeDee Owl">
                             <span class="pvp-status-dot ${statusClass}"></span>
                         </div>
-                        <div>
-                            <div style="font-size: 0.88rem; font-weight: 800; color: var(--text-main); display: flex; align-items: center; gap: 6px;">
-                                <span>${usr.name}</span>
+                        <div style="min-width: 0; flex: 1;">
+                            <div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap; margin-bottom: 2px;">
+                                <strong style="font-size: 0.88rem; font-weight: 800; color: var(--text-main); white-space: nowrap;">${usr.name}</strong>
                                 <span class="pvp-badge-mascot ${mascotLower}">${usr.mascot}</span>
-                                <span style="font-size: 0.7rem; color: ${config.badgeColor}; font-weight: bold; background: rgba(255,255,255,0.05); padding: 1px 6px; border-radius: 8px; border: 1px solid ${config.badgeColor}40;">Cấp ${oppLevel} ${config.stars}</span>
+                                <span style="font-size: 0.68rem; color: ${config.badgeColor}; font-weight: bold; background: rgba(239,68,68,0.05); padding: 1px 6px; border-radius: 6px; border: 1px solid ${config.badgeColor}30; white-space: nowrap;">Cấp ${oppLevel} ${config.stars}</span>
                             </div>
-                            <div style="font-size: 0.72rem; color: #10b981; font-weight: 500; margin-top: 4px;">${usr.status}</div>
+                            <div style="font-size: 0.72rem; color: #10b981; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${usr.status}</div>
                         </div>
                     </div>
-                    <div>
+                    <div style="flex-shrink: 0;">
                         ${actionBtn}
                     </div>
                 </div>
