@@ -155,13 +155,17 @@ function syncUser(data) {
     if (industry) writeProfileFieldToRow(sheet, rowIndex, "industry", industry, idx);
     if (skill) writeProfileFieldToRow(sheet, rowIndex, "skill", skill, idx);
     
-    // SEND VERIFICATION EMAIL IMMEDIATELY
-    sendVerificationEmail(email, name);
+    // SEND APPROPRIATE EMAIL IMMEDIATELY
+    if (data.action === "sendEbookVerificationEmail" || data.tool === "ebook-download" || data.ebookTitle) {
+      sendEbookVerificationEmail(email, name, data.ebookTitle, data.fileUrl || data.downloadLink);
+    } else {
+      sendVerificationEmail(email, name);
+    }
     
     return createJsonResponse({ success: true, exists: false, userId: userId, message: "Registered. Verification email sent." });
   } else {
-    // Existing user: update details
-    if (idx.points !== -1) sheet.getRange(userRowIndex, idx.points + 1).setValue(points);
+    // Existing user: update details in "Học Viên Đăng Ký"
+    if (idx.points !== -1 && points) sheet.getRange(userRowIndex, idx.points + 1).setValue(points);
     if (idx.password !== -1 && password) sheet.getRange(userRowIndex, idx.password + 1).setValue(password);
     if (idx.lastActivity !== -1) sheet.getRange(userRowIndex, idx.lastActivity + 1).setValue(formatTimestamp(date));
     
@@ -169,7 +173,12 @@ function syncUser(data) {
     if (industry) writeProfileFieldToRow(sheet, userRowIndex, "industry", industry, idx);
     if (skill) writeProfileFieldToRow(sheet, userRowIndex, "skill", skill, idx);
     
-    return createJsonResponse({ success: true, exists: true, userId: userId, message: "User profile updated." });
+    // If this existing user submitted the ebook form, ALWAYS dispatch the Ebook verification email to them
+    if (data.action === "sendEbookVerificationEmail" || data.tool === "ebook-download" || data.ebookTitle) {
+      sendEbookVerificationEmail(email, name, data.ebookTitle, data.fileUrl || data.downloadLink);
+    }
+    
+    return createJsonResponse({ success: true, exists: true, userId: userId, message: "User profile updated & ebook email sent." });
   }
 }
 

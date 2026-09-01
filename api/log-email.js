@@ -652,11 +652,12 @@ module.exports = async (req, res) => {
 
   if (!webhookUrl) {
     console.warn(`[SHEETS_SYNC_WARN] Webhook URL not set.`);
+    const shouldRequireVerify = (action === 'sendEbookVerificationEmail');
     return res.status(200).json({ 
       success: true, 
       userId: localUser.id,
-      verified: !!isVerified,
-      allowDirectDownload: !!isVerified,
+      verified: shouldRequireVerify ? false : !!isVerified,
+      allowDirectDownload: shouldRequireVerify ? false : !!isVerified,
       points: localUser.points,
       user: {
         id: localUser.id,
@@ -664,7 +665,7 @@ module.exports = async (req, res) => {
         name: localUser.name,
         points: localUser.points,
         avatar: localUser.avatar || '',
-        verified: !!localUser.verified
+        verified: shouldRequireVerify ? false : !!localUser.verified
       },
       warning: 'Webhook URL not configured, but local save completed.' 
     });
@@ -679,7 +680,7 @@ module.exports = async (req, res) => {
     let payload = {};
     if (action === 'sendEbookVerificationEmail' || tool === 'ebook-download') {
       payload = {
-        action: isVerified ? 'syncUser' : 'sendEbookVerificationEmail',
+        action: 'syncUser',
         userId: localUser.id,
         name: name || localUser.name,
         email,
@@ -741,8 +742,9 @@ module.exports = async (req, res) => {
     if (action === 'sendEbookVerificationEmail' || tool === 'ebook-download') {
       return res.status(200).json({
         success: true,
-        verified: !!isVerified,
-        allowDirectDownload: !!isVerified,
+        verified: false,
+        allowDirectDownload: false,
+        emailSent: true,
         userId: localUser.id,
         points: localUser.points,
         user: {
@@ -751,7 +753,7 @@ module.exports = async (req, res) => {
           name: localUser.name,
           points: localUser.points,
           avatar: localUser.avatar || '',
-          verified: !!localUser.verified
+          verified: false
         }
       });
     }
