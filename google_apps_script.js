@@ -11,7 +11,7 @@
  */
 
 // CONFIGURATION: Mã khóa bí mật bảo mật chống spam & giả mạo webhook
-const B2B_SECRET_KEY = "bd_secret_key_2026_petervo_secure_b2b_tips"; 
+const B2B_SECRET_KEY = "2108330119Snail!!"; 
 
 function doPost(e) {
   try {
@@ -818,113 +818,47 @@ function createJsonResponse(obj) {
 
 // Full premium HTML email template with matching styles
 function getHtmlEmailTemplate(message, buttonText, buttonUrl, mascotUrl, name) {
-  const finalMascotUrl = mascotUrl || 'https://bd-tips.vercel.app/mascot_mascot.jpg';
-  const greeting = name ? "Chào " + name + " cùng Cú BeeDee! 🦉☀️" : "Chào ngày mới cùng Cú BeeDee! 🦉☀️";
+  const finalMascotUrl = mascotUrl || "https://bd-tips.vercel.app/mascot_quests.jpg";
+  const greeting = name ? ("Chào " + name + " cùng Cú BeeDee! 🦉☀️") : "Chào ngày mới cùng Cú BeeDee! 🦉☀️";
   
-  return '<!DOCTYPE html>' +
-'<html>' +
-'<head>' +
-'  <meta charset="utf-8">' +
-'  <meta name="viewport" content="width=device-width, initial-scale=1.0">' +
-'  <title>BD Bình Dân Học Vụ - Lời khuyên hàng ngày</title>' +
-'  <style>' +
-'    @import url(\'https://fonts.googleapis.com/css2?family=Lexend:wght@400;700;800&family=Plus+Jakarta+Sans:wght@400;700;800&display=swap\');' +
-'    body, table, td, div, p, a, span {' +
-'      font-family: \'Plus Jakarta Sans\', \'Lexend\', Arial, Helvetica, sans-serif !important;' +
-'    }' +
-'    body {' +
-'      margin: 0;' +
-'      padding: 0;' +
-'      background-color: #fcf9f4;' +
-'      color: #334155;' +
-'    }' +
-'    .email-container {' +
-'      max-width: 500px;' +
-'      margin: 30px auto;' +
-'      background-color: #ffffff;' +
-'      border: 1.5px solid #f3a83b;' +
-'      border-radius: 24px;' +
-'      padding: 35px 28px;' +
-'      text-align: center;' +
-'      box-shadow: 0 10px 25px rgba(243, 168, 59, 0.08);' +
-'    }' +
-'    .mascot-container {' +
-'      margin-bottom: 20px;' +
-'      display: inline-block;' +
-'      padding: 10px;' +
-'      background: rgba(243, 168, 59, 0.08);' +
-'      border-radius: 50%;' +
-'    }' +
-'    .mascot-img {' +
-'      width: 90px;' +
-'      height: 90px;' +
-'      object-fit: contain;' +
-'      display: block;' +
-'      border-radius: 50%;' +
-'    }' +
-'    .headline {' +
-'      font-size: 1.35rem;' +
-'      font-weight: 800;' +
-'      color: #1e293b;' +
-'      margin: 0 0 18px 0;' +
-'      line-height: 1.3;' +
-'    }' +
-'    .content-text {' +
-'      font-size: 0.95rem;' +
-'      line-height: 1.65;' +
-'      color: #475569;' +
-'      margin: 0 0 25px 0;' +
-'      text-align: left;' +
-'    }' +
-'    .cta-container {' +
-'      margin: 25px 0;' +
-'    }' +
-'    .cta-btn {' +
-'      display: inline-block;' +
-'      padding: 14px 32px;' +
-'      background: linear-gradient(135deg, #f3a83b 0%, #f59e0b 100%);' +
-'      color: #ffffff !important;' +
-'      text-decoration: none !important;' +
-'      font-weight: 800;' +
-'      font-size: 0.88rem;' +
-'      border-radius: 12px;' +
-'      box-shadow: 0 5px 18px rgba(243, 168, 59, 0.35);' +
-'      text-transform: uppercase;' +
-'      letter-spacing: 0.8px;' +
-'    }' +
-'    .footer-text {' +
-'      font-size: 0.76rem;' +
-'      color: #94a3b8;' +
-'      border-top: 1px solid rgba(243, 168, 59, 0.15);' +
-'      padding-top: 22px;' +
-'      margin-top: 22px;' +
-'      line-height: 1.45;' +
-'      text-align: center;' +
-'    }' +
-'    .accent-link {' +
-'      color: #d97706;' +
-'      text-decoration: none;' +
-'      font-weight: bold;' +
-'    }' +
-'  </style>' +
-'</head>' +
-'<body>' +
-'  <div class="email-container">' +
-'    <div class="mascot-container">' +
-'      <img src="' + finalMascotUrl + '" class="mascot-img" alt="Cú BeeDee">' +
-'    </div>' +
-'    <div class="headline">' + greeting + '</div>' +
-'    <div class="content-text">' +
-'      ' + message +
-'    </div>' +
-'    <div class="cta-container">' +
-'      <a href="' + buttonUrl + '" target="_blank" class="cta-btn">' + buttonText + '</a>' +
-'    </div>' +
-'    <div class="footer-text">' +
-'      Bạn nhận được email này vì đã kích hoạt chế độ tự động nhắc nhở rèn luyện hàng ngày tại <a href="https://bd-tips.vercel.app" class="accent-link">BD Bình Dân Học Vụ</a>.<br>' +
-'      © 2026 BD Bình Dân Học Vụ. All rights reserved.' +
-'    </div>' +
-'  </div>' +
-'</body>' +
-'</html>';
+  return [
+    "<!DOCTYPE html>",
+    "<html>",
+    "<head>",
+    "  <meta charset=\"utf-8\">",
+    "  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">",
+    "  <title>BD Bình Dân Học Vụ</title>",
+    "  <style>",
+    "    @import url('https://fonts.googleapis.com/css2?family=Lexend:wght@400;700;800&family=Plus+Jakarta+Sans:wght@400;700;800&display=swap');",
+    "    body, table, td, div, p, a, span { font-family: 'Plus Jakarta Sans', 'Lexend', Arial, Helvetica, sans-serif !important; }",
+    "    body { margin: 0; padding: 0; background-color: #fcf9f4; color: #334155; }",
+    "    .email-container { max-width: 500px; margin: 30px auto; background-color: #ffffff; border: 1.5px solid #f3a83b; border-radius: 24px; padding: 35px 28px; text-align: center; box-shadow: 0 10px 25px rgba(243, 168, 59, 0.08); }",
+    "    .mascot-container { margin-bottom: 20px; display: inline-block; padding: 10px; background: rgba(243, 168, 59, 0.08); border-radius: 50%; }",
+    "    .mascot-img { width: 90px; height: 90px; object-fit: contain; display: block; border-radius: 50%; }",
+    "    .headline { font-size: 1.35rem; font-weight: 800; color: #1e293b; margin: 0 0 18px 0; line-height: 1.3; }",
+    "    .content-text { font-size: 0.95rem; line-height: 1.65; color: #475569; margin: 0 0 25px 0; text-align: left; }",
+    "    .cta-container { margin: 25px 0; }",
+    "    .cta-btn { display: inline-block; padding: 14px 32px; background: linear-gradient(135deg, #f3a83b 0%, #f59e0b 100%); color: #ffffff !important; text-decoration: none !important; font-weight: 800; font-size: 0.88rem; border-radius: 12px; box-shadow: 0 5px 18px rgba(243, 168, 59, 0.35); text-transform: uppercase; letter-spacing: 0.8px; }",
+    "    .footer-text { font-size: 0.76rem; color: #94a3b8; border-top: 1px solid rgba(243, 168, 59, 0.15); padding-top: 22px; margin-top: 22px; line-height: 1.45; text-align: center; }",
+    "    .accent-link { color: #d97706; text-decoration: none; font-weight: bold; }",
+    "  </style>",
+    "</head>",
+    "<body>",
+    "  <div class=\"email-container\">",
+    "    <div class=\"mascot-container\">",
+    "      <img src=\"" + finalMascotUrl + "\" class=\"mascot-img\" alt=\"Cú BeeDee\">",
+    "    </div>",
+    "    <div class=\"headline\">" + greeting + "</div>",
+    "    <div class=\"content-text\">" + message + "</div>",
+    "    <div class=\"cta-container\">",
+    "      <a href=\"" + buttonUrl + "\" target=\"_blank\" class=\"cta-btn\">" + buttonText + "</a>",
+    "    </div>",
+    "    <div class=\"footer-text\">",
+    "      Bạn nhận được email này vì đã đăng ký nhận tài liệu và tham gia rèn luyện tại <a href=\"https://bd-tips.vercel.app\" class=\"accent-link\">BD Bình Dân Học Vụ</a>.<br>",
+    "      © 2026 BD Bình Dân Học Vụ. All rights reserved.",
+    "    </div>",
+    "  </div>",
+    "</body>",
+    "</html>"
+  ].join("\n");
 }
