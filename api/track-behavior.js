@@ -3,13 +3,14 @@ const { readLogs, writeLogs, readUsers, writeUsers } = require('./_db-helper');
 
 // B2B BD TIPS PORTAL - BEHAVIOR TRACKER API - FORCE DEPLOY 1787759700
 function httpPost(url, body, maxRedirects = 5) {
-  if (url.includes('script.google.com') && process.env.B2B_SECRET_KEY) {
+  if (url.includes('script.google.com')) {
+    const secKey = process.env.B2B_SECRET_KEY || 'bd_secret_key_2026_petervo_secure_b2b_tips';
     if (typeof body === 'object' && body !== null) {
-      body.secretKey = process.env.B2B_SECRET_KEY;
+      body.secretKey = secKey;
     } else if (typeof body === 'string') {
       try {
         const parsed = JSON.parse(body);
-        parsed.secretKey = process.env.B2B_SECRET_KEY;
+        parsed.secretKey = secKey;
         body = JSON.stringify(parsed);
       } catch (e) {}
     }

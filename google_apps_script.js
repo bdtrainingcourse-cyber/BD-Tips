@@ -10,14 +10,14 @@
  * 5. Copy the Web App URL and set it as GOOGLE_SHEET_LEADS_WEBHOOK in Vercel Environment Variables.
  */
 
-// CONFIGURATION: Optional secret key (leave empty to allow all requests)
-const B2B_SECRET_KEY = ""; 
+// CONFIGURATION: Mã khóa bí mật bảo mật chống spam & giả mạo webhook
+const B2B_SECRET_KEY = "bd_secret_key_2026_petervo_secure_b2b_tips"; 
 
 function doPost(e) {
   try {
     const postData = JSON.parse(e.postData.contents);
     
-    // Security check (only if explicitly configured with non-empty string)
+    // Security check: Xác thực chữ ký bí mật bảo vệ dữ liệu Google Sheet
     if (B2B_SECRET_KEY && B2B_SECRET_KEY.trim() !== "") {
       if (postData.secretKey !== B2B_SECRET_KEY) {
         return ContentService.createTextOutput(JSON.stringify({
