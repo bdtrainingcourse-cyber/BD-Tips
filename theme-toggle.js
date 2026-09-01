@@ -2226,6 +2226,22 @@ function initGlobalComponents() {
                                 );
                             }
                         }
+                    } else if (data.exists === false) {
+                        // User was deleted from Google Sheets by admin: purge local session completely
+                        localStorage.removeItem('streak_email');
+                        localStorage.removeItem('streak_name');
+                        localStorage.removeItem('streak_user_id');
+                        localStorage.removeItem('streak_active');
+                        localStorage.removeItem('b2b_user_verified');
+                        localStorage.removeItem('b2b_points_balance');
+                        localStorage.removeItem('profile_experience');
+                        localStorage.removeItem('profile_industry');
+                        localStorage.removeItem('profile_skill');
+                        localStorage.removeItem('b2b_custom_avatar');
+                        localStorage.removeItem('b2b_has_downloaded_before');
+                        if (window.updateNavbarUserHUD) {
+                            window.updateNavbarUserHUD();
+                        }
                     }
                 } catch (e) {
                     console.warn('Verification check failed:', e);
@@ -3362,9 +3378,10 @@ window.showSubtleProfileModal = function({ title, subtitle, options, fieldName, 
     overlay.style.transition = 'opacity 0.3s ease';
 
     const container = document.createElement('div');
+    container.style.position = 'relative';
     container.style.maxWidth = '460px';
     container.style.width = '100%';
-    container.style.padding = '30px 24px';
+    container.style.padding = '30px 24px 20px 24px';
     container.style.borderRadius = '20px';
     container.style.border = '1px solid #e2e8f0';
     container.style.background = '#ffffff';
@@ -3373,9 +3390,32 @@ window.showSubtleProfileModal = function({ title, subtitle, options, fieldName, 
     container.style.transform = 'scale(0.9)';
     container.style.transition = 'transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)';
 
+    const closeBtn = document.createElement('button');
+    closeBtn.innerHTML = '&times;';
+    closeBtn.setAttribute('aria-label', 'Đóng');
+    closeBtn.style.position = 'absolute';
+    closeBtn.style.top = '14px';
+    closeBtn.style.right = '16px';
+    closeBtn.style.background = 'transparent';
+    closeBtn.style.border = 'none';
+    closeBtn.style.fontSize = '1.6rem';
+    closeBtn.style.lineHeight = '1';
+    closeBtn.style.color = '#94a3b8';
+    closeBtn.style.cursor = 'pointer';
+    closeBtn.onclick = () => {
+        localStorage.setItem('b2b_last_survey_prompt_time', Date.now().toString());
+        overlay.style.opacity = '0';
+        container.style.transform = 'scale(0.9)';
+        setTimeout(() => {
+            overlay.remove();
+            if (callback) callback();
+        }, 300);
+    };
+    container.appendChild(closeBtn);
+
     const iconEl = document.createElement('div');
     iconEl.style.fontSize = '2.5rem';
-    iconEl.style.marginBottom = '15px';
+    iconEl.style.marginBottom = '12px';
     iconEl.innerHTML = '🦉';
 
     const titleEl = document.createElement('h3');
@@ -3386,7 +3426,7 @@ window.showSubtleProfileModal = function({ title, subtitle, options, fieldName, 
     titleEl.innerText = title;
 
     const subEl = document.createElement('p');
-    subEl.style.margin = '0 0 24px 0';
+    subEl.style.margin = '0 0 20px 0';
     subEl.style.fontSize = '0.85rem';
     subEl.style.color = '#475569';
     subEl.style.lineHeight = '1.5';
@@ -3432,6 +3472,7 @@ window.showSubtleProfileModal = function({ title, subtitle, options, fieldName, 
             btn.innerHTML = `${opt} <span style="float: right;">⏳</span>`;
 
             localStorage.setItem(`profile_${fieldName}`, opt);
+            localStorage.setItem('b2b_last_survey_prompt_time', Date.now().toString());
 
             const email = localStorage.getItem('streak_email');
             const active = localStorage.getItem('streak_active') === 'true';
@@ -3457,7 +3498,7 @@ window.showSubtleProfileModal = function({ title, subtitle, options, fieldName, 
                             if (window.showGlobalNotification) {
                                 window.showGlobalNotification(
                                     '🎉 Nhận Điểm Thưởng!',
-                                    `Cú BeeDee tặng bác <strong>+10 BD-Points</strong> vì đã cập nhật thông tin profile!<br><br>Số dư hiện tại: <strong>${data.points} BD-Points</strong>`
+                                    `Cú BeeDee tặng bác <strong>+10 BD-Points</strong> vì đã hoàn thành khảo sát profile!<br><br>Số dư hiện tại: <strong>${data.points} BD-Points</strong>`
                                 );
                             } else {
                                 alert(`Cú BeeDee tặng bác +10 BD-Points! Số dư: ${data.points}`);
@@ -3489,10 +3530,30 @@ window.showSubtleProfileModal = function({ title, subtitle, options, fieldName, 
         optionsContainer.appendChild(btn);
     });
 
+    const skipBtn = document.createElement('button');
+    skipBtn.innerText = 'Để sau (Bỏ qua câu hỏi này)';
+    skipBtn.style.background = 'transparent';
+    skipBtn.style.border = 'none';
+    skipBtn.style.color = '#94a3b8';
+    skipBtn.style.fontSize = '0.8rem';
+    skipBtn.style.cursor = 'pointer';
+    skipBtn.style.marginTop = '14px';
+    skipBtn.style.padding = '6px';
+    skipBtn.onclick = () => {
+        localStorage.setItem('b2b_last_survey_prompt_time', Date.now().toString());
+        overlay.style.opacity = '0';
+        container.style.transform = 'scale(0.9)';
+        setTimeout(() => {
+            overlay.remove();
+            if (callback) callback();
+        }, 300);
+    };
+
     container.appendChild(iconEl);
     container.appendChild(titleEl);
     container.appendChild(subEl);
     container.appendChild(optionsContainer);
+    container.appendChild(skipBtn);
     overlay.appendChild(container);
     document.body.appendChild(overlay);
 
@@ -3503,8 +3564,19 @@ window.showSubtleProfileModal = function({ title, subtitle, options, fieldName, 
 };
 
 window.triggerProfileOnboarding = function(callback) {
-    // 1. Check Experience
+    // 1. Spacing check: Only prompt max 1 question every 2 hours (or once per session)
+    const lastPrompt = parseInt(localStorage.getItem('b2b_last_survey_prompt_time') || '0', 10);
+    const now = Date.now();
+    const twoHoursMs = 2 * 60 * 60 * 1000;
+    
+    if (now - lastPrompt < twoHoursMs) {
+        if (callback) callback();
+        return;
+    }
+
+    // 2. Prioritize: Check Experience first
     if (!localStorage.getItem('profile_experience')) {
+        localStorage.setItem('b2b_last_survey_prompt_time', now.toString());
         window.showSubtleProfileModal({
             title: '🦉 Tinh chỉnh độ khó AI',
             subtitle: 'Chào bác! Để Cú BeeDee chuẩn bị bộ câu hỏi và kịch bản thực chiến phù hợp nhất với trình độ, bác làm B2B Sales/BD được mấy năm rồi?',
@@ -3514,13 +3586,17 @@ window.triggerProfileOnboarding = function(callback) {
                 '4 năm trở lên (Lão làng)'
             ],
             fieldName: 'experience',
-            callback: () => window.triggerProfileOnboarding(callback)
+            callback: () => {
+                // Done for this session! Do NOT pop next question immediately.
+                if (callback) callback();
+            }
         });
         return;
     }
 
-    // 2. Check Industry
+    // 3. Next session: Check Industry
     if (!localStorage.getItem('profile_industry')) {
+        localStorage.setItem('b2b_last_survey_prompt_time', now.toString());
         window.showSubtleProfileModal({
             title: '💼 Lĩnh vực hoạt động',
             subtitle: 'Bác đang phụ trách phát triển thị trường (BD) trong lĩnh vực/ngành nghề nào?',
@@ -3531,13 +3607,16 @@ window.triggerProfileOnboarding = function(callback) {
                 'Tài chính / Bất động sản / Khác'
             ],
             fieldName: 'industry',
-            callback: () => window.triggerProfileOnboarding(callback)
+            callback: () => {
+                if (callback) callback();
+            }
         });
         return;
     }
 
-    // 3. Check Skill
+    // 4. Next session: Check Skill
     if (!localStorage.getItem('profile_skill')) {
+        localStorage.setItem('b2b_last_survey_prompt_time', now.toString());
         window.showSubtleProfileModal({
             title: '🎯 Kỹ năng muốn rèn luyện',
             subtitle: 'Kỹ năng BD nào bác đang muốn tập trung cải thiện nhất trong thời gian này?',
@@ -3548,7 +3627,9 @@ window.triggerProfileOnboarding = function(callback) {
                 'Xây dựng mối quan hệ bền vững (KAM)'
             ],
             fieldName: 'skill',
-            callback: () => window.triggerProfileOnboarding(callback)
+            callback: () => {
+                if (callback) callback();
+            }
         });
         return;
     }

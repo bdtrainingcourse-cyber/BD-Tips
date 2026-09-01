@@ -321,33 +321,42 @@ module.exports = async (req, res) => {
   let sheetsResponseText = "";
   let debugError = "";
 
-  if (!localUser && webhookUrl && action !== 'verifyUser') {
+  // Always consult Google Sheets as the Single Source of Truth when checking email existence or if local profile is missing
+  if (webhookUrl && (action === 'checkEmail' || !localUser) && action !== 'verifyUser') {
     try {
       const response = await httpPost(webhookUrl, { action: 'checkEmail', email: cleanEmail, userId: userId, name: name });
       const resText = await response.text();
       sheetsResponseText = resText;
       const result = JSON.parse(resText);
       if (result.exists && result.user) {
-        const uid = result.user.id || 'UID_' + Math.random().toString(36).substr(2, 9).toUpperCase();
+        const uid = result.user.id || (localUser ? localUser.id : 'UID_' + Math.random().toString(36).substr(2, 9).toUpperCase());
         const resolvedName = (result.user.name && result.user.name !== 'Khách' && result.user.name !== 'Học viên') 
           ? result.user.name 
-          : (name || 'Học viên');
+          : (name || (localUser ? localUser.name : 'Học viên'));
         users[uid] = {
           id: uid,
           email: cleanEmail,
           name: resolvedName,
           points: (result.user.points !== null && result.user.points !== undefined) ? Number(result.user.points) : 25,
           verified: !!result.user.verified,
-          password: result.user.password || result.user.passwordHash || '',
-          experience: result.user.experience || '',
-          industry: result.user.industry || '',
-          skill: result.user.skill || '',
+          password: result.user.password || result.user.passwordHash || (localUser ? localUser.password : ''),
+          experience: result.user.experience || (localUser ? localUser.experience : ''),
+          industry: result.user.industry || (localUser ? localUser.industry : ''),
+          skill: result.user.skill || (localUser ? localUser.skill : ''),
           lastIp: clientIp,
           lastActive: timestamp
         };
         writeUsers(users);
         matchedUserId = uid;
         localUser = users[uid];
+      } else if (result.exists === false) {
+        // User was deleted from Google Sheets! Purge from local memory/file immediately
+        if (matchedUserId && users[matchedUserId]) {
+          delete users[matchedUserId];
+          writeUsers(users);
+        }
+        localUser = null;
+        matchedUserId = null;
       }
     } catch (e) {
       debugError = e.message;
