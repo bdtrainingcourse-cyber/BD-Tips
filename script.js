@@ -6335,13 +6335,111 @@ if (document.readyState === 'loading') {
         }
     }
 
-    // --- ONLINE PVP MATCHMAKER MECHANICS (DUAL ARENA SYSTEM) ---
+    // --- ONLINE PVP MATCHMAKER MECHANICS (DYNAMIC DIFFICULTY & DUAL ARENA SYSTEM) ---
     const MOCK_ONLINE_USERS = [
-        { id: 'usr-1', name: 'Hào Nguyễn', mascot: 'Architect', status: '🟢 Đang ở B2B Zip', points: 80, level: 4, gameId: 'game-zip', gameTitle: 'B2B Zip (Sales Path Finder)', botSpeed: 9, quote: 'Tôi đã tối ưu hóa logic phễu săn Lead B2B Zip đạt Cấp 4. Bác thử xem có nối đường ống nhanh hơn tôi không?' },
-        { id: 'usr-2', name: 'SaasWarrior', mascot: 'Commander', status: '🟢 Đang ở B2B Wend', points: 85, level: 5, gameId: 'game-wend', gameTitle: 'B2B Wend (Word Search)', botSpeed: 8, quote: 'Ma trận thuật ngữ B2B Wend này tôi giải mã chỉ trong 40 giây. Thách bác vượt qua Cấp 5 của tôi đấy!' },
-        { id: 'usr-3', name: 'ChuaTeChotDeal', mascot: 'Champion', status: '🟢 Vừa thắng B2B Tango', points: 90, level: 6, gameId: 'game-tango', gameTitle: 'B2B Tango (Reasoning Grid)', botSpeed: 8.5, quote: 'Logic phân bổ deal độc bản B2B Tango Cấp 6 không làm khó được tôi. Bác dám vào so tài logic không?' },
-        { id: 'usr-4', name: 'Bob Growth', mascot: 'Farmer', status: '🟢 Đang ở B2B Queens', points: 75, level: 3, gameId: 'game-queens', gameTitle: 'B2B Queens (BD Alignment)', botSpeed: 10, quote: 'Sắp xếp vùng địa bàn BD Queens không trùng lặp là sở trường của tôi. Đấu thử xem ai phân bổ đội ngũ tối ưu hơn?' }
+        { 
+            id: 'usr-1', 
+            name: 'Hào Nguyễn', 
+            mascot: 'Architect', 
+            status: '🟢 Đang ở B2B Zip', 
+            gameId: 'game-zip', 
+            gameTitle: 'B2B Zip (Sales Path Finder)', 
+            baseSpeed: 9.5,
+            quotes: [
+                'Tôi đã tối ưu hóa logic phễu săn Lead B2B Zip đạt Cấp 1. Bác thử xem có nối đường ống nhanh hơn tôi không?',
+                'Lần trước bác đi đường ống rất chuẩn! Lần này tôi đã rút ngắn thời gian xử lý xuống còn 42 giây đấy!',
+                'Tôi đã kích hoạt chế độ Enterprise Pipeline! 8 bước liên hoàn không một sai số, dám so tài tiếp không?'
+            ]
+        },
+        { 
+            id: 'usr-2', 
+            name: 'SaasWarrior', 
+            mascot: 'Commander', 
+            status: '🟢 Đang ở B2B Wend', 
+            gameId: 'game-wend', 
+            gameTitle: 'B2B Wend (Word Search)', 
+            baseSpeed: 8.5,
+            quotes: [
+                'Ma trận thuật ngữ B2B Wend này tôi giải mã chỉ trong 45 giây. Thách bác vượt qua Cấp 1 của tôi đấy!',
+                'Bác tìm từ nhanh đấy! Nhưng sang Cấp 2 với thuật ngữ Churn & LTV ma trận ẩn, bác sẽ bất ngờ đấy!',
+                'Đỉnh cao giải mã B2B: Expansion, Retention, Cross-sell trong 35 giây! Bác dám vào sàn đấu không?'
+            ]
+        },
+        { 
+            id: 'usr-3', 
+            name: 'ChuaTeChotDeal', 
+            mascot: 'Champion', 
+            status: '🟢 Vừa thắng B2B Tango', 
+            gameId: 'game-tango', 
+            gameTitle: 'B2B Tango (Reasoning Grid)', 
+            baseSpeed: 9.0,
+            quotes: [
+                'Logic phân bổ deal độc bản B2B Tango Cấp 1 không làm khó được tôi. Bác dám vào so tài logic không?',
+                'Vừa nãy tôi nhường bác 1 bước thôi! Cấp 2 này phân bổ deal đa tầng siêu hóc búa, thử sức nào!',
+                'Ma trận đàm phán tối thượng đã mở! Ai giải xong trước trong 35 giây người đó là Bá Chủ Chốt Deal!'
+            ]
+        },
+        { 
+            id: 'usr-4', 
+            name: 'Bob Growth', 
+            mascot: 'Farmer', 
+            status: '🟢 Đang ở B2B Queens', 
+            gameId: 'game-queens', 
+            gameTitle: 'B2B Queens (BD Alignment)', 
+            baseSpeed: 10.0,
+            quotes: [
+                'Sắp xếp vùng địa bàn BD Queens không trùng lặp là sở trường của tôi. Đấu thử xem ai phân bổ đội ngũ tối ưu hơn?',
+                'Bác xếp 4 tướng rất khéo! Lên Cấp 2 với 5 vùng chiến lược 5x5 sẽ căng thẳng hơn nhiều đấy!',
+                'Cấp 3 Đại Tướng: 6 địa bàn không xung đột trong 35 giây! Bác sẵn sàng nhận thử thách chưa?'
+            ]
+        }
     ];
+
+    // Helper to get opponent current level
+    function getOpponentLevel(userId) {
+        return parseInt(localStorage.getItem(`pvp_level_${userId}`) || '1', 10);
+    }
+
+    // Helper to get battle parameters by level
+    function getBattleConfig(level, baseSpeed) {
+        if (level === 1) {
+            return {
+                levelTitle: 'Tập Sự Săn Deal ⭐',
+                stars: '⭐',
+                timeLimit: 50,
+                botSpeed: baseSpeed || 9.0,
+                rewardPoints: 50,
+                badgeColor: '#10b981'
+            };
+        } else if (level === 2) {
+            return {
+                levelTitle: 'Chuyên Gia Thực Chiến ⭐⭐',
+                stars: '⭐⭐',
+                timeLimit: 42,
+                botSpeed: Math.max(5.5, (baseSpeed || 9.0) - 2.5),
+                rewardPoints: 80,
+                badgeColor: '#3b82f6'
+            };
+        } else if (level === 3) {
+            return {
+                levelTitle: 'Đại Sư Đàm Phán ⭐⭐⭐',
+                stars: '⭐⭐⭐',
+                timeLimit: 35,
+                botSpeed: Math.max(4.5, (baseSpeed || 9.0) - 4.0),
+                rewardPoints: 120,
+                badgeColor: '#8b5cf6'
+            };
+        } else {
+            return {
+                levelTitle: `Huyền Thoại Vô Song (Cấp ${level}) 👑`,
+                stars: '👑🔥',
+                timeLimit: 28,
+                botSpeed: Math.max(3.5, (baseSpeed || 9.0) - 5.0),
+                rewardPoints: 160,
+                badgeColor: '#ef4444'
+            };
+        }
+    }
 
     function renderOnlineUsersList() {
         const container = document.getElementById('online-users-list');
@@ -6349,11 +6447,17 @@ if (document.readyState === 'loading') {
         
         let listHtml = '';
         MOCK_ONLINE_USERS.forEach(usr => {
-            const isBeaten = localStorage.getItem(`online_pvp_beaten_${usr.id}`) === 'true' || 
-                             localStorage.getItem(`challenge_beaten_online_pvp_beaten_${usr.id}`) === 'true';
+            const oppLevel = getOpponentLevel(usr.id);
+            const config = getBattleConfig(oppLevel, usr.baseSpeed);
             
-            const actionBtn = isBeaten
-                ? `<button onclick="challengeOnlineUser('${usr.id}')" style="font-size: 0.72rem; color: #10b981; font-weight: bold; background: rgba(16, 185, 129, 0.15); padding: 6px 12px; border-radius: 8px; border: 1px solid rgba(16,185,129,0.3); text-transform: uppercase; cursor: pointer;">🏆 Thắng (Đấu lại)</button>`
+            const isBeatenAtLeastOnce = oppLevel > 1 || 
+                                        localStorage.getItem(`online_pvp_beaten_${usr.id}`) === 'true';
+            
+            const actionBtn = isBeatenAtLeastOnce
+                ? `<button onclick="challengeOnlineUser('${usr.id}')" style="font-size: 0.72rem; color: ${config.badgeColor}; font-weight: bold; background: rgba(255,255,255,0.05); padding: 6px 12px; border-radius: 8px; border: 1px solid ${config.badgeColor}; text-transform: uppercase; cursor: pointer; display: flex; align-items: center; gap: 4px;">
+                    <span>⚔️ Đấu Cấp ${oppLevel}</span>
+                    <span style="font-size: 0.65rem; background: ${config.badgeColor}; color: white; padding: 1px 5px; border-radius: 6px;">+${config.rewardPoints}đ</span>
+                  </button>`
                 : `<button onclick="challengeOnlineUser('${usr.id}')" class="pvp-btn-challenge">Khiêu Chiến</button>`;
             
             const mascotLower = usr.mascot.toLowerCase();
@@ -6367,9 +6471,10 @@ if (document.readyState === 'loading') {
                             <span class="pvp-status-dot ${statusClass}"></span>
                         </div>
                         <div>
-                            <div style="font-size: 0.88rem; font-weight: 800; color: var(--text-main); display: flex; flex-direction: column; align-items: flex-start; gap: 2px;">
+                            <div style="font-size: 0.88rem; font-weight: 800; color: var(--text-main); display: flex; align-items: center; gap: 6px;">
                                 <span>${usr.name}</span>
                                 <span class="pvp-badge-mascot ${mascotLower}">${usr.mascot}</span>
+                                <span style="font-size: 0.7rem; color: ${config.badgeColor}; font-weight: bold; background: rgba(255,255,255,0.05); padding: 1px 6px; border-radius: 8px; border: 1px solid ${config.badgeColor}40;">Cấp ${oppLevel} ${config.stars}</span>
                             </div>
                             <div style="font-size: 0.72rem; color: #10b981; font-weight: 500; margin-top: 4px;">${usr.status}</div>
                         </div>
@@ -6384,13 +6489,18 @@ if (document.readyState === 'loading') {
         container.innerHTML = listHtml;
     }
 
-    // Step 1: Open VS Matchmaking Intro Dialog
+    // Step 1: Open Dynamic VS Matchmaking Intro Dialog
     window.challengeOnlineUser = function(userId) {
         try {
             const usr = MOCK_ONLINE_USERS.find(u => u.id === userId);
             if (!usr) return;
             
+            const oppLevel = getOpponentLevel(usr.id);
+            const config = getBattleConfig(oppLevel, usr.baseSpeed);
             const playerName = localStorage.getItem('streak_name') || 'Bạn (Chiến Binh BD)';
+            
+            const quoteIdx = Math.min(oppLevel - 1, usr.quotes.length - 1);
+            const currentQuote = usr.quotes[quoteIdx];
             
             const overlay = document.createElement('div');
             overlay.className = 'pvp-select-overlay';
@@ -6410,30 +6520,32 @@ if (document.readyState === 'loading') {
             overlay.style.boxSizing = 'border-box';
             
             const box = document.createElement('div');
-            box.style.maxWidth = '560px';
+            box.style.maxWidth = '580px';
             box.style.width = '100%';
             box.style.padding = '30px 25px';
             box.style.borderRadius = '24px';
-            box.style.border = '1.5px solid rgba(239, 68, 68, 0.3)';
+            box.style.border = `1.5px solid ${config.badgeColor}`;
             box.style.background = 'linear-gradient(180deg, #16192b 0%, #0d0f1a 100%)';
             box.style.color = '#ffffff';
             box.style.textAlign = 'center';
-            box.style.boxShadow = '0 25px 60px rgba(0,0,0,0.6), inset 0 0 30px rgba(239, 68, 68, 0.08)';
+            box.style.boxShadow = `0 25px 60px rgba(0,0,0,0.6), 0 0 30px ${config.badgeColor}25`;
             
             box.innerHTML = `
-                <div style="font-size: 0.85rem; font-weight: 800; color: #f3a83b; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 8px;">
-                    ⚔️ ĐẤU TRƯỜNG ĐỐI KHÁNG TRỰC TIẾP (PVP BATTLE)
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 10px;">
+                    <div style="font-size: 0.85rem; font-weight: 800; color: #f3a83b; text-transform: uppercase; letter-spacing: 1px;">
+                        ⚔️ ĐẤU TRƯỜNG ĐỐI KHÁNG THỜI GIAN THỰC
+                    </div>
+                    <div style="background: ${config.badgeColor}; color: white; font-size: 0.72rem; font-weight: 900; padding: 3px 10px; border-radius: 12px; text-transform: uppercase;">
+                        THỬ THÁCH: CẤP ${oppLevel} ${config.stars}
+                    </div>
                 </div>
-                <h2 style="margin: 0 0 20px 0; font-size: 1.4rem; font-weight: 900; color: #ffffff; text-transform: uppercase;">
-                    XÁC NHẬN KHIÊU CHIẾN
-                </h2>
                 
                 <!-- 2-Sided Face-off Banner -->
                 <div style="display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 15px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 18px; padding: 20px 15px; margin-bottom: 20px;">
                     <!-- Player 1 (You) -->
                     <div style="display: flex; flex-direction: column; align-items: center; gap: 8px;">
                         <div style="position: relative;">
-                            <img src="mascot_challenge.jpg" style="width: 60px; height: 60px; border-radius: 50%; border: 2.5px solid #10b981; box-shadow: 0 0 15px rgba(16,185,129,0.4);" alt="You">
+                            <img src="mascot_challenge.jpg" style="width: 62px; height: 62px; border-radius: 50%; border: 2.5px solid #10b981; box-shadow: 0 0 15px rgba(16,185,129,0.4);" alt="You">
                             <span style="position: absolute; bottom: 0; right: 0; background: #10b981; color: white; font-size: 0.65rem; padding: 2px 6px; border-radius: 10px; font-weight: bold;">BẠN</span>
                         </div>
                         <strong style="font-size: 0.95rem; color: #10b981;">${playerName}</strong>
@@ -6443,43 +6555,43 @@ if (document.readyState === 'loading') {
                     <!-- Center VS -->
                     <div style="display: flex; flex-direction: column; align-items: center; gap: 4px;">
                         <span style="font-size: 1.8rem; font-weight: 900; color: #ef4444; text-shadow: 0 0 15px rgba(239,68,68,0.6); font-style: italic;">VS</span>
-                        <span style="font-size: 0.65rem; color: #94a3b8; text-transform: uppercase;">50 Giây Tốc Độ</span>
+                        <span style="font-size: 0.68rem; color: #f3a83b; font-weight: bold; background: rgba(243,168,59,0.15); padding: 2px 8px; border-radius: 10px;">${config.timeLimit} Giây</span>
                     </div>
                     
                     <!-- Player 2 (Opponent) -->
                     <div style="display: flex; flex-direction: column; align-items: center; gap: 8px;">
                         <div style="position: relative;">
-                            <img src="mascot_challenge.jpg" style="width: 60px; height: 60px; border-radius: 50%; border: 2.5px solid #ef4444; box-shadow: 0 0 15px rgba(239,68,68,0.4);" alt="Opponent">
-                            <span style="position: absolute; bottom: 0; right: 0; background: #ef4444; color: white; font-size: 0.65rem; padding: 2px 6px; border-radius: 10px; font-weight: bold;">ĐỐI THỦ</span>
+                            <img src="mascot_challenge.jpg" style="width: 62px; height: 62px; border-radius: 50%; border: 2.5px solid ${config.badgeColor}; box-shadow: 0 0 15px ${config.badgeColor}60;" alt="Opponent">
+                            <span style="position: absolute; bottom: 0; right: 0; background: ${config.badgeColor}; color: white; font-size: 0.65rem; padding: 2px 6px; border-radius: 10px; font-weight: bold;">CẤP ${oppLevel}</span>
                         </div>
-                        <strong style="font-size: 0.95rem; color: #ef4444;">${usr.name}</strong>
-                        <span style="font-size: 0.72rem; color: #f3a83b;">${usr.mascot}</span>
+                        <strong style="font-size: 0.95rem; color: ${config.badgeColor};">${usr.name}</strong>
+                        <span style="font-size: 0.72rem; color: #f3a83b;">${config.levelTitle}</span>
                     </div>
                 </div>
                 
                 <!-- Match Details -->
-                <div style="background: rgba(0,0,0,0.25); border: 1px solid rgba(255,255,255,0.06); border-radius: 12px; padding: 12px 16px; margin-bottom: 20px; font-size: 0.82rem; text-align: left; line-height: 1.5;">
-                    <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
+                <div style="background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.06); border-radius: 14px; padding: 14px 18px; margin-bottom: 18px; font-size: 0.84rem; text-align: left; line-height: 1.6;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
                         <span style="color: #94a3b8;">Đấu trường:</span>
                         <strong style="color: #38bdf8;">${usr.gameTitle}</strong>
                     </div>
-                    <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
-                        <span style="color: #94a3b8;">Quy tắc song đấu:</span>
-                        <strong style="color: #ffffff;">Ai hoàn thành 100% tiến độ trước sẽ Thắng!</strong>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+                        <span style="color: #94a3b8;">Thời gian tối đa:</span>
+                        <strong style="color: #f3a83b;">${config.timeLimit} giây (Tốc độ bot: Nhanh)</strong>
                     </div>
                     <div style="display: flex; justify-content: space-between; border-top: 1px dashed rgba(255,255,255,0.1); padding-top: 6px; margin-top: 6px;">
-                        <span style="color: #94a3b8;">Phần thưởng thắng cuộc:</span>
-                        <strong style="color: #10b981;">+50 BD-Points ⚡</strong>
+                        <span style="color: #94a3b8;">Thưởng thắng Cấp ${oppLevel}:</span>
+                        <strong style="color: #10b981; font-size: 0.95rem;">+${config.rewardPoints} BD-Points ⚡</strong>
                     </div>
                 </div>
                 
-                <p style="font-size: 0.8rem; color: #cbd5e1; font-style: italic; margin: 0 0 20px 0; background: rgba(239,68,68,0.08); border-left: 3px solid #ef4444; padding: 8px 12px; text-align: left;">
-                    "${usr.quote}"
+                <p style="font-size: 0.8rem; color: #cbd5e1; font-style: italic; margin: 0 0 20px 0; background: rgba(239,68,68,0.08); border-left: 3px solid ${config.badgeColor}; padding: 10px 14px; text-align: left; border-radius: 0 8px 8px 0;">
+                    "${currentQuote}"
                 </p>
                 
                 <div style="display: flex; flex-direction: column; gap: 10px;">
-                    <button id="btn-start-dual-arena" class="pvp-btn-challenge" style="width: 100%; padding: 14px; font-size: 1rem; font-weight: 900; letter-spacing: 0.5px; border: none; cursor: pointer; box-shadow: 0 4px 20px rgba(239,68,68,0.4);">
-                        🔥 BƯỚC VÀO SÀN ĐẤU (BẮT ĐẦU ĐỐI KHÁNG NGAY) ➔
+                    <button id="btn-start-dual-arena" class="pvp-btn-challenge" style="width: 100%; padding: 14px; font-size: 1rem; font-weight: 900; letter-spacing: 0.5px; border: none; cursor: pointer; background: linear-gradient(135deg, ${config.badgeColor} 0%, #e11d48 100%); box-shadow: 0 4px 25px ${config.badgeColor}60;">
+                        🔥 BƯỚC VÀO SÀN ĐẤU CẤP ${oppLevel} (CHIẾN NGAY) ➔
                     </button>
                     <button onclick="this.closest('.pvp-select-overlay').remove()" class="btn btn-secondary" style="padding: 10px; font-size: 0.85rem; font-weight: bold; border: none; background: transparent; color: #94a3b8; cursor: pointer;">Hủy bỏ</button>
                 </div>
@@ -6490,7 +6602,7 @@ if (document.readyState === 'loading') {
             
             box.querySelector('#btn-start-dual-arena').addEventListener('click', () => {
                 overlay.remove();
-                startDualScreenBattle(usr);
+                startDualScreenBattle(usr, oppLevel);
             });
         } catch (err) {
             console.error("Error in challengeOnlineUser:", err);
@@ -6498,18 +6610,21 @@ if (document.readyState === 'loading') {
         }
     };
 
-    // Step 2: Full Dual-Screen Live Battle Engine
+    // Step 2: Full Dual-Screen Live Battle Engine with Dynamic Level
     let dualBattleTimer = null;
     let dualBotTimer = null;
     let battleTimeLeft = 50;
     let playerProgress = 0;
     let botProgress = 0;
 
-    function startDualScreenBattle(usr) {
+    function startDualScreenBattle(usr, level) {
         clearInterval(dualBattleTimer);
         clearInterval(dualBotTimer);
         
-        battleTimeLeft = 50;
+        const oppLevel = level || getOpponentLevel(usr.id);
+        const config = getBattleConfig(oppLevel, usr.baseSpeed);
+        
+        battleTimeLeft = config.timeLimit;
         playerProgress = 0;
         botProgress = 0;
         
@@ -6539,9 +6654,9 @@ if (document.readyState === 'loading') {
                     <!-- Player HUD (Left) -->
                     <div style="display: flex; flex-direction: column; gap: 6px;">
                         <div style="display: flex; align-items: center; gap: 10px;">
-                            <img src="mascot_challenge.jpg" style="width: 36px; height: 36px; border-radius: 50%; border: 2px solid #10b981;" alt="You">
+                            <img src="mascot_challenge.jpg" style="width: 38px; height: 38px; border-radius: 50%; border: 2px solid #10b981;" alt="You">
                             <div>
-                                <strong style="font-size: 0.9rem; color: #10b981; display: block;">${playerName}</strong>
+                                <strong style="font-size: 0.92rem; color: #10b981; display: block;">${playerName}</strong>
                                 <span style="font-size: 0.7rem; color: #94a3b8;">Tiến độ của bạn: <b id="dual-player-percent" style="color: #10b981;">0%</b></span>
                             </div>
                         </div>
@@ -6552,18 +6667,18 @@ if (document.readyState === 'loading') {
                     
                     <!-- Timer & VS Header (Center) -->
                     <div style="text-align: center; padding: 0 15px;">
-                        <div id="dual-battle-timer" style="font-size: 1.8rem; font-weight: 900; font-family: monospace; color: #f3a83b; text-shadow: 0 0 10px rgba(243,168,59,0.5);">50s</div>
-                        <div style="font-size: 0.72rem; color: #ef4444; font-weight: 900; letter-spacing: 1px;">⚔️ ĐỐI KHÁNG ⚔️</div>
+                        <div id="dual-battle-timer" style="font-size: 1.8rem; font-weight: 900; font-family: monospace; color: #f3a83b; text-shadow: 0 0 10px rgba(243,168,59,0.5);">${battleTimeLeft}s</div>
+                        <div style="font-size: 0.7rem; color: ${config.badgeColor}; font-weight: 900; letter-spacing: 1px;">⚔️ ĐỐI KHÁNG CẤP ${oppLevel} ⚔️</div>
                     </div>
                     
                     <!-- Opponent Bot HUD (Right) -->
                     <div style="display: flex; flex-direction: column; gap: 6px; text-align: right;">
                         <div style="display: flex; align-items: center; justify-content: flex-end; gap: 10px;">
                             <div>
-                                <strong style="font-size: 0.9rem; color: #ef4444; display: block;">${usr.name} (${usr.mascot})</strong>
-                                <span style="font-size: 0.7rem; color: #94a3b8;">Tiến độ đối thủ: <b id="dual-bot-percent" style="color: #ef4444;">0%</b></span>
+                                <strong style="font-size: 0.92rem; color: ${config.badgeColor}; display: block;">${usr.name} (Cấp ${oppLevel})</strong>
+                                <span style="font-size: 0.7rem; color: #94a3b8;">Tiến độ đối thủ: <b id="dual-bot-percent" style="color: ${config.badgeColor};">0%</b></span>
                             </div>
-                            <img src="mascot_challenge.jpg" style="width: 36px; height: 36px; border-radius: 50%; border: 2px solid #ef4444;" alt="Bot">
+                            <img src="mascot_challenge.jpg" style="width: 38px; height: 38px; border-radius: 50%; border: 2px solid ${config.badgeColor};" alt="Bot">
                         </div>
                         <div style="background: rgba(255,255,255,0.08); height: 10px; border-radius: 6px; overflow: hidden; border: 1px solid rgba(239,68,68,0.3);">
                             <div id="dual-bot-bar" style="width: 0%; height: 100%; background: linear-gradient(90deg, #ef4444, #f43f5e); transition: width 0.4s ease; box-shadow: 0 0 10px #ef4444;"></div>
@@ -6578,10 +6693,10 @@ if (document.readyState === 'loading') {
                 <div style="background: rgba(255,255,255,0.02); border: 1.5px solid rgba(16,185,129,0.3); border-radius: 20px; padding: 20px; display: flex; flex-direction: column; box-shadow: 0 8px 30px rgba(0,0,0,0.3); position: relative; overflow: hidden;">
                     <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 10px; margin-bottom: 15px;">
                         <h4 style="margin: 0; font-size: 1.05rem; font-weight: 800; color: #10b981; display: flex; align-items: center; gap: 8px;">
-                            <span>🎮 MÀN HÌNH THI ĐẤU CỦA BẠN:</span>
+                            <span>🎮 MÀN HÌNH CỦA BẠN:</span>
                             <span style="color: #ffffff; font-weight: 600;">${usr.gameTitle}</span>
                         </h4>
-                        <span style="font-size: 0.75rem; background: rgba(16,185,129,0.2); color: #10b981; padding: 3px 10px; border-radius: 12px; font-weight: bold;">Trực Tiếp ⚡</span>
+                        <span style="font-size: 0.75rem; background: rgba(16,185,129,0.2); color: #10b981; padding: 3px 10px; border-radius: 12px; font-weight: bold;">Cấp ${oppLevel} ⭐</span>
                     </div>
                     
                     <!-- Game Render Area -->
@@ -6591,18 +6706,18 @@ if (document.readyState === 'loading') {
                 </div>
                 
                 <!-- Right Screen: Opponent Live Feed & Combat Logs -->
-                <div style="background: rgba(255,255,255,0.02); border: 1.5px solid rgba(239,68,68,0.3); border-radius: 20px; padding: 20px; display: flex; flex-direction: column; gap: 15px; box-shadow: 0 8px 30px rgba(0,0,0,0.3);">
+                <div style="background: rgba(255,255,255,0.02); border: 1.5px solid ${config.badgeColor}50; border-radius: 20px; padding: 20px; display: flex; flex-direction: column; gap: 15px; box-shadow: 0 8px 30px rgba(0,0,0,0.3);">
                     <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 10px;">
-                        <h4 style="margin: 0; font-size: 0.95rem; font-weight: 800; color: #ef4444; display: flex; align-items: center; gap: 6px;">
-                            <span>🤖 MÀN HÌNH ĐỐI THỦ:</span>
+                        <h4 style="margin: 0; font-size: 0.95rem; font-weight: 800; color: ${config.badgeColor}; display: flex; align-items: center; gap: 6px;">
+                            <span>🤖 ĐỐI THỦ:</span>
                             <span style="color: #ffffff;">${usr.name}</span>
                         </h4>
                         <span class="live-dot" style="display: inline-block; width: 8px; height: 8px; background-color: #ef4444; border-radius: 50%; box-shadow: 0 0 8px #ef4444;"></span>
                     </div>
                     
                     <!-- Simulated Opponent Radar Grid -->
-                    <div style="background: rgba(0,0,0,0.4); border: 1px solid rgba(239,68,68,0.2); border-radius: 12px; padding: 15px; text-align: center;">
-                        <div style="font-size: 0.75rem; color: #94a3b8; margin-bottom: 8px;">Mô phỏng thao tác giải đố đối thủ</div>
+                    <div style="background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 15px; text-align: center;">
+                        <div style="font-size: 0.75rem; color: #94a3b8; margin-bottom: 8px;">Mô phỏng nhịp độ giải đố đối thủ (Cấp ${oppLevel})</div>
                         <div id="bot-simulated-grid" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; max-width: 180px; margin: 0 auto;">
                             <!-- Animated Bot Grid Dots -->
                         </div>
@@ -6614,8 +6729,8 @@ if (document.readyState === 'loading') {
                             📡 NHẬT KÝ SONG ĐẤU THỜI GIAN THỰC
                         </div>
                         <div id="dual-combat-logs" style="background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.05); border-radius: 10px; padding: 10px; flex: 1; min-height: 140px; font-family: monospace; font-size: 0.75rem; color: #cbd5e1; overflow-y: auto; display: flex; flex-direction: column; gap: 6px;">
-                            <div>[00:00] ⚔️ Trận đấu chính thức bắt đầu!</div>
-                            <div>[00:02] 🤖 ${usr.name} đang phân tích đề bài...</div>
+                            <div>[00:00] ⚔️ Bước vào trận đấu Cấp ${oppLevel}!</div>
+                            <div>[00:02] 🤖 ${usr.name} đang phân tích cấu trúc đề...</div>
                         </div>
                     </div>
                     
@@ -6645,30 +6760,28 @@ if (document.readyState === 'loading') {
         // Surrender button
         document.getElementById('btn-dual-surrender').addEventListener('click', () => {
             if (confirm('Bác có chắc muốn rút lui khỏi trận đấu này không?')) {
-                endDualBattle(false, usr, 'Bạn đã chủ động rút lui!');
+                endDualBattle(false, usr, oppLevel, 'Bạn đã chủ động rút lui!');
             }
         });
         
-        // Render Interactive Game based on usr.gameId
-        renderDualInteractiveGame(usr);
+        // Render Interactive Game based on usr.gameId & Level
+        renderDualInteractiveGame(usr, oppLevel);
         
         // Start timers
-        startDualBattleCountdown(usr);
-        startBotProgressSimulation(usr);
+        startDualBattleCountdown(usr, oppLevel);
+        startBotProgressSimulation(usr, oppLevel);
     }
 
     function addCombatLog(msg) {
         const logBox = document.getElementById('dual-combat-logs');
         if (!logBox) return;
-        const elapsed = 50 - battleTimeLeft;
-        const timeStr = elapsed < 10 ? `00:0${elapsed}` : `00:${elapsed}`;
         const entry = document.createElement('div');
-        entry.innerHTML = `[${timeStr}] ${msg}`;
+        entry.innerHTML = msg;
         logBox.appendChild(entry);
         logBox.scrollTop = logBox.scrollHeight;
     }
 
-    function updatePlayerProgress(percent, msg) {
+    function updatePlayerProgress(percent, msg, usr, oppLevel) {
         playerProgress = Math.min(100, percent);
         const pBar = document.getElementById('dual-player-bar');
         const pTxt = document.getElementById('dual-player-percent');
@@ -6678,11 +6791,11 @@ if (document.readyState === 'loading') {
         if (msg) addCombatLog(`🟢 <strong>Bạn</strong>: ${msg}`);
         
         if (playerProgress >= 100) {
-            endDualBattle(true, null, 'Bạn đã hoàn thành 100% mục tiêu trước đối thủ!');
+            endDualBattle(true, usr, oppLevel, 'Bạn đã hoàn thành 100% mục tiêu trước đối thủ!');
         }
     }
 
-    function startDualBattleCountdown(usr) {
+    function startDualBattleCountdown(usr, oppLevel) {
         const timerEl = document.getElementById('dual-battle-timer');
         dualBattleTimer = setInterval(() => {
             battleTimeLeft--;
@@ -6695,16 +6808,16 @@ if (document.readyState === 'loading') {
             if (battleTimeLeft <= 0) {
                 clearInterval(dualBattleTimer);
                 if (playerProgress > botProgress) {
-                    endDualBattle(true, usr, `Hết giờ! Bạn đạt ${Math.round(playerProgress)}% cao hơn đối thủ (${Math.round(botProgress)}%)!`);
+                    endDualBattle(true, usr, oppLevel, `Hết giờ! Bạn đạt ${Math.round(playerProgress)}% cao hơn đối thủ (${Math.round(botProgress)}%)!`);
                 } else {
-                    endDualBattle(false, usr, 'Hết giờ! Đối thủ đã chiến thắng vì đạt tiến độ cao hơn!');
+                    endDualBattle(false, usr, oppLevel, 'Hết giờ! Đối thủ đã chiến thắng vì đạt tiến độ cao hơn!');
                 }
             }
         }, 1000);
     }
 
-    function startBotProgressSimulation(usr) {
-        const intervalSec = usr.botSpeed || 9;
+    function startBotProgressSimulation(usr, oppLevel) {
+        const config = getBattleConfig(oppLevel, usr.baseSpeed);
         let step = 0;
         
         dualBotTimer = setInterval(() => {
@@ -6721,8 +6834,8 @@ if (document.readyState === 'loading') {
                 const idx = (step - 1) * 4 + i;
                 const cell = document.getElementById(`bot-cell-${idx}`);
                 if (cell) {
-                    cell.style.background = '#ef4444';
-                    cell.style.boxShadow = '0 0 8px #ef4444';
+                    cell.style.background = config.badgeColor;
+                    cell.style.boxShadow = `0 0 8px ${config.badgeColor}`;
                 }
             }
             
@@ -6735,35 +6848,31 @@ if (document.readyState === 'loading') {
             
             if (botProgress >= 100) {
                 clearInterval(dualBotTimer);
-                endDualBattle(false, usr, `${usr.name} đã hoàn thành 100% mục tiêu trước bạn!`);
+                endDualBattle(false, usr, oppLevel, `${usr.name} đã hoàn thành 100% mục tiêu trước bạn!`);
             }
-        }, intervalSec * 1000);
+        }, config.botSpeed * 1000);
     }
 
-    // Step 3: Interactive Mini-Game Renderers inside Dual Arena
-    function renderDualInteractiveGame(usr) {
+    // Step 3: Interactive Mini-Game Renderers with Dynamic Difficulty
+    function renderDualInteractiveGame(usr, oppLevel) {
         const container = document.getElementById('dual-game-render-area');
         if (!container) return;
         
-        // Game 1: B2B Wend (Word Search)
         if (usr.gameId === 'game-wend') {
-            renderDualWendGame(container);
+            renderDualWendGame(container, usr, oppLevel);
         } else if (usr.gameId === 'game-zip') {
-            renderDualZipGame(container);
+            renderDualZipGame(container, usr, oppLevel);
         } else if (usr.gameId === 'game-tango') {
-            renderDualTangoGame(container);
+            renderDualTangoGame(container, usr, oppLevel);
         } else {
-            renderDualQueensGame(container);
+            renderDualQueensGame(container, usr, oppLevel);
         }
     }
 
-    // --- GAME 1: B2B WEND (Word Search PvP) ---
-    function renderDualWendGame(container) {
-        const words = ['LEAD', 'SPIN', 'ICP', 'DEAL'];
-        let foundWords = [];
-        let selectedLetters = [];
-        
-        const grid = [
+    // --- GAME 1: B2B WEND (Word Search Dynamic Level) ---
+    function renderDualWendGame(container, usr, oppLevel) {
+        let words = ['LEAD', 'SPIN', 'ICP', 'DEAL'];
+        let grid = [
             ['L', 'E', 'A', 'D', 'B', 'C'],
             ['K', 'S', 'P', 'I', 'N', 'M'],
             ['X', 'I', 'C', 'P', 'R', 'T'],
@@ -6772,13 +6881,36 @@ if (document.readyState === 'loading') {
             ['S', 'A', 'L', 'E', 'S', 'W']
         ];
         
+        if (oppLevel === 2) {
+            words = ['CHURN', 'CAC', 'LTV', 'FUNNEL'];
+            grid = [
+                ['C', 'H', 'U', 'R', 'N', 'A'],
+                ['C', 'A', 'C', 'X', 'Y', 'Z'],
+                ['L', 'T', 'V', 'B', 'C', 'D'],
+                ['F', 'U', 'N', 'N', 'E', 'L'],
+                ['P', 'I', 'T', 'C', 'H', 'O'],
+                ['S', 'A', 'L', 'E', 'S', 'K']
+            ];
+        } else if (oppLevel >= 3) {
+            words = ['UPSELL', 'EXPAND', 'RETAIN', 'SCALE'];
+            grid = [
+                ['U', 'P', 'S', 'E', 'L', 'L'],
+                ['E', 'X', 'P', 'A', 'N', 'D'],
+                ['R', 'E', 'T', 'A', 'I', 'N'],
+                ['S', 'C', 'A', 'L', 'E', 'Q'],
+                ['B', 'U', 'Y', 'E', 'R', 'S'],
+                ['G', 'R', 'O', 'W', 'T', 'H']
+            ];
+        }
+        
+        let foundWords = [];
+        let selectedLetters = [];
+        
+        const wordSpans = words.map(w => `<span id="target-word-${w}" style="color: #f3a83b; font-weight: bold; margin: 0 4px;">${w}</span>`).join(',');
+        
         container.innerHTML = `
             <div style="font-size: 0.82rem; color: #cbd5e1; margin-bottom: 12px; background: rgba(0,0,0,0.3); padding: 10px 14px; border-radius: 10px;">
-                💡 <b>Nhiệm vụ:</b> Nhấp chọn các chữ cái trên lưới để tìm đúng 4 từ khóa B2B: 
-                <span id="target-word-LEAD" style="color: #f3a83b; font-weight: bold; margin-left: 5px;">LEAD</span>, 
-                <span id="target-word-SPIN" style="color: #f3a83b; font-weight: bold; margin-left: 5px;">SPIN</span>, 
-                <span id="target-word-ICP" style="color: #f3a83b; font-weight: bold; margin-left: 5px;">ICP</span>, 
-                <span id="target-word-DEAL" style="color: #f3a83b; font-weight: bold; margin-left: 5px;">DEAL</span>
+                💡 <b>Nhiệm vụ (Cấp ${oppLevel}):</b> Tìm đúng 4 thuật ngữ B2B: ${wordSpans}
             </div>
             
             <div style="display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; max-width: 360px; margin: 0 auto;" id="wend-grid-container">
@@ -6843,7 +6975,6 @@ if (document.readyState === 'loading') {
                     wordSpan.style.textDecoration = 'line-through';
                 }
                 
-                // Highlight locked cells
                 selectedLetters.forEach(item => {
                     const cell = gridBox.querySelector(`[data-row="${item.r}"][data-col="${item.c}"]`);
                     if (cell) {
@@ -6855,7 +6986,7 @@ if (document.readyState === 'loading') {
                 selectedLetters = [];
                 if (currentWordEl) currentWordEl.textContent = '--';
                 
-                updatePlayerProgress(foundWords.length * 25, `Đã tìm ra từ khóa <strong>[${word}]</strong>!`);
+                updatePlayerProgress(foundWords.length * 25, `Đã tìm ra từ khóa <strong>[${word}]</strong>!`, usr, oppLevel);
             } else {
                 alert('Từ chưa chính xác hoặc đã tìm rồi. Bác hãy thử chọn lại nhé!');
                 selectedLetters = [];
@@ -6869,9 +7000,9 @@ if (document.readyState === 'loading') {
         });
     }
 
-    // --- GAME 2: B2B ZIP (Sales Path Finder PvP) ---
-    function renderDualZipGame(container) {
-        const pipelineStages = [
+    // --- GAME 2: B2B ZIP (Path Finder Dynamic Level) ---
+    function renderDualZipGame(container, usr, oppLevel) {
+        let pipelineStages = [
             { id: 1, name: '1. Lead Gen 🎯' },
             { id: 2, name: '2. ICP Qualify 🔍' },
             { id: 3, name: '3. Cold Outreach ✉️' },
@@ -6880,28 +7011,46 @@ if (document.readyState === 'loading') {
             { id: 6, name: '6. Closed Won 🏆' }
         ];
         
+        let distractors = [
+            { id: 99, name: 'Spam Mail ❌' },
+            { id: 98, name: 'Discount 50% ❌' },
+            { id: 97, name: 'Ghosted ❌' }
+        ];
+        
+        if (oppLevel >= 2) {
+            pipelineStages = [
+                { id: 1, name: '1. Inbound Lead 🎯' },
+                { id: 2, name: '2. BANT Scoring 🔍' },
+                { id: 3, name: '3. Demo Solution 📢' },
+                { id: 4, name: '4. Security Audit 🛡️' },
+                { id: 5, name: '5. Procurement ⚖️' },
+                { id: 6, name: '6. Board Sign-off ✍️' },
+                { id: 7, name: '7. Closed Won 🏆' }
+            ];
+            distractors.push({ id: 96, name: 'Price War ❌' }, { id: 95, name: 'Red Tape ❌' });
+        }
+        
         let currentStep = 1;
+        const totalSteps = pipelineStages.length;
         
         container.innerHTML = `
             <div style="font-size: 0.82rem; color: #cbd5e1; margin-bottom: 12px; background: rgba(0,0,0,0.3); padding: 10px 14px; border-radius: 10px;">
-                💡 <b>Nhiệm vụ:</b> Nhấp chọn đúng thứ tự 6 bước phễu bán hàng từ <b>1 ➔ 6</b> để thông suốt đường ống chốt deal!
+                💡 <b>Nhiệm vụ (Cấp ${oppLevel}):</b> Nhấp chọn đúng thứ tự ${totalSteps} bước phễu bán hàng từ <b>1 ➔ ${totalSteps}</b> (Coi chừng bẫy distractor)!
             </div>
             
-            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; max-width: 440px; margin: 0 auto;" id="zip-pipeline-grid">
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; max-width: 460px; margin: 0 auto;" id="zip-pipeline-grid">
                 <!-- Pipeline Cards -->
             </div>
         `;
         
         const gridBox = container.querySelector('#zip-pipeline-grid');
-        // Shuffle stages for challenge
-        const shuffled = [...pipelineStages, { id: 99, name: 'Spam Mail ❌' }, { id: 98, name: 'Discount 50% ❌' }, { id: 97, name: 'Ghosted ❌' }]
-            .sort(() => Math.random() - 0.5);
+        const shuffled = [...pipelineStages, ...distractors].sort(() => Math.random() - 0.5);
             
         shuffled.forEach(stage => {
             const btn = document.createElement('button');
             btn.textContent = stage.name;
-            btn.style.padding = '14px 10px';
-            btn.style.fontSize = '0.85rem';
+            btn.style.padding = '14px 8px';
+            btn.style.fontSize = '0.82rem';
             btn.style.fontWeight = 'bold';
             btn.style.background = 'rgba(255,255,255,0.06)';
             btn.style.border = '1.5px solid rgba(255,255,255,0.15)';
@@ -6917,7 +7066,7 @@ if (document.readyState === 'loading') {
                     btn.style.color = '#34d399';
                     btn.disabled = true;
                     
-                    updatePlayerProgress((currentStep / 6) * 100, `Đã mở thông bước: ${stage.name}`);
+                    updatePlayerProgress((currentStep / totalSteps) * 100, `Đã thông suốt bước: ${stage.name}`, usr, oppLevel);
                     currentStep++;
                 } else {
                     btn.style.background = 'rgba(239, 68, 68, 0.4)';
@@ -6933,8 +7082,8 @@ if (document.readyState === 'loading') {
         });
     }
 
-    // --- GAME 3: B2B TANGO (Reasoning Grid PvP) ---
-    function renderDualTangoGame(container) {
+    // --- GAME 3: B2B TANGO (Reasoning Grid Dynamic Level) ---
+    function renderDualTangoGame(container, usr, oppLevel) {
         let grid = [
             ['🤝', '', '', '❌'],
             ['', '❌', '🤝', ''],
@@ -6951,7 +7100,7 @@ if (document.readyState === 'loading') {
         
         container.innerHTML = `
             <div style="font-size: 0.82rem; color: #cbd5e1; margin-bottom: 12px; background: rgba(0,0,0,0.3); padding: 10px 14px; border-radius: 10px;">
-                💡 <b>Nhiệm vụ:</b> Nhấp vào ô trống để chuyển đổi giữa 🤝 (Deal) và ❌ (Reject) sao cho mỗi hàng và cột có đúng 2🤝 và 2❌!
+                💡 <b>Nhiệm vụ (Cấp ${oppLevel}):</b> Điền deal 🤝 và ❌ sao cho mỗi hàng và cột có số lượng bằng nhau!
             </div>
             
             <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; max-width: 280px; margin: 0 auto;" id="tango-grid-box">
@@ -6981,14 +7130,13 @@ if (document.readyState === 'loading') {
                         
                         grid[r][c] = btn.textContent;
                         
-                        // Check progress
                         let correctCount = 0;
                         for (let i = 0; i < 4; i++) {
                             for (let j = 0; j < 4; j++) {
                                 if (grid[i][j] === solution[i][j]) correctCount++;
                             }
                         }
-                        updatePlayerProgress((correctCount / 16) * 100, `Vừa đặt logic ô (${r+1},${c+1})`);
+                        updatePlayerProgress((correctCount / 16) * 100, `Vừa đặt logic ô (${r+1},${c+1})`, usr, oppLevel);
                     });
                 }
                 
@@ -6997,31 +7145,32 @@ if (document.readyState === 'loading') {
         });
     }
 
-    // --- GAME 4: B2B QUEENS (BD Territory Alignment PvP) ---
-    function renderDualQueensGame(container) {
+    // --- GAME 4: B2B QUEENS (BD Territory Alignment Dynamic Level) ---
+    function renderDualQueensGame(container, usr, oppLevel) {
+        const size = oppLevel >= 2 ? 5 : 4;
         let queensPlaced = [];
         
         container.innerHTML = `
             <div style="font-size: 0.82rem; color: #cbd5e1; margin-bottom: 12px; background: rgba(0,0,0,0.3); padding: 10px 14px; border-radius: 10px;">
-                💡 <b>Nhiệm vụ:</b> Đặt 4 Vương miện (👑) vào lưới 4x4 sao cho không có 2 người nào nằm chung hàng, chung cột hoặc chung đường chéo!
+                💡 <b>Nhiệm vụ (Cấp ${oppLevel}):</b> Đặt ${size} Vương miện (👑) vào lưới ${size}x${size} sao cho không có 2 người nào cùng hàng, cột hay đường chéo!
             </div>
             
-            <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; max-width: 280px; margin: 0 auto;" id="queens-grid-box">
+            <div style="display: grid; grid-template-columns: repeat(${size}, 1fr); gap: 6px; max-width: ${size === 5 ? '320px' : '280px'}; margin: 0 auto;" id="queens-grid-box">
                 <!-- Queens Cells -->
             </div>
         `;
         
         const gridBox = container.querySelector('#queens-grid-box');
         
-        for (let r = 0; r < 4; r++) {
-            for (let c = 0; c < 4; c++) {
+        for (let r = 0; r < size; r++) {
+            for (let c = 0; c < size; c++) {
                 const btn = document.createElement('button');
                 btn.textContent = '·';
-                btn.style.height = '54px';
-                btn.style.fontSize = '1.4rem';
+                btn.style.height = size === 5 ? '46px' : '54px';
+                btn.style.fontSize = '1.3rem';
                 btn.style.background = 'rgba(255,255,255,0.06)';
                 btn.style.border = '1.5px solid rgba(255,255,255,0.15)';
-                btn.style.borderRadius = '10px';
+                btn.style.borderRadius = '8px';
                 btn.style.color = '#ffffff';
                 btn.style.cursor = 'pointer';
                 
@@ -7032,8 +7181,8 @@ if (document.readyState === 'loading') {
                         btn.textContent = '·';
                         btn.style.background = 'rgba(255,255,255,0.06)';
                     } else {
-                        if (queensPlaced.length >= 4) {
-                            alert('Bác chỉ được đặt tối đa 4 Vương miện (👑) thôi nhé!');
+                        if (queensPlaced.length >= size) {
+                            alert(`Bác chỉ được đặt tối đa ${size} Vương miện (👑) thôi nhé!`);
                             return;
                         }
                         queensPlaced.push({ r, c });
@@ -7042,7 +7191,6 @@ if (document.readyState === 'loading') {
                         btn.style.borderColor = '#f3a83b';
                     }
                     
-                    // Validate conflict
                     let hasConflict = false;
                     for (let i = 0; i < queensPlaced.length; i++) {
                         for (let j = i + 1; j < queensPlaced.length; j++) {
@@ -7054,10 +7202,10 @@ if (document.readyState === 'loading') {
                         }
                     }
                     
-                    if (queensPlaced.length === 4 && !hasConflict) {
-                        updatePlayerProgress(100, 'Phân bổ 4 BD Manager hoàn hảo không xung đột!');
+                    if (queensPlaced.length === size && !hasConflict) {
+                        updatePlayerProgress(100, `Phân bổ ${size} BD Manager hoàn hảo không xung đột!`, usr, oppLevel);
                     } else {
-                        updatePlayerProgress((queensPlaced.length / 4) * 50, `Đã đặt ${queensPlaced.length}/4 Vương miện`);
+                        updatePlayerProgress((queensPlaced.length / size) * 50, `Đã đặt ${queensPlaced.length}/${size} Vương miện`, usr, oppLevel);
                     }
                 });
                 
@@ -7066,47 +7214,65 @@ if (document.readyState === 'loading') {
         }
     }
 
-    // Step 4: Final Victory / Defeat Screen
-    function endDualBattle(isWin, usr, reason) {
+    // Step 4: Final Victory / Defeat Screen with Progression & Re-Challenge Loop
+    function endDualBattle(isWin, usr, oppLevel, reason) {
         clearInterval(dualBattleTimer);
         clearInterval(dualBotTimer);
         
         const modal = document.getElementById('pvp-dual-arena-modal');
         if (!modal) return;
         
-        const rewardPoints = 50;
+        const config = getBattleConfig(oppLevel, usr ? usr.baseSpeed : 9.0);
         
         if (isWin) {
+            // Level up opponent
+            const nextLvl = oppLevel + 1;
             if (usr && usr.id) {
+                localStorage.setItem(`pvp_level_${usr.id}`, nextLvl.toString());
                 localStorage.setItem(`online_pvp_beaten_${usr.id}`, 'true');
             }
             renderOnlineUsersList();
             
             const currentPoints = parseInt(localStorage.getItem('b2b_points_balance') || '0', 10);
-            localStorage.setItem('b2b_points_balance', (currentPoints + rewardPoints).toString());
+            localStorage.setItem('b2b_points_balance', (currentPoints + config.rewardPoints).toString());
             if (window.updateNavbarUserHUD) window.updateNavbarUserHUD();
             
+            const nextConfig = getBattleConfig(nextLvl, usr ? usr.baseSpeed : 9.0);
+            
             modal.innerHTML = `
-                <div style="max-width: 520px; width: 100%; margin: auto; background: linear-gradient(180deg, #13241b 0%, #0c1712 100%); border: 2px solid #10b981; border-radius: 24px; padding: 35px 25px; text-align: center; box-shadow: 0 25px 60px rgba(0,0,0,0.8), 0 0 40px rgba(16,185,129,0.3);">
-                    <div style="font-size: 4.5rem; margin-bottom: 15px;">🏆👑</div>
-                    <div style="font-size: 0.85rem; font-weight: 800; color: #34d399; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 6px;">VICTORY - CHIẾN THẮNG RỰC RỠ!</div>
-                    <h2 style="margin: 0 0 15px 0; font-size: 1.6rem; font-weight: 900; color: #ffffff;">BẠN LÀ CHIẾN THẦN BD!</h2>
+                <div style="max-width: 540px; width: 100%; margin: auto; background: linear-gradient(180deg, #13241b 0%, #0c1712 100%); border: 2px solid #10b981; border-radius: 24px; padding: 35px 25px; text-align: center; box-shadow: 0 25px 60px rgba(0,0,0,0.8), 0 0 40px rgba(16,185,129,0.3);">
+                    <div style="font-size: 4rem; margin-bottom: 12px;">🏆👑</div>
+                    <div style="font-size: 0.85rem; font-weight: 800; color: #34d399; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 4px;">VICTORY - CHIẾN THẮNG CẤP ${oppLevel}!</div>
+                    <h2 style="margin: 0 0 12px 0; font-size: 1.6rem; font-weight: 900; color: #ffffff;">ĐỐI THỦ ĐÃ BỊ HẠ GỤC!</h2>
                     
-                    <p style="font-size: 0.9rem; color: #cbd5e1; line-height: 1.5; margin: 0 0 20px 0;">
+                    <p style="font-size: 0.88rem; color: #cbd5e1; line-height: 1.5; margin: 0 0 15px 0;">
                         ${reason}
                     </p>
                     
-                    <div style="background: rgba(16,185,129,0.15); border: 1.5px dashed #10b981; border-radius: 14px; padding: 15px; margin-bottom: 25px;">
-                        <span style="font-size: 1.1rem; font-weight: 900; color: #10b981;">🎁 THƯỞNG SONG ĐẤU: +50 BD-POINTS! ⚡</span>
+                    <div style="background: rgba(16,185,129,0.15); border: 1.5px dashed #10b981; border-radius: 14px; padding: 14px; margin-bottom: 15px;">
+                        <span style="font-size: 1.1rem; font-weight: 900; color: #10b981;">🎁 NHẬN THƯỞNG: +${config.rewardPoints} BD-POINTS! ⚡</span>
+                    </div>
+                    
+                    <!-- Next Level Promotion Alert -->
+                    <div style="background: rgba(59,130,246,0.15); border: 1px solid rgba(59,130,246,0.3); border-radius: 12px; padding: 12px; margin-bottom: 20px; font-size: 0.82rem; color: #93c5fd; text-align: left;">
+                        ⭐ <b>THĂNG CẤP ĐỐI THỦ:</b> <strong>${usr ? usr.name : 'Đối thủ'}</strong> đã thăng cấp lên <strong>Cấp ${nextLvl} (${nextConfig.levelTitle})</strong>. Thời gian sẽ rút ngắn xuống <strong>${nextConfig.timeLimit}s</strong> và phần thưởng tăng lên <strong>+${nextConfig.rewardPoints}đ</strong>!
                     </div>
                     
                     <div style="display: flex; flex-direction: column; gap: 10px;">
-                        <button id="btn-dual-win-close" class="btn btn-primary" style="padding: 14px; font-size: 1rem; font-weight: bold; border-radius: 12px; border: none; cursor: pointer; background: #10b981; color: white;">
-                            Nhận Thưởng & Trở Về Đấu Trường ➔
+                        <button id="btn-dual-next-level" class="pvp-btn-challenge" style="padding: 14px; font-size: 0.95rem; font-weight: 900; border: none; cursor: pointer; background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);">
+                            🔥 THỬ THÁCH TIẾP CẤP ${nextLvl} NGAY (+${nextConfig.rewardPoints}đ) ➔
+                        </button>
+                        <button id="btn-dual-win-close" class="btn btn-secondary" style="padding: 10px; font-size: 0.85rem; font-weight: bold; border: none; background: transparent; color: #94a3b8; cursor: pointer;">
+                            Đóng & Trở về Đấu Trường
                         </button>
                     </div>
                 </div>
             `;
+            
+            document.getElementById('btn-dual-next-level').addEventListener('click', () => {
+                modal.remove();
+                startDualScreenBattle(usr, nextLvl);
+            });
             
             document.getElementById('btn-dual-win-close').addEventListener('click', () => {
                 modal.remove();
@@ -7116,7 +7282,7 @@ if (document.readyState === 'loading') {
             modal.innerHTML = `
                 <div style="max-width: 520px; width: 100%; margin: auto; background: linear-gradient(180deg, #241318 0%, #170c10 100%); border: 2px solid #ef4444; border-radius: 24px; padding: 35px 25px; text-align: center; box-shadow: 0 25px 60px rgba(0,0,0,0.8), 0 0 40px rgba(239,68,68,0.3);">
                     <div style="font-size: 4.5rem; margin-bottom: 15px;">💀⚔️</div>
-                    <div style="font-size: 0.85rem; font-weight: 800; color: #f87171; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 6px;">DEFEAT - BẠN ĐÃ BẠI TRẬN!</div>
+                    <div style="font-size: 0.85rem; font-weight: 800; color: #f87171; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 6px;">DEFEAT - BẠN ĐÃ BẠI TRẬN CẤP ${oppLevel}!</div>
                     <h2 style="margin: 0 0 15px 0; font-size: 1.5rem; font-weight: 900; color: #ffffff;">ĐỐI THỦ ĐÃ VỀ ĐÍCH TRƯỚC!</h2>
                     
                     <p style="font-size: 0.9rem; color: #cbd5e1; line-height: 1.5; margin: 0 0 20px 0;">
@@ -7124,12 +7290,12 @@ if (document.readyState === 'loading') {
                     </p>
                     
                     <div style="background: rgba(239,68,68,0.15); border: 1.5px dashed #ef4444; border-radius: 14px; padding: 12px; margin-bottom: 25px; font-size: 0.85rem; color: #f87171; font-weight: bold;">
-                        Đừng nản chí! Hãy tái đấu ngay để lật ngược tình thế!
+                        Tốc độ Cấp ${oppLevel} rất nhanh! Hãy tái đấu ngay để rút kinh nghiệm và bứt phá!
                     </div>
                     
                     <div style="display: flex; flex-direction: column; gap: 10px;">
                         <button id="btn-dual-retry" class="pvp-btn-challenge" style="padding: 14px; font-size: 1rem; font-weight: 900; border: none; cursor: pointer;">
-                            🔥 TÁI ĐẤU NGAY LẬP TỨC ➔
+                            🔥 TÁI ĐẤU LẠI CẤP ${oppLevel} NGAY ➔
                         </button>
                         <button id="btn-dual-lose-close" class="btn btn-secondary" style="padding: 10px; font-size: 0.85rem; font-weight: bold; border: none; background: transparent; color: #94a3b8; cursor: pointer;">
                             Rút lui rèn luyện thêm
@@ -7140,7 +7306,7 @@ if (document.readyState === 'loading') {
             
             document.getElementById('btn-dual-retry').addEventListener('click', () => {
                 modal.remove();
-                startDualScreenBattle(usr);
+                startDualScreenBattle(usr, oppLevel);
             });
             
             document.getElementById('btn-dual-lose-close').addEventListener('click', () => {
