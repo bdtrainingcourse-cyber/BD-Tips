@@ -398,14 +398,21 @@ document.addEventListener('DOMContentLoaded', () => {
                 card.style.transition = 'all 0.3s ease';
                 const liveCount = getEbookDownloadCount(ebook);
                 const isHot = ebook.badge === 'Hot Best-seller';
-                const badgeStyle = isHot 
-                    ? 'background: linear-gradient(135deg, #a20a0a 0%, #f3a83b 100%); color: #ffffff; font-weight: 800; border: 1px solid #f3a83b; box-shadow: 0 4px 12px rgba(243, 168, 59, 0.4);' 
-                    : '';
+                const isShouldKnow = ebook.badge === 'Should know';
+                let badgeStyle = '';
+                let badgePrefix = '';
+                if (isHot) {
+                    badgeStyle = 'background: linear-gradient(135deg, #a20a0a 0%, #f3a83b 100%); color: #ffffff; font-weight: 800; border: 1px solid #f3a83b; box-shadow: 0 4px 12px rgba(243, 168, 59, 0.4);';
+                    badgePrefix = '🔥 ';
+                } else if (isShouldKnow) {
+                    badgeStyle = 'background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: #ffffff; font-weight: 800; border: 1px solid #fbbf24; box-shadow: 0 4px 12px rgba(245, 158, 11, 0.45);';
+                    badgePrefix = '⭐ ';
+                }
 
                 const coverHtml = ebook.coverImage ? `
                     <div class="ebook-cover-frame">
                         <img src="${ebook.coverImage}" data-src="${ebook.coverImage}" alt="${ebook.title}" class="ebook-cover-img" loading="lazy" onerror="this.onerror=null; this.src='https://raw.githubusercontent.com/bdtrainingcourse-cyber/BD-Tips/main/' + this.getAttribute('data-src');">
-                        <span class="ebook-cover-badge-overlay" style="${badgeStyle}">${isHot ? '🔥 ' : ''}${ebook.badge || 'PDF Ebook'}</span>
+                        <span class="ebook-cover-badge-overlay" style="${badgeStyle}">${badgePrefix}${ebook.badge || 'PDF Ebook'}</span>
                     </div>
                 ` : `<div style="font-size: 2.2rem; margin-bottom: 10px;">${ebook.icon || '📚'}</div>`;
 

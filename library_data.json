@@ -93,6 +93,19 @@
   ],
   "ebooks": [
     {
+      "id": "ebook-tro-cap-that-nghiep",
+      "title": "Quy Trình Hưởng Trợ Cấp Thất Nghiệp (TCTN)",
+      "description": "Cẩm nang hướng dẫn chi tiết từng bước thủ tục, điều kiện hưởng, hồ sơ pháp lý và mốc thời gian nhận trợ cấp thất nghiệp chuẩn xác theo luật lao động.",
+      "author": "Peter Vo",
+      "date": "2026-09-01",
+      "fileUrl": "ebooks/Quy trình hưởng trợ cấp thất nghiệp.pdf",
+      "coverImage": "ebook-covers/cover-tro-cap-that-nghiep.png",
+      "fileSize": "13.9 MB",
+      "badge": "Should know",
+      "icon": "📋",
+      "downloads": 215
+    },
+    {
       "id": "ebook-mindset-bd",
       "title": "Tư Duy BD \"Thép\" & Tâm Lý Học B2B Mindset",
       "description": "Giải mã tâm lý khách hàng B2B, vượt qua rào cản từ chối giá và xây dựng tư duy chốt deal bền vững cho nhân sự BD.",
@@ -195,19 +208,6 @@
       "badge": "Scale Up 2026",
       "icon": "🚀",
       "downloads": 128
-    },
-    {
-      "id": "ebook-tro-cap-that-nghiep",
-      "title": "Quy Trình Hưởng Trợ Cấp Thất Nghiệp",
-      "description": "Cẩm nang hướng dẫn chi tiết từng bước thủ tục, điều kiện hưởng, hồ sơ pháp lý và mốc thời gian nhận trợ cấp thất nghiệp chuẩn xác theo luật lao động.",
-      "author": "Peter Vo",
-      "date": "2026-09-01",
-      "fileUrl": "ebooks/Quy trình hưởng trợ cấp thất nghiệp.pdf",
-      "coverImage": "ebook-covers/cover-tro-cap-that-nghiep.png",
-      "fileSize": "13.9 MB",
-      "badge": "Hot New 2026",
-      "icon": "📋",
-      "downloads": 168
     }
   ],
   "glossary": [
