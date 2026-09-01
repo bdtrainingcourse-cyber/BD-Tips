@@ -41,6 +41,48 @@ document.addEventListener('DOMContentLoaded', () => {
     let searchQuery = '';
     let searchTrackTimeout;
 
+    // Immediate verification of session on library load
+    const currentStoredEmail = localStorage.getItem('streak_email');
+    if (currentStoredEmail) {
+        fetch(`/api/log-email?action=checkEmail&email=${encodeURIComponent(currentStoredEmail)}`)
+            .then(res => res.json())
+            .then(data => {
+                if (data.exists === false) {
+                    // User was deleted from Google Sheets! Clean all storage
+                    localStorage.removeItem('streak_email');
+                    localStorage.removeItem('streak_name');
+                    localStorage.removeItem('streak_user_id');
+                    localStorage.removeItem('streak_active');
+                    localStorage.removeItem('b2b_user_verified');
+                    localStorage.removeItem('b2b_points_balance');
+                    localStorage.removeItem('b2b_has_downloaded_before');
+                    localStorage.removeItem('b2b_daily_downloads');
+                    localStorage.removeItem('profile_experience');
+                    localStorage.removeItem('profile_industry');
+                    localStorage.removeItem('profile_skill');
+                    if (window.updateNavbarUserHUD) {
+                        window.updateNavbarUserHUD();
+                    }
+                } else if (data.exists && data.user) {
+                    if (data.user.verified) {
+                        localStorage.setItem('b2b_user_verified', 'true');
+                    } else {
+                        localStorage.removeItem('b2b_user_verified');
+                    }
+                    if (data.user.points !== undefined) {
+                        localStorage.setItem('b2b_points_balance', data.user.points.toString());
+                    }
+                    if (window.updateNavbarUserHUD) {
+                        window.updateNavbarUserHUD();
+                    }
+                }
+            })
+            .catch(e => console.warn('Library check user error:', e));
+    } else {
+        // If not logged in, ensure stale download blocker flags are cleared
+        localStorage.removeItem('b2b_has_downloaded_before');
+    }
+
     // --- Daily Download Limit & Retention Helpers ---
     function getTodayKey() {
         const today = new Date();
@@ -570,50 +612,31 @@ document.addEventListener('DOMContentLoaded', () => {
     function handleEbookDownload(ebook) {
         currentSelectedEbook = ebook;
         
-        // If they unlocked the 7-day streak reward, they are exempt from all limits!
-        const ebookCredits = parseInt(localStorage.getItem('b2b_unlocked_ebook_credits') || '0', 10);
-        const streakUnlocked = ebookCredits > 0 || localStorage.getItem('b2b_streak_unlocked_ebook') === 'true';
-        
-        if (!streakUnlocked) {
-            // Check Daily Download Limit (1 per day default + bonus credits)
-            const todayDl = getTodayDownloads();
-            const allowedDl = 1 + getTodayBonusCredits();
-
-            if (todayDl >= allowedDl) {
-                // Daily limit reached -> Open retention modal to invite playing mini game or community!
-                limitModal.classList.remove('hidden');
-                return;
-            }
-
-            // If they are a returning user who already registered in the past,
-            // they must earn a bonus credit today to unlock any new/different ebook!
-            const hasDownloadedBefore = localStorage.getItem('b2b_has_downloaded_before') === 'true';
-            if (hasDownloadedBefore && getTodayBonusCredits() < 1) {
-                // Force playing games / visiting community
-                const limitModalTitle = document.querySelector('#limit-modal .modal-title');
-                const limitModalDesc = document.querySelector('#limit-modal p');
-                if (limitModalTitle) {
-                    limitModalTitle.textContent = "Cần Tích Điểm Để Mở Khóa Ebook Mới";
-                }
-                if (limitModalDesc) {
-                    limitModalDesc.textContent = "Bạn đã tải Ebook chào mừng trước đó. Để mở khóa tải Ebook tiếp theo, vui lòng tham gia Thử thách B2B hoặc Cộng đồng BD để tích lũy điểm mở khóa nhé!";
-                }
-                limitModal.classList.remove('hidden');
-                return;
-            }
-        }
-
         const currentEmail = localStorage.getItem('streak_email');
         const isVerifiedLocal = localStorage.getItem('b2b_user_verified') === 'true';
 
-        // 1. User đã đăng ký VÀ email đã xác thực -> Vẫn giữ flow cũ là ebook tải trực tiếp về máy
+        // 1. User đã đăng ký VÀ email đã xác thực -> Kiểm tra hạn mức tải trực tiếp về máy
         if (currentEmail && isVerifiedLocal) {
+            const ebookCredits = parseInt(localStorage.getItem('b2b_unlocked_ebook_credits') || '0', 10);
+            const streakUnlocked = ebookCredits > 0 || localStorage.getItem('b2b_streak_unlocked_ebook') === 'true';
+            
+            if (!streakUnlocked) {
+                // Check Daily Download Limit (1 per day default + bonus credits)
+                const todayDl = getTodayDownloads();
+                const allowedDl = 1 + getTodayBonusCredits();
+
+                if (todayDl >= allowedDl) {
+                    // Daily limit reached -> Open retention modal
+                    limitModal.classList.remove('hidden');
+                    return;
+                }
+            }
+
             triggerDownload(ebook);
             return;
         }
 
-        // 2. User đã đăng ký (email chưa xác thực) HOẶC User mới vào mục này lần đầu -> Bắt buộc gửi ebook qua email để tự tải về & xác thực email
-        currentSelectedEbook = ebook;
+        // 2. User mới HOẶC User đã đăng ký nhưng chưa xác thực email -> Mở popup đăng ký nhận Ebook qua email
         downloadEbookTitle.textContent = ebook.title;
 
         const modalTitleEl = document.querySelector('#download-modal .modal-title');
@@ -621,12 +644,12 @@ document.addEventListener('DOMContentLoaded', () => {
         const submitBtn = downloadForm ? downloadForm.querySelector('button[type="submit"]') : null;
 
         if (currentEmail) {
-            // User đã đăng ký nhưng chưa xác thực
+            // User đã có email lưu trong máy nhưng chưa xác thực
             regEmail.value = currentEmail;
             regFirstName.value = localStorage.getItem('streak_name') || '';
             regEmail.readOnly = true;
             if (modalTitleEl) modalTitleEl.textContent = "Nhận Ebook & Kích Hoạt Tài Khoản";
-            if (modalNoticeEl) modalNoticeEl.innerHTML = `💡 Email <strong>${currentEmail}</strong> chưa được xác thực. Cú BeeDee sẽ gửi link tải Ebook trực tiếp qua email của bạn kèm link kích hoạt (+15đ ⚡).`;
+            if (modalNoticeEl) modalNoticeEl.innerHTML = `💡 Email <strong>${currentEmail}</strong> chưa được xác thực. Cú BeeDee sẽ gửi trọn bộ file PDF Ebook trực tiếp qua email của bạn kèm link kích hoạt (+15đ ⚡).`;
             if (submitBtn) submitBtn.textContent = "📨 Gửi Ebook Đến Email Của Tôi ➔";
         } else {
             // User mới lần đầu
@@ -634,7 +657,7 @@ document.addEventListener('DOMContentLoaded', () => {
             regFirstName.value = '';
             regEmail.readOnly = false;
             if (modalTitleEl) modalTitleEl.textContent = "Đăng Ký Nhận Ebook Qua Email";
-            if (modalNoticeEl) modalNoticeEl.innerHTML = `💡 Ebook sẽ được gửi tự động qua email của bạn kèm link xác thực kích hoạt tài khoản (+15đ ⚡).`;
+            if (modalNoticeEl) modalNoticeEl.innerHTML = `💡 Ebook sẽ được gửi tự động qua email của bạn kèm file PDF đính kèm và link kích hoạt tài khoản (+15đ ⚡).`;
             if (submitBtn) submitBtn.textContent = "📨 Gửi Ebook Đến Email & Xác Thực ➔";
         }
 
