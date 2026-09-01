@@ -618,3 +618,90 @@ body.dark-theme #download-modal .form-group select {
     color: #f8fafc;
 }
 
+/* Limit & Retention Modal Light Theme Styling */
+#limit-modal .modal-card {
+    background: #ffffff !important;
+    border: 1px solid #e2e8f0 !important;
+    color: #0f172a !important;
+    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.15) !important;
+    border-radius: 20px;
+}
+
+#limit-modal .modal-title {
+    color: #a20a0a !important;
+    font-weight: 800;
+}
+
+#limit-modal p {
+    color: #475569 !important;
+    line-height: 1.6;
+}
+
+#limit-modal #btn-unlock-game {
+    background: linear-gradient(135deg, #a20a0a 0%, #750707 100%) !important;
+    color: #ffffff !important;
+    box-shadow: 0 6px 18px rgba(162, 10, 10, 0.35) !important;
+    border: none !important;
+}
+
+#limit-modal #btn-unlock-game:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(162, 10, 10, 0.45) !important;
+}
+
+#limit-modal #btn-unlock-community {
+    background: #f8fafc !important;
+    border: 1.5px solid #cbd5e1 !important;
+    color: #0f172a !important;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+}
+
+#limit-modal #btn-unlock-community:hover {
+    background: #f1f5f9 !important;
+    border-color: #94a3b8 !important;
+    transform: translateY(-2px);
+}
+
+#limit-modal #btn-limit-close {
+    background: #e2e8f0 !important;
+    border: 1px solid #cbd5e1 !important;
+    color: #334155 !important;
+    font-weight: 700;
+    border-radius: 12px;
+    padding: 12px 20px;
+    transition: all 0.2s ease;
+}
+
+#limit-modal #btn-limit-close:hover {
+    background: #cbd5e1 !important;
+    color: #0f172a !important;
+}
+
+body.dark-theme #limit-modal .modal-card {
+    background: #151a23 !important;
+    border-color: rgba(255, 255, 255, 0.1) !important;
+    color: #f8fafc !important;
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.6) !important;
+}
+
+body.dark-theme #limit-modal .modal-title {
+    color: #f8fafc !important;
+}
+
+body.dark-theme #limit-modal p {
+    color: #94a3b8 !important;
+}
+
+body.dark-theme #limit-modal #btn-unlock-community {
+    background: rgba(255, 255, 255, 0.08) !important;
+    border-color: rgba(255, 255, 255, 0.15) !important;
+    color: #ffffff !important;
+}
+
+body.dark-theme #limit-modal #btn-limit-close {
+    background: rgba(255, 255, 255, 0.1) !important;
+    border-color: rgba(255, 255, 255, 0.15) !important;
+    color: #f8fafc !important;
+}
+
+

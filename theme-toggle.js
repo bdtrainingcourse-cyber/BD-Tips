@@ -1989,42 +1989,53 @@ function initGlobalComponents() {
             pointer-events: auto;
         }
         .global-modal-box {
-            background: rgba(30, 41, 59, 0.95);
-            border: 1.5px solid rgba(243, 168, 59, 0.25);
+            background: #ffffff;
+            border: 1.5px solid rgba(243, 168, 59, 0.35);
             border-radius: 20px;
             padding: 30px;
             width: 90%;
             max-width: 480px;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.18);
             transform: scale(0.9) translateY(20px);
             transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-            color: #f8fafc;
+            color: #0f172a;
             font-family: 'Be Vietnam Pro', sans-serif;
         }
         .global-modal-overlay.active .global-modal-box {
             transform: scale(1) translateY(0);
         }
+        body.dark-theme .global-modal-box {
+            background: rgba(30, 41, 59, 0.95);
+            border-color: rgba(243, 168, 59, 0.25);
+            color: #f8fafc;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
         .global-sync-banner {
             position: fixed;
             bottom: 30px;
             right: 30px;
-            background: rgba(30, 41, 59, 0.95);
+            background: #ffffff;
             border: 1.5px solid #f3a83b;
             border-radius: 16px;
             padding: 20px;
             width: 350px;
             max-width: calc(100vw - 60px);
-            box-shadow: 0 20px 25px -5px rgba(0,0,0,0.5);
+            box-shadow: 0 20px 35px rgba(0,0,0,0.15);
             z-index: 9999;
             transform: translateY(120px) scale(0.9);
             opacity: 0;
             transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            color: #f8fafc;
+            color: #0f172a;
             font-family: 'Be Vietnam Pro', sans-serif;
         }
         .global-sync-banner.active {
             transform: translateY(0) scale(1);
             opacity: 1;
+        }
+        body.dark-theme .global-sync-banner {
+            background: rgba(30, 41, 59, 0.95);
+            color: #f8fafc;
+            box-shadow: 0 20px 25px -5px rgba(0,0,0,0.5);
         }
         .global-share-btn-item {
             padding: 12px;
@@ -2273,10 +2284,10 @@ window.showGlobalNotification = function(title, message) {
         overlay.className = 'global-modal-overlay';
         overlay.innerHTML = `
             <div class="global-modal-box">
-                <h3 id="global-noti-title" style="margin-top: 0; font-size: 1.25rem; font-weight: 800; color: #f59e0b; display: flex; align-items: center; gap: 8px;"></h3>
-                <p id="global-noti-msg" style="font-size: 0.92rem; line-height: 1.6; color: #cbd5e1; margin-bottom: 22px;"></p>
+                <h3 id="global-noti-title" style="margin-top: 0; font-size: 1.25rem; font-weight: 800; color: #b45309; display: flex; align-items: center; gap: 8px;"></h3>
+                <p id="global-noti-msg" style="font-size: 0.95rem; line-height: 1.65; color: #334155; margin-bottom: 22px;"></p>
                 <div style="display: flex; justify-content: flex-end;">
-                    <button id="global-noti-close-btn" style="background: linear-gradient(135deg, #f3a83b 0%, #f59e0b 100%); border: none; color: #fff; padding: 8px 24px; border-radius: 8px; font-weight: 700; cursor: pointer; transition: transform 0.2s ease;">Đồng Ý & Đóng</button>
+                    <button id="global-noti-close-btn" style="background: linear-gradient(135deg, #a20a0a 0%, #7f0707 100%); border: none; color: #fff; padding: 10px 26px; border-radius: 10px; font-weight: 700; cursor: pointer; transition: transform 0.2s ease; box-shadow: 0 4px 12px rgba(162, 10, 10, 0.25);">Đồng Ý & Đóng</button>
                 </div>
             </div>
         `;

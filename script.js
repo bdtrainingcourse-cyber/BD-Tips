@@ -6695,13 +6695,14 @@ if (document.readyState === 'loading') {
         // Create full dual battle modal container
         const modal = document.createElement('div');
         modal.id = 'pvp-dual-arena-modal';
+        const isDarkTheme = document.body.classList.contains('dark-theme');
         modal.style.position = 'fixed';
         modal.style.top = '0';
         modal.style.left = '0';
         modal.style.width = '100vw';
         modal.style.height = '100vh';
-        modal.style.background = 'radial-gradient(circle at center, #131728 0%, #080a12 100%)';
-        modal.style.color = '#ffffff';
+        modal.style.background = isDarkTheme ? 'radial-gradient(circle at center, #131728 0%, #080a12 100%)' : '#f8fafc';
+        modal.style.color = isDarkTheme ? '#ffffff' : '#0f172a';
         modal.style.zIndex = '30000';
         modal.style.display = 'flex';
         modal.style.flexDirection = 'column';
@@ -6709,9 +6710,17 @@ if (document.readyState === 'loading') {
         modal.style.overflowY = 'auto';
         modal.style.padding = '15px';
         
+        const cardBg = isDarkTheme ? 'rgba(255,255,255,0.03)' : '#ffffff';
+        const cardBorder = isDarkTheme ? 'rgba(255,255,255,0.1)' : '#e2e8f0';
+        const cardShadow = isDarkTheme ? 'rgba(0,0,0,0.5)' : 'rgba(0,0,0,0.08)';
+        const titleColor = isDarkTheme ? '#ffffff' : '#0f172a';
+        const logBg = isDarkTheme ? 'rgba(0,0,0,0.5)' : '#f1f5f9';
+        const logBorder = isDarkTheme ? 'rgba(255,255,255,0.05)' : '#cbd5e1';
+        const logText = isDarkTheme ? '#cbd5e1' : '#334155';
+        
         modal.innerHTML = `
             <!-- Top Dual Battle HUD Bar -->
-            <div style="max-width: 1100px; width: 100%; margin: 0 auto 15px auto; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); border-radius: 20px; padding: 15px 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); box-sizing: border-box;">
+            <div style="max-width: 1100px; width: 100%; margin: 0 auto 15px auto; background: ${cardBg}; border: 1px solid ${cardBorder}; border-radius: 20px; padding: 15px 20px; box-shadow: 0 10px 30px ${cardShadow}; box-sizing: border-box;">
                 <div style="display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 15px;">
                     <!-- Player HUD (Left) -->
                     <div style="display: flex; flex-direction: column; gap: 6px;">
@@ -6719,10 +6728,10 @@ if (document.readyState === 'loading') {
                             <img src="mascot_challenge.jpg" style="width: 38px; height: 38px; border-radius: 50%; border: 2px solid #10b981;" alt="You">
                             <div>
                                 <strong style="font-size: 0.92rem; color: #10b981; display: block;">${playerName}</strong>
-                                <span style="font-size: 0.7rem; color: #94a3b8;">Tiến độ của bạn: <b id="dual-player-percent" style="color: #10b981;">0%</b></span>
+                                <span style="font-size: 0.7rem; color: #64748b;">Tiến độ của bạn: <b id="dual-player-percent" style="color: #10b981;">0%</b></span>
                             </div>
                         </div>
-                        <div style="background: rgba(255,255,255,0.08); height: 10px; border-radius: 6px; overflow: hidden; border: 1px solid rgba(16,185,129,0.3);">
+                        <div style="background: rgba(0,0,0,0.06); height: 10px; border-radius: 6px; overflow: hidden; border: 1px solid rgba(16,185,129,0.3);">
                             <div id="dual-player-bar" style="width: 0%; height: 100%; background: linear-gradient(90deg, #10b981, #34d399); transition: width 0.3s ease; box-shadow: 0 0 10px #10b981;"></div>
                         </div>
                     </div>
@@ -6738,11 +6747,11 @@ if (document.readyState === 'loading') {
                         <div style="display: flex; align-items: center; justify-content: flex-end; gap: 10px;">
                             <div>
                                 <strong style="font-size: 0.92rem; color: ${config.badgeColor}; display: block;">${usr.name} (Cấp ${oppLevel})</strong>
-                                <span style="font-size: 0.7rem; color: #94a3b8;">Tiến độ đối thủ: <b id="dual-bot-percent" style="color: ${config.badgeColor};">0%</b></span>
+                                <span style="font-size: 0.7rem; color: #64748b;">Tiến độ đối thủ: <b id="dual-bot-percent" style="color: ${config.badgeColor};">0%</b></span>
                             </div>
                             <img src="mascot_challenge.jpg" style="width: 38px; height: 38px; border-radius: 50%; border: 2px solid ${config.badgeColor};" alt="Bot">
                         </div>
-                        <div style="background: rgba(255,255,255,0.08); height: 10px; border-radius: 6px; overflow: hidden; border: 1px solid rgba(239,68,68,0.3);">
+                        <div style="background: rgba(0,0,0,0.06); height: 10px; border-radius: 6px; overflow: hidden; border: 1px solid rgba(239,68,68,0.3);">
                             <div id="dual-bot-bar" style="width: 0%; height: 100%; background: linear-gradient(90deg, #ef4444, #f43f5e); transition: width 0.4s ease; box-shadow: 0 0 10px #ef4444;"></div>
                         </div>
                     </div>
@@ -6752,13 +6761,13 @@ if (document.readyState === 'loading') {
             <!-- Main Dual Screens Arena Container -->
             <div style="max-width: 1100px; width: 100%; margin: 0 auto; display: grid; grid-template-columns: 1fr 340px; gap: 20px; flex: 1; box-sizing: border-box;" class="dual-screens-grid">
                 <!-- Left Screen: Your Interactive Play Area -->
-                <div style="background: rgba(255,255,255,0.02); border: 1.5px solid rgba(16,185,129,0.3); border-radius: 20px; padding: 20px; display: flex; flex-direction: column; box-shadow: 0 8px 30px rgba(0,0,0,0.3); position: relative; overflow: hidden;">
-                    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 10px; margin-bottom: 15px;">
+                <div style="background: ${cardBg}; border: 1.5px solid rgba(16,185,129,0.3); border-radius: 20px; padding: 20px; display: flex; flex-direction: column; box-shadow: 0 8px 30px ${cardShadow}; position: relative; overflow: hidden;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid ${cardBorder}; padding-bottom: 10px; margin-bottom: 15px;">
                         <h4 style="margin: 0; font-size: 1.05rem; font-weight: 800; color: #10b981; display: flex; align-items: center; gap: 8px;">
                             <span>🎮 MÀN HÌNH CỦA BẠN:</span>
-                            <span style="color: #ffffff; font-weight: 600;">${usr.gameTitle}</span>
+                            <span style="color: ${titleColor}; font-weight: 600;">${usr.gameTitle}</span>
                         </h4>
-                        <span style="font-size: 0.75rem; background: rgba(16,185,129,0.2); color: #10b981; padding: 3px 10px; border-radius: 12px; font-weight: bold;">Cấp ${oppLevel} ⭐</span>
+                        <span style="font-size: 0.75rem; background: rgba(16,185,129,0.15); color: #10b981; padding: 3px 10px; border-radius: 12px; font-weight: bold;">Cấp ${oppLevel} ⭐</span>
                     </div>
                     
                     <!-- Game Render Area -->
@@ -6768,18 +6777,18 @@ if (document.readyState === 'loading') {
                 </div>
                 
                 <!-- Right Screen: Opponent Live Feed & Combat Logs -->
-                <div style="background: rgba(255,255,255,0.02); border: 1.5px solid ${config.badgeColor}50; border-radius: 20px; padding: 20px; display: flex; flex-direction: column; gap: 15px; box-shadow: 0 8px 30px rgba(0,0,0,0.3);">
-                    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 10px;">
+                <div style="background: ${cardBg}; border: 1.5px solid ${config.badgeColor}50; border-radius: 20px; padding: 20px; display: flex; flex-direction: column; gap: 15px; box-shadow: 0 8px 30px ${cardShadow};">
+                    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid ${cardBorder}; padding-bottom: 10px;">
                         <h4 style="margin: 0; font-size: 0.95rem; font-weight: 800; color: ${config.badgeColor}; display: flex; align-items: center; gap: 6px;">
                             <span>🤖 ĐỐI THỦ:</span>
-                            <span style="color: #ffffff;">${usr.name}</span>
+                            <span style="color: ${titleColor};">${usr.name}</span>
                         </h4>
                         <span class="live-dot" style="display: inline-block; width: 8px; height: 8px; background-color: #ef4444; border-radius: 50%; box-shadow: 0 0 8px #ef4444;"></span>
                     </div>
                     
                     <!-- Simulated Opponent Radar Grid -->
-                    <div style="background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 15px; text-align: center;">
-                        <div style="font-size: 0.75rem; color: #94a3b8; margin-bottom: 8px;">Mô phỏng nhịp độ giải đố đối thủ (Cấp ${oppLevel})</div>
+                    <div style="background: ${isDarkTheme ? 'rgba(0,0,0,0.4)' : '#f8fafc'}; border: 1px solid ${cardBorder}; border-radius: 12px; padding: 15px; text-align: center;">
+                        <div style="font-size: 0.75rem; color: #64748b; margin-bottom: 8px;">Mô phỏng nhịp độ giải đố đối thủ (Cấp ${oppLevel})</div>
                         <div id="bot-simulated-grid" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; max-width: 180px; margin: 0 auto;">
                             <!-- Animated Bot Grid Dots -->
                         </div>
@@ -6787,16 +6796,16 @@ if (document.readyState === 'loading') {
                     
                     <!-- Live Combat Feed Log -->
                     <div style="flex: 1; display: flex; flex-direction: column;">
-                        <div style="font-size: 0.75rem; color: #f3a83b; font-weight: bold; text-transform: uppercase; margin-bottom: 6px;">
+                        <div style="font-size: 0.75rem; color: #b45309; font-weight: bold; text-transform: uppercase; margin-bottom: 6px;">
                             📡 NHẬT KÝ SONG ĐẤU THỜI GIAN THỰC
                         </div>
-                        <div id="dual-combat-logs" style="background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.05); border-radius: 10px; padding: 10px; flex: 1; min-height: 140px; font-family: monospace; font-size: 0.75rem; color: #cbd5e1; overflow-y: auto; display: flex; flex-direction: column; gap: 6px;">
+                        <div id="dual-combat-logs" style="background: ${logBg}; border: 1px solid ${logBorder}; border-radius: 10px; padding: 10px; flex: 1; min-height: 140px; font-family: monospace; font-size: 0.75rem; color: ${logText}; overflow-y: auto; display: flex; flex-direction: column; gap: 6px;">
                             <div>[00:00] ⚔️ Bước vào trận đấu Cấp ${oppLevel}!</div>
                             <div>[00:02] 🤖 ${usr.name} đang phân tích cấu trúc đề...</div>
                         </div>
                     </div>
                     
-                    <button id="btn-dual-surrender" style="padding: 8px; font-size: 0.75rem; background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.3); color: #f87171; border-radius: 8px; cursor: pointer; font-weight: bold;">
+                    <button id="btn-dual-surrender" style="padding: 8px; font-size: 0.75rem; background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.3); color: #dc2626; border-radius: 8px; cursor: pointer; font-weight: bold;">
                         🏳️ Xin thua (Rút lui)
                     </button>
                 </div>
