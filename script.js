@@ -3908,6 +3908,32 @@ const initB2BApp = () => {
             return;
         }
 
+        // Check PvP Challenge completion
+        const pvpActive = sessionStorage.getItem('pvp_active') === 'true';
+        const pvpGameId = sessionStorage.getItem('pvp_game_id');
+        let pvpBannerHtml = '';
+        if (pvpActive && pvpGameId === gameId) {
+            const challenger = sessionStorage.getItem('pvp_challenger') || 'Đối thủ';
+            const postId = sessionStorage.getItem('pvp_post_id');
+            if (postId) {
+                localStorage.setItem(postId, 'true');
+            }
+            sessionStorage.removeItem('pvp_active');
+            sessionStorage.removeItem('pvp_challenger');
+            sessionStorage.removeItem('pvp_game_id');
+            sessionStorage.removeItem('pvp_post_id');
+            
+            pvpBannerHtml = `
+                <div style="background: linear-gradient(135deg, rgba(16, 185, 129, 0.15) 0%, rgba(5, 150, 105, 0.2) 100%); border: 1.5px dashed #10b981; border-radius: 12px; padding: 12px; color: #047857; font-weight: 800; font-size: 0.95rem; width: 100%; box-sizing: border-box; display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 5px;">
+                    <span>⚔️ ĐÃ HẠ GỤC ĐỐI THỦ: <strong>${challenger}</strong>! (+50đ Thưởng Song Đấu PvP)</span>
+                </div>
+            `;
+            const curP = parseInt(localStorage.getItem('b2b_points_balance') || '0', 10);
+            localStorage.setItem('b2b_points_balance', (curP + 50).toString());
+            if (window.updateNavbarUserHUD) window.updateNavbarUserHUD();
+            if (typeof renderOnlineUsersList === 'function') renderOnlineUsersList();
+        }
+
         // Show stage clear
         arcadePlayArea.innerHTML = `
             <div style="text-align: center; padding: 30px; display: flex; flex-direction: column; align-items: center; gap: 15px; box-sizing: border-box;">
@@ -3919,6 +3945,7 @@ const initB2BApp = () => {
                 <div style="background: #ecfdf5; border: 1px solid #a7f3d0; border-radius: 8px; padding: 12px; font-size: 0.85rem; color: #047857; font-weight: bold; width: 100%; box-sizing: border-box;">
                     ⚡ Nhận: +${pointsToAdd} BD-Points!
                 </div>
+                ${pvpBannerHtml}
                 <button id="btn-next-arcade-level" class="btn btn-primary" style="padding: 12px 24px; font-weight: bold; width: 100%; margin-top: 10px; box-shadow: 0 4px 10px rgba(16, 185, 129, 0.2);">Bước Vào Cấp ${nextLvl} ➔</button>
             </div>
         `;
@@ -5930,7 +5957,7 @@ if (document.readyState === 'loading') {
                     <div style="width: 50px; height: 50px; border-radius: 50%; background: rgba(243, 168, 59, 0.15); display: flex; align-items: center; justify-content: center; font-size: 1.8rem; flex-shrink: 0;">🦉</div>
                     <div>
                         <h3 style="margin: 0; font-size: 1.15rem; font-weight: 800; color: #ffffff;">Chào mừng trở lại, ${name}!</h3>
-                        <p style="margin: 3px 0 0 0; font-size: 0.72rem; color: #f3a83b; font-weight: bold;">Hôm nay bạn đã rèn luyện chưa?</p>
+                <p style="margin: 3px 0 0 0; font-size: 0.72rem; color: #f3a83b; font-weight: bold;">Hôm nay bạn đã rèn luyện chưa?</p>
                     </div>
                 </div>
 
@@ -6043,7 +6070,7 @@ if (document.readyState === 'loading') {
             } else {
                 btn.style.background = 'rgba(255,255,255,0.05)';
                 btn.style.borderColor = 'var(--border-color)';
-                btn.style.color = 'var(--text-light)';
+                btn.style.color = '#text-light';
                 btn.textContent = `Khóa (${reqVal}đ) 🔒`;
             }
         });
@@ -6308,12 +6335,12 @@ if (document.readyState === 'loading') {
         }
     }
 
-    // --- ONLINE PVP MATCHMAKER MECHANICS ---
+    // --- ONLINE PVP MATCHMAKER MECHANICS (B2B ARCADE) ---
     const MOCK_ONLINE_USERS = [
-        { id: 'usr-1', name: 'Hào Nguyễn', mascot: 'Architect', status: '🟢 Đang ở Ải 1', points: 80, gameId: 'puzzle-negotiation', quote: 'Tôi đã tối ưu hóa logic phễu Ải 1 đạt 80 điểm. Bác thử xem có tìm ra điểm nghẽn nào trong cách đi deal của tôi không?' },
-        { id: 'usr-2', name: 'SaasWarrior', mascot: 'Commander', status: '🟢 Đang ở Ải 2', points: 85, gameId: 'puzzle-kpi', quote: 'Ải KPI này tôi thiết lập trong 5 phút. Thách bác vượt qua 85 điểm của tôi đấy! Dám chơi không?' },
-        { id: 'usr-3', name: 'ChuaTeChotDeal', mascot: 'Champion', status: '🟢 Vừa thắng Ải 3', points: 90, gameId: 'puzzle-law', quote: 'Lòng tin khách hàng là tuyệt đối, tôi quẹt thẻ Ải 3 đạt 90 điểm dễ như trở bàn tay. Bác thử sức xem!' },
-        { id: 'usr-4', name: 'Bob Growth', mascot: 'Farmer', status: '🟢 Đang online', points: 75, gameId: 'puzzle-negotiation', quote: 'Tôi làm chậm mà chắc, tích lũy 75 điểm Ải 1 làm vốn. Bác đấu thử xem ai kiên trì hơn?' }
+        { id: 'usr-1', name: 'Hào Nguyễn', mascot: 'Architect', status: '🟢 Đang ở B2B Zip', points: 80, level: 4, gameId: 'game-zip', gameTitle: 'B2B Zip (Sales Path Finder)', quote: 'Tôi đã tối ưu hóa logic phễu săn Lead B2B Zip đạt Cấp 4. Bác thử xem có nối đường ống nhanh hơn tôi không?' },
+        { id: 'usr-2', name: 'SaasWarrior', mascot: 'Commander', status: '🟢 Đang ở B2B Wend', points: 85, level: 5, gameId: 'game-wend', gameTitle: 'B2B Wend (Word Search)', quote: 'Ma trận thuật ngữ B2B Wend này tôi giải mã chỉ trong 45 giây. Thách bác vượt qua Cấp 5 của tôi đấy!' },
+        { id: 'usr-3', name: 'ChuaTeChotDeal', mascot: 'Champion', status: '🟢 Vừa thắng B2B Tango', points: 90, level: 6, gameId: 'game-tango', gameTitle: 'B2B Tango (Reasoning Grid)', quote: 'Logic phân bổ deal độc bản B2B Tango Cấp 6 không làm khó được tôi. Bác dám vào so tài logic không?' },
+        { id: 'usr-4', name: 'Bob Growth', mascot: 'Farmer', status: '🟢 Đang ở B2B Queens', points: 75, level: 3, gameId: 'game-queens', gameTitle: 'B2B Queens (BD Alignment)', quote: 'Sắp xếp vùng địa bàn BD Queens không trùng lặp là sở trường của tôi. Đấu thử xem ai phân bổ đội ngũ tối ưu hơn?' }
     ];
 
     function renderOnlineUsersList() {
@@ -6330,7 +6357,7 @@ if (document.readyState === 'loading') {
                 : `<button onclick="challengeOnlineUser('${usr.id}')" class="pvp-btn-challenge">Khiêu Chiến</button>`;
             
             const mascotLower = usr.mascot.toLowerCase();
-            const statusClass = (usr.status.includes('online') || usr.status.includes('Ải')) ? '' : 'idle';
+            const statusClass = (usr.status.includes('online') || usr.status.includes('B2B')) ? '' : 'idle';
             
             listHtml += `
                 <div class="pvp-user-row">
@@ -6362,9 +6389,10 @@ if (document.readyState === 'loading') {
             const usr = MOCK_ONLINE_USERS.find(u => u.id === userId);
             if (!usr) return;
             
-            const gameTitle = usr.gameId === 'puzzle-negotiation' ? 'Ải 1: Đàm phán B2B' : usr.gameId === 'puzzle-kpi' ? 'Ải 2: KPI Master' : 'Ải 3: Luật Lao Động';
-            const userScore = localStorage.getItem(`high_score_${usr.gameId}`);
-            const finalUserScore = userScore ? parseInt(userScore, 10) : null;
+            const key = usr.gameId.replace('game-', '');
+            const currentLevel = parseInt(localStorage.getItem(`b2b_arcade_level_${key}`) || '1', 10);
+            const userHighLevel = currentLevel > 1 ? currentLevel - 1 : 0;
+            const userScore = userHighLevel > 0 ? (userHighLevel * 15) : null;
             
             const overlay = document.createElement('div');
             overlay.className = 'pvp-select-overlay';
@@ -6394,19 +6422,21 @@ if (document.readyState === 'loading') {
             box.style.textAlign = 'center';
             box.style.boxShadow = '0 20px 50px rgba(0,0,0,0.3)';
             
-            const scoreDisplay = finalUserScore !== null ? `<strong>${finalUserScore} điểm</strong>` : `<span style="color: var(--text-light); font-style: italic;">Chưa có điểm kỷ lục</span>`;
+            const scoreDisplay = userHighLevel > 0 
+                ? `<strong>Đã vượt Cấp ${userHighLevel} (${userScore}đ)</strong>` 
+                : `<span style="color: var(--text-light); font-style: italic;">Chưa vượt cấp nào</span>`;
             
             let actionButtons = '';
-            if (finalUserScore !== null) {
+            if (userHighLevel > 0) {
                 actionButtons = `
                     <button id="btn-pvp-compare" class="pvp-btn-challenge" style="width: 100%; padding: 12px; margin-bottom: 8px;">So Kèo Ngay (Dùng Điểm Kỷ Lục)</button>
-                    <button id="btn-pvp-replay" class="btn btn-secondary" style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--border-color); background: rgba(255,255,255,0.05); color: var(--text-main); font-weight: bold; cursor: pointer;">Đấu Lại (Chơi Game Mới)</button>
+                    <button id="btn-pvp-replay" class="btn btn-secondary" style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--border-color); background: rgba(255,255,255,0.05); color: var(--text-main); font-weight: bold; cursor: pointer;">Quyết Đấu (Vào Chơi Game Ngay)</button>
                 `;
             } else {
                 actionButtons = `
                     <button id="btn-pvp-replay" class="pvp-btn-challenge" style="width: 100%; padding: 12px; margin-bottom: 8px;">Quyết Chiến Ngay (Chơi Lấy Điểm)</button>
                     <p style="font-size: 0.72rem; color: var(--text-light); margin-top: 6px; line-height: 1.3;">
-                        Bác chưa chơi ải này. Hãy quyết chiến ngay để thiết lập điểm số đấu với ${usr.name}!
+                        Bác chưa vượt ải này. Hãy quyết chiến ngay trong B2B Arcade để so tài với ${usr.name}!
                     </p>
                 `;
             }
@@ -6425,11 +6455,11 @@ if (document.readyState === 'loading') {
                 <div style="background: rgba(255,255,255,0.01); border: 1px solid var(--border-color); border-radius: 12px; padding: 12px; margin-bottom: 20px; font-size: 0.82rem; text-align: left; display: flex; flex-direction: column; gap: 6px;">
                     <div style="display: flex; justify-content: space-between;">
                         <span style="color: var(--text-light);">Thử thách tại:</span>
-                        <strong style="color: var(--primary);">${gameTitle}</strong>
+                        <strong style="color: var(--primary);">${usr.gameTitle}</strong>
                     </div>
                     <div style="display: flex; justify-content: space-between;">
-                        <span style="color: var(--text-light);">Điểm đối thủ:</span>
-                        <strong style="color: var(--text-main);">${usr.points} điểm</strong>
+                        <span style="color: var(--text-light);">Cấp độ đối thủ:</span>
+                        <strong style="color: var(--text-main);">Cấp ${usr.level} (${usr.points} điểm)</strong>
                     </div>
                     <div style="display: flex; justify-content: space-between; border-top: 1px dashed rgba(255,255,255,0.08); padding-top: 6px; margin-top: 4px;">
                         <span style="color: var(--text-light);">Kỷ lục của bác:</span>
@@ -6446,10 +6476,10 @@ if (document.readyState === 'loading') {
             overlay.appendChild(box);
             document.body.appendChild(overlay);
             
-            if (finalUserScore !== null) {
+            if (userHighLevel > 0) {
                 box.querySelector('#btn-pvp-compare').addEventListener('click', () => {
                     overlay.remove();
-                    executePvpComparison(usr, finalUserScore);
+                    executePvpComparison(usr, userScore);
                 });
             }
             
@@ -6468,42 +6498,37 @@ if (document.readyState === 'loading') {
         sessionStorage.setItem('pvp_challenger', usr.name);
         sessionStorage.setItem('pvp_mascot', usr.mascot);
         sessionStorage.setItem('pvp_score_to_beat', usr.points.toString());
+        sessionStorage.setItem('pvp_level_to_beat', (usr.level || 1).toString());
         sessionStorage.setItem('pvp_game_id', usr.gameId);
         sessionStorage.setItem('pvp_post_id', `online_pvp_beaten_${usr.id}`);
         
-        const targetUrl = `index.html?challenge=true&challenger=${encodeURIComponent(usr.name)}&mascot=${usr.mascot}&score=${usr.points}&gameId=${usr.gameId}&postId=online_pvp_beaten_${usr.id}#minigame-section`;
-        
-        if (window.location.pathname.endsWith('index.html') || window.location.pathname === '/' || window.location.pathname.endsWith('/')) {
-            window.history.pushState({}, '', targetUrl);
-            
-            // Scroll to the minigame section directly
+        // If it's an Arcade game:
+        if (usr.gameId && usr.gameId.startsWith('game-')) {
+            const sec = document.getElementById('arcade-section');
+            if (sec) {
+                sec.scrollIntoView({ behavior: 'smooth' });
+            }
+            // Open the Arcade game modal directly!
+            if (typeof openArcadeGame === 'function') {
+                setTimeout(() => {
+                    openArcadeGame(usr.gameId);
+                }, 300);
+            }
+        } else {
+            // Fallback for quiz games
             const sec = document.getElementById('minigame-section');
             if (sec) {
                 sec.scrollIntoView({ behavior: 'smooth' });
             }
-            
-            // Open the game directly
             const targetGameIdx = games.findIndex(g => g.id === usr.gameId);
-            if (targetGameIdx !== -1) {
+            if (targetGameIdx !== -1 && typeof selectGame === 'function') {
                 selectGame(targetGameIdx);
             }
-            
-            // Show the notification directly
-            if (window.showGlobalNotification) {
-                window.showGlobalNotification(
-                    '⚔️ NHẬN LỜI KHIÊU CHIẾN PVP!',
-                    `Bác đã nhận lời thách đấu từ <strong>${usr.name}</strong> (${usr.mascot})!<br><br>Hãy nhấn <strong>Bắt Đầu Chơi</strong> để quyết chiến và vượt qua mốc <strong>${usr.points} điểm</strong> nhé!`
-                );
-            } else {
-                alert(`⚔️ LỜI KHIÊU CHIẾN PVP: Bác nhận được lời thách đấu từ ${usr.name} (${usr.mascot}). Vượt qua mốc ${usr.points} điểm nhé bác!`);
-            }
-        } else {
-            window.location.href = targetUrl;
         }
     }
 
     async function executePvpComparison(usr, userScore) {
-        const isWin = userScore > usr.points;
+        const isWin = userScore >= usr.points || (usr.level && (userScore / 15) >= usr.level);
         const rewardPoints = 50;
         
         const overlay = document.createElement('div');
@@ -6528,11 +6553,11 @@ if (document.readyState === 'loading') {
         box.style.width = '100%';
         box.style.padding = '30px 24px';
         box.style.borderRadius = '20px';
-        box.style.border = '1px solid var(--border-color)';
+        box.style.border = isWin ? '1.5px solid #10b981' : '1.5px solid #ef4444';
         box.style.background = 'var(--card-bg)';
         box.style.color = 'var(--text-main)';
         box.style.textAlign = 'center';
-        box.style.boxShadow = '0 20px 40px rgba(0, 0, 0, 0.3)';
+        box.style.boxShadow = '0 25px 50px -12px rgba(0, 0, 0, 0.5)';
         
         if (isWin) {
             localStorage.setItem(`online_pvp_beaten_${usr.id}`, 'true');
@@ -6564,24 +6589,24 @@ if (document.readyState === 'loading') {
                 <div style="font-size: 3.5rem; margin-bottom: 15px;">🏆🎉</div>
                 <h3 style="margin: 0 0 10px 0; font-size: 1.3rem; font-weight: 800; color: #10b981; text-transform: uppercase;">CHIẾN THẮNG RỰC RỠ!</h3>
                 <p style="margin: 0 0 20px 0; font-size: 0.88rem; color: var(--text-light); line-height: 1.5;">
-                    Tuyệt vời! Điểm kỷ lục của bác là <strong>${userScore} điểm</strong>, đè bẹp mốc <strong>${usr.points} điểm</strong> của đối thủ <strong>${usr.name}</strong>!
+                    Tuyệt vời! Bác đã vượt qua mốc thử thách của đối thủ <strong>${usr.name}</strong> tại <strong>${usr.gameTitle}</strong>!
                 </p>
                 <div style="background: rgba(16, 185, 129, 0.08); border: 1.5px dashed #10b981; padding: 12px; border-radius: 12px; margin-bottom: 20px; font-weight: bold; color: #10b981; font-size: 0.9rem;">
                     🎁 PHẦN THƯỞNG SONG ĐẤU: +50 BD-Points!
                 </div>
-                <button onclick="this.closest('.pvp-overlay').remove()" class="btn btn-primary" style="width: 100%; padding: 12px; font-weight: bold; border-radius: 8px; border: none; cursor: pointer;">Nhận Thưởng & Đóng</button>
+                <button onclick="this.closest('.pvp-overlay').remove(); if(typeof renderOnlineUsersList === 'function') renderOnlineUsersList();" class="btn btn-primary" style="width: 100%; padding: 12px; font-weight: bold; border-radius: 8px; border: none; cursor: pointer;">Nhận Thưởng & Đóng</button>
             `;
         } else {
             box.innerHTML = `
                 <div style="font-size: 3.5rem; margin-bottom: 15px;">⚔️🦉</div>
                 <h3 style="margin: 0 0 10px 0; font-size: 1.3rem; font-weight: 800; color: #ef4444; text-transform: uppercase;">BẠN ĐÃ BẠI TRẬN!</h3>
                 <p style="margin: 0 0 20px 0; font-size: 0.88rem; color: var(--text-light); line-height: 1.5;">
-                    Rất tiếc! Điểm số <strong>${userScore} điểm</strong> của bác không đủ vượt qua mốc <strong>${usr.points} điểm</strong> của đối thủ <strong>${usr.name}</strong>.
+                    Kỷ lục của bác chưa vượt qua cấp độ đối thủ <strong>${usr.name}</strong> (Cấp ${usr.level} - ${usr.points}đ).
                 </p>
                 <div style="background: rgba(239, 68, 68, 0.08); border: 1.5px dashed #ef4444; padding: 12px; border-radius: 12px; margin-bottom: 20px; font-weight: bold; color: #ef4444; font-size: 0.85rem;">
-                    Bác hãy chọn nút "Đấu Lại" để chơi game cải thiện điểm số nhé!
+                    Bác hãy chọn nút "Quyết Đấu" để vào chơi nâng cao cấp độ nhé!
                 </div>
-                <button onclick="this.closest('.pvp-overlay').remove()" class="btn btn-secondary" style="width: 100%; padding: 12px; font-weight: bold; border-radius: 8px; border: 1px solid var(--border-color); background: rgba(255,255,255,0.05); color: var(--text-main); cursor: pointer;">Đóng</button>
+                <button onclick="this.closest('.pvp-overlay').remove(); if(typeof renderOnlineUsersList === 'function') renderOnlineUsersList();" class="btn btn-secondary" style="width: 100%; padding: 12px; font-weight: bold; border-radius: 8px; border: 1px solid var(--border-color); background: rgba(255,255,255,0.05); color: var(--text-main); cursor: pointer;">Đóng</button>
             `;
         }
         
@@ -6591,33 +6616,24 @@ if (document.readyState === 'loading') {
 
     function initOnlineUsersStatusRotation() {
         const statuses = [
-            '🟢 Đang online',
-            '🟢 Đang ở Ải 1',
-            '🟢 Đang ở Ải 2',
-            '🟢 Đang ở Ải 3',
-            '🟢 Vừa thắng Ải 1',
-            '🟢 Vừa thắng Ải 2',
-            '🟢 Vừa thắng Ải 3',
-            '🟡 Đang nghiên cứu Ebook',
-            '🟡 Đang đọc Thư viện',
-            '🟡 Đang chuẩn bị Pitching'
+            '🟢 Đang ở B2B Zip',
+            '🟢 Đang ở B2B Wend',
+            '🟢 Đang ở B2B Tango',
+            '🟢 Đang ở B2B Queens',
+            '🟢 Vừa thắng B2B Zip',
+            '🟢 Vừa thắng B2B Wend',
+            '🟢 Vừa thắng B2B Tango',
+            '🟢 Vừa thắng B2B Queens',
+            '🟡 Đang nghiên cứu Chiến Thuật',
+            '🟡 Đang đọc Thư viện BD'
         ];
         
         setInterval(() => {
             try {
-                // Pick a random user
                 const randomUserIdx = Math.floor(Math.random() * MOCK_ONLINE_USERS.length);
                 const usr = MOCK_ONLINE_USERS[randomUserIdx];
-                
-                // Pick a random status
                 const randomStatus = statuses[Math.floor(Math.random() * statuses.length)];
                 usr.status = randomStatus;
-                
-                // Slightly fluctuate points (+- 5 points)
-                const pointFluctuation = (Math.random() > 0.5 ? 5 : -5);
-                usr.points = Math.max(60, Math.min(100, usr.points + pointFluctuation));
-                
-                // Re-render the list if we are on index.html
                 renderOnlineUsersList();
             } catch (e) {
                 console.error("Error in status rotation:", e);
@@ -6625,7 +6641,6 @@ if (document.readyState === 'loading') {
         }, 30000);
     }
 
-    // Run initializations on startup
     function checkPvPChallenge() {
         try {
             const urlParams = new URLSearchParams(window.location.search);
