@@ -355,9 +355,9 @@ module.exports = async (req, res) => {
     }
   }
 
-  // Guard against duplicate registrations or leads from verified users
+  // Guard against duplicate registrations for already registered verified users EXCEPT for ebook-download / tool leads
   const isVerified = localUser && localUser.verified;
-  if (isVerified && (action === 'syncUser' || !action)) {
+  if (isVerified && (action === 'syncUser' || !action) && tool !== 'ebook-download' && tool !== 'exit-intent-ebook' && tool !== 'daily-points' && tool !== 'daily-reminder') {
     return res.status(400).json({
       error: 'Email này đã được đăng ký và xác thực. Vui lòng sử dụng tính năng Đăng Nhập ở góc phải Menu bar để đồng bộ tài khoản!'
     });
@@ -666,7 +666,7 @@ module.exports = async (req, res) => {
   try {
     // Forward to Google Sheets Webhook
     let payload = {};
-    if (action === 'syncUser' || tool === 'daily-points' || tool === 'exit-intent-ebook') {
+    if (action === 'syncUser' || tool === 'daily-points' || tool === 'exit-intent-ebook' || tool === 'ebook-download') {
       payload = {
         action: 'syncUser',
         userId: localUser.id,
@@ -679,7 +679,9 @@ module.exports = async (req, res) => {
         password: localUser.password || '',
         experience: localUser.experience || '',
         industry: localUser.industry || '',
-        skill: localUser.skill || ''
+        skill: localUser.skill || '',
+        ebookTitle: ebookTitle || '',
+        downloadLink: downloadLink || ''
       };
     } else if (action === 'updatePoints') {
       payload = { action, email, userId: localUser.id, points, device: deviceType };

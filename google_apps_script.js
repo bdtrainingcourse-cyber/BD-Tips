@@ -34,7 +34,7 @@ function doPost(e) {
     // Route actions
     if (action === "checkEmail") {
       return checkEmail(email, name);
-    } else if (action === "syncUser" || postData.tool === "daily-reminder") {
+    } else if (action === "syncUser" || postData.tool === "daily-reminder" || postData.tool === "ebook-download" || postData.tool === "exit-intent-ebook") {
       return syncUser(postData);
     } else if (action === "verifyUser" || postData.tool === "email-verification") {
       return verifyUser(email, postData.points);

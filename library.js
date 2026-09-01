@@ -745,6 +745,7 @@ document.addEventListener('DOMContentLoaded', () => {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
+                action: 'syncUser',
                 name: firstName,
                 email: email,
                 tool: 'ebook-download',
@@ -774,19 +775,40 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
                 limitModal.classList.remove('hidden');
             } else {
-                // Success
+                // Success: Register user locally and establish session
+                const uid = data.userId || (data.user && data.user.id) || 'UID_' + Math.random().toString(36).substr(2, 9).toUpperCase();
+                const userName = firstName || (data.user && data.user.name) || 'Học viên';
+                const userPoints = (data.user && data.user.points) || data.points || 25;
+                
+                localStorage.setItem('streak_email', email);
+                localStorage.setItem('streak_name', userName);
+                localStorage.setItem('streak_user_id', uid);
+                localStorage.setItem('b2b_points_balance', userPoints.toString());
+                if (data.user && data.user.verified) {
+                    localStorage.setItem('b2b_user_verified', 'true');
+                }
+                
                 const registrationData = {
-                    firstName,
+                    firstName: userName,
                     email,
                     experience: experience,
                     registeredAt: new Date().toISOString()
                 };
                 localStorage.setItem('b2b_user_registration', JSON.stringify(registrationData));
                 localStorage.setItem('b2b_has_downloaded_before', 'true');
+                
+                if (window.updateNavbarUserHUD) {
+                    window.updateNavbarUserHUD();
+                }
+                if (window.trackUserBehavior) {
+                    window.trackUserBehavior('ebook_lead_download', `Ebook: ${ebookTitle} | Email: ${email}`);
+                }
+                
                 closeDownloadModal();
                 if (currentSelectedEbook) {
                     triggerDownload(currentSelectedEbook);
                 }
+                showToast(`🎉 Đăng ký thành công! Đang tải cuốn "${ebookTitle}" về máy.`);
             }
         })
         .catch(err => {
@@ -796,6 +818,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 submitBtn.textContent = 'Đăng Ký & Tải Xuống';
             }
             // Fallback success
+            localStorage.setItem('streak_email', email);
+            localStorage.setItem('streak_name', firstName);
             const registrationData = {
                 firstName,
                 email,
@@ -804,6 +828,9 @@ document.addEventListener('DOMContentLoaded', () => {
             };
             localStorage.setItem('b2b_user_registration', JSON.stringify(registrationData));
             localStorage.setItem('b2b_has_downloaded_before', 'true');
+            if (window.updateNavbarUserHUD) {
+                window.updateNavbarUserHUD();
+            }
             closeDownloadModal();
             if (currentSelectedEbook) {
                 triggerDownload(currentSelectedEbook);
