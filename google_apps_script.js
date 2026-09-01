@@ -34,11 +34,11 @@ function doPost(e) {
     // Route actions
     if (action === "checkEmail") {
       return checkEmail(email, name);
+    } else if (action === "sendEbookVerificationEmail" || postData.tool === "ebook-download" || postData.ebookTitle) {
+      syncUser(postData, true);
+      return sendEbookVerificationEmail(email, name, postData.ebookTitle, postData.fileUrl || postData.downloadLink);
     } else if (action === "syncUser" || postData.tool === "daily-reminder" || postData.tool === "exit-intent-ebook") {
       return syncUser(postData);
-    } else if (action === "sendEbookVerificationEmail" || postData.tool === "ebook-download") {
-      syncUser(postData);
-      return sendEbookVerificationEmail(email, name, postData.ebookTitle, postData.fileUrl || postData.downloadLink);
     } else if (action === "verifyUser" || postData.tool === "email-verification") {
       return verifyUser(email, postData.points);
     } else if (action === "updatePoints") {
@@ -105,7 +105,7 @@ function checkEmail(email, name) {
 // ------------------------------------------------------------------
 // 2. ACTION: syncUser (Registers a new user, sends verification link)
 // ------------------------------------------------------------------
-function syncUser(data) {
+function syncUser(data, skipEmail) {
   const sheet = getOrCreateSheet("Học Viên Đăng Ký");
   const email = data.email.toLowerCase().trim();
   const name = data.name || "Học viên";
@@ -155,11 +155,13 @@ function syncUser(data) {
     if (industry) writeProfileFieldToRow(sheet, rowIndex, "industry", industry, idx);
     if (skill) writeProfileFieldToRow(sheet, rowIndex, "skill", skill, idx);
     
-    // SEND APPROPRIATE EMAIL IMMEDIATELY
-    if (data.action === "sendEbookVerificationEmail" || data.tool === "ebook-download" || data.ebookTitle) {
-      sendEbookVerificationEmail(email, name, data.ebookTitle, data.fileUrl || data.downloadLink);
-    } else {
-      sendVerificationEmail(email, name);
+    // SEND APPROPRIATE EMAIL IMMEDIATELY IF NOT SKIPPED
+    if (!skipEmail) {
+      if (data.action === "sendEbookVerificationEmail" || data.tool === "ebook-download" || data.ebookTitle) {
+        sendEbookVerificationEmail(email, name, data.ebookTitle, data.fileUrl || data.downloadLink);
+      } else {
+        sendVerificationEmail(email, name);
+      }
     }
     
     return createJsonResponse({ success: true, exists: false, userId: userId, message: "Registered. Verification email sent." });
@@ -173,12 +175,12 @@ function syncUser(data) {
     if (industry) writeProfileFieldToRow(sheet, userRowIndex, "industry", industry, idx);
     if (skill) writeProfileFieldToRow(sheet, userRowIndex, "skill", skill, idx);
     
-    // If this existing user submitted the ebook form, ALWAYS dispatch the Ebook verification email to them
-    if (data.action === "sendEbookVerificationEmail" || data.tool === "ebook-download" || data.ebookTitle) {
+    // If this existing user submitted the ebook form and skipEmail is false, dispatch the Ebook verification email to them
+    if (!skipEmail && (data.action === "sendEbookVerificationEmail" || data.tool === "ebook-download" || data.ebookTitle)) {
       sendEbookVerificationEmail(email, name, data.ebookTitle, data.fileUrl || data.downloadLink);
     }
     
-    return createJsonResponse({ success: true, exists: true, userId: userId, message: "User profile updated & ebook email sent." });
+    return createJsonResponse({ success: true, exists: true, userId: userId, message: "User profile updated." });
   }
 }
 
