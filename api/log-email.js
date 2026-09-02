@@ -80,8 +80,8 @@ async function validateEmail(email) {
   return { valid: true };
 }
 
-// Native HTTPS POST helper with 3s timeout
-function httpPost(url, body, maxRedirects = 5) {
+// Modern HTTP POST helper using native fetch with 15s timeout
+async function httpPost(url, body) {
   if (url.includes('script.google.com')) {
     const secKey = process.env.B2B_SECRET_KEY || '2108330119Snail!!';
     if (typeof body === 'object' && body !== null) {
@@ -95,157 +95,50 @@ function httpPost(url, body, maxRedirects = 5) {
     }
   }
 
-  return new Promise((resolve) => {
-    try {
-      const urlObj = new URL(url);
-      const postData = typeof body === 'string' ? body : JSON.stringify(body);
-      const options = {
-        hostname: urlObj.hostname,
-        path: urlObj.pathname + urlObj.search,
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Content-Length': Buffer.byteLength(postData)
-        }
-      };
-      
-      const req = https.request(options, (res) => {
-        if ((res.statusCode === 301 || res.statusCode === 302 || res.statusCode === 307 || res.statusCode === 308) && res.headers.location) {
-          if (maxRedirects <= 0) {
-            resolve({
-              ok: false,
-              status: 500,
-              text: () => Promise.resolve('Too many redirects'),
-              json: () => Promise.resolve({})
-            });
-            return;
-          }
-          httpGet(res.headers.location, maxRedirects - 1).then(resolve);
-          return;
-        }
+  const postData = typeof body === 'string' ? body : JSON.stringify(body);
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 15000);
 
-        let data = '';
-        res.on('data', (chunk) => data += chunk);
-        res.on('end', () => {
-          resolve({
-            ok: res.statusCode >= 200 && res.statusCode < 300,
-            status: res.statusCode,
-            text: () => Promise.resolve(data),
-            json: () => {
-              try {
-                return Promise.resolve(JSON.parse(data));
-              } catch (e) {
-                return Promise.reject(e);
-              }
-            }
-          });
-        });
-      });
-      
-      req.setTimeout(5000, () => {
-        req.destroy();
-        resolve({
-          ok: false,
-          status: 408,
-          text: () => Promise.resolve('Timeout'),
-          json: () => Promise.resolve({})
-        });
-      });
-
-      req.on('error', (err) => {
-        resolve({
-          ok: false,
-          status: 500,
-          text: () => Promise.resolve(err.message),
-          json: () => Promise.resolve({})
-        });
-      });
-
-      req.write(postData);
-      req.end();
-    } catch (e) {
-      resolve({
-        ok: false,
-        status: 500,
-        text: () => Promise.resolve(e.message),
-        json: () => Promise.resolve({})
-      });
-    }
-  });
+  try {
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: postData,
+      signal: controller.signal
+    });
+    clearTimeout(timeoutId);
+    return response;
+  } catch (err) {
+    clearTimeout(timeoutId);
+    return {
+      ok: false,
+      status: 500,
+      text: () => Promise.resolve(err.message),
+      json: () => Promise.resolve({ error: err.message })
+    };
+  }
 }
 
-function httpGet(url, maxRedirects = 5) {
-  return new Promise((resolve) => {
-    try {
-      const urlObj = new URL(url);
-      const options = {
-        hostname: urlObj.hostname,
-        path: urlObj.pathname + urlObj.search,
-        method: 'GET'
-      };
-      
-      const req = https.request(options, (res) => {
-        if ((res.statusCode === 301 || res.statusCode === 302 || res.statusCode === 307 || res.statusCode === 308) && res.headers.location) {
-          if (maxRedirects <= 0) {
-            resolve({
-              ok: false,
-              status: 500,
-              text: () => Promise.resolve('Too many redirects'),
-              json: () => Promise.resolve({})
-            });
-            return;
-          }
-          httpGet(res.headers.location, maxRedirects - 1).then(resolve);
-          return;
-        }
+async function httpGet(url) {
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 10000);
 
-        let data = '';
-        res.on('data', (chunk) => data += chunk);
-        res.on('end', () => {
-          resolve({
-            ok: res.statusCode >= 200 && res.statusCode < 300,
-            status: res.statusCode,
-            text: () => Promise.resolve(data),
-            json: () => {
-              try {
-                return Promise.resolve(JSON.parse(data));
-              } catch (e) {
-                return Promise.reject(e);
-              }
-            }
-          });
-        });
-      });
-      
-      req.setTimeout(5000, () => {
-        req.destroy();
-        resolve({
-          ok: false,
-          status: 408,
-          text: () => Promise.resolve('Timeout'),
-          json: () => Promise.resolve({})
-        });
-      });
-
-      req.on('error', (err) => {
-        resolve({
-          ok: false,
-          status: 500,
-          text: () => Promise.resolve(err.message),
-          json: () => Promise.resolve({})
-        });
-      });
-
-      req.end();
-    } catch (e) {
-      resolve({
-        ok: false,
-        status: 500,
-        text: () => Promise.resolve(e.message),
-        json: () => Promise.resolve({})
-      });
-    }
-  });
+  try {
+    const response = await fetch(url, {
+      method: 'GET',
+      signal: controller.signal
+    });
+    clearTimeout(timeoutId);
+    return response;
+  } catch (err) {
+    clearTimeout(timeoutId);
+    return {
+      ok: false,
+      status: 500,
+      text: () => Promise.resolve(err.message),
+      json: () => Promise.resolve({ error: err.message })
+    };
+  }
 }
 
 module.exports = async (req, res) => {
