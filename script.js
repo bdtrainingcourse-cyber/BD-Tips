@@ -5676,7 +5676,7 @@ if (document.readyState === 'loading') {
     if (shareLinkedin) {
         shareLinkedin.addEventListener('click', () => {
             if (window.registerUserAction) window.registerUserAction('share_click');
-            const shareText = `Tôi vừa đạt điểm tối đa trong thử thách B2B Challenge của Peter Võ! 🚀 Học hỏi thực chiến mỗi ngày để nâng cấp tư duy BD B2B. Luyện tập cùng tôi tại: https://bd-tips.vercel.app/`;
+            const shareText = `Tôi vừa đạt điểm tối đa trong thử thách B2B Challenge của Peter Võ! 🚀 Học hỏi thực chiến mỗi ngày để nâng cấp tư duy BD B2B. Luyện tập cùng tôi tại: https://bdbinhdanhocvu.com/`;
             const url = encodeURIComponent(window.location.href);
             window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${url}`, '_blank');
         });
@@ -5690,7 +5690,7 @@ if (document.readyState === 'loading') {
     if (shareCopy) {
         shareCopy.addEventListener('click', () => {
             if (window.registerUserAction) window.registerUserAction('share_click');
-            const copyText = `Tôi vừa đạt điểm tối đa trong thử thách B2B Challenge của Peter Võ! 🚀 Luyện tập cùng tôi tại: https://bd-tips.vercel.app/`;
+            const copyText = `Tôi vừa đạt điểm tối đa trong thử thách B2B Challenge của Peter Võ! 🚀 Luyện tập cùng tôi tại: https://bdbinhdanhocvu.com/`;
             navigator.clipboard.writeText(copyText).then(() => {
                 alert('📋 Đã sao chép liên kết chia sẻ! Bạn có thể dán trực tiếp lên LinkedIn, Facebook, Instagram hoặc Tiktok.');
             }).catch(err => {

@@ -222,7 +222,7 @@ function httpGet(url, maxRedirects = 5) {
 }
 
 function getHtmlTemplate(message, buttonText, buttonUrl, mascotUrl) {
-  const finalMascotUrl = mascotUrl || 'https://bd-tips.vercel.app/mascot_mascot.jpg';
+  const finalMascotUrl = mascotUrl || 'https://bdbinhdanhocvu.com/mascot_mascot.jpg';
   return `<!DOCTYPE html>
 <html>
 <head>
@@ -325,7 +325,7 @@ function getHtmlTemplate(message, buttonText, buttonUrl, mascotUrl) {
       <a href="${buttonUrl}" target="_blank" class="cta-btn">${buttonText}</a>
     </div>
     <div class="footer-text">
-      Bạn nhận được email này vì đã kích hoạt chế độ tự động nhắc nhở rèn luyện hàng ngày tại <a href="https://bd-tips.vercel.app" class="accent-link">BD Bình Dân Học Vụ</a>.<br>
+      Bạn nhận được email này vì đã kích hoạt chế độ tự động nhắc nhở rèn luyện hàng ngày tại <a href="https://bdbinhdanhocvu.com" class="accent-link">BD Bình Dân Học Vụ</a>.<br>
       © 2026 BD Bình Dân Học Vụ. All rights reserved.
     </div>
   </div>
@@ -450,17 +450,17 @@ module.exports = async (req, res) => {
   ]);
 
   // 3. Match Mascot based on context
-  let selectedMascot = "https://bd-tips.vercel.app/mascot_mascot.jpg";
+  let selectedMascot = "https://bdbinhdanhocvu.com/mascot_mascot.jpg";
   if (weatherCode === 61) {
-    selectedMascot = "https://bd-tips.vercel.app/mascot_rain.jpg";
+    selectedMascot = "https://bdbinhdanhocvu.com/mascot_rain.jpg";
   } else if (weatherCode === 95) {
-    selectedMascot = "https://bd-tips.vercel.app/mascot_storm.jpg";
+    selectedMascot = "https://bdbinhdanhocvu.com/mascot_storm.jpg";
   } else if (temp >= 33) {
-    selectedMascot = "https://bd-tips.vercel.app/mascot_hot.jpg";
+    selectedMascot = "https://bdbinhdanhocvu.com/mascot_hot.jpg";
   } else if (isFriday) {
-    selectedMascot = "https://bd-tips.vercel.app/mascot_relax.jpg";
+    selectedMascot = "https://bdbinhdanhocvu.com/mascot_relax.jpg";
   } else if (dayOfWeek === 1) {
-    selectedMascot = "https://bd-tips.vercel.app/mascot_challenge.jpg";
+    selectedMascot = "https://bdbinhdanhocvu.com/mascot_challenge.jpg";
   }
 
   // 4. Fallback Static Ultra-Short Templates
@@ -469,29 +469,29 @@ module.exports = async (req, res) => {
       subject: `Pipeline của bạn có lạnh như thời tiết ${temp}°C? ❄️`,
       message: `Hôm nay ${dayName} thời tiết khá dịu mát (${temp}°C), thích hợp để ngồi sưởi ấm pipeline bằng vài deal mới. Tin tức hôm nay: "${newsTitle}". Hãy dùng trợ lý <b>Cold Email AI</b> để bứt phá tỉ lệ mở thư nhé!`,
       buttonText: "✍️ Soạn Cold Email Ngay",
-      buttonUrl: "https://bd-tips.vercel.app/email-assistant.html",
-      mascot: "https://bd-tips.vercel.app/mascot_ghost.jpg"
+      buttonUrl: "https://bdbinhdanhocvu.com/email-assistant.html",
+      mascot: "https://bdbinhdanhocvu.com/mascot_ghost.jpg"
     },
     {
       subject: `Nắng nóng ${temp}°C làm bạn quá tải? ☀️`,
       message: `Trời hôm nay đang nắng nóng gay gắt (${temp}°C) dễ làm tụt năng lượng. Tin nóng: "${newsTitle}". Hãy tạm nghỉ tay, thư giãn và khám phá phong cách sales của mình với trắc nghiệm <b>Test Tính Cách BD</b> nhé!`,
       buttonText: "📊 Test Tính Cách Ngay",
-      buttonUrl: "https://bd-tips.vercel.app/personality-test.html",
-      mascot: "https://bd-tips.vercel.app/mascot_architect.jpg"
+      buttonUrl: "https://bdbinhdanhocvu.com/personality-test.html",
+      mascot: "https://bdbinhdanhocvu.com/mascot_architect.jpg"
     },
     {
       subject: `Trời mưa rả rích, làm sao để lead không ghost? 🌧️`,
       message: `Thời tiết mưa ẩm dễ làm tinh thần đi xuống. Đọc ngay tin tiêu điểm: "${newsTitle}" và vào <b>Thư viện BD</b> xem mẹo rã đông lead từ anh Peter Vo!`,
       buttonText: "📚 Đọc Case-Study Ngay",
-      buttonUrl: "https://bd-tips.vercel.app/library.html",
-      mascot: "https://bd-tips.vercel.app/mascot_rain.jpg"
+      buttonUrl: "https://bdbinhdanhocvu.com/library.html",
+      mascot: "https://bdbinhdanhocvu.com/mascot_rain.jpg"
     },
     {
       subject: `Luyện phản xạ thực chiến ngày ${dayName}! 🦉`,
       message: `Bản tin kinh tế: "${newsTitle}". Hãy dành 2 phút giải trí và rèn luyện phản xạ xử lý từ chối cùng <b>Minigame B2B Challenge</b> để tích lũy điểm đổi quà nhé!`,
       buttonText: "🎮 Chơi Game Thực Chiến",
-      buttonUrl: "https://bd-tips.vercel.app/#minigame-section",
-      mascot: "https://bd-tips.vercel.app/mascot_challenge.jpg"
+      buttonUrl: "https://bdbinhdanhocvu.com/#minigame-section",
+      mascot: "https://bdbinhdanhocvu.com/mascot_challenge.jpg"
     }
   ];
 
@@ -503,7 +503,7 @@ module.exports = async (req, res) => {
   const apiKey = process.env.GEMINI_API_KEY;
   if (apiKey) {
     try {
-      const systemPrompt = `Bạn là trợ lý Cú BeeDee của cổng thông tin học tập "BD Bình Dân Học Vụ" (https://bd-tips.vercel.app).
+      const systemPrompt = `Bạn là trợ lý Cú BeeDee của cổng thông tin học tập "BD Bình Dân Học Vụ" (https://bdbinhdanhocvu.com).
 Nhiệm vụ của bạn là viết một email ngắn gọn, thông minh và cực kỳ hóm hỉnh gửi học viên BD vào đầu giờ sáng.
 
 BỐI CẢNH THỰC TẾ TRONG NGÀY:
@@ -512,13 +512,13 @@ BỐI CẢNH THỰC TẾ TRONG NGÀY:
 - Tin tức kinh tế tiêu điểm trên VnExpress: "${newsTitle}"
 
 DANH SÁCH TÍNH NĂNG/CÔNG CỤ CỦA WEBSITE ĐỂ ĐIỀU HƯỚNG:
-1. Mini Game B2B Challenge (https://bd-tips.vercel.app/quests.html hoặc https://bd-tips.vercel.app/#minigame-section) -> Chơi game xử lý từ chối B2B thực chiến để tích lũy BD-Points đổi quà.
-2. Cộng Đồng B2B (https://bd-tips.vercel.app/community.html) -> Nơi chia sẻ bài viết, kết nối chiến thần B2B và thảo luận sôi nổi.
-3. Test Tính Cách BD (https://bd-tips.vercel.app/personality-test.html) -> Làm trắc nghiệm tính cách BD chuyên sâu để khám phá điểm mạnh/yếu thực chiến và nhận diện phong cách sales.
-4. AI Email Assistant (https://bd-tips.vercel.app/email-assistant.html) -> Viết Cold Email B2B bứt phá tỷ lệ chuyển đổi.
-5. Thư Viện BD (https://bd-tips.vercel.app/library.html) -> Các case study và bài viết chiều sâu từ anh Peter Vo.
-6. KPI & Phễu (https://bd-tips.vercel.app/kpi-estimation.html) -> Lập kế hoạch B2B và tính toán tỷ lệ chuyển đổi phễu.
-7. Lương Gross-Net (https://bd-tips.vercel.app/salary.html) -> Công cụ tính lương Gross/Net chi tiết và tra cứu Luật Lao Động.
+1. Mini Game B2B Challenge (https://bdbinhdanhocvu.com/quests.html hoặc https://bdbinhdanhocvu.com/#minigame-section) -> Chơi game xử lý từ chối B2B thực chiến để tích lũy BD-Points đổi quà.
+2. Cộng Đồng B2B (https://bdbinhdanhocvu.com/community.html) -> Nơi chia sẻ bài viết, kết nối chiến thần B2B và thảo luận sôi nổi.
+3. Test Tính Cách BD (https://bdbinhdanhocvu.com/personality-test.html) -> Làm trắc nghiệm tính cách BD chuyên sâu để khám phá điểm mạnh/yếu thực chiến và nhận diện phong cách sales.
+4. AI Email Assistant (https://bdbinhdanhocvu.com/email-assistant.html) -> Viết Cold Email B2B bứt phá tỷ lệ chuyển đổi.
+5. Thư Viện BD (https://bdbinhdanhocvu.com/library.html) -> Các case study và bài viết chiều sâu từ anh Peter Vo.
+6. KPI & Phễu (https://bdbinhdanhocvu.com/kpi-estimation.html) -> Lập kế hoạch B2B và tính toán tỷ lệ chuyển đổi phễu.
+7. Lương Gross-Net (https://bdbinhdanhocvu.com/salary.html) -> Công cụ tính lương Gross/Net chi tiết và tra cứu Luật Lao Động.
 
 YÊU CẦU NỘI DUNG & PHONG CÁCH:
 1. Độ dài: CỰC KỲ NGẮN GỌN (tối đa 2 đến 3 câu ngắn).
@@ -555,17 +555,17 @@ YÊU CẦU NỘI DUNG & PHONG CÁCH:
           const parsed = JSON.parse(cleanedJson);
           if (parsed.subject && parsed.message && parsed.buttonText && parsed.buttonUrl) {
             const mascotMap = {
-              challenge: "https://bd-tips.vercel.app/mascot_challenge.jpg",
-              correct: "https://bd-tips.vercel.app/mascot_correct.jpg",
-              wrong: "https://bd-tips.vercel.app/mascot_wrong.jpg",
-              ghost: "https://bd-tips.vercel.app/mascot_ghost.jpg",
-              law: "https://bd-tips.vercel.app/mascot_law.jpg",
-              milktea: "https://bd-tips.vercel.app/mascot_milktea.jpg",
-              relax: "https://bd-tips.vercel.app/mascot_relax.jpg",
-              hot: "https://bd-tips.vercel.app/mascot_hot.jpg",
-              rain: "https://bd-tips.vercel.app/mascot_rain.jpg",
-              storm: "https://bd-tips.vercel.app/mascot_storm.jpg",
-              default: "https://bd-tips.vercel.app/mascot_mascot.jpg"
+              challenge: "https://bdbinhdanhocvu.com/mascot_challenge.jpg",
+              correct: "https://bdbinhdanhocvu.com/mascot_correct.jpg",
+              wrong: "https://bdbinhdanhocvu.com/mascot_wrong.jpg",
+              ghost: "https://bdbinhdanhocvu.com/mascot_ghost.jpg",
+              law: "https://bdbinhdanhocvu.com/mascot_law.jpg",
+              milktea: "https://bdbinhdanhocvu.com/mascot_milktea.jpg",
+              relax: "https://bdbinhdanhocvu.com/mascot_relax.jpg",
+              hot: "https://bdbinhdanhocvu.com/mascot_hot.jpg",
+              rain: "https://bdbinhdanhocvu.com/mascot_rain.jpg",
+              storm: "https://bdbinhdanhocvu.com/mascot_storm.jpg",
+              default: "https://bdbinhdanhocvu.com/mascot_mascot.jpg"
             };
             const finalMascot = mascotMap[parsed.mascotType] || mascotMap.default;
             template = {
@@ -591,16 +591,16 @@ YÊU CẦU NỘI DUNG & PHONG CÁCH:
         subject: "Cuối tuần rồi! Xả stress cực mạnh thôi! 🦉🎉",
         message: "6h00 chiều thứ Sáu đã điểm! Hãy gấp laptop lại, xả stress cực mạnh bằng câu chuyện cười BD giòn giã tại <b>Thư viện BD</b> và tận hưởng kỳ nghỉ cuối tuần trọn vẹn nhé!",
         buttonText: "🤪 Đọc Truyện Cười BD",
-        buttonUrl: "https://bd-tips.vercel.app/library.html",
-        mascot: "https://bd-tips.vercel.app/mascot_relax.jpg"
+        buttonUrl: "https://bdbinhdanhocvu.com/library.html",
+        mascot: "https://bdbinhdanhocvu.com/mascot_relax.jpg"
       };
     } else {
       template = {
         subject: "Thứ 6 rồi! Cùng share chuyện vui lên cộng đồng nào! 🧋✨",
         message: "Cuối cùng thì ngày thứ 6 mong đợi cũng đã tới! Hãy ghé ngay <b>Diễn đàn Cộng đồng</b> chia sẻ những câu chuyện vui hoặc kỷ niệm đi làm đáng nhớ trong tuần qua nhé!",
         buttonText: "💬 Chia Sẻ Chuyện Vui Ngay",
-        buttonUrl: "https://bd-tips.vercel.app/community.html",
-        mascot: "https://bd-tips.vercel.app/mascot_milktea.jpg"
+        buttonUrl: "https://bdbinhdanhocvu.com/community.html",
+        mascot: "https://bdbinhdanhocvu.com/mascot_milktea.jpg"
       };
     }
   }

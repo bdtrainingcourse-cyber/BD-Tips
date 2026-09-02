@@ -200,8 +200,8 @@ function calculateLocalEvaluation(transcript, context, config, product) {
     salesFramework: config.difficulty === 'Expert' ? 'MEDDICC' : 'BANT',
     estimatedSkillLevel: score >= 90 ? 'Expert' : score >= 80 ? 'Advanced' : score >= 65 ? 'Intermediate' : 'Beginner',
     resources: [
-      "https://bd-tips.vercel.app/library.html#L123 (Xem cẩm nang xử lý từ chối B2B)",
-      "https://bd-tips.vercel.app/course.html (Khóa học BD B2B Thực chiến Peter Vo)"
+      "https://bdbinhdanhocvu.com/library.html#L123 (Xem cẩm nang xử lý từ chối B2B)",
+      "https://bdbinhdanhocvu.com/course.html (Khóa học BD B2B Thực chiến Peter Vo)"
     ]
   };
 }
@@ -538,7 +538,7 @@ Respond ONLY with a valid JSON object matching the following structure. Do not w
         suggestedAnswers: [],
         salesFramework: "N/A",
         estimatedSkillLevel: "Beginner",
-        resources: ["https://bd-tips.vercel.app/library.html"]
+        resources: ["https://bdbinhdanhocvu.com/library.html"]
       };
       return res.status(200).json({ report: emptyReport });
     }

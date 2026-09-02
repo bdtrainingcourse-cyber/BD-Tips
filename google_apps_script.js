@@ -350,11 +350,11 @@ function sendDailyEmailsSynchronously(data) {
       } else {
         // Flow for Unverified Users: Send verification reminder email
         try {
-          const verificationUrl = "https://bd-tips.vercel.app/?verify_email=" + encodeURIComponent(email);
+          const verificationUrl = "https://bdbinhdanhocvu.com/?verify_email=" + encodeURIComponent(email);
           const unverifiedSubject = "🦉 Nhắc nhở: Xác thực tài khoản B2B BD & Nhận ngay 15đ tích lũy";
           const unverifiedMessage = "Chào bác <b>" + name + "</b>,<br><br>Cú BeeDee thấy tài khoản của bác vẫn chưa được kích hoạt. Hãy nhấn vào nút bên dưới để xác thực địa chỉ email. Tài khoản kích hoạt thành công sẽ được tặng thêm ngay <b>15đ ⚡</b> và mở khóa toàn bộ kho tài liệu thực chiến nhé!";
           
-          const bodyHtml = getHtmlEmailTemplate(unverifiedMessage, "Kích hoạt & Nhận 15đ", verificationUrl, "https://bd-tips.vercel.app/mascot_quests.jpg", name);
+          const bodyHtml = getHtmlEmailTemplate(unverifiedMessage, "Kích hoạt & Nhận 15đ", verificationUrl, "https://bdbinhdanhocvu.com/mascot_quests.jpg", name);
           MailApp.sendEmail({
             to: email,
             subject: unverifiedSubject,
@@ -398,11 +398,11 @@ function sendSingleEmail(data) {
 
 function sendVerificationReminder(email, name) {
   try {
-    const verificationUrl = "https://bd-tips.vercel.app/?verify_email=" + encodeURIComponent(email);
+    const verificationUrl = "https://bdbinhdanhocvu.com/?verify_email=" + encodeURIComponent(email);
     const unverifiedSubject = "🦉 Nhắc nhở: Xác thực tài khoản B2B BD & Nhận ngay 15đ tích lũy";
     const unverifiedMessage = "Chào bác <b>" + name + "</b>,<br><br>Cú BeeDee thấy tài khoản của bác vẫn chưa được kích hoạt. Hãy nhấn vào nút bên dưới để xác thực địa chỉ email. Tài khoản kích hoạt thành công sẽ được tặng thêm ngay <b>15đ ⚡</b> và mở khóa toàn bộ kho tài liệu thực chiến nhé!";
     
-    const bodyHtml = getHtmlEmailTemplate(unverifiedMessage, "Kích hoạt & Nhận 15đ", verificationUrl, "https://bd-tips.vercel.app/mascot_quests.jpg", name);
+    const bodyHtml = getHtmlEmailTemplate(unverifiedMessage, "Kích hoạt & Nhận 15đ", verificationUrl, "https://bdbinhdanhocvu.com/mascot_quests.jpg", name);
     MailApp.sendEmail({
       to: email,
       subject: unverifiedSubject,
@@ -419,11 +419,11 @@ function sendVerificationReminder(email, name) {
 // ------------------------------------------------------------------
 function sendVerificationEmail(email, name) {
   try {
-    const verificationUrl = "https://bd-tips.vercel.app/?verify_email=" + encodeURIComponent(email);
+    const verificationUrl = "https://bdbinhdanhocvu.com/?verify_email=" + encodeURIComponent(email);
     const subject = "🦉 Kích hoạt tài khoản & Nhận 15đ tích lũy - Cú BeeDee";
     const message = "Chào mừng bác <b>" + name + "</b> đã tham gia rèn luyện cùng Cú BeeDee!<br><br>Vui lòng nhấp vào nút bên dưới để xác thực địa chỉ email của bác. Cú BeeDee sẽ tặng thêm ngay <b>15đ ⚡</b> vào tài khoản tích lũy của bác sau khi xác thực thành công.";
     
-    const bodyHtml = getHtmlEmailTemplate(message, "Kích hoạt & Nhận 15đ", verificationUrl, "https://bd-tips.vercel.app/mascot_quests.jpg", name);
+    const bodyHtml = getHtmlEmailTemplate(message, "Kích hoạt & Nhận 15đ", verificationUrl, "https://bdbinhdanhocvu.com/mascot_quests.jpg", name);
     
     MailApp.sendEmail({
       to: email,
@@ -437,11 +437,11 @@ function sendVerificationEmail(email, name) {
 
 function sendForgotPasswordEmail(email, name, resetToken) {
   try {
-    const resetUrl = "https://bd-tips.vercel.app/quests.html?reset_token=" + encodeURIComponent(resetToken) + "&email=" + encodeURIComponent(email);
+    const resetUrl = "https://bdbinhdanhocvu.com/quests.html?reset_token=" + encodeURIComponent(resetToken) + "&email=" + encodeURIComponent(email);
     const subject = "🔑 Khôi phục mật khẩu tài khoản Cú BeeDee";
     const message = "Chúng tôi nhận được yêu cầu khôi phục mật khẩu cho tài khoản <b>" + email + "</b> của bác.<br><br>Vui lòng click vào nút bên dưới để thiết lập mật khẩu mới (liên kết có giá trị trong vòng 1 giờ).";
     
-    const bodyHtml = getHtmlEmailTemplate(message, "Đặt lại mật khẩu", resetUrl, "https://bd-tips.vercel.app/mascot_law.jpg", name);
+    const bodyHtml = getHtmlEmailTemplate(message, "Đặt lại mật khẩu", resetUrl, "https://bdbinhdanhocvu.com/mascot_law.jpg", name);
     
     MailApp.sendEmail({
       to: email,
@@ -460,11 +460,11 @@ function sendEbookVerificationEmail(email, name, ebookTitle, fileUrl) {
     const downloadPath = fileUrl || "ebooks/Quy trình hưởng trợ cấp thất nghiệp.pdf";
     const directPdfUrl = downloadPath.startsWith('http') 
       ? downloadPath 
-      : ("https://bd-tips.vercel.app/" + encodeURI(downloadPath.replace(/^\//, '')));
+      : ("https://bdbinhdanhocvu.com/" + encodeURI(downloadPath.replace(/^\//, '')));
     
     // UTM tracking parameters for conversion tracking & auto-verification
     const utmTracking = "utm_source=email_ebook&utm_medium=email&utm_campaign=ebook_download_button&utm_content=" + encodeURIComponent(title);
-    const actionButtonUrl = "https://bd-tips.vercel.app/library.html?verify_email=" + encodeURIComponent(email) + "&download_file=" + encodeURIComponent(downloadPath) + "&ebook_title=" + encodeURIComponent(title) + "&" + utmTracking;
+    const actionButtonUrl = "https://bdbinhdanhocvu.com/library.html?verify_email=" + encodeURIComponent(email) + "&download_file=" + encodeURIComponent(downloadPath) + "&ebook_title=" + encodeURIComponent(title) + "&" + utmTracking;
     
     const subject = "📚 [Tải Ebook] " + title + " - Cú BeeDee";
     const message = "Chào bác <b>" + name + "</b>,<br><br>" +
@@ -472,7 +472,7 @@ function sendEbookVerificationEmail(email, name, ebookTitle, fileUrl) {
       "📎 <b>File PDF đầy đủ đã được đính kèm trực tiếp trong email này</b> để bác có thể xem/tải về máy hoặc lưu trữ tiện lợi.<br><br>" +
       "Bác cũng có thể nhấn vào nút bên dưới để <b>Tải / Mở Ebook PDF Trực Tiếp</b> (hệ thống sẽ tự động xác thực tài khoản và tặng thêm <b>15đ ⚡</b> tích lũy cho bác nhé):";
     
-    const bodyHtml = getHtmlEmailTemplate(message, "📥 Tải / Mở Ebook PDF Ngay", actionButtonUrl, "https://bd-tips.vercel.app/mascot_quests.jpg", name);
+    const bodyHtml = getHtmlEmailTemplate(message, "📥 Tải / Mở Ebook PDF Ngay", actionButtonUrl, "https://bdbinhdanhocvu.com/mascot_quests.jpg", name);
     
     // Fetch and attach PDF directly if under 24MB
     let attachments = [];
@@ -818,7 +818,7 @@ function createJsonResponse(obj) {
 
 // Full premium HTML email template with matching styles
 function getHtmlEmailTemplate(message, buttonText, buttonUrl, mascotUrl, name) {
-  const finalMascotUrl = mascotUrl || "https://bd-tips.vercel.app/mascot_quests.jpg";
+  const finalMascotUrl = mascotUrl || "https://bdbinhdanhocvu.com/mascot_quests.jpg";
   const greeting = name ? ("Chào " + name + " cùng Cú BeeDee! 🦉☀️") : "Chào ngày mới cùng Cú BeeDee! 🦉☀️";
   
   return [
@@ -854,7 +854,7 @@ function getHtmlEmailTemplate(message, buttonText, buttonUrl, mascotUrl, name) {
     "      <a href=\"" + buttonUrl + "\" target=\"_blank\" class=\"cta-btn\">" + buttonText + "</a>",
     "    </div>",
     "    <div class=\"footer-text\">",
-    "      Bạn nhận được email này vì đã đăng ký nhận tài liệu và tham gia rèn luyện tại <a href=\"https://bd-tips.vercel.app\" class=\"accent-link\">BD Bình Dân Học Vụ</a>.<br>",
+    "      Bạn nhận được email này vì đã đăng ký nhận tài liệu và tham gia rèn luyện tại <a href=\"https://bdbinhdanhocvu.com\" class=\"accent-link\">BD Bình Dân Học Vụ</a>.<br>",
     "      © 2026 BD Bình Dân Học Vụ. All rights reserved.",
     "    </div>",
     "  </div>",

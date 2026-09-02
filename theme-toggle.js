@@ -534,7 +534,7 @@ function showQuestWelcomeBanner() {
     const bannerHtml = `
         <div id="streak-welcome-banner" style="position: fixed; bottom: 20px; right: 20px; background: rgba(30, 20, 10, 0.95); backdrop-filter: blur(10px); border: 1.5px solid #f3a83b; border-radius: 12px; padding: 15px; max-width: 320px; box-shadow: 0 10px 25px rgba(0,0,0,0.3); display: flex; align-items: flex-start; gap: 12px; z-index: 9999; font-family: sans-serif; animation: slideInUp 0.5s ease;">
             <button onclick="window.closeQuestWelcomeBanner()" style="position: absolute; top: 5px; right: 8px; background: none; border: none; color: #f3a83b; font-size: 1.1rem; cursor: pointer; padding: 0; line-height: 1;">&times;</button>
-            <img src="/bd_mascot.png" alt="Cú" style="width: 40px; height: 40px; object-fit: contain; flex-shrink: 0;" onerror="this.src='https://bd-tips.vercel.app/bd_mascot.png'" />
+            <img src="/bd_mascot.png" alt="Cú" style="width: 40px; height: 40px; object-fit: contain; flex-shrink: 0;" onerror="this.src='https://bdbinhdanhocvu.com/bd_mascot.png'" />
             <div style="flex: 1;">
                 <p style="margin: 0; font-size: 0.8rem; line-height: 1.4; color: #ecd9c6; padding-right: 10px;">${message}</p>
                 <button onclick="window.dismissQuestWelcomeBanner()" style="margin-top: 8px; background: transparent; border: 1px solid #f3a83b; color: #f3a83b; border-radius: 4px; padding: 3px 10px; font-size: 0.7rem; cursor: pointer; transition: all 0.2s;">Tôi đi làm ngay!</button>
@@ -626,7 +626,7 @@ function showCampaignCompletePopup(campaignTitle, bonusPoints) {
       <div id="b2b-campaign-popup" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(8px); display: flex; align-items: center; justify-content: center; z-index: 99999; opacity: 0; transition: opacity 0.3s ease;">
         <div style="background: linear-gradient(135deg, #102d1f 0%, #081e13 100%); border: 2px solid #34d399; border-radius: 20px; max-width: 440px; width: 90%; padding: 30px; text-align: center; box-shadow: 0 20px 40px rgba(0,0,0,0.5); position: relative; transform: scale(0.9); transition: transform 0.3s ease;">
           <div style="width: 90px; height: 90px; margin: 0 auto 15px auto; border-radius: 50%; border: 3px solid #34d399; display: flex; align-items: center; justify-content: center; overflow: hidden; background: #fffaf0;">
-            <img src="/bd_mascot.png" alt="Cú BeeDee" style="width: 76px; height: 76px; display: block; object-fit: contain;" onerror="this.src='https://bd-tips.vercel.app/bd_mascot.png'" />
+            <img src="/bd_mascot.png" alt="Cú BeeDee" style="width: 76px; height: 76px; display: block; object-fit: contain;" onerror="this.src='https://bdbinhdanhocvu.com/bd_mascot.png'" />
           </div>
           <h3 style="color: #34d399; margin: 10px 0; font-size: 1.25rem; font-weight: 800; font-family: sans-serif;">Chiến Dịch Hoàn Thành! 🏆</h3>
           <p style="color: #ecd9c6; font-size: 0.95rem; line-height: 1.6; margin: 15px 0 25px 0; font-family: sans-serif;">Chúc mừng chiến thần! Bạn đã xuất sắc hoàn thành mọi thử thách của chiến dịch:<br><b style="color: #34d399;">"${campaignTitle}"</b>! Cú BeeDee rất khâm phục tài năng thực chiến của bạn.</p>
