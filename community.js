@@ -108,7 +108,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (window.showSubtleProfileModal && !localStorage.getItem('profile_industry')) {
             window.showSubtleProfileModal({
                 title: '💼 Lĩnh vực hoạt động',
-                subtitle: 'Chào bác! Hãy chia sẻ lĩnh vực bác đang phát triển để Cú lọc các bài thảo luận phù hợp nhất với ngành của bác:',
+                subtitle: 'Chào bạn! Hãy chia sẻ lĩnh vực bạn đang phát triển để Cú lọc các bài thảo luận phù hợp nhất với ngành của bạn:',
                 options: [
                     'Công nghệ / Phần mềm (SaaS)',
                     'Sản xuất / Logistics / Bán sỉ',
@@ -252,7 +252,7 @@ document.addEventListener('DOMContentLoaded', () => {
             id: 'challenge-peter',
             category: 'challenge',
             title: '⚔️ KHIÊU CHIẾN: Ai tự tin đàm phán giỏi hơn sếp Peter Võ? (Ải 1 Đàm Phán B2B)',
-            content: 'Chào các bác! Tôi là Peter Võ (Tổng Tư Lệnh). Tôi vừa hoàn thành Ải Đàm phán thương lượng B2B trong Đấu trường Thực chiến và đạt mức điểm 85. Bác nào tự tin đàm phán giỏi, hãy click nút <b>Nhận lời thách đấu</b> bên dưới để thử tài vượt qua điểm số của tôi. Thắng nhận ngay <b>+50 BD-Points</b> từ Cú BeeDee!',
+            content: 'Chào các bạn! Tôi là Peter Võ (Tổng Tư Lệnh). Tôi vừa hoàn thành Ải Đàm phán thương lượng B2B trong Đấu trường Thực chiến và đạt mức điểm 85. Bạn nào tự tin đàm phán giỏi, hãy click nút <b>Nhận lời thách đấu</b> bên dưới để thử tài vượt qua điểm số của tôi. Thắng nhận ngay <b>+50 BD-Points</b> từ Cú BeeDee!',
             author: 'Peter Võ (Tổng Tư Lệnh)',
             email: 'peter.vo@pvacademy.vn',
             date: 'Hôm nay',
@@ -267,7 +267,7 @@ document.addEventListener('DOMContentLoaded', () => {
             id: 'challenge-minh',
             category: 'challenge',
             title: '⚔️ KHIÊU CHIẾN: Thử tài thiết lập KPI B2B cùng chuyên gia MinhBD (Ải 2 KPI Master)',
-            content: 'Chào các đồng nghiệp! Mình là MinhBD (Kiến Trúc Sư). Mình thách đấu toàn bộ cộng đồng vượt qua mức điểm 80 tại Ải Cân não thiết lập KPI B2B. Hãy click <b>Nhận lời thách đấu</b> để xem bác hay mình có tư duy quản trị số liệu sắc bén hơn nhé! Thắng nhận <b>+50 BD-Points</b> thưởng nóng!',
+            content: 'Chào các đồng nghiệp! Mình là MinhBD (Kiến Trúc Sư). Mình thách đấu toàn bộ cộng đồng vượt qua mức điểm 80 tại Ải Cân não thiết lập KPI B2B. Hãy click <b>Nhận lời thách đấu</b> để xem bạn hay mình có tư duy quản trị số liệu sắc bén hơn nhé! Thắng nhận <b>+50 BD-Points</b> thưởng nóng!',
             author: 'MinhBD (Kiến Trúc Sư)',
             email: 'minh.bd@kpiarchitect.com',
             date: 'Hôm nay',
@@ -282,7 +282,7 @@ document.addEventListener('DOMContentLoaded', () => {
             id: 'post-1',
             category: 'pic',
             title: 'Cần xin contact PIC bộ phận Procurement (Thu mua) tại PNJ chi nhánh Miền Nam',
-            content: 'Chào các bác, em bên giải pháp bao bì cao cấp đang muốn tiếp cận phòng Thu mua của PNJ để chào thầu. Bác nào đã từng làm việc bên này hoặc có email/số điện thoại sếp Procurement cho em xin kết nối với ạ. Em xin hậu tạ ly cafe!',
+            content: 'Chào các bạn, em bên giải pháp bao bì cao cấp đang muốn tiếp cận phòng Thu mua của PNJ để chào thầu. Bạn nào đã từng làm việc bên này hoặc có email/số điện thoại sếp Procurement cho em xin kết nối với ạ. Em xin hậu tạ ly cafe!',
             author: 'BD_HaoNguyen',
             email: 'hao.nguyen@packagingsolutions.com',
             date: 'July 16, 2026',
@@ -298,7 +298,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 {
                     author: 'BD_HaoNguyen',
                     email: 'hao.nguyen@packagingsolutions.com',
-                    content: 'Tuyệt vời quá bác Bob ơi, để em gửi email chào sân ngay. Cảm ơn bác nhiều!',
+                    content: 'Tuyệt vời quá bạn Bob ơi, để em gửi email chào sân ngay. Cảm ơn bạn nhiều!',
                     date: 'July 16, 2026'
                 }
             ]
@@ -306,7 +306,7 @@ document.addEventListener('DOMContentLoaded', () => {
         {
             id: 'post-2',
             category: 'qna',
-            title: 'Sếp giao chỉ tiêu Pipeline X5 trong 2 tháng tới, bắt đầu từ đâu đây các bác?',
+            title: 'Sếp giao chỉ tiêu Pipeline X5 trong 2 tháng tới, bắt đầu từ đâu đây các bạn?',
             content: 'Tình hình là công ty SaaS vừa gọi vốn xong, sếp tổng yêu cầu đội BD phải nhân 5 lần lượng cơ hội (Pipeline) trong phễu để chuẩn bị cho chiến dịch quý tới. Em đang hơi ngợp không biết nên tập trung vào Cold outreach diện rộng hay nhờ quan hệ giới thiệu (Referral). Xin lời khuyên thực chiến từ các cao nhân!',
             author: 'SaasWarrior',
             email: '',
@@ -332,7 +332,7 @@ document.addEventListener('DOMContentLoaded', () => {
             id: 'post-3',
             category: 'story',
             title: 'Pha \'lật kèo\' ngoạn mục từ bị Blacklist sang chốt hợp đồng $80k sau 3 tháng kiên trì',
-            content: 'Chia sẻ với các bác câu chuyện xương máu vừa rồi của em. Gặp khách hàng doanh nghiệp sản xuất, lúc đầu chào giải pháp quản lý ERP thì bị sếp bên đó gạt phắt đi, thậm chí bảo lễ tân chặn số em vì phiền. Thay vì bỏ cuộc, em chuyển sang viết bản tin tổng hợp xu hướng chuyển đổi số sản xuất gửi hàng tuần cho trợ lý sếp đọc...',
+            content: 'Chia sẻ với các bạn câu chuyện xương máu vừa rồi của em. Gặp khách hàng doanh nghiệp sản xuất, lúc đầu chào giải pháp quản lý ERP thì bị sếp bên đó gạt phắt đi, thậm chí bảo lễ tân chặn số em vì phiền. Thay vì bỏ cuộc, em chuyển sang viết bản tin tổng hợp xu hướng chuyển đổi số sản xuất gửi hàng tuần cho trợ lý sếp đọc...',
             author: 'ChuaTeChotDeal',
             email: 'dealmaster@salesforce.com',
             date: 'July 14, 2026',
@@ -342,7 +342,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 {
                     author: 'An Nguyen',
                     email: 'an.nguyen@esoft.com',
-                    content: 'Quá nể sự kiên trì của bác. Đúng là BD thực chiến phải có tư duy bền bỉ như vậy!',
+                    content: 'Quá nể sự kiên trì của bạn. Đúng là BD thực chiến phải có tư duy bền bỉ như vậy!',
                     date: 'July 14, 2026'
                 }
             ]
@@ -1024,7 +1024,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     // Send mock email alert to author (since they registered their email)
                     triggerEmailToast(
                         targetPost.email,
-                        `Bác có bình luận mới từ ${authorName} tại bài viết: "${targetPost.title.substring(0, 30)}..."`
+                        `Bạn có bình luận mới từ ${authorName} tại bài viết: "${targetPost.title.substring(0, 30)}..."`
                     );
                 } else if (isAuthorNameMatch) {
                     // Unregistered post author -> display inside the bell icon
@@ -1274,7 +1274,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (window.showSubtleProfileModal && !localStorage.getItem('profile_industry')) {
                 window.showSubtleProfileModal({
                     title: '🦉 Kết nối đúng tệp đối tác',
-                    subtitle: 'Chào bác! Để Cú BeeDee phân loại và gợi ý các bài thảo luận/kết nối đối tác phù hợp nhất với lĩnh vực của bác, vui lòng chọn ngành bác đang làm nhé:',
+                    subtitle: 'Chào bạn! Để Cú BeeDee phân loại và gợi ý các bài thảo luận/kết nối đối tác phù hợp nhất với lĩnh vực của bạn, vui lòng chọn ngành bạn đang làm nhé:',
                     options: [
                         'Công nghệ',
                         'Giáo dục/ Edtech',
@@ -1574,7 +1574,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         body: JSON.stringify({ email: newEmail, source: 'community-profile-register' })
                     }).catch(console.error);
 
-                    alert(`🎉 Kích hoạt B2B Profile thành công! Tặng bác 25đ ⚡.`);
+                    alert(`🎉 Kích hoạt B2B Profile thành công! Tặng bạn 25đ ⚡.`);
                 }
             } else {
                 localStorage.removeItem('streak_email');
@@ -1652,7 +1652,7 @@ document.addEventListener('DOMContentLoaded', () => {
         sessionStorage.setItem('pvp_game_id', gameId);
         sessionStorage.setItem('pvp_post_id', postId);
         
-        alert(`⚔️ NHẬN THÁCH ĐẤU TỪ CỘNG ĐỒNG!\n\nHệ thống sẽ đưa bác tới Minigame "${gameId === 'puzzle-negotiation' ? 'Đàm phán B2B' : gameId === 'puzzle-kpi' ? 'KPI Master' : 'Luật Lao Động'}". Vượt qua mốc ${score} điểm của ${author} để nhận +50 BD-Points nhé!`);
+        alert(`⚔️ NHẬN THÁCH ĐẤU TỪ CỘNG ĐỒNG!\n\nHệ thống sẽ đưa bạn tới Minigame "${gameId === 'puzzle-negotiation' ? 'Đàm phán B2B' : gameId === 'puzzle-kpi' ? 'KPI Master' : 'Luật Lao Động'}". Vượt qua mốc ${score} điểm của ${author} để nhận +50 BD-Points nhé!`);
         window.location.href = `index.html?challenge=true&challenger=${encodeURIComponent(author)}&mascot=Expert&score=${score}&gameId=${gameId}&postId=${postId}`;
     };
 

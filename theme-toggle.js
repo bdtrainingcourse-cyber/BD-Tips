@@ -2765,7 +2765,7 @@ const TOURS = {
         {
             elementId: 'minigame-section',
             title: '🎮 1. Đấu trường B2B Sales Challenge',
-            text: '🦉 Cú BeeDeee mách nước: Bác chuẩn bị bước vào nơi rèn phản xạ đàm phán đắt giá! Đây là chỗ để bác luyện đối đáp khi bị Purchasing "hành xác" hoặc từ chối phũ phàng (chê đắt, đã có mối ruột,...).'
+            text: '🦉 Cú BeeDeee mách nước: Bạn chuẩn bị bước vào nơi rèn phản xạ đàm phán đắt giá! Đây là chỗ để bạn luyện đối đáp khi bị Purchasing "hành xác" hoặc từ chối phũ phàng (chê đắt, đã có mối ruột,...).'
         },
         {
             elementId: 'start-btn',
@@ -2775,7 +2775,7 @@ const TOURS = {
         {
             elementId: 'options-container',
             title: '⚡ 3. Lựa chọn tông giọng đàm phán',
-            text: '🦉 Cú BeeDeee mách nước: Đọc kỹ tình huống và chọn 1 trong 3 câu trả lời theo các tông giọng: Chuyên nghiệp (Professional), Giải pháp (Solution), hoặc Trực diện (Direct). AI sẽ chấm điểm và tặng bác điểm thưởng BD-Points ⚡ nâng hạng!'
+            text: '🦉 Cú BeeDeee mách nước: Đọc kỹ tình huống và chọn 1 trong 3 câu trả lời theo các tông giọng: Chuyên nghiệp (Professional), Giải pháp (Solution), hoặc Trực diện (Direct). AI sẽ chấm điểm và tặng bạn điểm thưởng BD-Points ⚡ nâng hạng!'
         }
     ],
     pitching: [
@@ -2787,19 +2787,19 @@ const TOURS = {
         {
             elementId: 'btn-start-chat-simulation',
             title: '📞 2. Bắt đầu cuộc gọi đàm thoại',
-            text: '🦉 Cú BeeDeee mách nước: Bấm để kết nối giả lập. AI Buyer sẽ bắt máy và thử thách phản xạ đàm thoại trực tiếp của bác.'
+            text: '🦉 Cú BeeDeee mách nước: Bấm để kết nối giả lập. AI Buyer sẽ bắt máy và thử thách phản xạ đàm thoại trực tiếp của bạn.'
         },
         {
             elementId: 'btn-voice-mic-main',
             title: '🎤 3. Nhấn Mic nói & Xem AI Coach nhắc bài',
-            text: '🦉 Cú BeeDeee mách nước: Nhấn giữ Mic để đối đáp. Điểm cực đỉnh: Góc dưới sẽ hiện mẹo ứng phó từ AI Coach khi bác bị khách hàng dồn vào thế bí! Cuộc gọi kết thúc sẽ có bảng phân tích độ tự tin và tỷ lệ chốt cuộc hẹn.'
+            text: '🦉 Cú BeeDeee mách nước: Nhấn giữ Mic để đối đáp. Điểm cực đỉnh: Góc dưới sẽ hiện mẹo ứng phó từ AI Coach khi bạn bị khách hàng dồn vào thế bí! Cuộc gọi kết thúc sẽ có bảng phân tích độ tự tin và tỷ lệ chốt cuộc hẹn.'
         }
     ],
     community: [
         {
             elementId: 'posts-container',
             title: '🧠 1. Đấu trường Cộng đồng BD',
-            text: '🦉 Cú BeeDeee mách nước: Nơi giao lưu võ nghệ của giới BD. Bác có thể đọc những câu chuyện bán hàng thực chiến xương máu hoặc học hỏi nghiệp vụ từ đồng nghiệp.'
+            text: '🦉 Cú BeeDeee mách nước: Nơi giao lưu võ nghệ của giới BD. Bạn có thể đọc những câu chuyện bán hàng thực chiến xương máu hoặc học hỏi nghiệp vụ từ đồng nghiệp.'
         },
         {
             elementId: 'vote-box',
@@ -2809,12 +2809,12 @@ const TOURS = {
         {
             elementId: 'btn-create-post',
             title: '✍️ 3. Săn & Treo thưởng điểm Bounty',
-            text: '🦉 Cú BeeDeee mách nước: Khi cần tìm thông tin PIC mua hàng gấp, bác đăng bài và treo điểm Bounty ⚡. Đồng nghiệp chia sẻ liên hệ PIC đúng sẽ giật giải nhận điểm Bounty này của bác!'
+            text: '🦉 Cú BeeDeee mách nước: Khi cần tìm thông tin PIC mua hàng gấp, bạn đăng bài và treo điểm Bounty ⚡. Đồng nghiệp chia sẻ liên hệ PIC đúng sẽ giật giải nhận điểm Bounty này của bạn!'
         },
         {
             elementId: 'btn-edit-profile',
             title: '🦉 4. Điền Email nhận 25⚡ lót tay',
-            text: '🦉 Cú BeeDeee mách nước: Xác thực Email công ty để kích hoạt danh tính BD. Bác sẽ được mở khóa xem toàn bộ thông tin PIC mua hàng bảo mật và nhận ngay 25⚡ điểm thưởng!'
+            text: '🦉 Cú BeeDeee mách nước: Xác thực Email công ty để kích hoạt danh tính BD. Bạn sẽ được mở khóa xem toàn bộ thông tin PIC mua hàng bảo mật và nhận ngay 25⚡ điểm thưởng!'
         }
     ]
 };
@@ -3059,7 +3059,7 @@ function showNewUserHelperWidget(pageId) {
     widget.innerHTML = `
         <span style="font-size: 2.2rem; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.15));">🦉</span>
         <div style="flex: 1; display: flex; flex-direction: column;">
-            <h5 style="margin: 0 0 5px 0; font-weight: 800; font-size: 0.9rem; color: var(--accent); font-family: 'Plus Jakarta Sans', sans-serif;">Bác là BD mới (Trong 24h đầu)!</h5>
+            <h5 style="margin: 0 0 5px 0; font-weight: 800; font-size: 0.9rem; color: var(--accent); font-family: 'Plus Jakarta Sans', sans-serif;">Bạn là BD mới (Trong 24h đầu)!</h5>
             <p style="margin: 0 0 10px 0; font-size: 0.78rem; color: var(--text-main); line-height: 1.45; text-align: left;">Bấm nút Hướng dẫn bên dưới để xem chi tiết cách thức rèn luyện phản xạ đàm phán đắt giá, cách gọi điện Pitching AI và săn điểm Bounty Cộng đồng nhé.</p>
             <div style="display: flex; gap: 8px;">
                 <button id="btn-helper-start" style="background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); border: none; color: white; padding: 6px 12px; border-radius: 6px; font-weight: bold; font-size: 0.75rem; cursor: pointer; transition: transform 0.2s;">Xem Hướng dẫn</button>
@@ -3129,7 +3129,7 @@ window.openDirectMessage = function(targetName, targetEmail = '') {
     }
 
     if (currentUser === targetName) {
-        alert('🦉 Cú BeeDeee mách nước: Bác không thể tự chat với chính mình đâu nè!');
+        alert('🦉 Cú BeeDeee mách nước: Bạn không thể tự chat với chính mình đâu nè!');
         return;
     }
 
@@ -3195,7 +3195,7 @@ window.openDirectMessage = function(targetName, targetEmail = '') {
         if (history.length === 0) {
             msgsContainer.innerHTML = `
                 <div style="text-align: center; padding: 20px 10px; color: var(--text-light); font-size: 0.72rem; line-height: 1.4;">
-                    🦉 Chào mừng bác đến với kênh chat bảo mật. <br>Hãy trao đổi lịch thiệp về PIC hoặc chia sẻ tài liệu nghiệp vụ nhé!
+                    🦉 Chào mừng bạn đến với kênh chat bảo mật. <br>Hãy trao đổi lịch thiệp về PIC hoặc chia sẻ tài liệu nghiệp vụ nhé!
                 </div>
             `;
             return;
@@ -3248,10 +3248,10 @@ window.openDirectMessage = function(targetName, targetEmail = '') {
         setTimeout(() => {
             const targetHistory = JSON.parse(localStorage.getItem(chatKey) || '[]');
             const replies = [
-                "Bác ơi, check giùm em PIC bên Vinamilk nha! Đang kẹt quá hứa hậu tạ 200⚡ luôn.",
-                "Tin nhắn mật từ Cú: Chúc bác săn lead thành công hôm nay nhé! 🦉",
-                "Được bác nhé, có gì gửi email hoặc thông tin PIC qua đây giùm em với.",
-                "Cảm ơn bác nhiều nha, đúng PIC mua hàng em đang tìm bấy lâu nay! 🙌"
+                "Bạn ơi, check giùm em PIC bên Vinamilk nha! Đang kẹt quá hứa hậu tạ 200⚡ luôn.",
+                "Tin nhắn mật từ Cú: Chúc bạn săn lead thành công hôm nay nhé! 🦉",
+                "Được bạn nhé, có gì gửi email hoặc thông tin PIC qua đây giùm em với.",
+                "Cảm ơn bạn nhiều nha, đúng PIC mua hàng em đang tìm bấy lâu nay! 🙌"
             ];
             const randomReply = replies[Math.floor(Math.random() * replies.length)];
             
@@ -3309,7 +3309,7 @@ window.testEmailReminder = async function() {
                 if (window.showGlobalNotification) {
                     window.showGlobalNotification(
                         '🦉 Đã tạo Email Nhắc Nhở thành công!',
-                        `Hệ thống đang chạy ở chế độ thử nghiệm nội bộ.<br><br>Đã tạo mẫu email nhắc nhở thành công và mở trong tab mới để bác xem trước thiết kế!`
+                        `Hệ thống đang chạy ở chế độ thử nghiệm nội bộ.<br><br>Đã tạo mẫu email nhắc nhở thành công và mở trong tab mới để bạn xem trước thiết kế!`
                     );
                 } else {
                     alert('Đã tạo mẫu email nhắc nhở thành công và mở trong tab mới!');
@@ -3318,7 +3318,7 @@ window.testEmailReminder = async function() {
                 if (window.showGlobalNotification) {
                     window.showGlobalNotification(
                         '✉️ Đã Gửi Email Nhắc Nhở!',
-                        `Cú BeeDee đã gửi một email nhắc nhở thực tế tới địa chỉ <strong>${email}</strong>.<br><br>Vui lòng kiểm tra hộp thư của bác (bao gồm cả mục Spam/Thư rác nếu không tìm thấy).`
+                        `Cú BeeDee đã gửi một email nhắc nhở thực tế tới địa chỉ <strong>${email}</strong>.<br><br>Vui lòng kiểm tra hộp thư của bạn (bao gồm cả mục Spam/Thư rác nếu không tìm thấy).`
                     );
                 } else {
                     alert(`Cú BeeDee đã gửi một email nhắc nhở thực tế tới địa chỉ ${email}.`);
@@ -3483,10 +3483,10 @@ window.showSubtleProfileModal = function({ title, subtitle, options, fieldName, 
                             if (window.showGlobalNotification) {
                                 window.showGlobalNotification(
                                     '🎉 Nhận Điểm Thưởng!',
-                                    `Cú BeeDee tặng bác <strong>+10 BD-Points</strong> vì đã hoàn thành khảo sát profile!<br><br>Số dư hiện tại: <strong>${data.points} BD-Points</strong>`
+                                    `Cú BeeDee tặng bạn <strong>+10 BD-Points</strong> vì đã hoàn thành khảo sát profile!<br><br>Số dư hiện tại: <strong>${data.points} BD-Points</strong>`
                                 );
                             } else {
-                                alert(`Cú BeeDee tặng bác +10 BD-Points! Số dư: ${data.points}`);
+                                alert(`Cú BeeDee tặng bạn +10 BD-Points! Số dư: ${data.points}`);
                             }
                         }
                     }
@@ -3499,7 +3499,7 @@ window.showSubtleProfileModal = function({ title, subtitle, options, fieldName, 
                 if (window.showGlobalNotification) {
                     window.showGlobalNotification(
                         '⚡ Lưu Thông Tin Thành Công!',
-                        `Đã ghi nhận câu trả lời của bác. Hệ thống đã tích lũy tạm thời <strong>+10 BD-Points</strong>. Đăng ký email để nhận điểm chính thức nhé!`
+                        `Đã ghi nhận câu trả lời của bạn. Hệ thống đã tích lũy tạm thời <strong>+10 BD-Points</strong>. Đăng ký email để nhận điểm chính thức nhé!`
                     );
                 }
             }
@@ -3564,7 +3564,7 @@ window.triggerProfileOnboarding = function(callback) {
         localStorage.setItem('b2b_last_survey_prompt_time', now.toString());
         window.showSubtleProfileModal({
             title: '🦉 Tinh chỉnh độ khó AI',
-            subtitle: 'Chào bác! Để Cú BeeDee chuẩn bị bộ câu hỏi và kịch bản thực chiến phù hợp nhất với trình độ, bác làm B2B Sales/BD được mấy năm rồi?',
+            subtitle: 'Chào bạn! Để Cú BeeDee chuẩn bị bộ câu hỏi và kịch bản thực chiến phù hợp nhất với trình độ, bạn làm B2B Sales/BD được mấy năm rồi?',
             options: [
                 'Dưới 2 năm (Tân binh)',
                 'Từ 2-4 năm (Thực chiến)',
@@ -3584,7 +3584,7 @@ window.triggerProfileOnboarding = function(callback) {
         localStorage.setItem('b2b_last_survey_prompt_time', now.toString());
         window.showSubtleProfileModal({
             title: '💼 Lĩnh vực hoạt động',
-            subtitle: 'Bác đang phụ trách phát triển thị trường (BD) trong lĩnh vực/ngành nghề nào?',
+            subtitle: 'Bạn đang phụ trách phát triển thị trường (BD) trong lĩnh vực/ngành nghề nào?',
             options: [
                 'Công nghệ / Phần mềm (SaaS)',
                 'Sản xuất / Logistics / Bán sỉ',
@@ -3604,7 +3604,7 @@ window.triggerProfileOnboarding = function(callback) {
         localStorage.setItem('b2b_last_survey_prompt_time', now.toString());
         window.showSubtleProfileModal({
             title: '🎯 Kỹ năng muốn rèn luyện',
-            subtitle: 'Kỹ năng BD nào bác đang muốn tập trung cải thiện nhất trong thời gian này?',
+            subtitle: 'Kỹ năng BD nào bạn đang muốn tập trung cải thiện nhất trong thời gian này?',
             options: [
                 'Tìm kiếm khách hàng & Tiếp cận (Cold reach)',
                 'Thuyết trình & Pitching giải pháp',

@@ -1476,7 +1476,7 @@ const initB2BApp = () => {
             if (window.showSubtleProfileModal && !localStorage.getItem('profile_experience')) {
                 window.showSubtleProfileModal({
                     title: '🦉 Tinh chỉnh độ khó AI',
-                    subtitle: 'Chào bác! Để Cú BeeDee chuẩn bị bộ câu hỏi và kịch bản thực chiến phù hợp nhất với trình độ, bác làm B2B Sales/BD được mấy năm rồi?',
+                    subtitle: 'Chào bạn! Để Cú BeeDee chuẩn bị bộ câu hỏi và kịch bản thực chiến phù hợp nhất với trình độ, bạn làm B2B Sales/BD được mấy năm rồi?',
                     options: [
                         'Dưới 2 năm (Tân binh)',
                         'Từ 2-4 năm (Thực chiến)',
@@ -2287,7 +2287,7 @@ const initB2BApp = () => {
                     }
                 } else {
                     sfx.wrong();
-                    let errMsg = "❌ Sai rồi bác ơi! Hãy kiểm tra lại các lỗi sau:\n";
+                    let errMsg = "❌ Sai rồi bạn ơi! Hãy kiểm tra lại các lỗi sau:\n";
                     if (rowErrors.length > 0) {
                         errMsg += `• Hàng ${rowErrors.join(', ')}: số lượng 🤝 và ❌ chưa bằng nhau (phải có đúng 2 chiếc mỗi loại).\n`;
                     }
@@ -5635,7 +5635,7 @@ if (document.readyState === 'loading') {
 
                     alert(`🎉 Đủ điều kiện đổi quà! Nhấn OK trong hộp thoại tiếp theo để mở hòm thư gửi đăng ký tới: bdtraining@bdbinhdanhocvu.com, hoặc nhấn Cancel để mở Zalo chat trực tiếp với anh Peter Võ (0931.100.569) để xác nhận nhận quà nhé!`);
 
-                    const openEmail = confirm(`Bác muốn gửi Email đăng ký nhận quà tới bdtraining@bdbinhdanhocvu.com?\n\n- Nhấn OK: Gửi Email tự động soạn sẵn.\n- Nhấn Cancel: Mở Zalo Chat trực tiếp với anh Peter Võ.`);
+                    const openEmail = confirm(`Bạn muốn gửi Email đăng ký nhận quà tới bdtraining@bdbinhdanhocvu.com?\n\n- Nhấn OK: Gửi Email tự động soạn sẵn.\n- Nhấn Cancel: Mở Zalo Chat trực tiếp với anh Peter Võ.`);
                     
                     if (openEmail) {
                         // Open mailto client
@@ -6188,7 +6188,7 @@ if (document.readyState === 'loading') {
                             historyList.insertBefore(historyItem, historyList.firstChild);
                         }
 
-                        alert('🥮 Chúc mừng bác đã đổi quà thành công! Đã cộng +50đ BD-Points vào ví.');
+                        alert('🥮 Chúc mừng bạn đã đổi quà thành công! Đã cộng +50đ BD-Points vào ví.');
                         codeInput.value = '';
                     } else {
                         alert(data.error || 'Có lỗi xảy ra khi đổi quà.');
@@ -6221,9 +6221,9 @@ if (document.readyState === 'loading') {
         
         let greeting = '';
         if (isRegistered && userName && userName !== 'Khách' && userName !== 'Học viên') {
-            greeting = `Xin chào bác <strong>${userName}</strong>!`;
+            greeting = `Xin chào bạn <strong>${userName}</strong>!`;
         } else {
-            greeting = `Xin chào bác!`;
+            greeting = `Xin chào bạn!`;
         }
 
         greetingTitle.innerHTML = greeting;
@@ -6231,11 +6231,11 @@ if (document.readyState === 'loading') {
         if (!isRegistered) {
             // New User
             mascotImg.src = 'beedee_mid_autumn.jpg?v=2.3.13';
-            greetingText.innerHTML = `Bác chưa đăng ký tích điểm kìa! Mau bật nhắc nhở để tui gửi bí kíp BD và tặng ngay 25 BD-Points nha!`;
+            greetingText.innerHTML = `Bạn chưa đăng ký tích điểm kìa! Mau bật nhắc nhở để tui gửi bí kíp BD và tặng ngay 25 BD-Points nha!`;
         } else if (isRegistered && !isVerified) {
             // Registered but not verified
             mascotImg.src = 'mascot_email.jpg?v=2.3.13';
-            greetingText.innerHTML = `Bác tích được <strong>${balance} BD-Points</strong> rồi đó, nhưng chưa cài mật khẩu. Cài ngay kẻo ví điểm bay màu nha!`;
+            greetingText.innerHTML = `Bạn tích được <strong>${balance} BD-Points</strong> rồi đó, nhưng chưa cài mật khẩu. Cài ngay kẻo ví điểm bay màu nha!`;
         } else {
             // Verified User -> Day of the week specific mascot and messages!
             const day = new Date().getDay(); // 0 = CN, 1 = T2, 2 = T3, 3 = T4, 4 = T5, 5 = T6, 6 = T7
@@ -6245,27 +6245,27 @@ if (document.readyState === 'loading') {
             switch(day) {
                 case 1: // Monday
                     mascotSrc = 'mascot_commander.jpg?v=2.3.13';
-                    msg = `Đầu tuần năng lượng lên bác ơi! Mục tiêu tuần này của bác là săn thêm bao nhiêu Deal đây? Mau vô mở kho tàng B2B thực chiến cùng tui nào!`;
+                    msg = `Đầu tuần năng lượng lên bạn ơi! Mục tiêu tuần này của bạn là săn thêm bao nhiêu Deal đây? Mau vô mở kho tàng B2B thực chiến cùng tui nào!`;
                     break;
                 case 2: // Tuesday
                     mascotSrc = 'mascot_architect.jpg?v=2.3.13';
-                    msg = `Thứ ba là ngày thiết lập hệ thống! Hãy để tui giúp bác lên kịch bản email tiếp cận lead tự động chuẩn chỉnh nhé!`;
+                    msg = `Thứ ba là ngày thiết lập hệ thống! Hãy để tui giúp bạn lên kịch bản email tiếp cận lead tự động chuẩn chỉnh nhé!`;
                     break;
                 case 3: // Wednesday
                     mascotSrc = 'mascot_kpi.jpg?v=2.3.13';
-                    msg = `Giữa tuần rồi bác ơi, KPI tuần này đã chạy được nửa chặng đường chưa? Mau vô ước tính KPI hoặc làm vài nhiệm vụ lấy điểm tích lũy thôi!`;
+                    msg = `Giữa tuần rồi bạn ơi, KPI tuần này đã chạy được nửa chặng đường chưa? Mau vô ước tính KPI hoặc làm vài nhiệm vụ lấy điểm tích lũy thôi!`;
                     break;
                 case 4: // Thursday
                     mascotSrc = 'mascot_salary.jpg?v=2.3.13';
-                    msg = `Thứ năm rồi, cuối tuần cận kề rồi! Deal nào còn dang dở thì chốt nhanh để cuối tháng lượm hoa hồng ngập ví nha bác!`;
+                    msg = `Thứ năm rồi, cuối tuần cận kề rồi! Deal nào còn dang dở thì chốt nhanh để cuối tháng lượm hoa hồng ngập ví nha bạn!`;
                     break;
                 case 5: // Friday
                     mascotSrc = 'mascot_champion.jpg?v=2.3.13';
-                    msg = `Thứ sáu cuối tuần rồi bác ơi! Gác lại áp lực, hãy cùng khách hàng xây dựng chemistry thật tốt rồi tận hưởng ngày nghỉ cuối tuần nhé!`;
+                    msg = `Thứ sáu cuối tuần rồi bạn ơi! Gác lại áp lực, hãy cùng khách hàng xây dựng chemistry thật tốt rồi tận hưởng ngày nghỉ cuối tuần nhé!`;
                     break;
                 default: // Weekend (6 = Sat, 0 = Sun)
                     mascotSrc = 'mascot_farmer.jpg?v=2.3.13';
-                    msg = `Bác đang có <strong>${balance} BD-Points</strong> trong ví. Cuối tuần rồi, hãy sạc lại năng lượng và trau dồi thêm kỹ năng BD cùng tui nha!`;
+                    msg = `Bạn đang có <strong>${balance} BD-Points</strong> trong ví. Cuối tuần rồi, hãy sạc lại năng lượng và trau dồi thêm kỹ năng BD cùng tui nha!`;
                     break;
             }
             mascotImg.src = mascotSrc;
@@ -6297,7 +6297,7 @@ if (document.readyState === 'loading') {
                     setTimeout(() => {
                         window.showSubtleProfileModal({
                             title: '🎯 Gợi ý Lộ trình rèn luyện',
-                            subtitle: 'Chào bác! Để Cú BeeDee gợi ý lộ trình nhiệm vụ thực chiến và tài liệu rèn luyện sát sườn nhất với bác, bác đang mong muốn tập trung phát triển kỹ năng nào nhất?',
+                            subtitle: 'Chào bạn! Để Cú BeeDee gợi ý lộ trình nhiệm vụ thực chiến và tài liệu rèn luyện sát sườn nhất với bạn, bạn đang mong muốn tập trung phát triển kỹ năng nào nhất?',
                             options: [
                                 'Kỹ năng Giao Tiếp',
                                 'Kỹ năng Presentation',
@@ -6378,8 +6378,8 @@ if (document.readyState === 'loading') {
             gameTitle: 'B2B Zip (Sales Path Finder)', 
             baseSpeed: 9.5,
             quotes: [
-                'Tôi đã tối ưu hóa logic phễu săn Lead B2B Zip đạt Cấp 1. Bác thử xem có nối đường ống nhanh hơn tôi không?',
-                'Lần trước bác đi đường ống rất chuẩn! Lần này tôi đã rút ngắn thời gian xử lý xuống còn 42 giây đấy!',
+                'Tôi đã tối ưu hóa logic phễu săn Lead B2B Zip đạt Cấp 1. Bạn thử xem có nối đường ống nhanh hơn tôi không?',
+                'Lần trước bạn đi đường ống rất chuẩn! Lần này tôi đã rút ngắn thời gian xử lý xuống còn 42 giây đấy!',
                 'Tôi đã kích hoạt chế độ Enterprise Pipeline! 8 bước liên hoàn không một sai số, dám so tài tiếp không?'
             ]
         },
@@ -6392,9 +6392,9 @@ if (document.readyState === 'loading') {
             gameTitle: 'B2B Wend (Word Search)', 
             baseSpeed: 8.5,
             quotes: [
-                'Ma trận thuật ngữ B2B Wend này tôi giải mã chỉ trong 45 giây. Thách bác vượt qua Cấp 1 của tôi đấy!',
-                'Bác tìm từ nhanh đấy! Nhưng sang Cấp 2 với thuật ngữ Churn & LTV ma trận ẩn, bác sẽ bất ngờ đấy!',
-                'Đỉnh cao giải mã B2B: Expansion, Retention, Cross-sell trong 35 giây! Bác dám vào sàn đấu không?'
+                'Ma trận thuật ngữ B2B Wend này tôi giải mã chỉ trong 45 giây. Thách bạn vượt qua Cấp 1 của tôi đấy!',
+                'Bạn tìm từ nhanh đấy! Nhưng sang Cấp 2 với thuật ngữ Churn & LTV ma trận ẩn, bạn sẽ bất ngờ đấy!',
+                'Đỉnh cao giải mã B2B: Expansion, Retention, Cross-sell trong 35 giây! Bạn dám vào sàn đấu không?'
             ]
         },
         { 
@@ -6406,8 +6406,8 @@ if (document.readyState === 'loading') {
             gameTitle: 'B2B Tango (Reasoning Grid)', 
             baseSpeed: 9.0,
             quotes: [
-                'Logic phân bổ deal độc bản B2B Tango Cấp 1 không làm khó được tôi. Bác dám vào so tài logic không?',
-                'Vừa nãy tôi nhường bác 1 bước thôi! Cấp 2 này phân bổ deal đa tầng siêu hóc búa, thử sức nào!',
+                'Logic phân bổ deal độc bản B2B Tango Cấp 1 không làm khó được tôi. Bạn dám vào so tài logic không?',
+                'Vừa nãy tôi nhường bạn 1 bước thôi! Cấp 2 này phân bổ deal đa tầng siêu hóc búa, thử sức nào!',
                 'Ma trận đàm phán tối thượng đã mở! Ai giải xong trước trong 35 giây người đó là Bá Chủ Chốt Deal!'
             ]
         },
@@ -6421,8 +6421,8 @@ if (document.readyState === 'loading') {
             baseSpeed: 10.0,
             quotes: [
                 'Sắp xếp vùng địa bàn BD Queens không trùng lặp là sở trường của tôi. Đấu thử xem ai phân bổ đội ngũ tối ưu hơn?',
-                'Bác xếp 4 tướng rất khéo! Lên Cấp 2 với 5 vùng chiến lược 5x5 sẽ căng thẳng hơn nhiều đấy!',
-                'Cấp 3 Đại Tướng: 6 địa bàn không xung đột trong 35 giây! Bác sẵn sàng nhận thử thách chưa?'
+                'Bạn xếp 4 tướng rất khéo! Lên Cấp 2 với 5 vùng chiến lược 5x5 sẽ căng thẳng hơn nhiều đấy!',
+                'Cấp 3 Đại Tướng: 6 địa bàn không xung đột trong 35 giây! Bạn sẵn sàng nhận thử thách chưa?'
             ]
         }
     ];
@@ -6842,7 +6842,7 @@ if (document.readyState === 'loading') {
         
         // Surrender button
         document.getElementById('btn-dual-surrender').addEventListener('click', () => {
-            if (confirm('Bác có chắc muốn rút lui khỏi trận đấu này không?')) {
+            if (confirm('Bạn có chắc muốn rút lui khỏi trận đấu này không?')) {
                 endDualBattle(false, usr, oppLevel, 'Bạn đã chủ động rút lui!');
             }
         });
@@ -7071,7 +7071,7 @@ if (document.readyState === 'loading') {
                 
                 updatePlayerProgress(foundWords.length * 25, `Đã tìm ra từ khóa <strong>[${word}]</strong>!`, usr, oppLevel);
             } else {
-                alert('Từ chưa chính xác hoặc đã tìm rồi. Bác hãy thử chọn lại nhé!');
+                alert('Từ chưa chính xác hoặc đã tìm rồi. Bạn hãy thử chọn lại nhé!');
                 selectedLetters = [];
                 if (currentWordEl) currentWordEl.textContent = '--';
                 gridBox.querySelectorAll('.wend-cell-btn.selected').forEach(btn => {
@@ -7265,7 +7265,7 @@ if (document.readyState === 'loading') {
                         btn.style.background = 'rgba(255,255,255,0.06)';
                     } else {
                         if (queensPlaced.length >= size) {
-                            alert(`Bác chỉ được đặt tối đa ${size} Vương miện (👑) thôi nhé!`);
+                            alert(`Bạn chỉ được đặt tối đa ${size} Vương miện (👑) thôi nhé!`);
                             return;
                         }
                         queensPlaced.push({ r, c });
@@ -7470,10 +7470,10 @@ function checkPvPChallenge() {
                     if (window.showGlobalNotification) {
                         window.showGlobalNotification(
                             '⚔️ NHẬN LỜI KHIÊU CHIẾN PVP!',
-                            `Bác đã nhận lời thách đấu từ <strong>${challenger || 'Đối thủ'}</strong> (${mascot || 'BD'})!<br><br>Hãy nhấn <strong>Bắt Đầu Chơi</strong> để quyết chiến và vượt qua mốc <strong>${scoreToBeat} điểm</strong> nhé!`
+                            `Bạn đã nhận lời thách đấu từ <strong>${challenger || 'Đối thủ'}</strong> (${mascot || 'BD'})!<br><br>Hãy nhấn <strong>Bắt Đầu Chơi</strong> để quyết chiến và vượt qua mốc <strong>${scoreToBeat} điểm</strong> nhé!`
                         );
                     } else {
-                        alert(`⚔️ LỜI KHIÊU CHIẾN PVP: Bác nhận được lời thách đấu từ ${challenger || 'Đối thủ'} (${mascot || 'BD'}). Vượt qua mốc ${scoreToBeat} điểm nhé bác!`);
+                        alert(`⚔️ LỜI KHIÊU CHIẾN PVP: Bạn nhận được lời thách đấu từ ${challenger || 'Đối thủ'} (${mascot || 'BD'}). Vượt qua mốc ${scoreToBeat} điểm nhé bạn!`);
                     }
                 }, 1500);
             }
@@ -7495,10 +7495,10 @@ function checkPvPChallenge() {
                     if (window.showGlobalNotification) {
                         window.showGlobalNotification(
                             '⚔️ CHUẨN BỊ KHIÊU CHIẾN!',
-                            `Bác hãy chơi ải game này đạt điểm số kỷ lục, hệ thống sẽ lưu điểm và tự động tạo link thách đấu để bác gửi bạn bè/đồng nghiệp nhé!`
+                            `Bạn hãy chơi ải game này đạt điểm số kỷ lục, hệ thống sẽ lưu điểm và tự động tạo link thách đấu để bạn gửi bạn bè/đồng nghiệp nhé!`
                         );
                     } else {
-                        alert('⚔️ CHUẨN BỊ KHIÊU CHIẾN: Bác hãy chơi ải này để lấy điểm cao và tạo link thách đấu nhé!');
+                        alert('⚔️ CHUẨN BỊ KHIÊU CHIẾN: Bạn hãy chơi ải này để lấy điểm cao và tạo link thách đấu nhé!');
                     }
                 }, 1500);
             }
@@ -7591,7 +7591,7 @@ function checkPvPChallenge() {
                         <div style="font-size: 3.5rem; margin-bottom: 15px;">🏆🎉</div>
                         <h3 style="margin: 0 0 10px 0; font-size: 1.3rem; font-weight: 800; color: #10b981; text-transform: uppercase;">CHIẾN THẮNG RỰC RỠ!</h3>
                         <p style="margin: 0 0 20px 0; font-size: 0.88rem; color: var(--text-light); line-height: 1.5;">
-                            Chúc mừng bác! Bác đạt <strong>${finalScore} điểm</strong>, xuất sắc đánh bại mốc <strong>${scoreToBeat} điểm</strong> của <strong>${challenger}</strong>!
+                            Chúc mừng bạn! Bạn đạt <strong>${finalScore} điểm</strong>, xuất sắc đánh bại mốc <strong>${scoreToBeat} điểm</strong> của <strong>${challenger}</strong>!
                         </p>
                         <div style="background: rgba(16, 185, 129, 0.08); border: 1.5px dashed #10b981; padding: 12px; border-radius: 12px; margin-bottom: 20px; font-weight: bold; color: #10b981; font-size: 0.9rem;">
                             🎁 THƯỞNG CHIẾN THẮNG: +50 BD-Points!
@@ -7603,10 +7603,10 @@ function checkPvPChallenge() {
                         <div style="font-size: 3.5rem; margin-bottom: 15px;">⚔️🦉</div>
                         <h3 style="margin: 0 0 10px 0; font-size: 1.3rem; font-weight: 800; color: #ef4444; text-transform: uppercase;">BẠN ĐÃ BẠI TRẬN!</h3>
                         <p style="margin: 0 0 20px 0; font-size: 0.88rem; color: var(--text-light); line-height: 1.5;">
-                            Rất tiếc! Điểm số <strong>${finalScore} điểm</strong> của bác chưa đủ để vượt qua mốc <strong>${scoreToBeat} điểm</strong> của <strong>${challenger}</strong>.
+                            Rất tiếc! Điểm số <strong>${finalScore} điểm</strong> của bạn chưa đủ để vượt qua mốc <strong>${scoreToBeat} điểm</strong> của <strong>${challenger}</strong>.
                         </p>
                         <div style="background: rgba(239, 68, 68, 0.08); border: 1.5px dashed #ef4444; padding: 12px; border-radius: 12px; margin-bottom: 20px; font-weight: bold; color: #ef4444; font-size: 0.85rem;">
-                            Hãy rèn luyện thêm kỹ năng để phục thù sau nhé bác!
+                            Hãy rèn luyện thêm kỹ năng để phục thù sau nhé bạn!
                         </div>
                         <button onclick="this.closest('.pvp-overlay').remove()" class="btn btn-secondary" style="width: 100%; padding: 12px; font-weight: bold; border-radius: 8px; border: 1px solid var(--border-color); background: rgba(255,255,255,0.05); color: var(--text-main); cursor: pointer;">Đóng</button>
                     `;

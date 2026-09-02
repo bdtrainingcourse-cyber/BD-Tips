@@ -873,7 +873,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 // Show clear instruction modal
                 window.showGlobalNotification(
                     '✉️ Ebook Đã Được Gửi Đến Email Của Bạn!',
-                    `Cú BeeDee vừa gửi trọn bộ cuốn <strong>${ebookTitle}</strong> (kèm file PDF đính kèm) đến địa chỉ email <strong>${email}</strong>.<br><br>👉 <strong>Bước tiếp theo:</strong> Bác hãy mở hòm thư email (hoặc mục <em>Spam / Thư rác</em>) để xem/tải trực tiếp file PDF về máy ngay nhé!`
+                    `Cú BeeDee vừa gửi trọn bộ cuốn <strong>${ebookTitle}</strong> (kèm file PDF đính kèm) đến địa chỉ email <strong>${email}</strong>.<br><br>👉 <strong>Bước tiếp theo:</strong> Bạn hãy mở hòm thư email (hoặc mục <em>Spam / Thư rác</em>) để xem/tải trực tiếp file PDF về máy ngay nhé!`
                 );
             }
         })

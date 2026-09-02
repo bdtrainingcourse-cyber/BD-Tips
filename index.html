@@ -8,9 +8,9 @@
     <title>BD Bình Dân Học Vụ | Nơi Chiến Binh BD Bắt Đầu</title>
     <meta name="description" content="Đừng để 'Cái miệng hại cái deal' - 5 pha chuyển mình về ngôn từ dành cho B2B Business Development">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css?v=2.3.78">
+    <link rel="stylesheet" href="style.css?v=2.3.79">
     <link rel="stylesheet" href="ai-chat.css?v=2.1.2">
-    <script src="theme-toggle.js?v=2.3.78"></script>
+    <script src="theme-toggle.js?v=2.3.79"></script>
 </head>
 <body>
     <!-- Navbar -->
@@ -68,7 +68,7 @@
             <div style="flex: 1; text-align: left; min-width: 280px; display: flex; flex-direction: column; gap: 8px;">
                 <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
                     <span style="background: var(--primary); color: white; padding: 4px 10px; border-radius: 20px; font-size: 0.68rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px;">🦉 Tôi là chú cú BeeDee Thông Thái</span>
-                    <h4 style="margin: 0; font-size: 1.15rem; font-weight: 800; color: var(--text-main);" id="beedee-greeting-title">Xin chào bác!</h4>
+                    <h4 style="margin: 0; font-size: 1.15rem; font-weight: 800; color: var(--text-main);" id="beedee-greeting-title">Xin chào bạn!</h4>
                 </div>
                 <div class="beedee-speech-bubble" style="background: rgba(255,255,255,0.02); padding: 12px 16px; border-radius: 14px; border: 1px solid var(--border-color); font-size: 0.88rem; color: var(--text-light); line-height: 1.5; font-weight: 500; position: relative;">
                     <p id="beedee-greeting-text" style="margin: 0;">Đang chuẩn bị lời chào hóm hỉnh...</p>
@@ -108,35 +108,35 @@
                 const avatarHtml = customAvatar ? `<img src="${customAvatar}" style="width: 28px; height: 28px; border-radius: 50%; object-fit: cover; border: 1.5px solid var(--primary); display: inline-block; vertical-align: middle; margin-right: 6px;">` : '';
 
                 if (isRegistered && userName && userName !== 'Khách' && userName !== 'Học viên') {
-                    greetingTitle.innerHTML = avatarHtml + 'Xin chào bác <strong>' + userName + '</strong>!';
+                    greetingTitle.innerHTML = avatarHtml + 'Xin chào bạn <strong>' + userName + '</strong>!';
                 } else {
-                    greetingTitle.innerHTML = avatarHtml + 'Xin chào bác!';
+                    greetingTitle.innerHTML = avatarHtml + 'Xin chào bạn!';
                 }
                 
                 if (greetingText && (greetingText.innerHTML.includes('Đang chuẩn bị') || greetingText.innerHTML === '')) {
                     if (!isRegistered) {
-                        greetingText.innerHTML = 'Bác chưa đăng ký tích điểm kìa! Mau bật nhắc nhở để tui gửi bí kíp BD và tặng ngay 25 BD-Points nha!';
+                        greetingText.innerHTML = 'Bạn chưa đăng ký tích điểm kìa! Mau bật nhắc nhở để tui gửi bí kíp BD và tặng ngay 25 BD-Points nha!';
                     } else if (isRegistered && !isVerified) {
-                        greetingText.innerHTML = 'Bác tích được <strong>' + balance + ' BD-Points</strong> rồi đó, nhưng chưa cài mật khẩu. Cài ngay kẻo ví điểm bay màu nha!';
+                        greetingText.innerHTML = 'Bạn tích được <strong>' + balance + ' BD-Points</strong> rồi đó, nhưng chưa cài mật khẩu. Cài ngay kẻo ví điểm bay màu nha!';
                     } else {
                         const day = new Date().getDay();
                         let mascotSrc = 'mascot_quests.jpg';
-                        let msg = 'Bác đang có <strong>' + balance + ' BD-Points</strong> trong ví. Hãy trau dồi thêm kỹ năng BD cùng tui nha!';
+                        let msg = 'Bạn đang có <strong>' + balance + ' BD-Points</strong> trong ví. Hãy trau dồi thêm kỹ năng BD cùng tui nha!';
                         if (day === 1) {
                             mascotSrc = 'mascot_commander.jpg';
-                            msg = 'Đầu tuần năng lượng lên bác ơi! Mục tiêu tuần này của bác là săn thêm bao nhiêu Deal đây? Mau vô mở kho tàng B2B thực chiến cùng tui nào!';
+                            msg = 'Đầu tuần năng lượng lên bạn ơi! Mục tiêu tuần này của bạn là săn thêm bao nhiêu Deal đây? Mau vô mở kho tàng B2B thực chiến cùng tui nào!';
                         } else if (day === 2) {
                             mascotSrc = 'mascot_architect.jpg';
-                            msg = 'Thứ ba là ngày thiết lập hệ thống! Hãy để tui giúp bác lên kịch bản email tiếp cận lead tự động chuẩn chỉnh nhé!';
+                            msg = 'Thứ ba là ngày thiết lập hệ thống! Hãy để tui giúp bạn lên kịch bản email tiếp cận lead tự động chuẩn chỉnh nhé!';
                         } else if (day === 3) {
                             mascotSrc = 'mascot_kpi.jpg';
-                            msg = 'Giữa tuần rồi bác ơi, KPI tuần này đã chạy được nửa chặng đường chưa? Mau vô ước tính KPI hoặc làm vài nhiệm vụ lấy điểm tích lũy thôi!';
+                            msg = 'Giữa tuần rồi bạn ơi, KPI tuần này đã chạy được nửa chặng đường chưa? Mau vô ước tính KPI hoặc làm vài nhiệm vụ lấy điểm tích lũy thôi!';
                         } else if (day === 4) {
                             mascotSrc = 'mascot_salary.jpg';
-                            msg = 'Thứ năm rồi, cuối tuần cận kề rồi! Deal nào còn dang dở thì chốt nhanh để cuối tháng lượm hoa hồng ngập ví nha bác!';
+                            msg = 'Thứ năm rồi, cuối tuần cận kề rồi! Deal nào còn dang dở thì chốt nhanh để cuối tháng lượm hoa hồng ngập ví nha bạn!';
                         } else if (day === 5) {
                             mascotSrc = 'mascot_champion.jpg';
-                            msg = 'Thứ sáu cuối tuần rồi bác ơi! Gác lại áp lực, hãy cùng khách hàng xây dựng chemistry thật tốt rồi tận hưởng ngày nghỉ cuối tuần nhé!';
+                            msg = 'Thứ sáu cuối tuần rồi bạn ơi! Gác lại áp lực, hãy cùng khách hàng xây dựng chemistry thật tốt rồi tận hưởng ngày nghỉ cuối tuần nhé!';
                         } else {
                             mascotSrc = 'mascot_farmer.jpg';
                         }
@@ -930,8 +930,8 @@
         </div>
     </div>
 
-    <script src="script.js?v=2.3.78"></script>
+    <script src="script.js?v=2.3.79"></script>
     <script src="ai-chat.js?v=2.3.24"></script>
-    <script defer src="/_vercel/insights/script.js?v=2.3.78"></script>
+    <script defer src="/_vercel/insights/script.js?v=2.3.79"></script>
 </body>
 </html>

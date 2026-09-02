@@ -353,7 +353,7 @@ function sendDailyEmailsSynchronously(data) {
         try {
           const verificationUrl = "https://bdbinhdanhocvu.com/?verify_email=" + encodeURIComponent(email);
           const unverifiedSubject = "🦉 Nhắc nhở: Xác thực tài khoản B2B BD & Nhận ngay 15đ tích lũy";
-          const unverifiedMessage = "Chào bác <b>" + name + "</b>,<br><br>Cú BeeDee thấy tài khoản của bác vẫn chưa được kích hoạt. Hãy nhấn vào nút bên dưới để xác thực địa chỉ email. Tài khoản kích hoạt thành công sẽ được tặng thêm ngay <b>15đ ⚡</b> và mở khóa toàn bộ kho tài liệu thực chiến nhé!";
+          const unverifiedMessage = "Chào bạn <b>" + name + "</b>,<br><br>Cú BeeDee thấy tài khoản của bạn vẫn chưa được kích hoạt. Hãy nhấn vào nút bên dưới để xác thực địa chỉ email. Tài khoản kích hoạt thành công sẽ được tặng thêm ngay <b>15đ ⚡</b> và mở khóa toàn bộ kho tài liệu thực chiến nhé!";
           
           const bodyHtml = getHtmlEmailTemplate(unverifiedMessage, "Kích hoạt & Nhận 15đ", verificationUrl, "https://bdbinhdanhocvu.com/mascot_quests.jpg", name);
           MailApp.sendEmail({
@@ -403,7 +403,7 @@ function sendVerificationReminder(email, name) {
   try {
     const verificationUrl = "https://bdbinhdanhocvu.com/?verify_email=" + encodeURIComponent(email);
     const unverifiedSubject = "🦉 Nhắc nhở: Xác thực tài khoản B2B BD & Nhận ngay 15đ tích lũy";
-    const unverifiedMessage = "Chào bác <b>" + name + "</b>,<br><br>Cú BeeDee thấy tài khoản của bác vẫn chưa được kích hoạt. Hãy nhấn vào nút bên dưới để xác thực địa chỉ email. Tài khoản kích hoạt thành công sẽ được tặng thêm ngay <b>15đ ⚡</b> và mở khóa toàn bộ kho tài liệu thực chiến nhé!";
+    const unverifiedMessage = "Chào bạn <b>" + name + "</b>,<br><br>Cú BeeDee thấy tài khoản của bạn vẫn chưa được kích hoạt. Hãy nhấn vào nút bên dưới để xác thực địa chỉ email. Tài khoản kích hoạt thành công sẽ được tặng thêm ngay <b>15đ ⚡</b> và mở khóa toàn bộ kho tài liệu thực chiến nhé!";
     
     const bodyHtml = getHtmlEmailTemplate(unverifiedMessage, "Kích hoạt & Nhận 15đ", verificationUrl, "https://bdbinhdanhocvu.com/mascot_quests.jpg", name);
     MailApp.sendEmail({
@@ -425,7 +425,7 @@ function sendVerificationEmail(email, name) {
   try {
     const verificationUrl = "https://bdbinhdanhocvu.com/?verify_email=" + encodeURIComponent(email);
     const subject = "🦉 Kích hoạt tài khoản & Nhận 15đ tích lũy - Cú BeeDee";
-    const message = "Chào mừng bác <b>" + name + "</b> đã tham gia rèn luyện cùng Cú BeeDee!<br><br>Vui lòng nhấp vào nút bên dưới để xác thực địa chỉ email của bác. Cú BeeDee sẽ tặng thêm ngay <b>15đ ⚡</b> vào tài khoản tích lũy của bác sau khi xác thực thành công.";
+    const message = "Chào mừng bạn <b>" + name + "</b> đã tham gia rèn luyện cùng Cú BeeDee!<br><br>Vui lòng nhấp vào nút bên dưới để xác thực địa chỉ email của bạn. Cú BeeDee sẽ tặng thêm ngay <b>15đ ⚡</b> vào tài khoản tích lũy của bạn sau khi xác thực thành công.";
     
     const bodyHtml = getHtmlEmailTemplate(message, "Kích hoạt & Nhận 15đ", verificationUrl, "https://bdbinhdanhocvu.com/mascot_quests.jpg", name);
     
@@ -444,7 +444,7 @@ function sendForgotPasswordEmail(email, name, resetToken) {
   try {
     const resetUrl = "https://bdbinhdanhocvu.com/quests.html?reset_token=" + encodeURIComponent(resetToken) + "&email=" + encodeURIComponent(email);
     const subject = "🔑 Khôi phục mật khẩu tài khoản Cú BeeDee";
-    const message = "Chúng tôi nhận được yêu cầu khôi phục mật khẩu cho tài khoản <b>" + email + "</b> của bác.<br><br>Vui lòng click vào nút bên dưới để thiết lập mật khẩu mới (liên kết có giá trị trong vòng 1 giờ).";
+    const message = "Chúng tôi nhận được yêu cầu khôi phục mật khẩu cho tài khoản <b>" + email + "</b> của bạn.<br><br>Vui lòng click vào nút bên dưới để thiết lập mật khẩu mới (liên kết có giá trị trong vòng 1 giờ).";
     
     const bodyHtml = getHtmlEmailTemplate(message, "Đặt lại mật khẩu", resetUrl, "https://bdbinhdanhocvu.com/mascot_law.jpg", name);
     
@@ -473,10 +473,10 @@ function sendEbookVerificationEmail(email, name, ebookTitle, fileUrl) {
     const actionButtonUrl = "https://bdbinhdanhocvu.com/library.html?verify_email=" + encodeURIComponent(email) + "&download_file=" + encodeURIComponent(downloadPath) + "&ebook_title=" + encodeURIComponent(title) + "&" + utmTracking;
     
     const subject = "📚 [Tải Ebook] " + title + " - Cú BeeDee";
-    const message = "Chào bác <b>" + name + "</b>,<br><br>" +
-      "Cú BeeDee gửi bác trọn bộ tài liệu thực chiến: <b>" + title + "</b>.<br><br>" +
-      "📎 <b>File PDF đầy đủ đã được đính kèm trực tiếp trong email này</b> để bác có thể xem/tải về máy hoặc lưu trữ tiện lợi.<br><br>" +
-      "Bác cũng có thể nhấn vào nút bên dưới để <b>Tải / Mở Ebook PDF Trực Tiếp</b> (hệ thống sẽ tự động xác thực tài khoản và tặng thêm <b>15đ ⚡</b> tích lũy cho bác nhé):";
+    const message = "Chào bạn <b>" + name + "</b>,<br><br>" +
+      "Cú BeeDee gửi bạn trọn bộ tài liệu thực chiến: <b>" + title + "</b>.<br><br>" +
+      "📎 <b>File PDF đầy đủ đã được đính kèm trực tiếp trong email này</b> để bạn có thể xem/tải về máy hoặc lưu trữ tiện lợi.<br><br>" +
+      "Bạn cũng có thể nhấn vào nút bên dưới để <b>Tải / Mở Ebook PDF Trực Tiếp</b> (hệ thống sẽ tự động xác thực tài khoản và tặng thêm <b>15đ ⚡</b> tích lũy cho bạn nhé):";
     
     const bodyHtml = getHtmlEmailTemplate(message, "📥 Tải / Mở Ebook PDF Ngay", actionButtonUrl, "https://bdbinhdanhocvu.com/mascot_quests.jpg", name);
     
