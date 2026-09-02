@@ -3020,9 +3020,14 @@ body.dark-theme .planet-tooltip-card {
 }
 
 .welcome-popup-item:hover {
-    background: rgba(255, 255, 255, 0.08) !important;
-    border-color: rgba(255, 255, 255, 0.15) !important;
+    background: #f1f5f9 !important;
+    border-color: rgba(162, 10, 10, 0.3) !important;
     transform: translateX(4px);
+}
+
+body.dark-theme .welcome-popup-item:hover {
+    background: rgba(255, 255, 255, 0.08) !important;
+    border-color: rgba(255, 255, 255, 0.18) !important;
 }
 
 /* Animations */

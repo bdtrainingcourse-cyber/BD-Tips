@@ -5956,40 +5956,52 @@ if (document.readyState === 'loading') {
         };
         window.closeWelcomeBackModal = closeModal;
 
+        const isDarkTheme = document.body.classList.contains('dark-theme');
+        const modalBg = isDarkTheme ? 'linear-gradient(135deg, #1d1e2a 0%, #11121d 100%)' : '#ffffff';
+        const modalBorder = '1.5px solid var(--primary, #a20a0a)';
+        const modalShadow = isDarkTheme ? '0 25px 60px rgba(0,0,0,0.6)' : '0 20px 50px rgba(0,0,0,0.15)';
+        const titleColor = isDarkTheme ? '#ffffff' : 'var(--text-main, #1e293b)';
+        const descColor = isDarkTheme ? '#94a3b8' : 'var(--text-light, #475569)';
+        const itemBg = isDarkTheme ? 'rgba(255,255,255,0.04)' : '#f8fafc';
+        const itemBorder = isDarkTheme ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.08)';
+        const itemTextColor = isDarkTheme ? '#ffffff' : 'var(--text-main, #1e293b)';
+        const checkboxBorder = isDarkTheme ? '#94a3b8' : '#cbd5e1';
+        const closeBtnColor = isDarkTheme ? '#94a3b8' : '#64748b';
+
         let checklistHtml = remainingQuests.map(q => {
             const dest = destMap[q.key] || '#';
             return `
-                <div style="display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; margin-bottom: 8px; cursor: pointer; transition: all 0.2s ease;" class="welcome-popup-item" onclick="window.navigateFromWelcomeBack('${dest}')">
+                <div style="display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; background: ${itemBg}; border: 1px solid ${itemBorder}; border-radius: 8px; margin-bottom: 8px; cursor: pointer; transition: all 0.2s ease;" class="welcome-popup-item" onclick="window.navigateFromWelcomeBack('${dest}')">
                     <div style="display: flex; align-items: center; gap: 10px;">
-                        <span style="display: inline-block; width: 14px; height: 14px; border: 1.5px solid #94a3b8; border-radius: 3px; background: transparent; flex-shrink: 0;"></span>
-                        <span style="font-size: 0.8rem; font-weight: bold; color: #ffffff;">${q.name}</span>
+                        <span style="display: inline-block; width: 14px; height: 14px; border: 1.5px solid ${checkboxBorder}; border-radius: 3px; background: transparent; flex-shrink: 0;"></span>
+                        <span style="font-size: 0.82rem; font-weight: 700; color: ${itemTextColor};">${q.name}</span>
                     </div>
-                    <span style="font-weight: 800; font-size: 0.75rem; color: #ff6b6b;">+${q.points}đ</span>
+                    <span style="font-weight: 800; font-size: 0.78rem; color: #ff4757;">+${q.points}đ</span>
                 </div>
             `;
         }).join('');
 
         modalOverlay.innerHTML = `
-            <div style="background: linear-gradient(135deg, #1d1e2a 0%, #11121d 100%); border: 1.5px solid var(--primary); border-radius: 24px; max-width: 480px; width: 90%; padding: 30px; box-shadow: 0 25px 60px rgba(0,0,0,0.55); position: relative; text-align: left; transform: scale(0.9); transition: transform 0.3s ease; font-family: 'Plus Jakarta Sans', sans-serif;">
-                <button id="btn-close-welcome-back" style="position: absolute; top: 15px; right: 15px; background: none; border: none; font-size: 1.3rem; color: #94a3b8; cursor: pointer; line-height: 1;">&times;</button>
+            <div style="background: ${modalBg}; border: ${modalBorder}; border-radius: 24px; max-width: 480px; width: 90%; padding: 30px; box-shadow: ${modalShadow}; position: relative; text-align: left; transform: scale(0.9); transition: transform 0.3s ease; font-family: 'Plus Jakarta Sans', sans-serif;">
+                <button id="btn-close-welcome-back" style="position: absolute; top: 15px; right: 15px; background: none; border: none; font-size: 1.3rem; color: ${closeBtnColor}; cursor: pointer; line-height: 1;">&times;</button>
                 
                 <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 20px;">
                     <div style="width: 50px; height: 50px; border-radius: 50%; background: rgba(243, 168, 59, 0.15); display: flex; align-items: center; justify-content: center; font-size: 1.8rem; flex-shrink: 0;">🦉</div>
                     <div>
-                        <h3 style="margin: 0; font-size: 1.15rem; font-weight: 800; color: #ffffff;">Chào mừng trở lại, ${name}!</h3>
-                <p style="margin: 3px 0 0 0; font-size: 0.72rem; color: #f3a83b; font-weight: bold;">Hôm nay bạn đã rèn luyện chưa?</p>
+                        <h3 style="margin: 0; font-size: 1.15rem; font-weight: 800; color: ${titleColor};">Chào mừng trở lại, ${name}!</h3>
+                        <p style="margin: 3px 0 0 0; font-size: 0.75rem; color: var(--primary, #a20a0a); font-weight: 800;">Hôm nay bạn đã rèn luyện chưa?</p>
                     </div>
                 </div>
 
-                <p style="font-size: 0.8rem; line-height: 1.5; color: #94a3b8; margin: 0 0 20px 0;">
-                    Cú BeeDee vẫn luôn ở đây đồng hành cùng bạn trên con đường nâng tầm ngôn từ B2B. Hôm nay bạn còn <strong style="color: #ff6b6b;">${remainingQuests.length} nhiệm vụ hàng ngày</strong> chưa hoàn thành đấy nhé:
+                <p style="font-size: 0.82rem; line-height: 1.5; color: ${descColor}; margin: 0 0 20px 0;">
+                    Cú BeeDee vẫn luôn ở đây đồng hành cùng bạn trên con đường nâng tầm ngôn từ B2B. Hôm nay bạn còn <strong style="color: #ff4757;">${remainingQuests.length} nhiệm vụ hàng ngày</strong> chưa hoàn thành đấy nhé:
                 </p>
 
                 <div style="max-height: 220px; overflow-y: auto; margin-bottom: 25px; padding-right: 5px;">
                     ${checklistHtml}
                 </div>
 
-                <button id="btn-action-welcome-back" class="btn btn-primary" style="width: 100%; padding: 12px; border-radius: 10px; font-weight: bold; font-size: 0.9rem; display: flex; align-items: center; justify-content: center; gap: 8px; background: linear-gradient(135deg, #ff416c, #ff4b2b); border: none; color: #ffffff; cursor: pointer;">
+                <button id="btn-action-welcome-back" class="btn btn-primary" style="width: 100%; padding: 12px; border-radius: 10px; font-weight: 800; font-size: 0.92rem; display: flex; align-items: center; justify-content: center; gap: 8px; background: linear-gradient(135deg, #ff416c, #ff4b2b); border: none; color: #ffffff; cursor: pointer; box-shadow: 0 4px 15px rgba(255, 65, 108, 0.35);">
                     ⚡ Bắt Đầu Thực Chiến Ngay!
                 </button>
            </div>
