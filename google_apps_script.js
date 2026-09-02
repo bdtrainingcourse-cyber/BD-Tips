@@ -2,6 +2,19 @@
  * GOOGLE APPS SCRIPT WEBHOOK BACKEND - B2B BD TIPS PORTAL
  * Production Domain: https://bdbinhdanhocvu.com
  * Email Sender: bdtraining@bdbinhdanhocvu.com
+ *
+ * SHEET 1: "Học Viên Đăng Ký"
+ * Layout: UserID | Họ và Tên | Email | Điểm Tích Lũy | Trạng Thái Xác Thực | Mật Khẩu | Ngày Đăng Ký | Hoạt Động Gần Nhất | Thiết Bị | Công Cụ Đăng Ký | Kinh Nghiệm | Ngành Nghề | Kỹ Năng | Tên Ebook Đã Tải | Số Điện Thoại | Công Ty
+ *
+ * SHEET 2: "Nhật Ký Tương Tác" (Chuẩn 8 cột theo format)
+ * Col A: Thời gian ghi nhận
+ * Col B: Email người dùng
+ * Col C: Tính năng chính
+ * Col D: Tiểu mục / Tên Game
+ * Col E: Hành động chi tiết
+ * Col F: Thông tin bổ sung
+ * Col G: Thiết bị
+ * Col H: User ID
  */
 
 const B2B_SECRET_KEY = "2108330119Snail!!";
@@ -29,10 +42,8 @@ function doPost(e) {
     if (action === "checkEmail") {
       return checkEmail(email, name);
     } else if (action === "sendEbookVerificationEmail" || (action === "syncUser" && (postData.tool === "ebook-download" || postData.ebookTitle)) || postData.tool === "ebook-download") {
-      // 1. Record/Sync user in sheet
       syncUser(postData, true);
-      // 2. Dispatch email with exact ebook
-      return sendEbookVerificationEmail(email, name, postData.ebookTitle, postData.fileUrl || postData.downloadLink);
+      return sendEbookVerificationEmail(email, name, postData.ebookTitle, postData.fileUrl || postData.downloadLink, postData.userId || "");
     } else if (action === "syncUser" || postData.tool === "daily-reminder" || postData.tool === "exit-intent-ebook") {
       return syncUser(postData);
     } else if (action === "verifyUser" || postData.tool === "email-verification") {
@@ -117,7 +128,7 @@ function checkEmail(email, name) {
 }
 
 // ------------------------------------------------------------------
-// 3. SYNC USER (Registers or updates user details)
+// 3. SYNC USER (Registers or updates user details in "Học Viên Đăng Ký")
 // ------------------------------------------------------------------
 function syncUser(data, skipEmail) {
   try {
@@ -148,7 +159,7 @@ function syncUser(data, skipEmail) {
     }
     
     if (userRowIndex === -1) {
-      // New User: Construct row matching headers
+      // New User: Construct row matching headers exactly
       const newRow = new Array(headers.length).fill("");
       if (idx.id !== -1) newRow[idx.id] = userId;
       if (idx.name !== -1) newRow[idx.name] = name;
@@ -157,6 +168,7 @@ function syncUser(data, skipEmail) {
       if (idx.verified !== -1) newRow[idx.verified] = "Chưa xác thực";
       if (idx.password !== -1) newRow[idx.password] = password;
       if (idx.date !== -1) newRow[idx.date] = date;
+      if (idx.lastActivity !== -1) newRow[idx.lastActivity] = date;
       if (idx.device !== -1) newRow[idx.device] = device;
       if (idx.tool !== -1) newRow[idx.tool] = tool;
       if (idx.experience !== -1) newRow[idx.experience] = data.experience || "";
@@ -169,7 +181,7 @@ function syncUser(data, skipEmail) {
       sheet.appendRow(newRow);
       const rowIndex = sheet.getLastRow();
       
-      // Secondary write for safety
+      // Secondary write for safety if headers had custom columns
       if (data.experience) writeProfileFieldToRow(sheet, rowIndex, "experience", data.experience, idx);
       if (data.industry) writeProfileFieldToRow(sheet, rowIndex, "industry", data.industry, idx);
       if (data.skill) writeProfileFieldToRow(sheet, rowIndex, "skill", data.skill, idx);
@@ -179,7 +191,7 @@ function syncUser(data, skipEmail) {
       
       if (!skipEmail) {
         if (data.action === "sendEbookVerificationEmail" || data.tool === "ebook-download" || data.ebookTitle) {
-          sendEbookVerificationEmail(email, name, data.ebookTitle, data.fileUrl || data.downloadLink);
+          sendEbookVerificationEmail(email, name, data.ebookTitle, data.fileUrl || data.downloadLink, userId);
         } else {
           sendVerificationEmail(email, name);
         }
@@ -191,6 +203,7 @@ function syncUser(data, skipEmail) {
       if (idx.points !== -1 && data.points !== undefined) sheet.getRange(userRowIndex, idx.points + 1).setValue(points);
       if (idx.password !== -1 && password) sheet.getRange(userRowIndex, idx.password + 1).setValue(password);
       if (idx.name !== -1 && name && name !== "Học viên") sheet.getRange(userRowIndex, idx.name + 1).setValue(name);
+      if (idx.lastActivity !== -1) sheet.getRange(userRowIndex, idx.lastActivity + 1).setValue(date);
       
       if (data.experience) writeProfileFieldToRow(sheet, userRowIndex, "experience", data.experience, idx);
       if (data.industry) writeProfileFieldToRow(sheet, userRowIndex, "industry", data.industry, idx);
@@ -200,7 +213,7 @@ function syncUser(data, skipEmail) {
       if (data.company) writeProfileFieldToRow(sheet, userRowIndex, "company", data.company, idx);
       
       if (!skipEmail && (data.action === "sendEbookVerificationEmail" || data.tool === "ebook-download" || data.ebookTitle)) {
-        sendEbookVerificationEmail(email, name, data.ebookTitle, data.fileUrl || data.downloadLink);
+        sendEbookVerificationEmail(email, name, data.ebookTitle, data.fileUrl || data.downloadLink, userId);
       }
       
       return createJsonResponse({ success: true, isNew: false, points: points, userId: userId });
@@ -238,6 +251,9 @@ function verifyUser(email, bonusPoints) {
         sheet.getRange(actualRow, idx.points + 1).setValue(newPoints);
         curPoints = newPoints;
       }
+      if (idx.lastActivity !== -1) {
+        sheet.getRange(actualRow, idx.lastActivity + 1).setValue(formatTimestamp(new Date().toISOString()));
+      }
       
       return createJsonResponse({ success: true, points: curPoints, message: "User verified." });
     }
@@ -261,6 +277,9 @@ function updatePoints(email, points) {
       if (idx.points !== -1) {
         sheet.getRange(actualRow, idx.points + 1).setValue(parseInt(points, 10));
       }
+      if (idx.lastActivity !== -1) {
+        sheet.getRange(actualRow, idx.lastActivity + 1).setValue(formatTimestamp(new Date().toISOString()));
+      }
       return createJsonResponse({ success: true, points: points });
     }
     return createJsonResponse({ success: false, error: "User not found" });
@@ -283,6 +302,9 @@ function updateProfile(email, field, value, points) {
       writeProfileFieldToRow(sheet, actualRow, field, value, idx);
       if (points !== undefined && idx.points !== -1) {
         sheet.getRange(actualRow, idx.points + 1).setValue(parseInt(points, 10));
+      }
+      if (idx.lastActivity !== -1) {
+        sheet.getRange(actualRow, idx.lastActivity + 1).setValue(formatTimestamp(new Date().toISOString()));
       }
       return createJsonResponse({ success: true, message: "Profile updated" });
     }
@@ -486,7 +508,7 @@ function sendForgotPasswordEmail(email, name, resetToken) {
 }
 
 // ------------------------------------------------------------------
-// 6. EBOOK VERIFICATION DISPATCHER (Dynamic Catalog & UTM Tracking)
+// 6. EBOOK VERIFICATION DISPATCHER (Dynamic Catalog & Exact UTM Tracking)
 // ------------------------------------------------------------------
 const EBOOK_CATALOG = {
   "quy trình hưởng trợ cấp thất nghiệp (tctn)": "ebooks/Quy trình hưởng trợ cấp thất nghiệp.pdf",
@@ -532,7 +554,7 @@ function resolveEbookFile(title, fileUrl) {
   return fileUrl || "ebooks/Quy trình hưởng trợ cấp thất nghiệp.pdf";
 }
 
-function sendEbookVerificationEmail(email, name, ebookTitle, fileUrl) {
+function sendEbookVerificationEmail(email, name, ebookTitle, fileUrl, userId) {
   try {
     const title = ebookTitle || "Cẩm nang B2B BD Thực Chiến";
     const downloadPath = resolveEbookFile(title, fileUrl);
@@ -559,18 +581,18 @@ function sendEbookVerificationEmail(email, name, ebookTitle, fileUrl) {
       Logger.log("Record ebook in sheet error: " + sheetErr.message);
     }
     
-    // 2. Log Ebook interest in "Nhật Ký Tương Tác"
+    // 2. Log Ebook interest in "Nhật Ký Tương Tác" (Exact 8-column layout)
     try {
       const logSheet = getOrCreateSheet("Nhật Ký Tương Tác");
       logSheet.appendRow([
-        formatTimestamp(new Date().toISOString()),
-        "UID_EBOOK",
-        email,
-        "Thư Viện Ebook",
-        "Đăng ký tải: " + title,
-        "Gửi email xác thực",
-        "Ebook: " + title + " | File: " + downloadPath + " | " + utmTracking,
-        "Desktop"
+        formatTimestamp(new Date().toISOString()), // Col A: Thời gian ghi nhận
+        email,                                      // Col B: Email người dùng
+        "Thư viện",                                 // Col C: Tính năng chính
+        title,                                      // Col D: Tiểu mục / Tên Game
+        "Đăng ký nhận Ebook",                       // Col E: Hành động chi tiết
+        "Ebook: " + title + " | File: " + downloadPath + " | " + utmTracking, // Col F: Thông tin bổ sung
+        "Desktop",                                  // Col G: Thiết bị
+        userId || ""                                // Col H: User ID
       ]);
     } catch (logErr) {
       Logger.log("Log ebook error: " + logErr.message);
@@ -619,7 +641,7 @@ function sendEbookVerificationEmail(email, name, ebookTitle, fileUrl) {
 }
 
 // ------------------------------------------------------------------
-// 7. OTHER ACTIONS & LOGGING
+// 7. COURSE REGISTRATION & LOG GENERAL LEAD
 // ------------------------------------------------------------------
 function handleCourseRegistration(data) {
   const sheet = getOrCreateSheet("Học Viên Đăng Ký");
@@ -641,6 +663,7 @@ function handleCourseRegistration(data) {
       "Chưa xác thực",
       "",
       date,
+      date,
       device,
       "course-registration"
     ]);
@@ -651,22 +674,119 @@ function handleCourseRegistration(data) {
 function logGeneralLead(data) {
   const sheet = getOrCreateSheet("Nhật Ký Tương Tác");
   let dateVal = data.date ? formatTimestamp(data.date) : formatTimestamp(new Date().toISOString());
-  let emailVal = data.email || "";
-  let actionVal = data.tool || data.action || "Tương tác";
-  let detailVal = data.detail || "";
+  let emailVal = data.email ? data.email.toLowerCase().trim() : "";
+  let mainFeature = "Tương tác";
+  let subFeature = data.tool || data.action || "General Log";
+  let detailAction = "Xem trang";
+  let additionalInfo = data.detail || "";
   let deviceVal = data.device || "Desktop";
-  let userIdVal = data.userId || "UID_LEAD";
+  let userIdVal = data.userId || "";
 
+  // 1. Cross-reference against "Học Viên Đăng Ký"
+  const regSheet = getOrCreateSheet("Học Viên Đăng Ký");
+  const regData = regSheet.getDataRange().getValues();
+  const regHeaders = regData[0];
+  const regIdx = getHeaderIndices(regHeaders);
+  
+  let matchedRowIndex = -1;
+  let registeredUserId = "";
+  let registeredEmail = "";
+
+  if (emailVal && emailVal !== "guest@petervo.vn" && !emailVal.startsWith("guest@")) {
+    for (let i = 1; i < regData.length; i++) {
+      if (regIdx.email !== -1 && regData[i] && regData[i][regIdx.email] !== undefined && regData[i][regIdx.email] !== null && regData[i][regIdx.email].toString().toLowerCase().trim() === emailVal) {
+        matchedRowIndex = i + 1;
+        registeredUserId = regIdx.id !== -1 && regData[i][regIdx.id] ? regData[i][regIdx.id].toString().trim() : "";
+        registeredEmail = emailVal;
+        break;
+      }
+    }
+  }
+
+  if (matchedRowIndex === -1 && userIdVal && !userIdVal.startsWith("GK_") && userIdVal !== "UID_LEAD" && userIdVal !== "") {
+    for (let i = 1; i < regData.length; i++) {
+      if (regIdx.id !== -1 && regData[i] && regData[i][regIdx.id] !== undefined && regData[i][regIdx.id] !== null && regData[i][regIdx.id].toString().trim() === userIdVal) {
+        matchedRowIndex = i + 1;
+        registeredUserId = userIdVal;
+        registeredEmail = regIdx.email !== -1 && regData[i][regIdx.email] ? regData[i][regIdx.email].toString().toLowerCase().trim() : "";
+        break;
+      }
+    }
+  }
+
+  // 2. Handle values based on whether user is registered or guest
+  let finalEmailColumn = "";
+  let finalUserIdColumn = "";
+
+  if (matchedRowIndex !== -1) {
+    // Registered user
+    finalEmailColumn = registeredEmail || emailVal;
+    finalUserIdColumn = registeredUserId || userIdVal;
+    
+    // Update last activity timestamp in "Học Viên Đăng Ký"
+    if (regIdx.lastActivity !== -1) {
+      regSheet.getRange(matchedRowIndex, regIdx.lastActivity + 1).setValue(dateVal);
+    }
+  } else {
+    // Guest user
+    if (emailVal && emailVal.includes("@") && emailVal !== "guest@petervo.vn") {
+      finalEmailColumn = emailVal;
+      finalUserIdColumn = userIdVal || "";
+    } else {
+      let guestKey = userIdVal && userIdVal.startsWith("GK_") ? userIdVal : ("GK_TEMP_" + Utilities.getUuid().substr(0, 8).toUpperCase());
+      finalEmailColumn = getOrCreateGuestId(guestKey);
+      finalUserIdColumn = "";
+    }
+  }
+
+  // Translate natural Vietnamese actions
+  const tool = data.tool || data.action || "";
+  if (tool === "page_view") {
+    mainFeature = "Duyệt trang";
+    subFeature = "Khách quan tâm";
+    detailAction = "Xem trang";
+  } else if (tool === "ebook_download" || tool === "ebook-download") {
+    mainFeature = "Thư viện";
+    subFeature = data.ebookTitle || "Tải Ebook";
+    detailAction = "Tải Ebook";
+  } else if (tool === "ebook_sent_to_email") {
+    mainFeature = "Thư viện";
+    subFeature = data.ebookTitle || "Gửi Ebook";
+    detailAction = "Đăng ký nhận Ebook";
+  } else if (tool === "ebook_email_button_verified") {
+    mainFeature = "Thư viện";
+    subFeature = data.ebookTitle || "Xác thực Ebook";
+    detailAction = "Bấm nút Email mở Ebook";
+  } else if (tool === "minigame_start" || tool === "arcade_start") {
+    mainFeature = "Arcade Game";
+    subFeature = "Mini Game B2B";
+    detailAction = "Khởi chạy ải";
+  } else if (tool === "minigame_play" || tool === "arcade_play") {
+    mainFeature = "Arcade Game";
+    subFeature = "Mini Game B2B";
+    detailAction = "Hoàn thành ải";
+  } else if (tool === "email_generate") {
+    mainFeature = "Trợ lý Email";
+    subFeature = "Tạo email B2B";
+    detailAction = "Sinh nội dung email";
+  } else if (tool === "course-registration") {
+    mainFeature = "Đăng ký khóa học";
+    subFeature = "Khóa học B2B BD";
+    detailAction = "Gửi form đăng ký";
+  }
+
+  // EXACT 8-COLUMN LAYOUT MATCHING IMAGE 2
   sheet.appendRow([
-    dateVal,
-    userIdVal,
-    emailVal,
-    "Tương tác",
-    actionVal,
-    "Ghi nhận hệ thống",
-    detailVal,
-    deviceVal
+    dateVal,            // Col A: Thời gian ghi nhận
+    finalEmailColumn,   // Col B: Email người dùng
+    mainFeature,        // Col C: Tính năng chính
+    subFeature,         // Col D: Tiểu mục / Tên Game
+    detailAction,       // Col E: Hành động chi tiết
+    additionalInfo,     // Col F: Thông tin bổ sung
+    deviceVal,          // Col G: Thiết bị
+    finalUserIdColumn   // Col H: User ID
   ]);
+
   return createJsonResponse({ success: true, message: "Lead logged." });
 }
 
@@ -680,6 +800,8 @@ function formatTimestamp(isoString) {
 }
 
 function getHeaderIndices(headers) {
+  if (!headers || !Array.isArray(headers)) return {};
+  
   function findIdx(names) {
     for (let i = 0; i < headers.length; i++) {
       const h = (headers[i] || "").toString().toLowerCase().trim();
@@ -692,30 +814,59 @@ function getHeaderIndices(headers) {
   }
   
   return {
-    id: findIdx(["id người dùng", "mã học viên", "user id", "userid", "id"]),
+    id: findIdx(["id", "userid", "user id", "mã học viên", "id người dùng"]),
     name: findIdx(["họ và tên", "tên", "họ tên", "name", "full name"]),
-    email: findIdx(["email", "địa chỉ email", "hòm thư"]),
-    points: findIdx(["điểm tích lũy", "điểm", "points", "point"]),
-    verified: findIdx(["trạng thái xác thực", "xác thực", "verified", "status"]),
+    email: findIdx(["email", "địa chỉ email", "hòm thư", "email người dùng"]),
+    points: findIdx(["điểm", "điểm tích lũy", "points", "point", "điểm bd-points", "bd-points"]),
+    verified: findIdx(["trạng thái xác thực", "xác thực", "verified", "status", "trạng thái"]),
     password: findIdx(["mật khẩu", "password"]),
-    date: findIdx(["ngày đăng ký", "thời gian", "ngày", "date"]),
-    lastActivity: findIdx(["hoạt động gần nhất", "last activity", "lastactive"]),
+    date: findIdx(["ngày đăng ký", "thời gian đăng ký", "thời gian", "ngày", "date"]),
+    lastActivity: findIdx(["hoạt động gần nhất", "hoạt động cuối cùng", "last activity", "last_activity"]),
     device: findIdx(["thiết bị", "device"]),
     tool: findIdx(["công cụ đăng ký", "công cụ", "tool"]),
     experience: findIdx(["kinh nghiệm", "năm kinh nghiệm", "experience", "exp"]),
     industry: findIdx(["ngành nghề", "ngành", "lĩnh vực", "industry"]),
-    skill: findIdx(["kỹ năng", "skill"]),
+    skill: findIdx(["kỹ năng", "kỹ năng mong muốn", "skill"]),
     ebook: findIdx(["tên ebook đã tải", "ebook đã tải", "tên ebook", "ebook", "tài liệu"]),
     phone: findIdx(["số điện thoại", "sđt", "phone", "điện thoại"]),
     company: findIdx(["công ty", "doanh nghiệp", "company"])
   };
 }
 
+function getOrCreateGuestId(guestKey) {
+  const sheet = getOrCreateSheet("Guest Mapping");
+  const data = sheet.getDataRange().getValues();
+  
+  for (let i = 1; i < data.length; i++) {
+    if (data[i] && data[i][0] === guestKey) {
+      return data[i][1];
+    }
+  }
+  
+  let maxNum = 0;
+  for (let i = 1; i < data.length; i++) {
+    if (data[i] && data[i][1] !== undefined && data[i][1] !== null) {
+      const val = data[i][1].toString();
+      if (val.startsWith("guest")) {
+        const num = parseInt(val.substring(5), 10);
+        if (!isNaN(num) && num > maxNum) {
+          maxNum = num;
+        }
+      }
+    }
+  }
+  
+  const newNum = maxNum + 1;
+  const newGuestId = "guest" + String(newNum).padStart(4, '0');
+  
+  sheet.appendRow([guestKey, newGuestId, new Date().toISOString()]);
+  return newGuestId;
+}
+
 function getOrCreateSheet(sheetName) {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
   const allSheets = ss.getSheets();
   
-  // Fuzzy match existing sheets
   const cleanTarget = sheetName.toLowerCase().replace(/[^a-z0-9]/g, '');
   for (let i = 0; i < allSheets.length; i++) {
     const s = allSheets[i];
@@ -738,25 +889,25 @@ function getOrCreateSheet(sheetName) {
   let sheet = ss.getSheetByName(sheetName);
   if (sheet) return sheet;
 
-  // If first sheet is named Sheet1 or Trang tính 1, rename and use it
   if (allSheets.length === 1 && (allSheets[0].getName().startsWith("Sheet") || allSheets[0].getName().startsWith("Trang tính"))) {
     allSheets[0].setName(sheetName);
     return allSheets[0];
   }
 
-  // Create standard sheet
   sheet = ss.insertSheet(sheetName);
   if (sheetName.includes("Học Viên") || sheetName === "Học Viên Đăng Ký") {
     sheet.appendRow([
       "ID Người Dùng", "Họ và Tên", "Email", "Điểm Tích Lũy", "Trạng Thái Xác Thực",
-      "Mật Khẩu", "Ngày Đăng Ký", "Thiết Bị", "Công Cụ Đăng Ký", "Kinh Nghiệm",
-      "Ngành Nghề", "Kỹ Năng", "Tên Ebook Đã Tải", "Số Điện Thoại", "Công Ty"
+      "Mật Khẩu", "Ngày Đăng Ký", "Hoạt Động Gần Nhất", "Thiết Bị", "Công Cụ Đăng Ký",
+      "Kinh Nghiệm", "Ngành Nghề", "Kỹ Năng", "Tên Ebook Đã Tải", "Số Điện Thoại", "Công Ty"
     ]);
   } else if (sheetName.includes("Nhật Ký") || sheetName === "Nhật Ký Tương Tác") {
     sheet.appendRow([
-      "Thời Gian", "Mã Học Viên", "Email", "Tính Năng Chính",
-      "Nghiệp Vụ Chi Tiết", "Hành Động Cụ Thể", "Dữ Liệu Bổ Sung", "Thiết Bị"
+      "Thời gian ghi nhận", "Email người dùng", "Tính năng chính", "Tiểu mục / Tên Game",
+      "Hành động chi tiết", "Thông tin bổ sung", "Thiết bị", "User ID"
     ]);
+  } else if (sheetName === "Guest Mapping") {
+    sheet.appendRow(["Guest Key", "Guest ID", "Date Created"]);
   }
   return sheet;
 }
