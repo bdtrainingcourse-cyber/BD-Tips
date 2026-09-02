@@ -263,7 +263,7 @@ module.exports = async (req, res) => {
   }
 
   const params = req.method === 'GET' ? req.query : req.body;
-  const { action, email, tool, name, phone, company, experience, ebookTitle, downloadLink, points, userId, password, field, value, industry, skill } = params;
+  const { action, email, tool, name, phone, company, experience, ebookTitle, fileUrl, downloadLink, points, userId, password, field, value, industry, skill } = params;
   
   if (!email || !email.includes('@')) {
     return res.status(400).json({ error: 'Email không hợp lệ!' });
@@ -315,10 +315,10 @@ module.exports = async (req, res) => {
   }
 
   // If user profile is missing from Vercel's ephemeral memory, rehydrate it from Google Sheets
-  const DEFAULT_LEADS_WEBHOOK = 'https://script.google.com/macros/s/AKfycbxoedzECs5aC0eopiaQiFVqOSrLdwL-P17OBd_Vj3TDmMJ8-Q2H_MD-9dMOx0Jllpxf/exec';
+  const ACTIVE_LEADS_WEBHOOK = 'https://script.google.com/macros/s/AKfycbxoedzECs5aC0eopiaQiFVqOSrLdwL-P17OBd_Vj3TDmMJ8-Q2H_MD-9dMOx0Jllpxf/exec';
   const webhookUrl = tool === 'course-registration' 
-    ? (process.env.GOOGLE_SHEET_COURSE_WEBHOOK || DEFAULT_LEADS_WEBHOOK) 
-    : (process.env.GOOGLE_SHEET_LEADS_WEBHOOK || DEFAULT_LEADS_WEBHOOK);
+    ? (process.env.GOOGLE_SHEET_COURSE_WEBHOOK || ACTIVE_LEADS_WEBHOOK) 
+    : ACTIVE_LEADS_WEBHOOK;
 
   let sheetsResponseText = "";
   let debugError = "";
@@ -704,7 +704,7 @@ module.exports = async (req, res) => {
         industry: localUser.industry || '',
         skill: localUser.skill || '',
         ebookTitle: ebookTitle || '',
-        fileUrl: params.fileUrl || downloadLink || '',
+        fileUrl: fileUrl || downloadLink || '',
         downloadLink: downloadLink || ''
       };
     } else if (action === 'syncUser' || tool === 'daily-points' || tool === 'exit-intent-ebook') {
