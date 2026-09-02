@@ -460,18 +460,95 @@ function sendForgotPasswordEmail(email, name, resetToken) {
   }
 }
 
+const EBOOK_CATALOG = {
+  "quy trình hưởng trợ cấp thất nghiệp (tctn)": "ebooks/Quy trình hưởng trợ cấp thất nghiệp.pdf",
+  "quy trình hưởng trợ cấp thất nghiệp": "ebooks/Quy trình hưởng trợ cấp thất nghiệp.pdf",
+  "tư duy bd \"thép\" & tâm lý học b2b mindset": "ebooks/Mindset BD Ebook.pdf",
+  "tư duy bd thép & tâm lý học b2b mindset": "ebooks/Mindset BD Ebook.pdf",
+  "tư duy bd thép": "ebooks/Mindset BD Ebook.pdf",
+  "mindset": "ebooks/Mindset BD Ebook.pdf",
+  "chiến lược social selling & linkedin bd 2026": "ebooks/LinkedIn_2026.pdf",
+  "chiến lược social selling & linkedin bd": "ebooks/LinkedIn_2026.pdf",
+  "linkedin": "ebooks/LinkedIn_2026.pdf",
+  "9 nguyên tắc thực chiến b2b bd": "ebooks/9 Nguyên Tắc  BD.pdf",
+  "9 nguyên tắc": "ebooks/9 Nguyên Tắc  BD.pdf",
+  "bộ cẩm nang ngôn từ b2b bd (5 pha chuyển mình)": "ebooks/BD B2B Language.pdf",
+  "bộ cẩm nang ngôn từ b2b bd": "ebooks/BD B2B Language.pdf",
+  "ngôn từ b2b": "ebooks/BD B2B Language.pdf",
+  "cẩm nang thực chiến hubspot crm cho b2b bd": "ebooks/Hubspot Basic Guideline.pdf",
+  "hubspot": "ebooks/Hubspot Basic Guideline.pdf",
+  "ma trận phễu kpi & quy đổi doanh thu b2b": "ebooks/KPI Inbound - Outbound funnel.pdf",
+  "ma trận phễu kpi": "ebooks/KPI Inbound - Outbound funnel.pdf",
+  "kpi": "ebooks/KPI Inbound - Outbound funnel.pdf",
+  "cẩm nang nhận diện & loại bỏ fake lead b2b": "ebooks/PHÁT HIỆN FAKE LEAD.pdf",
+  "fake lead": "ebooks/PHÁT HIỆN FAKE LEAD.pdf",
+  "ebook scale up yourself - bứt phá năng lực bd b2b": "ebooks/Scale Up Yourself.pdf",
+  "scale up yourself": "ebooks/Scale Up Yourself.pdf"
+};
+
+function resolveEbookFile(title, fileUrl) {
+  // If a valid custom fileUrl was passed that is not the default fallback, use it
+  if (fileUrl && fileUrl !== "ebooks/Quy trình hưởng trợ cấp thất nghiệp.pdf") {
+    return fileUrl;
+  }
+  if (title) {
+    const cleanTitle = title.toLowerCase().trim();
+    if (EBOOK_CATALOG[cleanTitle]) {
+      return EBOOK_CATALOG[cleanTitle];
+    }
+    for (const [k, v] of Object.entries(EBOOK_CATALOG)) {
+      if (cleanTitle.includes(k) || k.includes(cleanTitle)) {
+        return v;
+      }
+    }
+  }
+  return fileUrl || "ebooks/Quy trình hưởng trợ cấp thất nghiệp.pdf";
+}
+
 function sendEbookVerificationEmail(email, name, ebookTitle, fileUrl) {
   try {
     const title = ebookTitle || "Cẩm nang B2B BD Thực Chiến";
-    const downloadPath = fileUrl || "ebooks/Quy trình hưởng trợ cấp thất nghiệp.pdf";
+    const downloadPath = resolveEbookFile(title, fileUrl);
     const directPdfUrl = downloadPath.startsWith('http') 
       ? downloadPath 
       : ("https://bdbinhdanhocvu.com/" + encodeURI(downloadPath.replace(/^\//, '')));
     
-    // UTM tracking parameters for conversion tracking & auto-verification
-    const utmTracking = "utm_source=email_ebook&utm_medium=email&utm_campaign=ebook_download_button&utm_content=" + encodeURIComponent(title);
+    // Dynamic UTM tracking per specific ebook for conversion attribution
+    const cleanSlug = title.toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_+|_+$/g, '');
+    const utmTracking = "utm_source=email_ebook&utm_medium=email&utm_campaign=ebook_" + cleanSlug + "&utm_content=" + encodeURIComponent(title);
     const actionButtonUrl = "https://bdbinhdanhocvu.com/library.html?verify_email=" + encodeURIComponent(email) + "&download_file=" + encodeURIComponent(downloadPath) + "&ebook_title=" + encodeURIComponent(title) + "&" + utmTracking;
     
+    // 1. Record Ebook Name in "Học Viên Đăng Ký"
+    try {
+      const sheet = getOrCreateSheet("Học Viên Đăng Ký");
+      const sheetData = sheet.getDataRange().getValues();
+      const headers = sheetData[0];
+      const idx = getHeaderIndices(headers);
+      const rowIndex = findUserRowIndex(sheetData, email, idx.email);
+      if (rowIndex !== -1 && idx.ebook !== -1) {
+        sheet.getRange(rowIndex + 1, idx.ebook + 1).setValue(title);
+      }
+    } catch (sheetErr) {
+      Logger.log("Record ebook in sheet error: " + sheetErr.message);
+    }
+    
+    // 2. Log Ebook interest in "Nhật Ký Tương Tác"
+    try {
+      const logSheet = getOrCreateSheet("Nhật Ký Tương Tác");
+      logSheet.appendRow([
+        formatTimestamp(new Date().toISOString()),
+        "UID_EBOOK",
+        email,
+        "Thư Viện Ebook",
+        "Đăng ký tải: " + title,
+        "Gửi email xác thực",
+        "Ebook: " + title + " | File: " + downloadPath + " | " + utmTracking,
+        "Desktop"
+      ]);
+    } catch (logErr) {
+      Logger.log("Log ebook error: " + logErr.message);
+    }
+
     const subject = "📚 [Tải Ebook] " + title + " - Cú BeeDee";
     const message = "Chào bạn <b>" + name + "</b>,<br><br>" +
       "Cú BeeDee gửi bạn trọn bộ tài liệu thực chiến: <b>" + title + "</b>.<br><br>" +
@@ -493,7 +570,7 @@ function sendEbookVerificationEmail(email, name, ebookTitle, fileUrl) {
         }
       }
     } catch (fetchErr) {
-      Logger.log("Attachment fetch error (will use direct link button): " + fetchErr.message);
+      Logger.log("Attachment fetch note: " + fetchErr.message);
     }
     
     const mailOptions = {
@@ -507,7 +584,7 @@ function sendEbookVerificationEmail(email, name, ebookTitle, fileUrl) {
     }
     
     MailApp.sendEmail(mailOptions);
-    return createJsonResponse({ success: true, message: "Ebook email with attachment sent to " + email });
+    return createJsonResponse({ success: true, message: "Ebook email with attachment sent to " + email, ebookTitle: title, fileUrl: downloadPath });
   } catch (err) {
     Logger.log("Failed to send ebook verification email: " + err.message);
     return createJsonResponse({ success: false, error: err.message });

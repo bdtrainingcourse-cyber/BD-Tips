@@ -54,97 +54,28 @@ function httpGet(url) {
   });
 }
 
-// Native HTTPS POST helper that mimics fetch response structure with 3s timeout
-function httpPost(url, body, maxRedirects = 5) {
-  if (url.includes('script.google.com') && process.env.B2B_SECRET_KEY) {
-    if (typeof body === 'object' && body !== null) {
-      body.secretKey = process.env.B2B_SECRET_KEY;
-    } else if (typeof body === 'string') {
-      try {
-        const parsed = JSON.parse(body);
-        parsed.secretKey = process.env.B2B_SECRET_KEY;
-        body = JSON.stringify(parsed);
-      } catch (e) {}
-    }
+const B2B_SECRET_KEY = process.env.B2B_SECRET_KEY || "2108330119Snail!!";
+
+// Native fetch POST helper with automatic secretKey injection
+async function httpPost(url, body) {
+  let postBody = body;
+  if (typeof postBody === 'object' && postBody !== null) {
+    if (B2B_SECRET_KEY) postBody.secretKey = B2B_SECRET_KEY;
+  } else if (typeof postBody === 'string') {
+    try {
+      const parsed = JSON.parse(postBody);
+      if (B2B_SECRET_KEY) parsed.secretKey = B2B_SECRET_KEY;
+      postBody = parsed;
+    } catch (e) {}
   }
 
-  return new Promise((resolve) => {
-    try {
-      const urlObj = new URL(url);
-      const postData = typeof body === 'string' ? body : JSON.stringify(body);
-      const options = {
-        hostname: urlObj.hostname,
-        path: urlObj.pathname + urlObj.search,
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Content-Length': Buffer.byteLength(postData)
-        }
-      };
-      
-      const req = https.request(options, (res) => {
-        if ((res.statusCode === 301 || res.statusCode === 302 || res.statusCode === 307 || res.statusCode === 308) && res.headers.location) {
-          if (maxRedirects <= 0) {
-            resolve({
-              ok: false,
-              status: 500,
-              text: () => Promise.resolve('Too many redirects'),
-              json: () => Promise.resolve({})
-            });
-            return;
-          }
-          httpGet(res.headers.location, maxRedirects - 1).then(resolve);
-          return;
-        }
-
-        let data = '';
-        res.on('data', (chunk) => data += chunk);
-        res.on('end', () => {
-          resolve({
-            ok: res.statusCode >= 200 && res.statusCode < 300,
-            status: res.statusCode,
-            text: () => Promise.resolve(data),
-            json: () => {
-              try {
-                return Promise.resolve(JSON.parse(data));
-              } catch (e) {
-                return Promise.reject(e);
-              }
-            }
-          });
-        });
-      });
-      
-      req.setTimeout(5000, () => {
-        req.destroy();
-        resolve({
-          ok: false,
-          status: 408,
-          text: () => Promise.resolve('Timeout'),
-          json: () => Promise.resolve({})
-        });
-      });
-
-      req.on('error', (err) => {
-        resolve({
-          ok: false,
-          status: 500,
-          text: () => Promise.resolve(err.message),
-          json: () => Promise.resolve({})
-        });
-      });
-
-      req.write(postData);
-      req.end();
-    } catch (e) {
-      resolve({
-        ok: false,
-        status: 500,
-        text: () => Promise.resolve(e.message),
-        json: () => Promise.resolve({})
-      });
-    }
+  const response = await fetch(url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(postBody)
   });
+
+  return response;
 }
 
 function httpGet(url, maxRedirects = 5) {

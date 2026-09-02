@@ -1601,11 +1601,10 @@ async function checkEmailVerification() {
                 localStorage.setItem('b2b_user_verified', 'true');
                 localStorage.setItem('b2b_has_downloaded_before', 'true');
                 
-                // Track UTM attribution
-                if (utmSource || utmCampaign) {
-                    if (window.trackUserBehavior) {
-                        window.trackUserBehavior('ebook_email_button_verified', `Campaign: ${utmCampaign || 'ebook_download'} | Content: ${utmContent || ebookTitle || ''}`);
-                    }
+                // Track UTM attribution & Ebook interest
+                if (window.trackUserBehavior) {
+                    const decodedTitle = ebookTitle ? decodeURIComponent(ebookTitle) : 'Ebook B2B BD';
+                    window.trackUserBehavior('ebook_email_button_verified', `Ebook: ${decodedTitle} | File: ${downloadFile || 'N/A'} | Campaign: ${utmCampaign || 'ebook_download'} | Content: ${utmContent || decodedTitle}`);
                 }
                 
                 // If this verification came from an Ebook download link
