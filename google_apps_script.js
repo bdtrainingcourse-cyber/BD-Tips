@@ -1,29 +1,23 @@
 /**
- * B2B BD TIPS PORTAL - GOOGLE APPS SCRIPT WEBHOOK BACKEND (v2.3.5)
- * Place this code in Extensions -> Apps Script on your Google Sheet.
- * 
- * Make sure to deploy this as a Web App:
- * 1. Click "Deploy" -> "New deployment"
- * 2. Select "Web app"
- * 3. Set "Execute as" to "Me"
- * 4. Set "Who has access" to "Anyone"
- * 5. Copy the Web App URL and set it as GOOGLE_SHEET_LEADS_WEBHOOK in Vercel Environment Variables.
+ * GOOGLE APPS SCRIPT WEBHOOK BACKEND - B2B BD TIPS PORTAL
+ * Production Domain: https://bdbinhdanhocvu.com
+ * Email Sender: bdtraining@bdbinhdanhocvu.com
  */
 
-// CONFIGURATION: Mã khóa bí mật bảo mật chống spam & giả mạo webhook
-const B2B_SECRET_KEY = "2108330119Snail!!"; 
+const B2B_SECRET_KEY = "2108330119Snail!!";
 
+// ------------------------------------------------------------------
+// 1. DOPOST & DOGET ROUTER
+// ------------------------------------------------------------------
 function doPost(e) {
   try {
-    const postData = JSON.parse(e.postData.contents);
+    const rawData = e.postData ? e.postData.contents : "{}";
+    const postData = JSON.parse(rawData);
     
-    // Security check: Xác thực chữ ký bí mật bảo vệ dữ liệu Google Sheet
-    if (B2B_SECRET_KEY && B2B_SECRET_KEY.trim() !== "") {
-      if (postData.secretKey !== B2B_SECRET_KEY) {
-        return ContentService.createTextOutput(JSON.stringify({
-          success: false,
-          error: "Unauthorized: Invalid secretKey."
-        })).setMimeType(ContentService.MimeType.JSON);
+    // Validate Secret Key
+    if (B2B_SECRET_KEY) {
+      if (!postData.secretKey || postData.secretKey !== B2B_SECRET_KEY) {
+        return createJsonResponse({ success: false, error: "Unauthorized: Invalid secretKey." });
       }
     }
     
@@ -35,7 +29,9 @@ function doPost(e) {
     if (action === "checkEmail") {
       return checkEmail(email, name);
     } else if (action === "sendEbookVerificationEmail" || (action === "syncUser" && (postData.tool === "ebook-download" || postData.ebookTitle)) || postData.tool === "ebook-download") {
+      // 1. Record/Sync user in sheet
       syncUser(postData, true);
+      // 2. Dispatch email with exact ebook
       return sendEbookVerificationEmail(email, name, postData.ebookTitle, postData.fileUrl || postData.downloadLink);
     } else if (action === "syncUser" || postData.tool === "daily-reminder" || postData.tool === "exit-intent-ebook") {
       return syncUser(postData);
@@ -56,241 +52,280 @@ function doPost(e) {
     } else if (postData.tool === "course-registration") {
       return handleCourseRegistration(postData);
     } else {
-      // Default fallback log
       return logGeneralLead(postData);
     }
-  } catch (error) {
-    return ContentService.createTextOutput(JSON.stringify({
-      success: false,
-      error: error.message
-    })).setMimeType(ContentService.MimeType.JSON);
+  } catch (err) {
+    Logger.log("doPost Error: " + err.message);
+    return createJsonResponse({ success: false, error: err.message });
+  }
+}
+
+function doGet(e) {
+  try {
+    const action = e.parameter.action;
+    const email = e.parameter.email ? e.parameter.email.toLowerCase().trim() : "";
+    const name = e.parameter.name || "Học viên";
+    
+    if (action === "checkEmail") {
+      return checkEmail(email, name);
+    } else if (action === "verifyUser") {
+      const points = e.parameter.points ? parseInt(e.parameter.points, 10) : 15;
+      return verifyUser(email, points);
+    } else {
+      return createJsonResponse({ success: true, message: "Webhook Active for BD Binh Dan Hoc Vu" });
+    }
+  } catch (err) {
+    return createJsonResponse({ success: false, error: err.message });
   }
 }
 
 // ------------------------------------------------------------------
-// 1. ACTION: checkEmail (Checks if user exists, returns profile)
+// 2. CHECK EMAIL & USER EXISTENCE
 // ------------------------------------------------------------------
 function checkEmail(email, name) {
-  const sheet = getOrCreateSheet("Học Viên Đăng Ký");
-  const data = sheet.getDataRange().getValues();
-  const headers = data[0];
-  const idx = getHeaderIndices(headers);
-
-  if (idx.email === -1) {
-    return createJsonResponse({ exists: false, error: "Email column not found." });
-  }
-
-  for (let i = 1; i < data.length; i++) {
-    if (data[i][idx.email].toString().toLowerCase().trim() === email) {
-      // User exists!
-      const userProfile = {
-        id: idx.id !== -1 ? data[i][idx.id] : "UID_" + i,
+  try {
+    if (!email) return createJsonResponse({ exists: false });
+    
+    const sheet = getOrCreateSheet("Học Viên Đăng Ký");
+    const data = sheet.getDataRange().getValues();
+    if (data.length <= 1) return createJsonResponse({ exists: false });
+    
+    const headers = data[0];
+    const idx = getHeaderIndices(headers);
+    const rowIndex = findUserRowIndex(data, email, idx.email);
+    
+    if (rowIndex !== -1) {
+      const row = data[rowIndex];
+      const verifiedVal = idx.verified !== -1 ? row[idx.verified] : false;
+      const isVerified = (verifiedVal === true || verifiedVal.toString().toUpperCase() === "TRUE" || verifiedVal.toString().trim() === "Đã xác thực");
+      
+      const userData = {
+        id: idx.id !== -1 && row[idx.id] ? row[idx.id] : "UID_LEGACY",
+        name: idx.name !== -1 && row[idx.name] ? row[idx.name] : name,
         email: email,
-        name: idx.name !== -1 ? data[i][idx.name] : name,
-        points: idx.points !== -1 ? Number(data[i][idx.points]) : 25,
-        verified: idx.verified !== -1 ? (data[i][idx.verified] === true || data[i][idx.verified].toString().toUpperCase() === "TRUE" || data[i][idx.verified].toString().trim() === "Đã xác thực") : false,
-        password: idx.password !== -1 ? data[i][idx.password] : "",
-        experience: idx.experience !== -1 ? data[i][idx.experience] : "",
-        industry: idx.industry !== -1 ? data[i][idx.industry] : "",
-        skill: idx.skill !== -1 ? data[i][idx.skill] : ""
+        points: idx.points !== -1 && !isNaN(parseInt(row[idx.points], 10)) ? parseInt(row[idx.points], 10) : 25,
+        avatar: "",
+        verified: isVerified
       };
       
-      return createJsonResponse({ exists: true, user: userProfile });
+      return createJsonResponse({ exists: true, user: userData });
     }
+    return createJsonResponse({ exists: false });
+  } catch (err) {
+    return createJsonResponse({ exists: false, error: err.message });
   }
-  
-  return createJsonResponse({ exists: false });
 }
 
 // ------------------------------------------------------------------
-// 2. ACTION: syncUser (Registers a new user, sends verification link)
+// 3. SYNC USER (Registers or updates user details)
 // ------------------------------------------------------------------
 function syncUser(data, skipEmail) {
-  const sheet = getOrCreateSheet("Học Viên Đăng Ký");
-  const email = data.email.toLowerCase().trim();
-  const name = data.name || "Học viên";
-  const points = data.points !== undefined ? Number(data.points) : 25;
-  const password = data.password || "";
-  const userId = data.userId || "UID_" + Math.random().toString(36).substr(2, 9).toUpperCase();
-  const device = data.device || "Desktop";
-  const date = data.date || new Date().toISOString();
-  
-  const experience = data.experience || "";
-  const industry = data.industry || "";
-  const skill = data.skill || "";
-  
-  const sheetData = sheet.getDataRange().getValues();
-  const headers = sheetData[0];
-  const idx = getHeaderIndices(headers);
-  
-  if (idx.email === -1) {
-    return createJsonResponse({ success: false, error: "Email column not found." });
-  }
-  
-  let userRowIndex = -1;
-  for (let i = 1; i < sheetData.length; i++) {
-    if (sheetData[i][idx.email].toString().toLowerCase().trim() === email) {
-      userRowIndex = i + 1;
-      break;
+  try {
+    const sheet = getOrCreateSheet("Học Viên Đăng Ký");
+    const email = data.email ? data.email.toLowerCase().trim() : "";
+    const name = data.name || "Học viên";
+    const points = data.points !== undefined ? Number(data.points) : 25;
+    const password = data.password || "";
+    const userId = data.userId || ("UID_" + Utilities.getUuid().substr(0, 8).toUpperCase());
+    const device = data.device || "Desktop";
+    const date = data.date ? formatTimestamp(data.date) : formatTimestamp(new Date().toISOString());
+    const tool = data.tool || (data.ebookTitle ? "ebook-download" : "General Sync");
+    
+    if (!email) return createJsonResponse({ success: false, error: "Missing email" });
+    
+    const sheetData = sheet.getDataRange().getValues();
+    const headers = sheetData[0];
+    const idx = getHeaderIndices(headers);
+    let userRowIndex = -1;
+    
+    if (idx.email !== -1) {
+      for (let i = 1; i < sheetData.length; i++) {
+        if (sheetData[i][idx.email] && sheetData[i][idx.email].toString().toLowerCase().trim() === email) {
+          userRowIndex = i + 1;
+          break;
+        }
+      }
     }
-  }
-  
-  if (userRowIndex === -1) {
-    // New User: Construct a row matching the sheet's current headers!
-    const newRow = new Array(headers.length).fill("");
-    if (idx.id !== -1) newRow[idx.id] = userId;
-    if (idx.name !== -1) newRow[idx.name] = name;
-    if (idx.email !== -1) newRow[idx.email] = email;
-    if (idx.points !== -1) newRow[idx.points] = points;
-    if (idx.verified !== -1) newRow[idx.verified] = "Chưa xác thực";
-    if (idx.password !== -1) newRow[idx.password] = password;
-    if (idx.date !== -1) newRow[idx.date] = formatTimestamp(date);
-    if (idx.lastActivity !== -1) newRow[idx.lastActivity] = formatTimestamp(date);
     
-    sheet.appendRow(newRow);
-    const rowIndex = sheet.getLastRow();
-    
-    // Write profile fields if present
-    if (experience) writeProfileFieldToRow(sheet, rowIndex, "experience", experience, idx);
-    if (industry) writeProfileFieldToRow(sheet, rowIndex, "industry", industry, idx);
-    if (skill) writeProfileFieldToRow(sheet, rowIndex, "skill", skill, idx);
-    
-    // SEND APPROPRIATE EMAIL IMMEDIATELY IF NOT SKIPPED
-    if (!skipEmail) {
-      if (data.action === "sendEbookVerificationEmail" || data.tool === "ebook-download" || data.ebookTitle) {
+    if (userRowIndex === -1) {
+      // New User: Construct row matching headers
+      const newRow = new Array(headers.length).fill("");
+      if (idx.id !== -1) newRow[idx.id] = userId;
+      if (idx.name !== -1) newRow[idx.name] = name;
+      if (idx.email !== -1) newRow[idx.email] = email;
+      if (idx.points !== -1) newRow[idx.points] = points;
+      if (idx.verified !== -1) newRow[idx.verified] = "Chưa xác thực";
+      if (idx.password !== -1) newRow[idx.password] = password;
+      if (idx.date !== -1) newRow[idx.date] = date;
+      if (idx.device !== -1) newRow[idx.device] = device;
+      if (idx.tool !== -1) newRow[idx.tool] = tool;
+      if (idx.experience !== -1) newRow[idx.experience] = data.experience || "";
+      if (idx.industry !== -1) newRow[idx.industry] = data.industry || "";
+      if (idx.skill !== -1) newRow[idx.skill] = data.skill || "";
+      if (idx.ebook !== -1) newRow[idx.ebook] = data.ebookTitle || "";
+      if (idx.phone !== -1) newRow[idx.phone] = data.phone || "";
+      if (idx.company !== -1) newRow[idx.company] = data.company || "";
+      
+      sheet.appendRow(newRow);
+      const rowIndex = sheet.getLastRow();
+      
+      // Secondary write for safety
+      if (data.experience) writeProfileFieldToRow(sheet, rowIndex, "experience", data.experience, idx);
+      if (data.industry) writeProfileFieldToRow(sheet, rowIndex, "industry", data.industry, idx);
+      if (data.skill) writeProfileFieldToRow(sheet, rowIndex, "skill", data.skill, idx);
+      if (data.ebookTitle) writeProfileFieldToRow(sheet, rowIndex, "ebook", data.ebookTitle, idx);
+      if (data.phone) writeProfileFieldToRow(sheet, rowIndex, "phone", data.phone, idx);
+      if (data.company) writeProfileFieldToRow(sheet, rowIndex, "company", data.company, idx);
+      
+      if (!skipEmail) {
+        if (data.action === "sendEbookVerificationEmail" || data.tool === "ebook-download" || data.ebookTitle) {
+          sendEbookVerificationEmail(email, name, data.ebookTitle, data.fileUrl || data.downloadLink);
+        } else {
+          sendVerificationEmail(email, name);
+        }
+      }
+      
+      return createJsonResponse({ success: true, isNew: true, points: points, userId: userId });
+    } else {
+      // Existing User: Update record
+      if (idx.points !== -1 && data.points !== undefined) sheet.getRange(userRowIndex, idx.points + 1).setValue(points);
+      if (idx.password !== -1 && password) sheet.getRange(userRowIndex, idx.password + 1).setValue(password);
+      if (idx.name !== -1 && name && name !== "Học viên") sheet.getRange(userRowIndex, idx.name + 1).setValue(name);
+      
+      if (data.experience) writeProfileFieldToRow(sheet, userRowIndex, "experience", data.experience, idx);
+      if (data.industry) writeProfileFieldToRow(sheet, userRowIndex, "industry", data.industry, idx);
+      if (data.skill) writeProfileFieldToRow(sheet, userRowIndex, "skill", data.skill, idx);
+      if (data.ebookTitle) writeProfileFieldToRow(sheet, userRowIndex, "ebook", data.ebookTitle, idx);
+      if (data.phone) writeProfileFieldToRow(sheet, userRowIndex, "phone", data.phone, idx);
+      if (data.company) writeProfileFieldToRow(sheet, userRowIndex, "company", data.company, idx);
+      
+      if (!skipEmail && (data.action === "sendEbookVerificationEmail" || data.tool === "ebook-download" || data.ebookTitle)) {
         sendEbookVerificationEmail(email, name, data.ebookTitle, data.fileUrl || data.downloadLink);
-      } else {
-        sendVerificationEmail(email, name);
       }
+      
+      return createJsonResponse({ success: true, isNew: false, points: points, userId: userId });
     }
-    
-    return createJsonResponse({ success: true, exists: false, userId: userId, message: "Registered. Verification email sent." });
-  } else {
-    // Existing user: update details in "Học Viên Đăng Ký"
-    if (idx.points !== -1 && points) sheet.getRange(userRowIndex, idx.points + 1).setValue(points);
-    if (idx.password !== -1 && password) sheet.getRange(userRowIndex, idx.password + 1).setValue(password);
-    if (idx.lastActivity !== -1) sheet.getRange(userRowIndex, idx.lastActivity + 1).setValue(formatTimestamp(date));
-    
-    if (experience) writeProfileFieldToRow(sheet, userRowIndex, "experience", experience, idx);
-    if (industry) writeProfileFieldToRow(sheet, userRowIndex, "industry", industry, idx);
-    if (skill) writeProfileFieldToRow(sheet, userRowIndex, "skill", skill, idx);
-    
-    // If this existing user submitted the ebook form and skipEmail is false, dispatch the Ebook verification email to them
-    if (!skipEmail && (data.action === "sendEbookVerificationEmail" || data.tool === "ebook-download" || data.ebookTitle)) {
-      sendEbookVerificationEmail(email, name, data.ebookTitle, data.fileUrl || data.downloadLink);
-    }
-    
-    return createJsonResponse({ success: true, exists: true, userId: userId, message: "User profile updated." });
+  } catch (err) {
+    return createJsonResponse({ success: false, error: err.message });
   }
 }
 
 // ------------------------------------------------------------------
-// 3. ACTION: verifyUser (Verifies email, awards 15 extra points)
+// 4. VERIFY USER & UPDATE POINTS
 // ------------------------------------------------------------------
-function verifyUser(email, points) {
-  const sheet = getOrCreateSheet("Học Viên Đăng Ký");
-  const sheetData = sheet.getDataRange().getValues();
-  const headers = sheetData[0];
-  const idx = getHeaderIndices(headers);
-  
-  if (idx.email === -1) return createJsonResponse({ success: false, error: "Email column not found." });
-  
-  for (let i = 1; i < sheetData.length; i++) {
-    if (sheetData[i][idx.email].toString().toLowerCase().trim() === email) {
-      const rowIndex = i + 1;
-      if (idx.verified !== -1) sheet.getRange(rowIndex, idx.verified + 1).setValue("Đã xác thực");
+function verifyUser(email, bonusPoints) {
+  try {
+    if (!email) return createJsonResponse({ success: false, error: "Missing email" });
+    const cleanEmail = email.toLowerCase().trim();
+    const sheet = getOrCreateSheet("Học Viên Đăng Ký");
+    const sheetData = sheet.getDataRange().getValues();
+    const headers = sheetData[0];
+    const idx = getHeaderIndices(headers);
+    const rowIndex = findUserRowIndex(sheetData, cleanEmail, idx.email);
+    
+    if (rowIndex !== -1) {
+      const actualRow = rowIndex + 1;
+      if (idx.verified !== -1) {
+        sheet.getRange(actualRow, idx.verified + 1).setValue("Đã xác thực");
+      }
+      
+      let curPoints = 25;
       if (idx.points !== -1) {
-        const currentPoints = Number(sheetData[i][idx.points]) || 25;
-        const newPoints = points !== undefined ? Number(points) : (currentPoints + 15);
-        sheet.getRange(rowIndex, idx.points + 1).setValue(newPoints);
+        const val = parseInt(sheetData[rowIndex][idx.points], 10);
+        curPoints = isNaN(val) ? 25 : val;
+        const addPts = bonusPoints !== undefined ? parseInt(bonusPoints, 10) : 15;
+        const newPoints = curPoints + addPts;
+        sheet.getRange(actualRow, idx.points + 1).setValue(newPoints);
+        curPoints = newPoints;
       }
-      if (idx.lastActivity !== -1) {
-        sheet.getRange(rowIndex, idx.lastActivity + 1).setValue(formatTimestamp(new Date().toISOString()));
-      }
-      return createJsonResponse({ success: true, message: "User verified successfully." });
+      
+      return createJsonResponse({ success: true, points: curPoints, message: "User verified." });
     }
+    return createJsonResponse({ success: false, error: "User not found" });
+  } catch (err) {
+    return createJsonResponse({ success: false, error: err.message });
   }
-  return createJsonResponse({ success: false, error: "User not found." });
 }
 
-// ------------------------------------------------------------------
-// 4. ACTION: updatePoints (Syncs active points balance)
-// ------------------------------------------------------------------
 function updatePoints(email, points) {
-  const sheet = getOrCreateSheet("Học Viên Đăng Ký");
-  const sheetData = sheet.getDataRange().getValues();
-  const headers = sheetData[0];
-  const idx = getHeaderIndices(headers);
-  
-  if (idx.email === -1 || idx.points === -1) return createJsonResponse({ success: false, error: "Columns not found." });
-  
-  for (let i = 1; i < sheetData.length; i++) {
-    if (sheetData[i][idx.email].toString().toLowerCase().trim() === email) {
-      sheet.getRange(i + 1, idx.points + 1).setValue(Number(points));
-      if (idx.lastActivity !== -1) {
-        sheet.getRange(i + 1, idx.lastActivity + 1).setValue(formatTimestamp(new Date().toISOString()));
+  try {
+    if (!email) return createJsonResponse({ success: false, error: "Missing email" });
+    const sheet = getOrCreateSheet("Học Viên Đăng Ký");
+    const sheetData = sheet.getDataRange().getValues();
+    const headers = sheetData[0];
+    const idx = getHeaderIndices(headers);
+    const rowIndex = findUserRowIndex(sheetData, email.toLowerCase().trim(), idx.email);
+    
+    if (rowIndex !== -1) {
+      const actualRow = rowIndex + 1;
+      if (idx.points !== -1) {
+        sheet.getRange(actualRow, idx.points + 1).setValue(parseInt(points, 10));
       }
-      return createJsonResponse({ success: true });
+      return createJsonResponse({ success: true, points: points });
     }
+    return createJsonResponse({ success: false, error: "User not found" });
+  } catch (err) {
+    return createJsonResponse({ success: false, error: err.message });
   }
-  return createJsonResponse({ success: false, error: "User not found." });
 }
 
-// ------------------------------------------------------------------
-// 4b. ACTION: updateProfile (Updates user experience, industry or skill and awards points)
-// ------------------------------------------------------------------
 function updateProfile(email, field, value, points) {
-  const sheet = getOrCreateSheet("Học Viên Đăng Ký");
-  const data = sheet.getDataRange().getValues();
-  const headers = data[0];
-  const idx = getHeaderIndices(headers);
-  const rowIndex = findUserRowIndex(data, email, idx.email);
-  if (rowIndex === -1) return createJsonResponse({ success: false, error: "User not found." });
-
-  writeProfileFieldToRow(sheet, rowIndex, field, value, idx);
-
-  // Update points
-  if (idx.points !== -1 && points !== undefined) {
-    sheet.getRange(rowIndex, idx.points + 1).setValue(Number(points));
+  try {
+    if (!email) return createJsonResponse({ success: false, error: "Missing email" });
+    const sheet = getOrCreateSheet("Học Viên Đăng Ký");
+    const sheetData = sheet.getDataRange().getValues();
+    const headers = sheetData[0];
+    const idx = getHeaderIndices(headers);
+    const rowIndex = findUserRowIndex(sheetData, email.toLowerCase().trim(), idx.email);
+    
+    if (rowIndex !== -1) {
+      const actualRow = rowIndex + 1;
+      writeProfileFieldToRow(sheet, actualRow, field, value, idx);
+      if (points !== undefined && idx.points !== -1) {
+        sheet.getRange(actualRow, idx.points + 1).setValue(parseInt(points, 10));
+      }
+      return createJsonResponse({ success: true, message: "Profile updated" });
+    }
+    return createJsonResponse({ success: false, error: "User not found" });
+  } catch (err) {
+    return createJsonResponse({ success: false, error: err.message });
   }
-  
-  // Update last activity!
-  if (idx.lastActivity !== -1) {
-    sheet.getRange(rowIndex, idx.lastActivity + 1).setValue(formatTimestamp(new Date().toISOString()));
-  }
-
-  return createJsonResponse({ success: true, message: "Profile field " + field + " updated." });
 }
 
 function findUserRowIndex(data, email, emailIdx) {
-  if (emailIdx === -1) return -1;
+  if (emailIdx === -1 || !email) return -1;
+  const cleanEmail = email.toLowerCase().trim();
   for (let i = 1; i < data.length; i++) {
-    if (data[i][emailIdx].toString().toLowerCase().trim() === email) {
-      return i + 1;
+    if (data[i] && data[i][emailIdx] !== undefined && data[i][emailIdx] !== null && data[i][emailIdx].toString().toLowerCase().trim() === cleanEmail) {
+      return i;
     }
   }
   return -1;
 }
 
 function writeProfileFieldToRow(sheet, rowIndex, field, value, idx) {
+  if (!value) return;
   let targetColIdx = -1;
   let colName = "";
   
-  if (field === "experience") {
+  if (field === "experience" || field === "exp") {
     targetColIdx = idx.experience;
-    colName = "Kinh nghiệm";
+    colName = "Kinh Nghiệm";
   } else if (field === "industry") {
     targetColIdx = idx.industry;
-    colName = "Lĩnh vực";
+    colName = "Ngành Nghề";
   } else if (field === "skill") {
     targetColIdx = idx.skill;
-    colName = "Kỹ năng mong muốn";
+    colName = "Kỹ Năng";
+  } else if (field === "ebook" || field === "ebookTitle") {
+    targetColIdx = idx.ebook;
+    colName = "Tên Ebook Đã Tải";
   } else if (field === "phone") {
     targetColIdx = idx.phone;
-    colName = "Số điện thoại";
+    colName = "Số Điện Thoại";
   } else if (field === "company") {
     targetColIdx = idx.company;
-    colName = "Công ty";
+    colName = "Công Ty";
   } else {
     return;
   }
@@ -304,7 +339,7 @@ function writeProfileFieldToRow(sheet, rowIndex, field, value, idx) {
 }
 
 // ------------------------------------------------------------------
-// 5. SYNCHRONOUS DAILY EMAIL DISPATCHER (Resolves Google Apps Script programmatic trigger permissions)
+// 5. SYNCHRONOUS DAILY EMAIL DISPATCHER
 // ------------------------------------------------------------------
 function sendDailyEmailsSynchronously(data) {
   try {
@@ -332,7 +367,6 @@ function sendDailyEmailsSynchronously(data) {
       const verified = idx.verified !== -1 ? (sheetData[i][idx.verified] === true || sheetData[i][idx.verified].toString().toUpperCase() === "TRUE" || sheetData[i][idx.verified].toString().trim() === "Đã xác thực") : false;
       
       if (verified) {
-        // Flow for Verified Users: Send normal daily reminder
         try {
           const bodyHtml = getHtmlEmailTemplate(message, buttonText, buttonUrl, mascot, name);
           MailApp.sendEmail({
@@ -342,14 +376,12 @@ function sendDailyEmailsSynchronously(data) {
             htmlBody: bodyHtml
           });
           sentCount++;
-          // Jitter delay between 1.5s - 3.5s to prevent Google burst spam detection
           const jitterDelay = Math.floor(Math.random() * 2000) + 1500;
           Utilities.sleep(jitterDelay); 
         } catch (err) {
           Logger.log("Failed to send daily email to " + email + ": " + err.message);
         }
       } else {
-        // Flow for Unverified Users: Send verification reminder email
         try {
           const verificationUrl = "https://bdbinhdanhocvu.com/?verify_email=" + encodeURIComponent(email);
           const unverifiedSubject = "🦉 Nhắc nhở: Xác thực tài khoản B2B BD & Nhận ngay 15đ tích lũy";
@@ -363,7 +395,6 @@ function sendDailyEmailsSynchronously(data) {
             htmlBody: bodyHtml
           });
           sentCount++;
-          // Jitter delay between 1.5s - 3.5s to prevent Google burst spam detection
           const jitterDelay = Math.floor(Math.random() * 2000) + 1500;
           Utilities.sleep(jitterDelay); 
         } catch (err) {
@@ -377,9 +408,6 @@ function sendDailyEmailsSynchronously(data) {
   }
 }
 
-// ------------------------------------------------------------------
-// 6. ACTION: sendSingleEmail (Used for developer preview and tests)
-// ------------------------------------------------------------------
 function sendSingleEmail(data) {
   try {
     const email = data.to;
@@ -418,9 +446,6 @@ function sendVerificationReminder(email, name) {
   }
 }
 
-// ------------------------------------------------------------------
-// 7. SYSTEM EMAILS: sendVerificationEmail & sendForgotPasswordEmail
-// ------------------------------------------------------------------
 function sendVerificationEmail(email, name) {
   try {
     const verificationUrl = "https://bdbinhdanhocvu.com/?verify_email=" + encodeURIComponent(email);
@@ -460,6 +485,9 @@ function sendForgotPasswordEmail(email, name, resetToken) {
   }
 }
 
+// ------------------------------------------------------------------
+// 6. EBOOK VERIFICATION DISPATCHER (Dynamic Catalog & UTM Tracking)
+// ------------------------------------------------------------------
 const EBOOK_CATALOG = {
   "quy trình hưởng trợ cấp thất nghiệp (tctn)": "ebooks/Quy trình hưởng trợ cấp thất nghiệp.pdf",
   "quy trình hưởng trợ cấp thất nghiệp": "ebooks/Quy trình hưởng trợ cấp thất nghiệp.pdf",
@@ -487,7 +515,6 @@ const EBOOK_CATALOG = {
 };
 
 function resolveEbookFile(title, fileUrl) {
-  // If a valid custom fileUrl was passed that is not the default fallback, use it
   if (fileUrl && fileUrl !== "ebooks/Quy trình hưởng trợ cấp thất nghiệp.pdf") {
     return fileUrl;
   }
@@ -592,7 +619,7 @@ function sendEbookVerificationEmail(email, name, ebookTitle, fileUrl) {
 }
 
 // ------------------------------------------------------------------
-// 8. OTHER ACTIONS: course-registration & logGeneralLead
+// 7. OTHER ACTIONS & LOGGING
 // ------------------------------------------------------------------
 function handleCourseRegistration(data) {
   const sheet = getOrCreateSheet("Học Viên Đăng Ký");
@@ -600,349 +627,187 @@ function handleCourseRegistration(data) {
   const name = data.name || "Học viên";
   const userId = data.userId || "UID_COURSE";
   const device = data.device || "Desktop";
-  const date = data.date || new Date().toISOString();
+  const date = data.date ? formatTimestamp(data.date) : formatTimestamp(new Date().toISOString());
   
   const sheetData = sheet.getDataRange().getValues();
-  let rowIndex = findUserRowIndex(sheetData, email);
+  let rowIndex = findUserRowIndex(sheetData, email, 2);
   
   if (rowIndex === -1) {
     sheet.appendRow([
       userId,
       name,
       email,
-      25, // default points
-      false, // verified
-      "", // password
+      25,
+      "Chưa xác thực",
+      "",
       date,
       device,
       "course-registration"
     ]);
-    rowIndex = sheet.getLastRow();
   }
-  
-  if (data.phone) writeProfileFieldToRow(sheet, rowIndex, "phone", data.phone);
-  if (data.company) writeProfileFieldToRow(sheet, rowIndex, "company", data.company);
-  
   return createJsonResponse({ success: true, message: "Course registration logged." });
 }
 
 function logGeneralLead(data) {
   const sheet = getOrCreateSheet("Nhật Ký Tương Tác");
-  
   let dateVal = data.date ? formatTimestamp(data.date) : formatTimestamp(new Date().toISOString());
   let emailVal = data.email || "";
-  let mainFeature = "Tương tác";
-  let subFeature = data.tool || "General Log";
-  let detailAction = "Xem trang";
-  let additionalInfo = data.detail || "";
+  let actionVal = data.tool || data.action || "Tương tác";
+  let detailVal = data.detail || "";
   let deviceVal = data.device || "Desktop";
   let userIdVal = data.userId || "UID_LEAD";
-  
-  // 1. Cross-reference against "Học Viên Đăng Ký"
-  const regSheet = getOrCreateSheet("Học Viên Đăng Ký");
-  const regData = regSheet.getDataRange().getValues();
-  const regHeaders = regData[0];
-  const regIdx = getHeaderIndices(regHeaders);
-  
-  let matchedRowIndex = -1;
-  let registeredUserId = "";
-  let registeredEmail = "";
 
-  const cleanEmail = emailVal.toLowerCase().trim();
-  if (cleanEmail && cleanEmail !== "guest@petervo.vn" && !cleanEmail.startsWith("guest@")) {
-    for (let i = 1; i < regData.length; i++) {
-      if (regIdx.email !== -1 && regData[i] && regData[i][regIdx.email] !== undefined && regData[i][regIdx.email] !== null && regData[i][regIdx.email].toString().toLowerCase().trim() === cleanEmail) {
-        matchedRowIndex = i + 1;
-        registeredUserId = regIdx.id !== -1 && regData[i][regIdx.id] ? regData[i][regIdx.id].toString().trim() : "";
-        registeredEmail = cleanEmail;
-        break;
-      }
-    }
-  }
-
-  if (matchedRowIndex === -1 && userIdVal && !userIdVal.startsWith("GK_") && userIdVal !== "UID_LEAD" && userIdVal !== "") {
-    for (let i = 1; i < regData.length; i++) {
-      if (regIdx.id !== -1 && regData[i] && regData[i][regIdx.id] !== undefined && regData[i][regIdx.id] !== null && regData[i][regIdx.id].toString().trim() === userIdVal) {
-        matchedRowIndex = i + 1;
-        registeredUserId = userIdVal;
-        registeredEmail = regIdx.email !== -1 && regData[i][regIdx.email] ? regData[i][regIdx.email].toString().toLowerCase().trim() : "";
-        break;
-      }
-    }
-  }
-
-  // 2. Handle values based on whether user is registered or guest
-  let finalEmailColumn = "";
-  let finalUserIdColumn = "";
-
-  if (matchedRowIndex !== -1) {
-    // Registered user: map to registered values
-    finalEmailColumn = registeredEmail;
-    finalUserIdColumn = registeredUserId;
-    
-    // Record last activity timestamp in "Học Viên Đăng Ký"
-    if (regIdx.lastActivity !== -1) {
-      regSheet.getRange(matchedRowIndex, regIdx.lastActivity + 1).setValue(dateVal);
-    }
-  } else {
-    // Unregistered guest: assign/retrieve guestxxxx ID and leave User ID blank
-    let guestId = "";
-    if (userIdVal && userIdVal.startsWith("GK_")) {
-      guestId = getOrCreateGuestId(userIdVal);
-    } else {
-      // Fallback for missing keys
-      const tempKey = "GK_TEMP_" + Math.random().toString(36).substr(2, 9).toUpperCase();
-      guestId = getOrCreateGuestId(tempKey);
-    }
-    finalEmailColumn = guestId;
-    finalUserIdColumn = ""; // No User ID for guest
-  }
-
-  // Translate tool events into natural Vietnamese text
-  const tool = data.tool;
-  if (tool === "page_view") {
-    mainFeature = "Duyệt trang";
-    subFeature = "Đọc bài / Di chuyển";
-    detailAction = "Xem trang";
-  } else if (tool === "ebook_download") {
-    mainFeature = "Thư viện";
-    subFeature = "Tải tài liệu";
-    detailAction = "Tải Ebook";
-  } else if (tool === "minigame_start" || tool === "arcade_start") {
-    mainFeature = "Arcade Game";
-    subFeature = "Bắt đầu chơi";
-    detailAction = "Khởi chạy ải";
-  } else if (tool === "minigame_play" || tool === "arcade_play") {
-    mainFeature = "Arcade Game";
-    subFeature = "Chơi game";
-    detailAction = "Hoàn thành ải";
-  } else if (tool === "email_generate") {
-    mainFeature = "Trợ lý Email";
-    subFeature = "Viết email AI";
-    detailAction = "Soạn thảo";
-  } else if (tool === "labor_case_view" || tool === "labor_search") {
-    mainFeature = "Tra cứu Luật";
-    subFeature = "Xem tình huống";
-    detailAction = "Tra cứu";
-  } else if (tool === "salary_calculate") {
-    mainFeature = "Tính lương";
-    subFeature = "Ước tính";
-    detailAction = "Tính toán";
-  } else if (tool === "pic_search") {
-    mainFeature = "PIC Finder";
-    subFeature = "Tìm kiếm sếp mua hàng";
-    detailAction = "Tra cứu";
-  } else if (tool === "community_post") {
-    mainFeature = "Cộng đồng";
-    subFeature = "Đăng bài viết mới";
-    detailAction = "Đăng thảo luận";
-  } else if (tool === "community_comment") {
-    mainFeature = "Cộng đồng";
-    subFeature = "Bình luận đóng góp";
-    detailAction = "Viết phản hồi";
-  } else if (tool === "article_read") {
-    mainFeature = "Thư viện";
-    subFeature = "Đọc cẩm nang";
-    detailAction = "Đọc bài viết";
-  } else if (tool === "search_query") {
-    mainFeature = "Tìm kiếm";
-    subFeature = "Tra cứu chung";
-    detailAction = "Gửi truy vấn";
-  } else if (tool === "pitching_scenario_select") {
-    mainFeature = "Pitching AI";
-    subFeature = "Luyện thuyết trình";
-    detailAction = "Chọn kịch bản";
-  } else if (tool === "pitching_complete") {
-    mainFeature = "Pitching AI";
-    subFeature = "Hoàn thành bài pitch";
-    detailAction = "Nhận đánh giá";
-  } else if (tool === "claim_reward" || tool === "claim-reward") {
-    mainFeature = "Đổi quà";
-    subFeature = "Cửa hàng quà tặng";
-    detailAction = "Nhận phần thưởng";
-  }
-  
   sheet.appendRow([
     dateVal,
-    finalEmailColumn,
-    mainFeature,
-    subFeature,
-    detailAction,
-    additionalInfo,
-    deviceVal,
-    finalUserIdColumn
+    userIdVal,
+    emailVal,
+    "Tương tác",
+    actionVal,
+    "Ghi nhận hệ thống",
+    detailVal,
+    deviceVal
   ]);
-  
-  return createJsonResponse({ success: true });
+  return createJsonResponse({ success: true, message: "Lead logged." });
 }
 
 function formatTimestamp(isoString) {
   try {
     const d = new Date(isoString);
-    const yr = d.getFullYear();
-    const mo = ('0' + (d.getMonth() + 1)).slice(-2);
-    const day = ('0' + d.getDate()).slice(-2);
-    const hr = ('0' + d.getHours()).slice(-2);
-    const min = ('0' + d.getMinutes()).slice(-2);
-    const sec = ('0' + d.getSeconds()).slice(-2);
-    return yr + '-' + mo + '-' + day + ' ' + hr + ':' + min + ':' + sec;
+    return Utilities.formatDate(d, "Asia/Ho_Chi_Minh", "yyyy-MM-dd HH:mm:ss");
   } catch (e) {
     return isoString;
   }
 }
 
-// ------------------------------------------------------------------
-// UTILITY FUNCTIONS: Helpers for Sheets and HTML
-// ------------------------------------------------------------------
 function getHeaderIndices(headers) {
-  if (!headers || !Array.isArray(headers)) {
-    return { email: -1, name: -1, points: -1, verified: -1, password: -1, id: -1, date: -1, lastActivity: -1, experience: -1, industry: -1, skill: -1, phone: -1, company: -1 };
-  }
-  const h = headers.map(val => val !== undefined && val !== null ? val.toString().toLowerCase().trim() : "");
-  
   function findIdx(names) {
-    for (let name of names) {
-      const idx = h.indexOf(name.toLowerCase().trim());
-      if (idx !== -1) return idx;
+    for (let i = 0; i < headers.length; i++) {
+      const h = (headers[i] || "").toString().toLowerCase().trim();
+      for (let j = 0; j < names.length; j++) {
+        const n = names[j].toLowerCase().trim();
+        if (h === n || h.includes(n)) return i;
+      }
     }
     return -1;
   }
   
   return {
-    email: findIdx(["email người dùng", "email", "email_address", "email address"]),
-    name: findIdx(["họ và tên", "name", "full name", "tên", "họ tên"]),
-    points: findIdx(["điểm bd-points", "points", "điểm", "bd-points"]),
-    verified: findIdx(["trạng thái xác thực", "verified", "xác thực", "trạng thái"]),
-    password: findIdx(["password", "mật khẩu"]),
-    id: findIdx(["id", "userid", "user id", "mã học viên"]),
-    date: findIdx(["thời gian đăng ký", "date", "ngày đăng ký", "thời gian"]),
-    lastActivity: findIdx(["hoạt động cuối cùng", "hoạt động cuối", "last activity", "last_activity"]),
-    experience: findIdx(["kinh nghiệm", "experience", "experience_years"]),
-    industry: findIdx(["lĩnh vực", "industry", "lĩnh vực hoạt động"]),
-    skill: findIdx(["kỹ năng mong muốn", "skill", "kỹ năng"]),
-    phone: findIdx(["số điện thoại", "phone", "sđt", "điện thoại"]),
-    company: findIdx(["công ty", "company", "doanh nghiệp"])
+    id: findIdx(["id người dùng", "mã học viên", "user id", "userid", "id"]),
+    name: findIdx(["họ và tên", "tên", "họ tên", "name", "full name"]),
+    email: findIdx(["email", "địa chỉ email", "hòm thư"]),
+    points: findIdx(["điểm tích lũy", "điểm", "points", "point"]),
+    verified: findIdx(["trạng thái xác thực", "xác thực", "verified", "status"]),
+    password: findIdx(["mật khẩu", "password"]),
+    date: findIdx(["ngày đăng ký", "thời gian", "ngày", "date"]),
+    lastActivity: findIdx(["hoạt động gần nhất", "last activity", "lastactive"]),
+    device: findIdx(["thiết bị", "device"]),
+    tool: findIdx(["công cụ đăng ký", "công cụ", "tool"]),
+    experience: findIdx(["kinh nghiệm", "năm kinh nghiệm", "experience", "exp"]),
+    industry: findIdx(["ngành nghề", "ngành", "lĩnh vực", "industry"]),
+    skill: findIdx(["kỹ năng", "skill"]),
+    ebook: findIdx(["tên ebook đã tải", "ebook đã tải", "tên ebook", "ebook", "tài liệu"]),
+    phone: findIdx(["số điện thoại", "sđt", "phone", "điện thoại"]),
+    company: findIdx(["công ty", "doanh nghiệp", "company"])
   };
-}
-
-function getOrCreateGuestId(guestKey) {
-  const sheet = getOrCreateSheet("Guest Mapping");
-  const data = sheet.getDataRange().getValues();
-  
-  for (let i = 1; i < data.length; i++) {
-    if (data[i] && data[i][0] === guestKey) {
-      return data[i][1];
-    }
-  }
-  
-  // Not found: generate new guest ID
-  let maxNum = 0;
-  for (let i = 1; i < data.length; i++) {
-    if (data[i] && data[i][1] !== undefined && data[i][1] !== null) {
-      const val = data[i][1].toString(); // e.g. "guest0015"
-      if (val.startsWith("guest")) {
-        const num = parseInt(val.substring(5), 10);
-        if (!isNaN(num) && num > maxNum) {
-          maxNum = num;
-        }
-      }
-    }
-  }
-  
-  const newNum = maxNum + 1;
-  const newGuestId = "guest" + String(newNum).padStart(4, '0');
-  
-  sheet.appendRow([guestKey, newGuestId, new Date().toISOString()]);
-  return newGuestId;
 }
 
 function getOrCreateSheet(sheetName) {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const allSheets = ss.getSheets();
   
-  // Redirect old/alternative sheet names to keep only standard sheets!
-  let targetSheetName = sheetName;
-  if (sheetName === "Leads" || sheetName === "CourseReg" || sheetName === "Học Viên Đăng Ký") {
-    targetSheetName = "Học Viên Đăng Ký";
-  } else if (sheetName === "Guest Mapping") {
-    targetSheetName = "Guest Mapping";
-  } else {
-    targetSheetName = "Nhật Ký Tương Tác";
-  }
-  
-  let sheet = ss.getSheetByName(targetSheetName);
-  if (!sheet) {
-    sheet = ss.insertSheet(targetSheetName);
-    
-    // Create standard headers
-    if (targetSheetName === "Học Viên Đăng Ký") {
-      sheet.appendRow(["UserID", "Name", "Email", "Points", "Verified", "Password", "Date", "Last Activity", "Device", "Tool"]);
-    } else if (targetSheetName === "Guest Mapping") {
-      sheet.appendRow(["Guest Key", "Guest ID", "Date Created"]);
-    } else {
-      // "Nhật Ký Tương Tác"
-      sheet.appendRow(["Thời gian ghi nhận", "Email người dùng", "Tính năng chính", "Tiểu mục / Tên Game", "Hành động chi tiết", "Thông tin bổ sung", "Thiết bị", "User ID"]);
+  // Fuzzy match existing sheets
+  const cleanTarget = sheetName.toLowerCase().replace(/[^a-z0-9]/g, '');
+  for (let i = 0; i < allSheets.length; i++) {
+    const s = allSheets[i];
+    const sClean = s.getName().toLowerCase().replace(/[^a-z0-9]/g, '');
+    if (cleanTarget.includes("hocvien") || cleanTarget.includes("leads") || cleanTarget.includes("coursereg")) {
+      if (sClean.includes("hocvien") || sClean.includes("leads") || sClean.includes("coursereg")) {
+        return s;
+      }
+    } else if (cleanTarget.includes("nhatky") || cleanTarget.includes("tuongtac") || cleanTarget.includes("log")) {
+      if (sClean.includes("nhatky") || sClean.includes("tuongtac") || sClean.includes("log")) {
+        return s;
+      }
+    } else if (cleanTarget.includes("guest")) {
+      if (sClean.includes("guest")) {
+        return s;
+      }
     }
+  }
+
+  let sheet = ss.getSheetByName(sheetName);
+  if (sheet) return sheet;
+
+  // If first sheet is named Sheet1 or Trang tính 1, rename and use it
+  if (allSheets.length === 1 && (allSheets[0].getName().startsWith("Sheet") || allSheets[0].getName().startsWith("Trang tính"))) {
+    allSheets[0].setName(sheetName);
+    return allSheets[0];
+  }
+
+  // Create standard sheet
+  sheet = ss.insertSheet(sheetName);
+  if (sheetName.includes("Học Viên") || sheetName === "Học Viên Đăng Ký") {
+    sheet.appendRow([
+      "ID Người Dùng", "Họ và Tên", "Email", "Điểm Tích Lũy", "Trạng Thái Xác Thực",
+      "Mật Khẩu", "Ngày Đăng Ký", "Thiết Bị", "Công Cụ Đăng Ký", "Kinh Nghiệm",
+      "Ngành Nghề", "Kỹ Năng", "Tên Ebook Đã Tải", "Số Điện Thoại", "Công Ty"
+    ]);
+  } else if (sheetName.includes("Nhật Ký") || sheetName === "Nhật Ký Tương Tác") {
+    sheet.appendRow([
+      "Thời Gian", "Mã Học Viên", "Email", "Tính Năng Chính",
+      "Nghiệp Vụ Chi Tiết", "Hành Động Cụ Thể", "Dữ Liệu Bổ Sung", "Thiết Bị"
+    ]);
   }
   return sheet;
 }
 
-function deleteTriggerByName(functionName) {
-  const triggers = ScriptApp.getProjectTriggers();
-  for (let i = 0; i < triggers.length; i++) {
-    if (triggers[i].getHandlerFunction() === functionName) {
-      ScriptApp.deleteTrigger(triggers[i]);
-    }
-  }
-}
-
 function createJsonResponse(obj) {
-  return ContentService.createTextOutput(JSON.stringify(obj))
-                       .setMimeType(ContentService.MimeType.JSON);
+  return ContentService.createTextOutput(JSON.stringify(obj)).setMimeType(ContentService.MimeType.JSON);
 }
 
-// Full premium HTML email template with matching styles
 function getHtmlEmailTemplate(message, buttonText, buttonUrl, mascotUrl, name) {
   const finalMascotUrl = mascotUrl || "https://bdbinhdanhocvu.com/mascot_quests.jpg";
-  const greeting = name ? ("Chào " + name + " cùng Cú BeeDee! 🦉☀️") : "Chào ngày mới cùng Cú BeeDee! 🦉☀️";
-  
-  return [
+  const lines = [
     "<!DOCTYPE html>",
     "<html>",
     "<head>",
     "  <meta charset=\"utf-8\">",
     "  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">",
-    "  <title>BD Bình Dân Học Vụ</title>",
     "  <style>",
-    "    @import url('https://fonts.googleapis.com/css2?family=Lexend:wght@400;700;800&family=Plus+Jakarta+Sans:wght@400;700;800&display=swap');",
-    "    body, table, td, div, p, a, span { font-family: 'Plus Jakarta Sans', 'Lexend', Arial, Helvetica, sans-serif !important; }",
-    "    body { margin: 0; padding: 0; background-color: #fcf9f4; color: #334155; }",
-    "    .email-container { max-width: 500px; margin: 30px auto; background-color: #ffffff; border: 1.5px solid #f3a83b; border-radius: 24px; padding: 35px 28px; text-align: center; box-shadow: 0 10px 25px rgba(243, 168, 59, 0.08); }",
-    "    .mascot-container { margin-bottom: 20px; display: inline-block; padding: 10px; background: rgba(243, 168, 59, 0.08); border-radius: 50%; }",
-    "    .mascot-img { width: 90px; height: 90px; object-fit: contain; display: block; border-radius: 50%; }",
-    "    .headline { font-size: 1.35rem; font-weight: 800; color: #1e293b; margin: 0 0 18px 0; line-height: 1.3; }",
-    "    .content-text { font-size: 0.95rem; line-height: 1.65; color: #475569; margin: 0 0 25px 0; text-align: left; }",
-    "    .cta-container { margin: 25px 0; }",
-    "    .cta-btn { display: inline-block; padding: 14px 32px; background: linear-gradient(135deg, #f3a83b 0%, #f59e0b 100%); color: #ffffff !important; text-decoration: none !important; font-weight: 800; font-size: 0.88rem; border-radius: 12px; box-shadow: 0 5px 18px rgba(243, 168, 59, 0.35); text-transform: uppercase; letter-spacing: 0.8px; }",
-    "    .footer-text { font-size: 0.76rem; color: #94a3b8; border-top: 1px solid rgba(243, 168, 59, 0.15); padding-top: 22px; margin-top: 22px; line-height: 1.45; text-align: center; }",
-    "    .accent-link { color: #d97706; text-decoration: none; font-weight: bold; }",
+    "    body { font-family: 'Segoe UI', Helvetica, Arial, sans-serif; background-color: #f8fafc; margin: 0; padding: 0; }",
+    "    .email-container { max-width: 580px; margin: 25px auto; background-color: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.06); }",
+    "    .email-header { background: linear-gradient(135deg, #a20a0a 0%, #7c0808 100%); padding: 28px 24px; text-align: center; }",
+    "    .email-header h1 { color: #ffffff; margin: 0; font-size: 20px; font-weight: 800; letter-spacing: 0.5px; }",
+    "    .email-header p { color: #fecaca; margin: 6px 0 0 0; font-size: 13px; font-weight: 500; }",
+    "    .email-body { padding: 30px 25px; color: #1e293b; font-size: 14.5px; line-height: 1.65; }",
+    "    .mascot-box { text-align: center; margin: 15px 0 25px 0; }",
+    "    .mascot-img { width: 96px; height: 96px; border-radius: 50%; border: 3px solid #f59e0b; box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3); }",
+    "    .cta-box { text-align: center; margin: 30px 0 20px 0; }",
+    "    .cta-btn { display: inline-block; background: linear-gradient(135deg, #a20a0a 0%, #dc2626 100%); color: #ffffff !important; text-decoration: none; padding: 13px 32px; font-size: 15px; font-weight: 800; border-radius: 30px; box-shadow: 0 4px 15px rgba(220, 38, 38, 0.35); }",
+    "    .email-footer { background-color: #f1f5f9; padding: 20px; text-align: center; font-size: 12px; color: #64748b; border-top: 1px solid #e2e8f0; }",
+    "    .accent-link { color: #a20a0a; text-decoration: none; font-weight: 700; }",
     "  </style>",
     "</head>",
     "<body>",
     "  <div class=\"email-container\">",
-    "    <div class=\"mascot-container\">",
-    "      <img src=\"" + finalMascotUrl + "\" class=\"mascot-img\" alt=\"Cú BeeDee\">",
+    "    <div class=\"email-header\">",
+    "      <h1>BD BÌNH DÂN HỌC VỤ</h1>",
+    "      <p>Nơi Chiến Binh BD Bắt Đầu &bull; Peter Vo</p>",
     "    </div>",
-    "    <div class=\"headline\">" + greeting + "</div>",
-    "    <div class=\"content-text\">" + message + "</div>",
-    "    <div class=\"cta-container\">",
-    "      <a href=\"" + buttonUrl + "\" target=\"_blank\" class=\"cta-btn\">" + buttonText + "</a>",
+    "    <div class=\"email-body\">",
+    "      <div class=\"mascot-box\">",
+    "        <img src=\"" + finalMascotUrl + "\" alt=\"Cú BeeDee\" class=\"mascot-img\">",
+    "      </div>",
+    "      <div>" + message + "</div>",
+    buttonUrl ? ("      <div class=\"cta-box\"><a href=\"" + buttonUrl + "\" class=\"cta-btn\">" + (buttonText || "Khám Phá Ngay &rarr;") + "</a></div>") : "",
     "    </div>",
-    "    <div class=\"footer-text\">",
+    "    <div class=\"email-footer\">",
     "      Bạn nhận được email này vì đã đăng ký nhận tài liệu và tham gia rèn luyện tại <a href=\"https://bdbinhdanhocvu.com\" class=\"accent-link\">BD Bình Dân Học Vụ</a>.<br>",
-    "      © 2026 BD Bình Dân Học Vụ. All rights reserved.",
+    "      &copy; 2026 BD Bình Dân Học Vụ. All rights reserved.",
     "    </div>",
     "  </div>",
     "</body>",
     "</html>"
-  ].join("\n");
+  ];
+  return lines.join("\n");
 }
