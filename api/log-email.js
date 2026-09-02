@@ -208,7 +208,7 @@ module.exports = async (req, res) => {
   }
 
   // If user profile is missing from Vercel's ephemeral memory, rehydrate it from Google Sheets
-  const ACTIVE_LEADS_WEBHOOK = 'https://script.google.com/macros/s/AKfycbxoedzECs5aC0eopiaQiFVqOSrLdwL-P17OBd_Vj3TDmMJ8-Q2H_MD-9dMOx0Jllpxf/exec';
+  const ACTIVE_LEADS_WEBHOOK = 'https://script.google.com/macros/s/AKfycbzhevaZUCV0ITOxOeeFTx4lFG4jqknpCFV1EJ4l_L75-zkgmmY0eJlKc68jEgk_mVU/exec';
   const webhookUrl = tool === 'course-registration' 
     ? (process.env.GOOGLE_SHEET_COURSE_WEBHOOK || ACTIVE_LEADS_WEBHOOK) 
     : ACTIVE_LEADS_WEBHOOK;

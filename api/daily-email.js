@@ -606,7 +606,7 @@ YÊU CẦU NỘI DUNG & PHONG CÁCH:
   }
 
   const subject = template.subject;
-  const webhookUrl = process.env.GOOGLE_SHEET_LEADS_WEBHOOK;
+  const webhookUrl = 'https://script.google.com/macros/s/AKfycbzhevaZUCV0ITOxOeeFTx4lFG4jqknpCFV1EJ4l_L75-zkgmmY0eJlKc68jEgk_mVU/exec';
 
   // If overriding for testing via ?email=...
   if (req.query.email) {

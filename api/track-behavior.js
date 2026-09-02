@@ -93,7 +93,7 @@ module.exports = async (req, res) => {
   let webhookText = '';
   let syncError = '';
   // Forward to Google Sheets Webhook (awaited to prevent Vercel context freeze)
-  const ACTIVE_LEADS_WEBHOOK = 'https://script.google.com/macros/s/AKfycbxoedzECs5aC0eopiaQiFVqOSrLdwL-P17OBd_Vj3TDmMJ8-Q2H_MD-9dMOx0Jllpxf/exec';
+  const ACTIVE_LEADS_WEBHOOK = 'https://script.google.com/macros/s/AKfycbzhevaZUCV0ITOxOeeFTx4lFG4jqknpCFV1EJ4l_L75-zkgmmY0eJlKc68jEgk_mVU/exec';
   const webhookUrl = ACTIVE_LEADS_WEBHOOK;
   if (webhookUrl) {
     try {
