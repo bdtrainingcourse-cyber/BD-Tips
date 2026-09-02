@@ -337,6 +337,7 @@ function sendDailyEmailsSynchronously(data) {
           const bodyHtml = getHtmlEmailTemplate(message, buttonText, buttonUrl, mascot, name);
           MailApp.sendEmail({
             to: email,
+            name: "BD Bình Dân Học Vụ - Cú BeeDee",
             subject: subject,
             htmlBody: bodyHtml
           });
@@ -357,6 +358,7 @@ function sendDailyEmailsSynchronously(data) {
           const bodyHtml = getHtmlEmailTemplate(unverifiedMessage, "Kích hoạt & Nhận 15đ", verificationUrl, "https://bdbinhdanhocvu.com/mascot_quests.jpg", name);
           MailApp.sendEmail({
             to: email,
+            name: "BD Bình Dân Học Vụ - Cú BeeDee",
             subject: unverifiedSubject,
             htmlBody: bodyHtml
           });
@@ -386,6 +388,7 @@ function sendSingleEmail(data) {
     
     MailApp.sendEmail({
       to: email,
+      name: "BD Bình Dân Học Vụ - Cú BeeDee",
       subject: data.subject,
       htmlBody: bodyHtml
     });
@@ -405,6 +408,7 @@ function sendVerificationReminder(email, name) {
     const bodyHtml = getHtmlEmailTemplate(unverifiedMessage, "Kích hoạt & Nhận 15đ", verificationUrl, "https://bdbinhdanhocvu.com/mascot_quests.jpg", name);
     MailApp.sendEmail({
       to: email,
+      name: "BD Bình Dân Học Vụ - Cú BeeDee",
       subject: unverifiedSubject,
       htmlBody: bodyHtml
     });
@@ -427,6 +431,7 @@ function sendVerificationEmail(email, name) {
     
     MailApp.sendEmail({
       to: email,
+      name: "BD Bình Dân Học Vụ - Cú BeeDee",
       subject: subject,
       htmlBody: bodyHtml
     });
@@ -445,6 +450,7 @@ function sendForgotPasswordEmail(email, name, resetToken) {
     
     MailApp.sendEmail({
       to: email,
+      name: "BD Bình Dân Học Vụ - Cú BeeDee",
       subject: subject,
       htmlBody: bodyHtml
     });
@@ -492,6 +498,7 @@ function sendEbookVerificationEmail(email, name, ebookTitle, fileUrl) {
     
     const mailOptions = {
       to: email,
+      name: "BD Bình Dân Học Vụ - Cú BeeDee",
       subject: subject,
       htmlBody: bodyHtml
     };
