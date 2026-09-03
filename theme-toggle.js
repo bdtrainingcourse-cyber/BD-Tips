@@ -248,6 +248,30 @@ const initThemeToggle = () => {
         document.querySelectorAll('.nav-dropdown').forEach(d => d.classList.remove('open'));
     });
 
+    // Global Header Actions Click Handlers (Login & Register)
+    document.addEventListener('click', (e) => {
+        const loginBtn = e.target.closest('#btn-navbar-login');
+        if (loginBtn) {
+            e.preventDefault();
+            e.stopPropagation();
+            if (typeof window.showGlobalLoginModal === 'function') {
+                window.showGlobalLoginModal();
+            }
+        }
+        const regBtn = e.target.closest('#btn-navbar-register');
+        if (regBtn) {
+            e.preventDefault();
+            e.stopPropagation();
+            const regInput = document.getElementById('challenge-trigger-name') || document.getElementById('sidebar-trigger-name');
+            if (regInput) {
+                regInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                regInput.focus();
+            } else {
+                window.location.href = 'index.html?register=true';
+            }
+        }
+    });
+
     // Floating Back to Top Button Handler
     let backToTopBtn = document.getElementById('back-to-top');
     if (!backToTopBtn) {
@@ -1719,24 +1743,24 @@ function initGlobalComponents() {
                 font-size: 1.1rem !important;
             }
 
-            .mobile-header-utilities {
+            .nav-header-actions {
                 display: flex !important;
                 align-items: center !important;
-                gap: 6px !important;
+                gap: 5px !important;
                 margin-left: auto !important;
-                margin-right: 6px !important;
                 flex-shrink: 0 !important;
             }
-            .mobile-header-utilities .nav-user-hud {
-                padding: 0 !important;
+            .nav-user-hud {
+                display: flex !important;
+                align-items: center !important;
+                gap: 4px !important;
                 margin: 0 !important;
+                padding: 0 !important;
                 background: none !important;
                 border: none !important;
-                display: flex !important;
-                align-items: center !important;
                 flex-shrink: 0 !important;
             }
-            .mobile-header-utilities .nav-user-hud .nav-login-btn {
+            .nav-user-hud .nav-login-btn {
                 padding: 5px 9px !important;
                 font-size: 0.72rem !important;
                 font-weight: 700 !important;
@@ -1746,9 +1770,10 @@ function initGlobalComponents() {
                 color: #fff !important;
                 border: none !important;
                 cursor: pointer !important;
+                display: inline-flex !important;
                 flex-shrink: 0 !important;
             }
-            .mobile-header-utilities .nav-user-hud .nav-register-btn {
+            .nav-user-hud .nav-register-btn {
                 display: inline-flex !important;
                 padding: 4px 8px !important;
                 font-size: 0.72rem !important;
@@ -1762,12 +1787,12 @@ function initGlobalComponents() {
                 flex-shrink: 0 !important;
                 margin-left: 0 !important;
             }
-            body.dark-theme .mobile-header-utilities .nav-user-hud .nav-register-btn {
+            body.dark-theme .nav-user-hud .nav-register-btn {
                 background: rgba(255, 255, 255, 0.08) !important;
                 border-color: rgba(255, 255, 255, 0.15) !important;
                 color: #cbd5e1 !important;
             }
-            .mobile-header-utilities #navbar-user-name {
+            .nav-user-hud #navbar-user-name {
                 display: none !important;
             }
             .mobile-menu-toggle {
@@ -2616,16 +2641,7 @@ function initGlobalNotificationBell() {
 }
 
 function initMobileHeaderUtilities() {
-    const mobileToggle = document.getElementById('mobile-menu-toggle');
-    if (!mobileToggle) return;
-    
-    let mobileParent = document.getElementById('mobile-header-utilities');
-    if (!mobileParent) {
-        mobileParent = document.createElement('div');
-        mobileParent.id = 'mobile-header-utilities';
-        mobileParent.className = 'mobile-header-utilities';
-        mobileToggle.parentNode.insertBefore(mobileParent, mobileToggle);
-    }
+    // Nav header actions is now permanently placed directly in HTML
 }
 
 function initLiveUserCounter() {
@@ -2654,6 +2670,11 @@ function initLiveUserCounter() {
         const val = Math.floor(Math.random() * (54 - 38 + 1)) + 38;
         sessionStorage.setItem('bd_live_users', val.toString());
         sessionStorage.setItem('bd_live_users_timestamp', now.toString());
+        
+        const numEl = document.getElementById('live-counter-number');
+        if (numEl) {
+            numEl.textContent = val;
+        }
         return val;
     }
 
@@ -2681,19 +2702,13 @@ function initLiveUserCounter() {
 function adjustHeaderUtilities() {
     const isMobile = window.innerWidth <= 992;
     const desktopParent = document.getElementById('nav-menu');
-    const mobileParent = document.getElementById('mobile-header-utilities');
     
     const liveCounter = document.getElementById('live-user-counter');
-    const hud = document.getElementById('navbar-user-hud');
     const shareBtn = document.getElementById('nav-share-btn');
     const bell = document.getElementById('notification-bell-container');
     const themeToggle = document.getElementById('theme-toggle');
     
     if (isMobile) {
-        // Trên mobile: Chỉ đưa hud vào mobileParent để hiện Đăng Nhập & Đăng Ký ngang hàng Logo
-        if (mobileParent && hud) {
-            mobileParent.appendChild(hud);
-        }
         // Đưa liveCounter, share, bell, themeToggle vào ngăn kéo Drawer menu
         if (desktopParent) {
             if (liveCounter) desktopParent.insertBefore(liveCounter, desktopParent.firstChild);
