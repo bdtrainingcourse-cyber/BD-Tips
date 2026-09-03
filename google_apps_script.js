@@ -315,8 +315,30 @@ function findUserRowIndex(data, email, emailIdx) {
 }
 
 // ------------------------------------------------------------------
-// 5. SYNCHRONOUS DAILY EMAIL DISPATCHER
+// 5. SYNCHRONOUS DAILY EMAIL DISPATCHER & NATIVE TRIGGER
 // ------------------------------------------------------------------
+function createDailyReminderTrigger() {
+  deleteTriggerByName("dailyCronTrigger");
+  ScriptApp.newTrigger("dailyCronTrigger")
+           .timeBased()
+           .everyDays(1)
+           .atHour(7) // Chạy tự động mỗi sáng lúc 7:00 - 8:00 AM giờ Việt Nam
+           .create();
+  Logger.log("Created Daily Reminder Trigger successfully at 7:00 AM VN time.");
+}
+
+function dailyCronTrigger() {
+  try {
+    const res = UrlFetchApp.fetch("https://www.bdbinhdanhocvu.com/api/daily-email", { 
+      muteHttpExceptions: true,
+      followRedirects: true
+    });
+    Logger.log("Daily Cron result: " + res.getContentText());
+  } catch (e) {
+    Logger.log("Daily Cron trigger error: " + e.message);
+  }
+}
+
 function sendDailyEmailsSynchronously(data) {
   try {
     const subject = data.subject;
@@ -912,6 +934,15 @@ function getOrCreateSheet(sheetName) {
     sheet.appendRow(["Guest Key", "Guest ID", "Date Created"]);
   }
   return sheet;
+}
+
+function deleteTriggerByName(functionName) {
+  const triggers = ScriptApp.getProjectTriggers();
+  for (let i = 0; i < triggers.length; i++) {
+    if (triggers[i].getHandlerFunction() === functionName) {
+      ScriptApp.deleteTrigger(triggers[i]);
+    }
+  }
 }
 
 function createJsonResponse(obj) {
