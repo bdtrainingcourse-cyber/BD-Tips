@@ -812,21 +812,26 @@ document.addEventListener('DOMContentLoaded', () => {
                 submitBtn.disabled = false;
                 submitBtn.textContent = '📨 Gửi Ebook Đến Email Của Tôi ➔';
             }
-            if (data.error === 'email_already_used') {
-                alert('Email này đã được dùng để tải Ebook trước đây. Bạn cần tham gia Mini Game hoặc Cộng đồng BD để tích điểm mở khóa Ebook mới!');
-                closeDownloadModal();
-                
-                // Customize and show limit modal
-                const limitModalTitle = document.querySelector('#limit-modal .modal-title');
-                const limitModalDesc = document.querySelector('#limit-modal p');
-                if (limitModalTitle) {
-                    limitModalTitle.textContent = "Cần Tích Điểm Để Mở Khóa Ebook Mới";
+            if (data.error) {
+                if (data.error === 'email_already_used') {
+                    alert('Email này đã được dùng để tải Ebook trước đây. Bạn cần tham gia Mini Game hoặc Cộng đồng BD để tích điểm mở khóa Ebook mới!');
+                    closeDownloadModal();
+                    
+                    // Customize and show limit modal
+                    const limitModalTitle = document.querySelector('#limit-modal .modal-title');
+                    const limitModalDesc = document.querySelector('#limit-modal p');
+                    if (limitModalTitle) {
+                        limitModalTitle.textContent = "Cần Tích Điểm Để Mở Khóa Ebook Mới";
+                    }
+                    if (limitModalDesc) {
+                        limitModalDesc.textContent = "Email này đã nhận Ebook chào mừng. Để tải Ebook tiếp theo, vui lòng tham gia Mini Game hoặc Cộng Đồng BD để tích lũy điểm mở khóa nhé!";
+                    }
+                    limitModal.classList.remove('hidden');
+                    return;
+                } else {
+                    alert(data.error);
+                    return;
                 }
-                if (limitModalDesc) {
-                    limitModalDesc.textContent = "Email này đã nhận Ebook chào mừng. Để tải Ebook tiếp theo, vui lòng tham gia Mini Game hoặc Cộng Đồng BD để tích lũy điểm mở khóa nhé!";
-                }
-                limitModal.classList.remove('hidden');
-                return;
             }
 
             const uid = data.userId || (data.user && data.user.id) || 'UID_' + Math.random().toString(36).substr(2, 9).toUpperCase();
