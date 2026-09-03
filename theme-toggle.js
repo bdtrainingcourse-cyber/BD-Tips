@@ -209,14 +209,36 @@ const initThemeToggle = () => {
             .catch(err => console.warn('Session check error:', err));
     }
 
-    // Mobile Hamburger Menu Toggle
+    // Mobile Hamburger Menu Toggle & Drawer Backdrop
     const mobileMenuToggleBtn = document.getElementById('mobile-menu-toggle');
     const navMenu = document.getElementById('nav-menu');
     if (mobileMenuToggleBtn && navMenu) {
+        let navBackdrop = document.getElementById('nav-backdrop');
+        if (!navBackdrop) {
+            navBackdrop = document.createElement('div');
+            navBackdrop.id = 'nav-backdrop';
+            navBackdrop.className = 'nav-backdrop';
+            navBackdrop.style.cssText = 'position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.45);backdrop-filter:blur(3px);z-index:99990;display:none;opacity:0;transition:opacity 0.25s ease;';
+            document.body.appendChild(navBackdrop);
+            navBackdrop.addEventListener('click', () => {
+                navMenu.classList.remove('mobile-open');
+                mobileMenuToggleBtn.innerHTML = '☰';
+                navBackdrop.style.opacity = '0';
+                setTimeout(() => { navBackdrop.style.display = 'none'; }, 250);
+            });
+        }
+
         mobileMenuToggleBtn.addEventListener('click', (e) => {
             e.stopPropagation();
             const isOpen = navMenu.classList.toggle('mobile-open');
             mobileMenuToggleBtn.innerHTML = isOpen ? '✕' : '☰';
+            if (isOpen) {
+                navBackdrop.style.display = 'block';
+                requestAnimationFrame(() => { navBackdrop.style.opacity = '1'; });
+            } else {
+                navBackdrop.style.opacity = '0';
+                setTimeout(() => { navBackdrop.style.display = 'none'; }, 250);
+            }
         });
 
         // Close mobile drawer when clicking outside
@@ -224,6 +246,10 @@ const initThemeToggle = () => {
             if (navMenu.classList.contains('mobile-open') && !navMenu.contains(e.target) && !mobileMenuToggleBtn.contains(e.target)) {
                 navMenu.classList.remove('mobile-open');
                 mobileMenuToggleBtn.innerHTML = '☰';
+                if (navBackdrop) {
+                    navBackdrop.style.opacity = '0';
+                    setTimeout(() => { navBackdrop.style.display = 'none'; }, 250);
+                }
             }
         });
     }
@@ -1677,6 +1703,7 @@ if (document.readyState === 'loading') {
         if (typeof initLiveUserCounter === 'function') initLiveUserCounter();
         if (typeof initMobileHeaderUtilities === 'function') initMobileHeaderUtilities();
         if (typeof adjustHeaderUtilities === 'function') adjustHeaderUtilities();
+        if (typeof initMobileQuickNav === 'function') initMobileQuickNav();
         window.addEventListener('resize', () => {
             if (typeof adjustHeaderUtilities === 'function') adjustHeaderUtilities();
         });
@@ -1689,6 +1716,7 @@ if (document.readyState === 'loading') {
     if (typeof initLiveUserCounter === 'function') initLiveUserCounter();
     if (typeof initMobileHeaderUtilities === 'function') initMobileHeaderUtilities();
     if (typeof adjustHeaderUtilities === 'function') adjustHeaderUtilities();
+    if (typeof initMobileQuickNav === 'function') initMobileQuickNav();
     window.addEventListener('resize', () => {
         if (typeof adjustHeaderUtilities === 'function') adjustHeaderUtilities();
     });
@@ -1726,87 +1754,48 @@ function initGlobalComponents() {
                 flex-shrink: 0 !important;
             }
             .mobile-header-utilities .nav-user-hud {
-                padding: 4px 6px !important;
-                font-size: 0.75rem !important;
+                padding: 0 !important;
                 margin: 0 !important;
-                border-radius: 10px !important;
-                background: rgba(0, 0, 0, 0.03) !important;
-                border: 1px solid rgba(0, 0, 0, 0.05) !important;
+                background: none !important;
+                border: none !important;
                 display: flex !important;
                 align-items: center !important;
-                gap: 2px !important;
                 flex-shrink: 0 !important;
+            }
+            .mobile-header-utilities .nav-user-hud .nav-login-btn {
+                padding: 5px 10px !important;
+                font-size: 0.76rem !important;
+                border-radius: 14px !important;
+                white-space: nowrap !important;
+            }
+            .mobile-header-utilities .nav-user-hud .nav-register-btn {
+                display: none !important;
             }
             .mobile-header-utilities #navbar-user-name {
                 display: none !important;
             }
-            body.dark-theme .mobile-header-utilities .nav-user-hud {
-                background: rgba(255, 255, 255, 0.05) !important;
-                border: 1px solid rgba(255, 255, 255, 0.1) !important;
-            }
-            .mobile-header-utilities .theme-toggle-btn,
-            .mobile-header-utilities .nav-share-btn {
-                width: 28px !important;
-                height: 28px !important;
-                font-size: 0.8rem !important;
-                border-radius: 50% !important;
-                display: flex !important;
-                align-items: center !important;
-                justify-content: center !important;
-                border: 1px solid rgba(0, 0, 0, 0.08) !important;
-                background: rgba(0, 0, 0, 0.02) !important;
-                cursor: pointer !important;
-                color: inherit !important;
-                margin: 0 !important;
-                padding: 0 !important;
-                flex-shrink: 0 !important;
-            }
-            .mobile-header-utilities .nav-notification-bell {
-                position: relative !important;
-                display: inline-flex !important;
-                align-items: center !important;
-                justify-content: center !important;
-                width: auto !important;
-                height: auto !important;
-                background: none !important;
-                border: none !important;
-                margin: 0 !important;
-                padding: 0 !important;
-                flex-shrink: 0 !important;
-            }
-            .mobile-header-utilities .nav-notification-bell button {
-                width: 28px !important;
-                height: 28px !important;
-                font-size: 0.8rem !important;
-                border-radius: 50% !important;
-                display: flex !important;
-                align-items: center !important;
-                justify-content: center !important;
-                border: 1px solid rgba(0, 0, 0, 0.08) !important;
-                background: rgba(0, 0, 0, 0.02) !important;
-                cursor: pointer !important;
-                color: inherit !important;
-                margin: 0 !important;
-                padding: 0 !important;
-                flex-shrink: 0 !important;
-            }
             .mobile-menu-toggle {
-                width: 28px !important;
-                height: 28px !important;
-                font-size: 0.85rem !important;
-                border-radius: 50% !important;
+                width: 38px !important;
+                min-width: 38px !important;
+                height: 38px !important;
+                font-size: 1.25rem !important;
+                border-radius: 8px !important;
                 display: flex !important;
                 align-items: center !important;
                 justify-content: center !important;
                 padding: 0 !important;
                 margin: 0 !important;
                 flex-shrink: 0 !important;
-                border: 1px solid rgba(0, 0, 0, 0.08) !important;
-                background: rgba(0, 0, 0, 0.02) !important;
+                border: 1px solid rgba(0, 0, 0, 0.12) !important;
+                background: rgba(0, 0, 0, 0.04) !important;
+                color: var(--text-main) !important;
+                cursor: pointer !important;
+                z-index: 10001 !important;
             }
             body.dark-theme .mobile-menu-toggle {
-                border-color: rgba(255, 255, 255, 0.1) !important;
-                background: rgba(255, 255, 255, 0.05) !important;
+                border-color: rgba(255, 255, 255, 0.15) !important;
+                background: rgba(255, 255, 255, 0.08) !important;
+                color: #f1f5f9 !important;
             }
             body.dark-theme .mobile-header-utilities .theme-toggle-btn,
             body.dark-theme .mobile-header-utilities .nav-share-btn,
@@ -2704,12 +2693,31 @@ function adjustHeaderUtilities() {
     const bell = document.getElementById('notification-bell-container');
     const themeToggle = document.getElementById('theme-toggle');
     
-    if (isMobile && mobileParent) {
-        if (liveCounter) mobileParent.appendChild(liveCounter);
-        if (hud) mobileParent.appendChild(hud);
-        if (shareBtn) mobileParent.appendChild(shareBtn);
-        if (bell) mobileParent.appendChild(bell);
-        if (themeToggle) mobileParent.appendChild(themeToggle);
+    if (isMobile) {
+        // Trên mobile: Chỉ đưa liveCounter và hud vào header để tránh tràn màn hình
+        if (mobileParent) {
+            if (liveCounter) mobileParent.appendChild(liveCounter);
+            if (hud) mobileParent.appendChild(hud);
+        }
+        // Đưa các nút tiện ích (share, bell, themeToggle) vào ngăn kéo Drawer menu
+        if (desktopParent) {
+            let drawerFooter = document.getElementById('nav-drawer-footer');
+            if (!drawerFooter) {
+                drawerFooter = document.createElement('div');
+                drawerFooter.id = 'nav-drawer-footer';
+                drawerFooter.className = 'nav-drawer-footer';
+                
+                const actionsRow = document.createElement('div');
+                actionsRow.id = 'nav-drawer-actions';
+                actionsRow.className = 'nav-drawer-actions';
+                drawerFooter.appendChild(actionsRow);
+                desktopParent.appendChild(drawerFooter);
+            }
+            const actionsRow = document.getElementById('nav-drawer-actions') || drawerFooter;
+            if (themeToggle) actionsRow.appendChild(themeToggle);
+            if (shareBtn) actionsRow.appendChild(shareBtn);
+            if (bell) actionsRow.appendChild(bell);
+        }
     } else if (!isMobile && desktopParent) {
         const targetAnchor = hud || themeToggle;
         if (liveCounter) {
@@ -2744,6 +2752,40 @@ function adjustHeaderUtilities() {
             desktopParent.appendChild(themeToggle);
         }
     }
+}
+
+function initMobileQuickNav() {
+    if (document.getElementById('mobile-quick-nav-bar')) return;
+    const header = document.querySelector('header.app-nav');
+    if (!header) return;
+    
+    const quickNav = document.createElement('nav');
+    quickNav.id = 'mobile-quick-nav-bar';
+    quickNav.className = 'mobile-quick-nav-bar';
+    
+    const currentPath = window.location.pathname;
+    const isHome = currentPath.endsWith('index.html') || currentPath === '/' || currentPath === '' || currentPath.endsWith('/');
+    const isLibrary = currentPath.includes('library');
+    const isTest = currentPath.includes('personality-test');
+    const isEmail = currentPath.includes('email-assistant');
+    const isKpi = currentPath.includes('kpi-estimation');
+    const isCommunity = currentPath.includes('community');
+    const isSalary = currentPath.includes('salary');
+    const isLaw = currentPath.includes('labor-law');
+    
+    quickNav.innerHTML = `
+        <a href="index.html" class="mobile-quick-nav-item ${isHome ? 'active' : ''}">🏠 Trang Chủ</a>
+        <a href="library.html" class="mobile-quick-nav-item ${isLibrary ? 'active' : ''}">📚 Thư Viện <span class="nav-badge-mini">HOT</span></a>
+        <a href="personality-test.html" class="mobile-quick-nav-item ${isTest ? 'active' : ''}">📊 Test B2B</a>
+        <a href="email-assistant.html" class="mobile-quick-nav-item ${isEmail ? 'active' : ''}">✍️ Email AI</a>
+        <a href="kpi-estimation.html" class="mobile-quick-nav-item ${isKpi ? 'active' : ''}">📈 Ma Trận KPI</a>
+        <a href="index.html#minigame-section" class="mobile-quick-nav-item">🎮 Challenge</a>
+        <a href="community.html" class="mobile-quick-nav-item ${isCommunity ? 'active' : ''}">💬 Cộng Đồng <span class="nav-badge-mini live">LIVE</span></a>
+        <a href="salary.html" class="mobile-quick-nav-item ${isSalary ? 'active' : ''}">💰 Tính Lương</a>
+        <a href="labor-law.html" class="mobile-quick-nav-item ${isLaw ? 'active' : ''}">⚖️ Luật LĐ</a>
+    `;
+    
+    header.parentNode.insertBefore(quickNav, header.nextSibling);
 }
 
 // --- B2B Onboarding Tour System (v=2.2.0) ---
