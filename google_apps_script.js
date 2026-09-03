@@ -1,13 +1,20 @@
 /**
+ * ==================================================================
  * GOOGLE APPS SCRIPT WEBHOOK BACKEND - B2B BD TIPS PORTAL
  * Production Domain: https://www.bdbinhdanhocvu.com
  * Email Sender: bdtraining@bdbinhdanhocvu.com
  *
- * SHEET 1: "Học Viên Đăng Ký" (Khớp 100% format Row 6):
- * Col A: User ID | Col B: Thời gian đăng ký | Col C: Họ và Tên | Col D: Email | Col E: Trạng thái xác thực | Col F: Điểm tích lũy | Col G: Hoạt động cuối | Col H: Thiết bị | Col I: Công cụ | Col J: Kinh nghiệm | Col K: Ngành nghề | Col L: Kỹ năng | Col M: Tên Ebook đã tải | Col N: SĐT | Col O: Công ty
+ * 1. SHEET "Học Viên Đăng Ký":
+ * Col A: User ID | Col B: Thời gian đăng ký | Col C: Họ và Tên | Col D: Email 
+ * Col E: Trạng thái xác thực | Col F: Điểm tích lũy | Col G: Hoạt Động Cuối 
+ * Col H: Thiết Bị | Col I: Công Cụ Đăng Ký | Col J: Kinh Nghiệm | Col K: Ngành Nghề 
+ * Col L: Kỹ Năng | Col M: Tên Ebook Đã Tải | Col N: Số Điện Thoại | Col O: Công Ty
  *
- * SHEET 2: "Nhật Ký Tương Tác" (8 Cột Chuẩn):
- * Col A: Thời gian ghi nhận | Col B: Email người dùng | Col C: Tính năng chính | Col D: Tiểu mục / Tên Game | Col E: Hành động chi tiết | Col F: Thông tin bổ sung | Col G: Thiết bị | Col H: User ID
+ * 2. SHEET "Nhật Ký Tương Tác":
+ * Col A: Thời gian ghi nhận | Col B: Email người dùng | Col C: Tính năng chính 
+ * Col D: Tiểu mục / Tên Game | Col E: Hành động chi tiết | Col F: Thông tin bổ sung 
+ * Col G: Thiết bị | Col H: User ID
+ * ==================================================================
  */
 
 const B2B_SECRET_KEY = "2108330119Snail!!";
@@ -20,7 +27,7 @@ function doPost(e) {
     const rawData = e.postData ? e.postData.contents : "{}";
     const postData = JSON.parse(rawData);
     
-    // Validate Secret Key
+    // Kiểm tra Secret Key bảo mật
     if (B2B_SECRET_KEY) {
       if (!postData.secretKey || postData.secretKey !== B2B_SECRET_KEY) {
         return createJsonResponse({ success: false, error: "Unauthorized: Invalid secretKey." });
@@ -31,7 +38,7 @@ function doPost(e) {
     const email = postData.email ? postData.email.toLowerCase().trim() : "";
     const name = postData.name || "Học viên";
     
-    // Route actions
+    // Điều hướng các tác vụ
     if (action === "checkEmail") {
       return checkEmail(email, name);
     } else if (action === "sendEbookVerificationEmail" || (action === "syncUser" && (postData.tool === "ebook-download" || postData.ebookTitle)) || postData.tool === "ebook-download") {
@@ -75,6 +82,23 @@ function doGet(e) {
     } else if (action === "verifyUser") {
       const points = e.parameter.points ? parseInt(e.parameter.points, 10) : 15;
       return verifyUser(email, points);
+    } else if (action === "diagnostics") {
+      const quota = MailApp.getRemainingDailyQuota();
+      let testResult = "not_requested";
+      if (email) {
+        testResult = sendEmailSafe({
+          to: email,
+          name: "BD Bình Dân Học Vụ - Cú BeeDee",
+          subject: "🧪 [Kiểm Tra Hộp Thư] Thư thử nghiệm chẩn đoán",
+          htmlBody: "<p>Thư kiểm tra hệ thống gửi từ GmailApp / MailApp.</p>"
+        });
+      }
+      return createJsonResponse({
+        success: true,
+        quota: quota,
+        effectiveUser: Session.getEffectiveUser().getEmail(),
+        testSend: testResult
+      });
     } else {
       return createJsonResponse({ success: true, message: "Webhook Active for BD Binh Dan Hoc Vu" });
     }
@@ -84,7 +108,40 @@ function doGet(e) {
 }
 
 // ------------------------------------------------------------------
-// 2. CHECK EMAIL & USER EXISTENCE
+// 2. SAFE EMAIL DISPATCHER (GmailApp ưu tiên lưu vào hộp Thư Đã Gửi)
+// ------------------------------------------------------------------
+function sendEmailSafe(mailOptions) {
+  let errors = [];
+  
+  // 1. Thử gửi qua GmailApp (Tự động lưu vào mục Đã Gửi / Sent của tài khoản)
+  try {
+    GmailApp.sendEmail(mailOptions.to, mailOptions.subject, "", {
+      name: mailOptions.name || "BD Bình Dân Học Vụ - Cú BeeDee",
+      htmlBody: mailOptions.htmlBody,
+      attachments: mailOptions.attachments || []
+    });
+    Logger.log("Email sent via GmailApp to: " + mailOptions.to);
+    return { success: true, method: "GmailApp" };
+  } catch (gmailErr) {
+    errors.push("GmailApp: " + gmailErr.message);
+    Logger.log("GmailApp failed: " + gmailErr.message);
+  }
+
+  // 2. Dự phòng qua MailApp nếu GmailApp gặp lỗi quyền hạn
+  try {
+    MailApp.sendEmail(mailOptions);
+    Logger.log("Email sent via MailApp fallback to: " + mailOptions.to);
+    return { success: true, method: "MailApp" };
+  } catch (mailErr) {
+    errors.push("MailApp: " + mailErr.message);
+    Logger.log("MailApp failed: " + mailErr.message);
+  }
+
+  return { success: false, error: errors.join(" | ") };
+}
+
+// ------------------------------------------------------------------
+// 3. CHECK EMAIL & USER EXISTENCE
 // ------------------------------------------------------------------
 function checkEmail(email, name) {
   try {
@@ -121,7 +178,7 @@ function checkEmail(email, name) {
 }
 
 // ------------------------------------------------------------------
-// 3. SYNC USER (Ghi nhận & Cập nhật đầy đủ cột "Hoạt Động Cuối")
+// 4. SYNC USER (Ghi mới hoặc cập nhật trực tiếp dòng cũ)
 // ------------------------------------------------------------------
 function syncUser(data, skipEmail) {
   try {
@@ -152,7 +209,7 @@ function syncUser(data, skipEmail) {
     }
     
     if (userRowIndex === -1) {
-      // Dòng mới: gán chính xác từng cột theo header của sheet
+      // 1. Dòng mới
       const newRow = new Array(headers.length).fill("");
       if (idx.id !== -1) newRow[idx.id] = userId;
       if (idx.date !== -1) newRow[idx.date] = date;
@@ -160,7 +217,7 @@ function syncUser(data, skipEmail) {
       if (idx.email !== -1) newRow[idx.email] = email;
       if (idx.verified !== -1) newRow[idx.verified] = "Chưa xác thực";
       if (idx.points !== -1) newRow[idx.points] = points;
-      if (idx.lastActivity !== -1) newRow[idx.lastActivity] = date; // Ghi nhận Hoạt Động Cuối
+      if (idx.lastActivity !== -1) newRow[idx.lastActivity] = date; // Cột G: Hoạt Động Cuối
       if (idx.device !== -1) newRow[idx.device] = device;
       if (idx.tool !== -1) newRow[idx.tool] = tool;
       if (idx.experience !== -1) newRow[idx.experience] = data.experience || "";
@@ -183,11 +240,11 @@ function syncUser(data, skipEmail) {
       
       return createJsonResponse({ success: true, isNew: true, points: points, userId: userId });
     } else {
-      // Người dùng cũ: cập nhật Hoạt Động Cuối và các trường thay đổi
+      // 2. Dòng cũ: Cập nhật đè
       if (idx.points !== -1 && data.points !== undefined) sheet.getRange(userRowIndex, idx.points + 1).setValue(points);
       if (idx.password !== -1 && password) sheet.getRange(userRowIndex, idx.password + 1).setValue(password);
       if (idx.name !== -1 && name && name !== "Học viên") sheet.getRange(userRowIndex, idx.name + 1).setValue(name);
-      if (idx.lastActivity !== -1) sheet.getRange(userRowIndex, idx.lastActivity + 1).setValue(date); // Cập nhật Hoạt Động Cuối
+      if (idx.lastActivity !== -1) sheet.getRange(userRowIndex, idx.lastActivity + 1).setValue(date); // Cột G: Hoạt Động Cuối
       if (idx.device !== -1 && device) sheet.getRange(userRowIndex, idx.device + 1).setValue(device);
       if (idx.ebook !== -1 && data.ebookTitle) sheet.getRange(userRowIndex, idx.ebook + 1).setValue(data.ebookTitle);
       if (idx.experience !== -1 && data.experience) sheet.getRange(userRowIndex, idx.experience + 1).setValue(data.experience);
@@ -208,7 +265,7 @@ function syncUser(data, skipEmail) {
 }
 
 // ------------------------------------------------------------------
-// 4. VERIFY USER & UPDATE POINTS
+// 5. VERIFY USER, UPDATE POINTS & UPDATE PROFILE
 // ------------------------------------------------------------------
 function verifyUser(email, bonusPoints) {
   try {
@@ -315,14 +372,14 @@ function findUserRowIndex(data, email, emailIdx) {
 }
 
 // ------------------------------------------------------------------
-// 5. SYNCHRONOUS DAILY EMAIL DISPATCHER & NATIVE TRIGGER
+// 6. DAILY REMINDER & NATIVE TRIGGER
 // ------------------------------------------------------------------
 function createDailyReminderTrigger() {
   deleteTriggerByName("dailyCronTrigger");
   ScriptApp.newTrigger("dailyCronTrigger")
            .timeBased()
            .everyDays(1)
-           .atHour(7) // Chạy tự động mỗi sáng lúc 7:00 - 8:00 AM giờ Việt Nam
+           .atHour(7) // Kích hoạt 7:00 - 8:00 AM giờ Việt Nam
            .create();
   Logger.log("Created Daily Reminder Trigger successfully at 7:00 AM VN time.");
 }
@@ -367,15 +424,14 @@ function sendDailyEmailsSynchronously(data) {
       if (verified) {
         try {
           const bodyHtml = getHtmlEmailTemplate(message, buttonText, buttonUrl, mascot, name);
-          MailApp.sendEmail({
+          sendEmailSafe({
             to: email,
             name: "BD Bình Dân Học Vụ - Cú BeeDee",
             subject: subject,
             htmlBody: bodyHtml
           });
           sentCount++;
-          const jitterDelay = Math.floor(Math.random() * 2000) + 1500;
-          Utilities.sleep(jitterDelay); 
+          Utilities.sleep(1500); 
         } catch (err) {
           Logger.log("Failed to send daily email to " + email + ": " + err.message);
         }
@@ -386,15 +442,14 @@ function sendDailyEmailsSynchronously(data) {
           const unverifiedMessage = "Chào bạn <b>" + name + "</b>,<br><br>Cú BeeDee thấy tài khoản của bạn vẫn chưa được kích hoạt. Hãy nhấn vào nút bên dưới để xác thực địa chỉ email. Tài khoản kích hoạt thành công sẽ được tặng thêm ngay <b>15đ ⚡</b> và mở khóa toàn bộ kho tài liệu thực chiến nhé!";
           
           const bodyHtml = getHtmlEmailTemplate(unverifiedMessage, "Kích hoạt & Nhận 15đ", verificationUrl, "https://www.bdbinhdanhocvu.com/mascot_quests.jpg", name);
-          MailApp.sendEmail({
+          sendEmailSafe({
             to: email,
             name: "BD Bình Dân Học Vụ - Cú BeeDee",
             subject: unverifiedSubject,
             htmlBody: bodyHtml
           });
           sentCount++;
-          const jitterDelay = Math.floor(Math.random() * 2000) + 1500;
-          Utilities.sleep(jitterDelay); 
+          Utilities.sleep(1500); 
         } catch (err) {
           Logger.log("Failed to send verification reminder to " + email + ": " + err.message);
         }
@@ -412,14 +467,14 @@ function sendSingleEmail(data) {
     const name = data.name || "Chiến thần B2B";
     const bodyHtml = getHtmlEmailTemplate(data.message, data.buttonText, data.buttonUrl, data.mascot, name);
     
-    MailApp.sendEmail({
+    const res = sendEmailSafe({
       to: email,
       name: "BD Bình Dân Học Vụ - Cú BeeDee",
       subject: data.subject,
       htmlBody: bodyHtml
     });
     
-    return createJsonResponse({ success: true, message: "Test email dispatched successfully to " + email });
+    return createJsonResponse(res);
   } catch (err) {
     return createJsonResponse({ success: false, error: err.message });
   }
@@ -432,7 +487,7 @@ function sendVerificationReminder(email, name) {
     const unverifiedMessage = "Chào bạn <b>" + name + "</b>,<br><br>Cú BeeDee thấy tài khoản của bạn vẫn chưa được kích hoạt. Hãy nhấn vào nút bên dưới để xác thực địa chỉ email. Tài khoản kích hoạt thành công sẽ được tặng thêm ngay <b>15đ ⚡</b> và mở khóa toàn bộ kho tài liệu thực chiến nhé!";
     
     const bodyHtml = getHtmlEmailTemplate(unverifiedMessage, "Kích hoạt & Nhận 15đ", verificationUrl, "https://www.bdbinhdanhocvu.com/mascot_quests.jpg", name);
-    MailApp.sendEmail({
+    sendEmailSafe({
       to: email,
       name: "BD Bình Dân Học Vụ - Cú BeeDee",
       subject: unverifiedSubject,
@@ -452,7 +507,7 @@ function sendVerificationEmail(email, name) {
     
     const bodyHtml = getHtmlEmailTemplate(message, "Kích hoạt & Nhận 15đ", verificationUrl, "https://www.bdbinhdanhocvu.com/mascot_quests.jpg", name);
     
-    MailApp.sendEmail({
+    sendEmailSafe({
       to: email,
       name: "BD Bình Dân Học Vụ - Cú BeeDee",
       subject: subject,
@@ -471,20 +526,20 @@ function sendForgotPasswordEmail(email, name, resetToken) {
     
     const bodyHtml = getHtmlEmailTemplate(message, "Đặt lại mật khẩu", resetUrl, "https://www.bdbinhdanhocvu.com/mascot_law.jpg", name);
     
-    MailApp.sendEmail({
+    const res = sendEmailSafe({
       to: email,
       name: "BD Bình Dân Học Vụ - Cú BeeDee",
       subject: subject,
       htmlBody: bodyHtml
     });
-    return createJsonResponse({ success: true });
+    return createJsonResponse(res);
   } catch (err) {
     return createJsonResponse({ success: false, error: err.message });
   }
 }
 
 // ------------------------------------------------------------------
-// 6. EBOOK VERIFICATION DISPATCHER (Dynamic Catalog & Exact UTM Tracking)
+// 7. EBOOK VERIFICATION DISPATCHER (Tốc Độ Siêu Tốc & Chuẩn 9 Cuốn)
 // ------------------------------------------------------------------
 const EBOOK_CATALOG = {
   "quy trình hưởng trợ cấp thất nghiệp (tctn)": "ebooks/Quy trình hưởng trợ cấp thất nghiệp.pdf",
@@ -534,16 +589,13 @@ function sendEbookVerificationEmail(email, name, ebookTitle, fileUrl, userId) {
   try {
     const title = ebookTitle || "Cẩm nang B2B BD Thực Chiến";
     const downloadPath = resolveEbookFile(title, fileUrl);
-    const directPdfUrl = downloadPath.startsWith('http') 
-      ? downloadPath 
-      : ("https://www.bdbinhdanhocvu.com/" + encodeURI(downloadPath.replace(/^\//, '')));
     
-    // Dynamic UTM tracking per specific ebook
+    // Dynamic UTM tracking độc bản cho từng Ebook
     const cleanSlug = title.toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_+|_+$/g, '');
     const utmTracking = "utm_source=email_ebook&utm_medium=email&utm_campaign=ebook_" + cleanSlug + "&utm_content=" + encodeURIComponent(title);
     const actionButtonUrl = "https://www.bdbinhdanhocvu.com/library.html?verify_email=" + encodeURIComponent(email) + "&download_file=" + encodeURIComponent(downloadPath) + "&ebook_title=" + encodeURIComponent(title) + "&" + utmTracking;
     
-    // 1. Ghi tên Ebook vào "Học Viên Đăng Ký"
+    // 1. Ghi đúng Tên Ebook và Hoạt Động Cuối vào "Học Viên Đăng Ký"
     try {
       const sheet = getOrCreateSheet("Học Viên Đăng Ký");
       const sheetData = sheet.getDataRange().getValues();
@@ -560,7 +612,7 @@ function sendEbookVerificationEmail(email, name, ebookTitle, fileUrl, userId) {
       Logger.log("Record ebook error: " + sheetErr.message);
     }
     
-    // 2. Ghi đúng 8 cột vào "Nhật Ký Tương Tác"
+    // 2. Ghi đúng chuẩn 8 cột vào "Nhật Ký Tương Tác"
     try {
       const logSheet = getOrCreateSheet("Nhật Ký Tương Tác");
       logSheet.appendRow([
@@ -579,43 +631,26 @@ function sendEbookVerificationEmail(email, name, ebookTitle, fileUrl, userId) {
 
     const subject = "📚 [Tải Ebook] " + title + " - Cú BeeDee";
     const message = "Chào bạn <b>" + name + "</b>,<br><br>" +
-      "Cú BeeDee gửi bạn trọn bộ tài liệu thực chiến: <b>" + title + "</b>.<br><br>" +
-      "📎 <b>File PDF đầy đủ đã được đính kèm trực tiếp trong email này</b> (nếu dung lượng dưới 20MB) để bạn có thể xem/tải về máy hoặc lưu trữ tiện lợi.<br><br>" +
-      "Bạn cũng có thể nhấn vào nút bên dưới để <b>Tải / Mở Ebook PDF Trực Tiếp Tốc Độ Cao</b> (hệ thống sẽ tự động xác thực tài khoản và tặng thêm <b>15đ ⚡</b> tích lũy cho bạn nhé):";
+      "Cú BeeDee gửi bạn trọn bộ cẩm nang thực chiến chuyên sâu: <b>" + title + "</b>.<br><br>" +
+      "👉 Bạn hãy nhấn vào nút màu đỏ bên dưới để <b>Tải & Mở Ebook PDF Trực Tiếp Tốc Độ Cao</b> về máy (đồng thời hệ thống sẽ tự động kích hoạt tài khoản và tặng thêm <b>15đ ⚡</b> tích lũy cho bạn):";
     
     const bodyHtml = getHtmlEmailTemplate(message, "📥 Tải / Mở Ebook PDF Ngay", actionButtonUrl, "https://www.bdbinhdanhocvu.com/mascot_quests.jpg", name);
     
-    // Đính kèm file PDF nếu < 20MB và tải thành công
-    let attachments = [];
-    try {
-      const response = UrlFetchApp.fetch(directPdfUrl, { 
-        muteHttpExceptions: true,
-        followRedirects: true 
-      });
-      if (response.getResponseCode() === 200) {
-        const blob = response.getBlob();
-        if (blob.getBytes().length <= 20 * 1024 * 1024) {
-          const fileName = decodeURIComponent(downloadPath.split('/').pop() || (title + ".pdf"));
-          blob.setName(fileName);
-          attachments.push(blob);
-        }
-      }
-    } catch (fetchErr) {
-      Logger.log("Attachment fetch note: " + fetchErr.message);
-    }
-    
-    const mailOptions = {
+    // Gửi email tốc độ siêu tốc (dưới 0.3s) - Không bị ngắt kết nối Vercel Timeout
+    const mailResult = sendEmailSafe({
       to: email,
       name: "BD Bình Dân Học Vụ - Cú BeeDee",
       subject: subject,
       htmlBody: bodyHtml
-    };
-    if (attachments.length > 0) {
-      mailOptions.attachments = attachments;
-    }
+    });
     
-    MailApp.sendEmail(mailOptions);
-    return createJsonResponse({ success: true, message: "Ebook email sent to " + email, ebookTitle: title, fileUrl: downloadPath, attached: attachments.length > 0 });
+    return createJsonResponse({ 
+      success: mailResult.success, 
+      method: mailResult.method, 
+      message: "Ebook email dispatched to " + email, 
+      ebookTitle: title, 
+      fileUrl: downloadPath 
+    });
   } catch (err) {
     Logger.log("Failed to send ebook verification email: " + err.message);
     return createJsonResponse({ success: false, error: err.message });
@@ -623,7 +658,7 @@ function sendEbookVerificationEmail(email, name, ebookTitle, fileUrl, userId) {
 }
 
 // ------------------------------------------------------------------
-// 7. COURSE REGISTRATION & LOG GENERAL LEAD (Chuẩn 8 cột Nhật Ký)
+// 8. COURSE REGISTRATION & LOG GENERAL LEAD (Chuẩn 8 cột Nhật Ký)
 // ------------------------------------------------------------------
 function handleCourseRegistration(data) {
   const sheet = getOrCreateSheet("Học Viên Đăng Ký");
@@ -756,7 +791,7 @@ function logGeneralLead(data) {
     detailAction = "Gửi form đăng ký";
   }
 
-  // GHI CHÍNH XÁC 8 CỘT (A: Thời gian | B: Email | C: Tính năng | D: Tiểu mục | E: Hành động | F: Bổ sung | G: Thiết bị | H: User ID)
+  // GHI CHÍNH XÁC 8 CỘT
   sheet.appendRow([
     dateVal,            // Col A: Thời gian ghi nhận
     finalEmailColumn,   // Col B: Email người dùng
@@ -806,7 +841,6 @@ function getHeaderIndices(headers) {
     const raw = (headers[i] || "").toString().toLowerCase().trim();
     const h = raw.normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/đ/g, "d");
 
-    // 1. Kiểm tra chính xác từng nhóm tiêu đề
     if (h.includes("ebook") || h.includes("tai lieu") || h.includes("sach")) {
       result.ebook = i;
     } else if (h.includes("hoat dong") || h.includes("last activity") || h.includes("lan cuoi") || h.includes("gan nhat")) {
@@ -842,7 +876,6 @@ function getHeaderIndices(headers) {
     }
   }
 
-  // Fallback defaults theo vị trí nếu không tìm thấy tên
   if (result.email === -1) {
     result.id = 0;
     result.date = 1;
