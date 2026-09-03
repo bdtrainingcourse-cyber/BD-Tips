@@ -209,36 +209,14 @@ const initThemeToggle = () => {
             .catch(err => console.warn('Session check error:', err));
     }
 
-    // Mobile Hamburger Menu Toggle & Drawer Backdrop
+    // Mobile Hamburger Menu Toggle (Clean, NO blur/backdrop)
     const mobileMenuToggleBtn = document.getElementById('mobile-menu-toggle');
     const navMenu = document.getElementById('nav-menu');
     if (mobileMenuToggleBtn && navMenu) {
-        let navBackdrop = document.getElementById('nav-backdrop');
-        if (!navBackdrop) {
-            navBackdrop = document.createElement('div');
-            navBackdrop.id = 'nav-backdrop';
-            navBackdrop.className = 'nav-backdrop';
-            navBackdrop.style.cssText = 'position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.45);backdrop-filter:blur(3px);z-index:99990;display:none;opacity:0;transition:opacity 0.25s ease;';
-            document.body.appendChild(navBackdrop);
-            navBackdrop.addEventListener('click', () => {
-                navMenu.classList.remove('mobile-open');
-                mobileMenuToggleBtn.innerHTML = '☰';
-                navBackdrop.style.opacity = '0';
-                setTimeout(() => { navBackdrop.style.display = 'none'; }, 250);
-            });
-        }
-
         mobileMenuToggleBtn.addEventListener('click', (e) => {
             e.stopPropagation();
             const isOpen = navMenu.classList.toggle('mobile-open');
             mobileMenuToggleBtn.innerHTML = isOpen ? '✕' : '☰';
-            if (isOpen) {
-                navBackdrop.style.display = 'block';
-                requestAnimationFrame(() => { navBackdrop.style.opacity = '1'; });
-            } else {
-                navBackdrop.style.opacity = '0';
-                setTimeout(() => { navBackdrop.style.display = 'none'; }, 250);
-            }
         });
 
         // Close mobile drawer when clicking outside
@@ -246,10 +224,6 @@ const initThemeToggle = () => {
             if (navMenu.classList.contains('mobile-open') && !navMenu.contains(e.target) && !mobileMenuToggleBtn.contains(e.target)) {
                 navMenu.classList.remove('mobile-open');
                 mobileMenuToggleBtn.innerHTML = '☰';
-                if (navBackdrop) {
-                    navBackdrop.style.opacity = '0';
-                    setTimeout(() => { navBackdrop.style.display = 'none'; }, 250);
-                }
             }
         });
     }
@@ -1763,30 +1737,52 @@ function initGlobalComponents() {
                 flex-shrink: 0 !important;
             }
             .mobile-header-utilities .nav-user-hud .nav-login-btn {
-                padding: 5px 10px !important;
-                font-size: 0.76rem !important;
+                padding: 5px 9px !important;
+                font-size: 0.72rem !important;
+                font-weight: 700 !important;
                 border-radius: 14px !important;
                 white-space: nowrap !important;
+                background: linear-gradient(135deg, #f3a83b 0%, #f59e0b 100%) !important;
+                color: #fff !important;
+                border: none !important;
+                cursor: pointer !important;
+                flex-shrink: 0 !important;
             }
             .mobile-header-utilities .nav-user-hud .nav-register-btn {
-                display: none !important;
+                display: inline-flex !important;
+                padding: 4px 8px !important;
+                font-size: 0.72rem !important;
+                font-weight: 700 !important;
+                border-radius: 14px !important;
+                white-space: nowrap !important;
+                background: #ffffff !important;
+                border: 1px solid #cbd5e1 !important;
+                color: #475569 !important;
+                cursor: pointer !important;
+                flex-shrink: 0 !important;
+                margin-left: 0 !important;
+            }
+            body.dark-theme .mobile-header-utilities .nav-user-hud .nav-register-btn {
+                background: rgba(255, 255, 255, 0.08) !important;
+                border-color: rgba(255, 255, 255, 0.15) !important;
+                color: #cbd5e1 !important;
             }
             .mobile-header-utilities #navbar-user-name {
                 display: none !important;
             }
             .mobile-menu-toggle {
-                width: 38px !important;
-                min-width: 38px !important;
-                height: 38px !important;
-                font-size: 1.25rem !important;
-                border-radius: 8px !important;
+                width: 32px !important;
+                min-width: 32px !important;
+                height: 32px !important;
+                font-size: 1.15rem !important;
+                border-radius: 6px !important;
                 display: flex !important;
                 align-items: center !important;
                 justify-content: center !important;
                 padding: 0 !important;
                 margin: 0 !important;
                 flex-shrink: 0 !important;
-                border: 1px solid rgba(0, 0, 0, 0.12) !important;
+                border: 1px solid rgba(0, 0, 0, 0.1) !important;
                 background: rgba(0, 0, 0, 0.04) !important;
                 color: var(--text-main) !important;
                 cursor: pointer !important;
@@ -2694,13 +2690,13 @@ function adjustHeaderUtilities() {
     const themeToggle = document.getElementById('theme-toggle');
     
     if (isMobile) {
-        // Trên mobile: Chỉ đưa liveCounter và hud vào header để tránh tràn màn hình
-        if (mobileParent) {
-            if (liveCounter) mobileParent.appendChild(liveCounter);
-            if (hud) mobileParent.appendChild(hud);
+        // Trên mobile: Chỉ đưa hud vào mobileParent để hiện Đăng Nhập & Đăng Ký ngang hàng Logo
+        if (mobileParent && hud) {
+            mobileParent.appendChild(hud);
         }
-        // Đưa các nút tiện ích (share, bell, themeToggle) vào ngăn kéo Drawer menu
+        // Đưa liveCounter, share, bell, themeToggle vào ngăn kéo Drawer menu
         if (desktopParent) {
+            if (liveCounter) desktopParent.insertBefore(liveCounter, desktopParent.firstChild);
             let drawerFooter = document.getElementById('nav-drawer-footer');
             if (!drawerFooter) {
                 drawerFooter = document.createElement('div');
