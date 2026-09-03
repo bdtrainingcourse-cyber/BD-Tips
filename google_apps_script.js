@@ -96,7 +96,6 @@ function doGet(e) {
       return createJsonResponse({
         success: true,
         quota: quota,
-        effectiveUser: Session.getEffectiveUser().getEmail(),
         testSend: testResult
       });
     } else {
