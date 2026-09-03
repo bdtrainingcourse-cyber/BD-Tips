@@ -3606,6 +3606,79 @@ body.dark-theme .pvp-user-row {
     .pvp-user-row {
         padding: 12px !important;
     }
+
+    /* Responsive Centering for Intro Section and Funny Reminder Box */
+    .intro-grid {
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        justify-content: center !important;
+        gap: 24px !important;
+        text-align: center !important;
+    }
+    .intro-card {
+        text-align: center !important;
+        align-items: center !important;
+        justify-content: center !important;
+        padding: 28px 18px !important;
+    }
+    .intro-card h2 {
+        font-size: 1.45rem !important;
+        text-align: center !important;
+    }
+    .intro-card .formula-container {
+        justify-content: center !important;
+        margin: 16px auto !important;
+    }
+    .intro-card .formula {
+        justify-content: center !important;
+        flex-wrap: wrap !important;
+        gap: 6px !important;
+    }
+    .intro-card .formula .badge {
+        font-size: 0.82rem !important;
+        padding: 6px 12px !important;
+    }
+    .intro-card .formula .operator {
+        font-size: 1.1rem !important;
+    }
+    .intro-card p {
+        text-align: center !important;
+        font-size: 0.95rem !important;
+    }
+    .intro-portrait-card {
+        width: 100% !important;
+        max-width: 360px !important;
+        margin: 0 auto !important;
+        text-align: center !important;
+        display: flex !important;
+        justify-content: center !important;
+        align-items: center !important;
+    }
+    .intro-portrait-card img {
+        margin: 0 auto !important;
+        display: block !important;
+    }
+
+    #challenge-funny-trigger-box {
+        padding: 20px 16px !important;
+        text-align: center !important;
+    }
+    #challenge-trigger-form {
+        flex-direction: column !important;
+        align-items: center !important;
+        justify-content: center !important;
+        width: 100% !important;
+        gap: 10px !important;
+    }
+    #challenge-trigger-form input[type="text"],
+    #challenge-trigger-form input[type="email"],
+    #challenge-trigger-form button {
+        width: 100% !important;
+        max-width: 300px !important;
+        box-sizing: border-box !important;
+        text-align: center !important;
+    }
 }
 
 
