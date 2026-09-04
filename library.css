@@ -704,4 +704,145 @@ body.dark-theme #limit-modal #btn-limit-close {
     color: #f8fafc !important;
 }
 
+/* Ebook Social Share Bar & Buttons */
+.ebook-share-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: rgba(0, 0, 0, 0.25);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 10px;
+    padding: 6px 12px;
+    margin-bottom: 12px;
+    transition: all 0.2s ease;
+}
+
+body:not(.dark-theme) .ebook-share-bar {
+    background: rgba(0, 0, 0, 0.04);
+    border: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.ebook-share-label {
+    font-size: 0.76rem;
+    color: var(--text-muted);
+    font-weight: 700;
+    letter-spacing: 0.3px;
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.ebook-share-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.ebook-share-btn {
+    width: 28px;
+    height: 28px;
+    border-radius: 7px;
+    border: none;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    padding: 0;
+    outline: none;
+    position: relative;
+    user-select: none;
+}
+
+.ebook-share-btn svg {
+    width: 15px;
+    height: 15px;
+    display: block;
+    pointer-events: none;
+}
+
+/* Platform specific buttons */
+.ebook-share-btn.share-linkedin {
+    background: #0a66c2;
+    color: #ffffff;
+}
+
+.ebook-share-btn.share-linkedin:hover {
+    transform: translateY(-2px) scale(1.08);
+    box-shadow: 0 4px 12px rgba(10, 102, 194, 0.55);
+}
+
+.ebook-share-btn.share-facebook {
+    background: #1877f2;
+    color: #ffffff;
+}
+
+.ebook-share-btn.share-facebook:hover {
+    transform: translateY(-2px) scale(1.08);
+    box-shadow: 0 4px 12px rgba(24, 119, 242, 0.55);
+}
+
+.ebook-share-btn.share-tiktok {
+    background: #010101;
+    color: #ffffff;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+}
+
+.ebook-share-btn.share-tiktok:hover {
+    transform: translateY(-2px) scale(1.08);
+    box-shadow: 0 4px 12px rgba(254, 44, 85, 0.45), 0 0 8px rgba(37, 244, 238, 0.35);
+    border-color: rgba(254, 44, 85, 0.6);
+}
+
+.ebook-share-btn.share-copy {
+    background: rgba(255, 255, 255, 0.08);
+    color: #cbd5e1;
+    border: 1px solid rgba(255, 255, 255, 0.14);
+}
+
+.ebook-share-btn.share-copy:hover {
+    background: rgba(243, 168, 59, 0.2);
+    color: #f3a83b;
+    border-color: #f3a83b;
+    transform: translateY(-2px) scale(1.08);
+    box-shadow: 0 4px 12px rgba(243, 168, 59, 0.4);
+}
+
+body:not(.dark-theme) .ebook-share-btn.share-copy {
+    background: rgba(0, 0, 0, 0.06);
+    color: #475569;
+    border: 1px solid rgba(0, 0, 0, 0.12);
+}
+
+body:not(.dark-theme) .ebook-share-btn.share-copy:hover {
+    background: rgba(162, 10, 10, 0.12);
+    color: #a20a0a;
+    border-color: #a20a0a;
+    box-shadow: 0 4px 12px rgba(162, 10, 10, 0.25);
+}
+
+/* Deep link target ebook glow animation */
+@keyframes ebookCardPulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(243, 168, 59, 0.7);
+        border-color: #f3a83b;
+    }
+    50% {
+        box-shadow: 0 0 25px 8px rgba(243, 168, 59, 0.45);
+        border-color: #f3a83b;
+        transform: translateY(-4px);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(243, 168, 59, 0);
+        border-color: rgba(243, 168, 59, 0.5);
+    }
+}
+
+.ebook-card-highlighted {
+    animation: ebookCardPulse 2s ease-in-out 2;
+    border-color: #f3a83b !important;
+}
+
+
 

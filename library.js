@@ -162,8 +162,8 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             articles = data.articles || [];
             ebooks = data.ebooks || [];
-            glossary = data.glossary || [];
             renderArticles();
+            handleEbookDeepLink();
         } catch (error) {
             console.error('Error loading library:', error);
             articlesContainer.innerHTML = `<div class="glass-panel" style="grid-column: 1/-1; text-align: center; color: #ef4444;">Không thể tải dữ liệu thư viện. Vui lòng thử lại sau.</div>`;
@@ -269,28 +269,74 @@ document.addEventListener('DOMContentLoaded', () => {
         readerModal.classList.add('hidden');
     }
 
-    // Social Share Handler
+    // Social Share Handler for Individual Ebooks
     function shareEbook(platform, ebook) {
-        const shareUrl = window.location.href;
+        const origin = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+            ? 'https://www.bdbinhdanhocvu.com'
+            : window.location.origin;
+        const currentOrigin = window.location.origin;
+
+        // Direct clean page URL with ebook param for browsing
+        const directUrl = `${currentOrigin}/library.html?ebook=${encodeURIComponent(ebook.id)}`;
+
+        // Social crawler URL with dynamic OpenGraph meta tags
+        const socialShareUrl = `${origin}/share/ebook/${encodeURIComponent(ebook.id)}`;
+
         const title = ebook.title;
         const text = `Tôi vừa đọc cuốn cẩm nang "${title}" của Peter Vo trên B2B BD Tips Portal! Kiến thức Business Development thực chiến rất sắc bén.`;
 
         if (platform === 'linkedin') {
-            const url = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}`;
+            const url = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(socialShareUrl)}`;
             window.open(url, '_blank', 'width=600,height=600');
         } else if (platform === 'facebook') {
-            const url = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}&quote=${encodeURIComponent(text)}`;
+            const url = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(socialShareUrl)}`;
             window.open(url, '_blank', 'width=600,height=600');
         } else if (platform === 'tiktok') {
-            navigator.clipboard.writeText(`${text}\n🔗 Link: ${shareUrl}`);
+            const copyContent = `${text}\n📖 Đọc & tải cẩm nang tại: ${directUrl}`;
+            navigator.clipboard.writeText(copyContent);
             showToast('🎵 Đã sao chép nội dung chia sẻ TikTok vào Clipboard! Hãy dán vào bài đăng TikTok của bạn.');
             setTimeout(() => {
                 window.open('https://www.tiktok.com', '_blank');
             }, 1200);
         } else if (platform === 'copy') {
-            navigator.clipboard.writeText(`${title} - ${shareUrl}`);
-            showToast('🔗 Đã sao chép liên kết chia sẻ!');
+            const copyContent = `${title} - ${directUrl}`;
+            navigator.clipboard.writeText(copyContent);
+            showToast(`🔗 Đã sao chép liên kết cẩm nang "${title}"!`);
         }
+    }
+
+    // Deep link handler for direct ebook sharing (?ebook=id or #ebook-id)
+    function handleEbookDeepLink() {
+        const urlParams = new URLSearchParams(window.location.search);
+        let targetId = urlParams.get('ebook');
+        if (!targetId && window.location.hash) {
+            targetId = window.location.hash.replace(/^#ebook-card-|^#ebook-|^#/, '');
+        }
+
+        if (!targetId) return;
+
+        const targetEbook = ebooks.find(e => e.id === targetId || e.id === `ebook-${targetId}`);
+        if (!targetEbook) return;
+
+        // Ensure active category is Ebooks
+        if (activeCategory !== 'Ebooks' && activeCategory !== 'All') {
+            activeCategory = 'Ebooks';
+            document.querySelectorAll('.tab-btn').forEach(b => {
+                b.classList.toggle('active', b.getAttribute('data-category') === 'Ebooks');
+            });
+            renderArticles();
+        }
+
+        setTimeout(() => {
+            const targetEl = document.getElementById(`ebook-card-${targetEbook.id}`);
+            if (targetEl) {
+                targetEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                targetEl.classList.remove('ebook-card-highlighted');
+                void targetEl.offsetWidth; // trigger reflow
+                targetEl.classList.add('ebook-card-highlighted');
+                showToast(`📖 Bạn đang xem cẩm nang: "${targetEbook.title}"`);
+            }
+        }, 350);
     }
 
     // Render cards to container
@@ -432,6 +478,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
             filteredEbooks.forEach(ebook => {
                 const card = document.createElement('div');
+                card.id = `ebook-card-${ebook.id}`;
+                card.setAttribute('data-ebook-id', ebook.id);
                 card.className = 'glass-panel article-card ebook-card';
                 card.style.cursor = 'pointer';
                 card.style.display = 'flex';
@@ -470,14 +518,31 @@ document.addEventListener('DOMContentLoaded', () => {
                     </div>
                     
                     <div>
-                        <!-- Social Share Bar -->
-                        <div style="display: flex; align-items: center; justify-content: space-between; background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.05); border-radius: 8px; padding: 6px 12px; margin-bottom: 12px;">
-                            <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: 600;">Chia sẻ:</span>
-                            <div style="display: flex; gap: 8px;">
-                                <button class="share-btn share-linkedin" title="Chia sẻ qua LinkedIn" style="background: transparent; border: none; cursor: pointer; font-size: 1rem;">💼</button>
-                                <button class="share-btn share-facebook" title="Chia sẻ qua Facebook" style="background: transparent; border: none; cursor: pointer; font-size: 1rem;">📘</button>
-                                <button class="share-btn share-tiktok" title="Chia sẻ qua TikTok" style="background: transparent; border: none; cursor: pointer; font-size: 1rem;">🎵</button>
-                                <button class="share-btn share-copy" title="Sao chép link" style="background: transparent; border: none; cursor: pointer; font-size: 1rem;">🔗</button>
+                        <!-- Social Share Bar with Brand SVG Icons -->
+                        <div class="ebook-share-bar">
+                            <span class="ebook-share-label">Chia sẻ:</span>
+                            <div class="ebook-share-actions">
+                                <button class="ebook-share-btn share-linkedin" title="Chia sẻ qua LinkedIn" aria-label="Chia sẻ qua LinkedIn">
+                                    <svg viewBox="0 0 24 24" fill="currentColor">
+                                        <path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.75M6.46 10.9v8.37H9.2V10.9H6.46M7.83 6.45a1.65 1.65 0 0 0-1.66 1.66 1.66 1.66 0 0 0 1.66 1.66 1.66 1.66 0 0 0 1.66-1.66 1.65 1.65 0 0 0-1.66-1.66Z"/>
+                                    </svg>
+                                </button>
+                                <button class="ebook-share-btn share-facebook" title="Chia sẻ qua Facebook" aria-label="Chia sẻ qua Facebook">
+                                    <svg viewBox="0 0 24 24" fill="currentColor">
+                                        <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+                                    </svg>
+                                </button>
+                                <button class="ebook-share-btn share-tiktok" title="Chia sẻ qua TikTok" aria-label="Chia sẻ qua TikTok">
+                                    <svg viewBox="0 0 24 24" fill="currentColor">
+                                        <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1.04-.1z"/>
+                                    </svg>
+                                </button>
+                                <button class="ebook-share-btn share-copy" title="Sao chép link cẩm nang" aria-label="Sao chép link cẩm nang">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
+                                        <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
+                                    </svg>
+                                </button>
                             </div>
                         </div>
 
@@ -1022,4 +1087,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
+
+    // Handle browser navigation back/forward with ebook query/hash
+    window.addEventListener('popstate', handleEbookDeepLink);
 });
