@@ -3697,12 +3697,6 @@ const initB2BApp = () => {
     }
 
     function openArcadeGame(gameId) {
-        if (!localStorage.getItem('profile_experience') && typeof window.triggerProfileOnboarding === 'function') {
-            window.triggerProfileOnboarding(() => {
-                _proceedOpenArcadeGame(gameId);
-            });
-            return;
-        }
         _proceedOpenArcadeGame(gameId);
     }
 

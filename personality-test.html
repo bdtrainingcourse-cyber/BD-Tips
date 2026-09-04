@@ -397,12 +397,6 @@
         let currentX = 0;
 
         function startQuiz() {
-            if (!localStorage.getItem('profile_experience') && typeof window.triggerProfileOnboarding === 'function') {
-                window.triggerProfileOnboarding(() => {
-                    _proceedStartQuiz();
-                });
-                return;
-            }
             _proceedStartQuiz();
         }
 
