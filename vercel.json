@@ -1,12 +1,6 @@
 {
   "version": 2,
   "cleanUrls": true,
-  "rewrites": [
-    {
-      "source": "/share/ebook/:id",
-      "destination": "/api/share-ebook?id=:id"
-    }
-  ],
   "crons": [
     {
       "path": "/api/daily-email",

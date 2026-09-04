@@ -1,6 +1,63 @@
 const fs = require('fs');
 const path = require('path');
 
+const FALLBACK_EBOOKS = [
+  {
+    id: "ebook-tro-cap-that-nghiep",
+    title: "Quy Trình Hưởng Trợ Cấp Thất Nghiệp (TCTN)",
+    description: "Cẩm nang hướng dẫn chi tiết từng bước thủ tục, điều kiện hưởng, hồ sơ pháp lý và mốc thời gian nhận trợ cấp thất nghiệp chuẩn xác theo luật lao động.",
+    coverImage: "ebook-covers/cover-tro-cap-that-nghiep.png"
+  },
+  {
+    id: "ebook-mindset-bd",
+    title: "Tư Duy BD \"Thép\" & Tâm Lý Học B2B Mindset",
+    description: "Giải mã tâm lý khách hàng B2B, vượt qua rào cản từ chối giá và xây dựng tư duy chốt deal bền vững cho nhân sự BD.",
+    coverImage: "ebook-covers/cover-mindset-bd.png"
+  },
+  {
+    id: "ebook-linkedin-2026",
+    title: "Chiến Lược Social Selling & LinkedIn BD 2026",
+    description: "Bí quyết xây dựng thương hiệu cá nhân trên LinkedIn, định vị Person-in-Charge (PIC) và tiếp cận quyết định viên không qua môi giới.",
+    coverImage: "ebook-covers/cover-linkedin-2026.png"
+  },
+  {
+    id: "ebook-9-principles",
+    title: "9 Nguyên Tắc Thực Chiến B2B BD",
+    description: "Cẩm nang 9 nguyên tắc cốt lõi giúp Business Developer xây dựng uy thế, định vị bản thân và chốt các hợp đồng doanh nghiệp giá trị cao.",
+    coverImage: "ebook-covers/cover-9-principles.png"
+  },
+  {
+    id: "ebook-b2b-language",
+    title: "Bộ Cẩm Nang Ngôn Từ B2B BD (5 Pha Chuyển Mình)",
+    description: "Phương pháp loại bỏ 5 cụm từ 'cấm kỵ' trong bán hàng B2B, nâng cấp ngôn từ thể hiện uy thế và năng lực giải quyết vấn đề.",
+    coverImage: "ebook-covers/cover-b2b-language.png"
+  },
+  {
+    id: "ebook-hubspot-guideline",
+    title: "Cẩm Nang Thực Chiến HubSpot CRM Cho B2B BD",
+    description: "Hướng dẫn làm chủ công cụ HubSpot CRM, quản lý quy trình deal, thiết lập pipeline và tự động hóa chăm sóc khách hàng doanh nghiệp.",
+    coverImage: "ebook-covers/cover-hubspot-guideline.png"
+  },
+  {
+    id: "ebook-kpi-funnel",
+    title: "Ma Trận Phễu KPI & Quy Đổi Doanh Thu B2B",
+    description: "Bảng tính & cẩm nang thiết lập phễu ngược Inbound & Outbound, quy đổi chính xác tỷ lệ CR và khối lượng công việc cần thiết cho BD.",
+    coverImage: "ebook-covers/cover-kpi-funnel.png"
+  },
+  {
+    id: "ebook-fake-lead",
+    title: "Cẩm Nang Nhận Diện & Loại Bỏ Fake Lead B2B",
+    description: "Bộ tiêu chí lọc và xác thực thông tin khách hàng doanh nghiệp, tránh lãng phí thời gian vào các dự án không có ngân sách thực.",
+    coverImage: "ebook-covers/cover-fake-lead.png"
+  },
+  {
+    id: "ebook-scale-up",
+    title: "Ebook Scale Up Yourself - Bứt Phá Năng Lực BD B2B",
+    description: "Lộ trình nâng cấp năng lực toàn diện cho BD từ Junior đến Senior và Head of BD.",
+    coverImage: "ebook-covers/cover-scale-up.png"
+  }
+];
+
 function getLibraryData() {
   const possiblePaths = [
     path.join(__dirname, '..', 'library_data.json'),
@@ -17,7 +74,7 @@ function getLibraryData() {
       }
     }
   }
-  return null;
+  return { ebooks: FALLBACK_EBOOKS };
 }
 
 module.exports = async (req, res) => {
@@ -35,8 +92,8 @@ module.exports = async (req, res) => {
   const baseUrl = `${protocol}://${host}`;
 
   const data = getLibraryData();
-  const ebooks = data && data.ebooks ? data.ebooks : [];
-  const ebook = id ? ebooks.find(e => e.id === id) : null;
+  const ebooks = (data && data.ebooks && data.ebooks.length > 0) ? data.ebooks : FALLBACK_EBOOKS;
+  const ebook = id ? ebooks.find(e => e.id === id || e.id === `ebook-${id}`) : null;
 
   if (!ebook) {
     res.setHeader('Location', '/library.html');
@@ -56,7 +113,7 @@ module.exports = async (req, res) => {
   const title = `Tải Cẩm Nang: ${ebook.title} | BD Bình Dân Học Vụ`;
   const desc = ebook.description || 'Cẩm nang thực chiến độc quyền từ Peter Võ trên B2B BD Tips Portal.';
   const directUrl = `${baseUrl}/library.html?ebook=${encodeURIComponent(ebook.id)}`;
-  const sharePageUrl = `${baseUrl}/share/ebook/${encodeURIComponent(ebook.id)}`;
+  const sharePageUrl = `${baseUrl}/api/share-ebook?id=${encodeURIComponent(ebook.id)}`;
   
   let imageUrl = `${baseUrl}/b2b_bd_partnership.png`;
   if (ebook.coverImage) {
