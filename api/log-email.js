@@ -303,13 +303,15 @@ module.exports = async (req, res) => {
     if (webhookUrl) {
       try {
         await httpPost(webhookUrl, {
+          action: 'verifyUser',
           userId: localUser.id,
           name: localUser.name || 'Học viên',
           email: cleanEmail,
           tool: 'email-verification',
-          points: localUser.points,
+          points: 15,
           date: timestamp,
-          password: localUser.password || ''
+          password: localUser.password || '',
+          secretKey: process.env.B2B_SECRET_KEY || '2108330119Snail!!'
         });
       } catch (err) {
         console.error(`[SHEETS_SYNC_ERROR] Verify user forward failed:`, err.message);

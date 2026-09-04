@@ -1634,20 +1634,16 @@ async function checkEmailVerification() {
                 // If this verification came from an Ebook download link
                 if (downloadFile) {
                     const decodedTitle = ebookTitle ? decodeURIComponent(ebookTitle) : 'Ebook B2B BD';
+                    const cleanFile = downloadFile.replace(/^\/+/, '');
+                    const directPdfUrl = window.location.origin + '/' + encodeURI(cleanFile);
                     window.showGlobalNotification(
-                        '🎉 Xác Thực Thành Công & Đang Mở Ebook!',
-                        `Cảm ơn bạn! Email <strong>${verifyEmail}</strong> của bạn đã được xác thực chính thức (+<strong>15đ ⚡</strong>).<br><br>Cuốn Ebook <strong>${decodedTitle}</strong> đang được tự động tải về thiết bị của bạn!`
+                        '🎉 Xác Thực Thành Công & Tải Ebook!',
+                        `Cảm ơn bạn! Email <strong>${verifyEmail}</strong> của bạn đã được xác thực chính thức (+<strong>15đ ⚡</strong>).<br><br>Cuốn Ebook <strong>${decodedTitle}</strong> đang được tự động tải về máy.<br><br><div style="text-align: center; margin: 15px 0;"><a href="${directPdfUrl}" download class="btn btn-primary" style="display: inline-block; background: linear-gradient(135deg, #a20a0a 0%, #dc2626 100%); color: #fff; padding: 12px 26px; border-radius: 12px; font-weight: 800; text-decoration: none; box-shadow: 0 4px 15px rgba(162, 10, 10, 0.35);">📥 Bấm Vào Đây Để Tải Ebook Ngay</a></div>`
                     );
 
-                    // Trigger automatic browser file download
                     setTimeout(() => {
-                        const link = document.createElement('a');
-                        link.href = downloadFile;
-                        link.download = downloadFile.split('/').pop();
-                        document.body.appendChild(link);
-                        link.click();
-                        document.body.removeChild(link);
-                    }, 1000);
+                        window.location.href = directPdfUrl;
+                    }, 800);
                 } else {
                     // Show standard verification notification modal
                     window.showGlobalNotification(

@@ -161,20 +161,20 @@ async function sendEbookEmail({ email, name, ebookTitle, fileUrl }) {
   const downloadPath = resolveEbookFile(title, fileUrl);
   const cleanSlug = title.toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_+|_+$/g, '');
   const utmTracking = `utm_source=email_ebook&utm_medium=email&utm_campaign=ebook_${cleanSlug}&utm_content=${encodeURIComponent(title)}`;
-  const actionButtonUrl = `https://www.bdbinhdanhocvu.com/library.html?verify_email=${encodeURIComponent(email)}&download_file=${encodeURIComponent(downloadPath)}&ebook_title=${encodeURIComponent(title)}&${utmTracking}`;
+  const actionButtonUrl = `https://www.bdbinhdanhocvu.com/api/download-ebook?email=${encodeURIComponent(email)}&file=${encodeURIComponent(downloadPath)}&title=${encodeURIComponent(title)}&${utmTracking}`;
 
   const subject = `📚 [Tải Về Ngay] ${title} - BD Bình Dân Học Vụ`;
   const message = `
     Peter Vo và Cú BeeDee gửi bạn tài liệu <strong>"${title}"</strong>!<br><br>
-    Bạn hãy bấm vào nút bên dưới để xác thực địa chỉ email, tự động kích hoạt tài khoản và tải trực tiếp tài liệu về máy nhé. Sau khi kích hoạt thành công, bạn còn được tặng thêm ngay <strong>15đ tích lũy ⚡</strong> để mở khóa các tài liệu chuyên sâu tiếp theo.
+    Bạn hãy bấm vào nút bên dưới để tải trực tiếp tài liệu về máy. Đồng thời, địa chỉ email của bạn sẽ được kích hoạt tài khoản chính thức (+<strong>15đ tích lũy ⚡</strong>) trên hệ thống BD Bình Dân Học Vụ.
   `;
 
   const html = renderHtmlEmailTemplate({
     greeting: `Chào bạn ${name || 'Chiến binh B2B'}`,
     message: message,
-    buttonText: `Tải Ebook: ${title.substring(0, 30)}... &rarr;`,
+    buttonText: `📥 Tải Ebook: ${title.substring(0, 32)} &rarr;`,
     buttonUrl: actionButtonUrl,
-    note: `💡 <strong>Mẹo nhỏ:</strong> Nếu nút bấm không hoạt động, bạn có thể copy link sau dán vào trình duyệt: <br><a href="${actionButtonUrl}" style="color: #166534; word-break: break-all;">${actionButtonUrl}</a>`
+    note: `💡 <strong>Mẹo nhỏ:</strong> Bạn hãy lưu tài liệu về máy để có thể xem lại bất cứ lúc nào. Chúc bạn gặt hái nhiều kết quả tốt trên hành trình BD!`
   });
 
   return sendResendEmail({
