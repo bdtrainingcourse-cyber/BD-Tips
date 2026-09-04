@@ -3,6 +3,12 @@ const https = require('https');
 const dns = require('dns').promises;
 const crypto = require('crypto');
 const { readUsers, writeUsers } = require('./_db-helper');
+const {
+  sendEbookEmail,
+  sendVerificationReminderEmail,
+  sendWelcomeRegistrationEmail,
+  sendResetPasswordEmail
+} = require('./_email-helper');
 
 const disposableDomains = [
   'yopmail.com', 'mailinator.com', 'tempmail.com', '10minutemail.com', 
@@ -457,6 +463,16 @@ module.exports = async (req, res) => {
           console.error('[FORGOT_PASSWORD_ERROR] Failed to send reset email:', err.message);
         }
       }
+
+      try {
+        await sendResetPasswordEmail({
+          email: cleanEmail,
+          name: localUser.name || 'Học viên',
+          resetToken: resetToken
+        });
+      } catch (resendErr) {
+        console.error('[FORGOT_PASSWORD_RESEND_ERROR]', resendErr.message);
+      }
       
       return res.status(200).json({ success: true, message: 'Reset token generated and email sent.' });
     }
@@ -643,7 +659,19 @@ module.exports = async (req, res) => {
     const resText = await response.text();
     console.log(`[SHEETS_SYNC] Success. Webhook response: ${resText}`);
 
+    // 1. Ebook Download Verification Email
     if (action === 'sendEbookVerificationEmail' || tool === 'ebook-download') {
+      try {
+        await sendEbookEmail({
+          email: cleanEmail,
+          name: name || (localUser ? localUser.name : 'Chiến binh B2B'),
+          ebookTitle: ebookTitle,
+          fileUrl: fileUrl || downloadLink
+        });
+      } catch (emailErr) {
+        console.error('[RESEND_EBOOK_ERROR]', emailErr.message);
+      }
+
       return res.status(200).json({
         success: true,
         verified: false,
@@ -663,7 +691,30 @@ module.exports = async (req, res) => {
       });
     }
 
+    // 2. Funny Reminder Owl Trigger
+    if (tool === 'daily-reminder') {
+      try {
+        await sendVerificationReminderEmail({
+          email: cleanEmail,
+          name: name || (localUser ? localUser.name : 'Học viên')
+        });
+      } catch (remErr) {
+        console.error('[RESEND_REMINDER_ERROR]', remErr.message);
+      }
+    }
+
+    // 3. New User Registration & Sync
     if (action === 'syncUser') {
+      if (!isVerified) {
+        try {
+          await sendWelcomeRegistrationEmail({
+            email: cleanEmail,
+            name: name || (localUser ? localUser.name : 'Học viên')
+          });
+        } catch (regErr) {
+          console.error('[RESEND_WELCOME_ERROR]', regErr.message);
+        }
+      }
       try {
         const result = JSON.parse(resText);
         if (result.exists && result.user && localUser) {

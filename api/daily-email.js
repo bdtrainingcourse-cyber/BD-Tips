@@ -1,6 +1,12 @@
 // Trigger rebuild for B2B_SECRET_KEY env variable injection
 const https = require('https');
 const { readUsers } = require('./_db-helper');
+const {
+  sendResendEmail,
+  sendVerificationReminderEmail,
+  renderHtmlEmailTemplate,
+  stripHtml
+} = require('./_email-helper');
 
 // Native HTTPS GET helper that mimics fetch response structure with 3s timeout
 function httpGet(url) {
@@ -542,49 +548,48 @@ YÊU CẦU NỘI DUNG & PHONG CÁCH:
   // If overriding for testing via ?email=...
   if (req.query.email) {
     const isUnverified = req.query.verified === 'false';
-    console.log(`[DAILY_EMAIL_CRON] Test mode. Sending email to ${req.query.email}...`);
-    if (webhookUrl) {
-      try {
-        let payload;
-        if (isUnverified) {
-          payload = {
-            action: 'sendVerificationReminder',
-            email: req.query.email,
-            name: req.query.name || 'Chiến thần B2B'
-          };
-        } else {
-          payload = {
-            action: 'sendSingleEmail',
-            to: req.query.email,
-            name: req.query.name || 'Chiến thần B2B',
-            subject: subject,
-            message: template.message,
-            buttonText: template.buttonText,
-            buttonUrl: template.buttonUrl,
-            mascot: template.mascot
-          };
-        }
-        const emailRes = await httpPost(webhookUrl, payload);
-        const resText = await emailRes.text();
-        return res.status(200).json({
-          success: true,
-          message: `Test email (${isUnverified ? 'unverified flow' : 'verified flow'}) sent to ${req.query.email}`,
-          sheetResponse: resText,
-          context: { temp, weatherDesc, newsTitle, mascot: template.mascot }
-        });
-      } catch (err) {
-        console.error(`[DAILY_EMAIL_CRON_ERROR] Test email failed:`, err);
-        return res.status(500).json({ error: err.message });
-      }
+    const targetEmail = req.query.email;
+    const targetName = req.query.name || 'Chiến thần B2B';
+    console.log(`[DAILY_EMAIL_CRON] Test mode. Sending email to ${targetEmail} via Resend...`);
+
+    let resendResult = null;
+    if (isUnverified) {
+      resendResult = await sendVerificationReminderEmail({ email: targetEmail, name: targetName });
     } else {
-      const bodyText = getHtmlTemplate(template.message, template.buttonText, template.buttonUrl, template.mascot);
-      return res.status(200).json({
-        success: true,
-        message: 'Mock send successful (Dev mode - no webhook URL)',
-        bodyHtml: bodyText,
-        context: { temp, weatherDesc, newsTitle, mascot: template.mascot }
+      const emailHtml = renderHtmlEmailTemplate({
+        greeting: `Chào bạn ${targetName}`,
+        message: template.message,
+        buttonText: template.buttonText,
+        buttonUrl: template.buttonUrl
+      });
+      resendResult = await sendResendEmail({
+        to: targetEmail,
+        subject: subject,
+        html: emailHtml
       });
     }
+
+    // Also sync to Google Sheets for records
+    let sheetText = "";
+    if (webhookUrl) {
+      try {
+        const payload = isUnverified 
+          ? { action: 'sendVerificationReminder', email: targetEmail, name: targetName }
+          : { action: 'sendSingleEmail', to: targetEmail, name: targetName, subject, message: template.message, buttonText: template.buttonText, buttonUrl: template.buttonUrl };
+        const emailRes = await httpPost(webhookUrl, payload);
+        sheetText = await emailRes.text();
+      } catch (err) {
+        console.warn(`[DAILY_EMAIL_SHEET_SYNC_WARN]`, err.message);
+      }
+    }
+
+    return res.status(200).json({
+      success: true,
+      resendResult: resendResult,
+      message: `Test email (${isUnverified ? 'unverified flow' : 'verified flow'}) sent via Resend to ${targetEmail}`,
+      sheetResponse: sheetText,
+      context: { temp, weatherDesc, newsTitle, mascot: template.mascot }
+    });
   }
 
   // Otherwise, it's the automated daily cron run! Trigger Sheet to email all registered users!
