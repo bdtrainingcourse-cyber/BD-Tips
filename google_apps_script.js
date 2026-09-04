@@ -106,16 +106,31 @@ function doGet(e) {
   }
 }
 
+function stripHtmlToText(html) {
+  if (!html) return "";
+  return html.replace(/<style[^>]*>[\s\S]*?<\/style>/gi, "")
+             .replace(/<br\s*[\/]?>/gi, "\n")
+             .replace(/<\/p>/gi, "\n\n")
+             .replace(/<[^>]+>/gi, "")
+             .replace(/&nbsp;/g, " ")
+             .replace(/&bull;/g, "•")
+             .replace(/&rarr;/g, "->")
+             .replace(/&amp;/g, "&")
+             .trim();
+}
+
 // ------------------------------------------------------------------
-// 2. SAFE EMAIL DISPATCHER (GmailApp ưu tiên lưu vào hộp Thư Đã Gửi)
+// 2. SAFE EMAIL DISPATCHER (Tự động kèm Plain Text chuẩn chống Spam)
 // ------------------------------------------------------------------
 function sendEmailSafe(mailOptions) {
   let errors = [];
+  const senderDisplayName = mailOptions.name || "BDBinhDanHocVu - Peter Vo";
+  const plainBody = mailOptions.body || stripHtmlToText(mailOptions.htmlBody || mailOptions.message || "") || "Xin chào, vui lòng xem nội dung email bên dưới.";
   
   // 1. Thử gửi qua GmailApp (Tự động lưu vào mục Đã Gửi / Sent của tài khoản)
   try {
-    GmailApp.sendEmail(mailOptions.to, mailOptions.subject, "", {
-      name: mailOptions.name || "BD Bình Dân Học Vụ - Cú BeeDee",
+    GmailApp.sendEmail(mailOptions.to, mailOptions.subject, plainBody, {
+      name: senderDisplayName,
       htmlBody: mailOptions.htmlBody,
       attachments: mailOptions.attachments || []
     });
@@ -128,7 +143,14 @@ function sendEmailSafe(mailOptions) {
 
   // 2. Dự phòng qua MailApp nếu GmailApp gặp lỗi quyền hạn
   try {
-    MailApp.sendEmail(mailOptions);
+    MailApp.sendEmail({
+      to: mailOptions.to,
+      name: senderDisplayName,
+      subject: mailOptions.subject,
+      body: plainBody,
+      htmlBody: mailOptions.htmlBody,
+      attachments: mailOptions.attachments || []
+    });
     Logger.log("Email sent via MailApp fallback to: " + mailOptions.to);
     return { success: true, method: "MailApp" };
   } catch (mailErr) {
@@ -437,13 +459,13 @@ function sendDailyEmailsSynchronously(data) {
       } else {
         try {
           const verificationUrl = "https://www.bdbinhdanhocvu.com/?verify_email=" + encodeURIComponent(email);
-          const unverifiedSubject = "🦉 Nhắc nhở: Xác thực tài khoản B2B BD & Nhận ngay 15đ tích lũy";
-          const unverifiedMessage = "Chào bạn <b>" + name + "</b>,<br><br>Cú BeeDee thấy tài khoản của bạn vẫn chưa được kích hoạt. Hãy nhấn vào nút bên dưới để xác thực địa chỉ email. Tài khoản kích hoạt thành công sẽ được tặng thêm ngay <b>15đ ⚡</b> và mở khóa toàn bộ kho tài liệu thực chiến nhé!";
+          const unverifiedSubject = "[BD Bình Dân Học Vụ] Peter Vo gửi bạn: Quà tặng mở khóa tài liệu & Điểm tích lũy";
+          const unverifiedMessage = "Chào bạn <b>" + name + "</b>,<br><br>Peter Vo và Cú BeeDee gửi bạn lời chào! Tài khoản học tập của bạn trên cổng BD Bình Dân Học Vụ đã sẵn sàng. Hãy bấm vào nút bên dưới để mở khóa toàn bộ kho tài liệu thực chiến và nhận ngay <b>15đ tích lũy</b> nhé!";
           
-          const bodyHtml = getHtmlEmailTemplate(unverifiedMessage, "Kích hoạt & Nhận 15đ", verificationUrl, "https://www.bdbinhdanhocvu.com/mascot_quests.jpg", name);
+          const bodyHtml = getHtmlEmailTemplate(unverifiedMessage, "Mở Khóa Tài Liệu & Nhận 15đ", verificationUrl, "https://www.bdbinhdanhocvu.com/mascot_quests.jpg", name);
           sendEmailSafe({
             to: email,
-            name: "BD Bình Dân Học Vụ - Cú BeeDee",
+            name: "BDBinhDanHocVu - Peter Vo",
             subject: unverifiedSubject,
             htmlBody: bodyHtml
           });
@@ -468,7 +490,7 @@ function sendSingleEmail(data) {
     
     const res = sendEmailSafe({
       to: email,
-      name: "BD Bình Dân Học Vụ - Cú BeeDee",
+      name: data.name || "BDBinhDanHocVu - Peter Vo",
       subject: data.subject,
       htmlBody: bodyHtml
     });
@@ -482,13 +504,13 @@ function sendSingleEmail(data) {
 function sendVerificationReminder(email, name) {
   try {
     const verificationUrl = "https://www.bdbinhdanhocvu.com/?verify_email=" + encodeURIComponent(email);
-    const unverifiedSubject = "🦉 Nhắc nhở: Xác thực tài khoản B2B BD & Nhận ngay 15đ tích lũy";
-    const unverifiedMessage = "Chào bạn <b>" + name + "</b>,<br><br>Cú BeeDee thấy tài khoản của bạn vẫn chưa được kích hoạt. Hãy nhấn vào nút bên dưới để xác thực địa chỉ email. Tài khoản kích hoạt thành công sẽ được tặng thêm ngay <b>15đ ⚡</b> và mở khóa toàn bộ kho tài liệu thực chiến nhé!";
+    const unverifiedSubject = "[BD Bình Dân Học Vụ] Peter Vo gửi bạn: Quà tặng mở khóa tài liệu & Điểm tích lũy";
+    const unverifiedMessage = "Chào bạn <b>" + name + "</b>,<br><br>Peter Vo và Cú BeeDee gửi bạn lời chào! Tài khoản học tập của bạn trên cổng BD Bình Dân Học Vụ đã sẵn sàng. Hãy bấm vào nút bên dưới để mở khóa toàn bộ kho tài liệu thực chiến và nhận ngay <b>15đ tích lũy</b> nhé!";
     
-    const bodyHtml = getHtmlEmailTemplate(unverifiedMessage, "Kích hoạt & Nhận 15đ", verificationUrl, "https://www.bdbinhdanhocvu.com/mascot_quests.jpg", name);
+    const bodyHtml = getHtmlEmailTemplate(unverifiedMessage, "Mở Khóa Tài Liệu & Nhận 15đ", verificationUrl, "https://www.bdbinhdanhocvu.com/mascot_quests.jpg", name);
     sendEmailSafe({
       to: email,
-      name: "BD Bình Dân Học Vụ - Cú BeeDee",
+      name: "BDBinhDanHocVu - Peter Vo",
       subject: unverifiedSubject,
       htmlBody: bodyHtml
     });
@@ -501,14 +523,14 @@ function sendVerificationReminder(email, name) {
 function sendVerificationEmail(email, name) {
   try {
     const verificationUrl = "https://www.bdbinhdanhocvu.com/?verify_email=" + encodeURIComponent(email);
-    const subject = "🦉 Kích hoạt tài khoản & Nhận 15đ tích lũy - Cú BeeDee";
-    const message = "Chào mừng bạn <b>" + name + "</b> đã tham gia rèn luyện cùng Cú BeeDee!<br><br>Vui lòng nhấp vào nút bên dưới để xác thực địa chỉ email của bạn. Cú BeeDee sẽ tặng thêm ngay <b>15đ ⚡</b> vào tài khoản tích lũy của bạn sau khi xác thực thành công.";
+    const subject = "[BD Bình Dân Học Vụ] Chào mừng bạn tham gia & Quà tặng 15đ mở khóa tài liệu";
+    const message = "Chào mừng bạn <b>" + name + "</b> đã tham gia rèn luyện cùng Peter Vo và Cú BeeDee!<br><br>Vui lòng nhấp vào nút bên dưới để mở khóa toàn bộ kho tài liệu thực chiến. Cú BeeDee sẽ tặng thêm ngay <b>15đ tích lũy</b> vào tài khoản học tập của bạn nhé.";
     
-    const bodyHtml = getHtmlEmailTemplate(message, "Kích hoạt & Nhận 15đ", verificationUrl, "https://www.bdbinhdanhocvu.com/mascot_quests.jpg", name);
+    const bodyHtml = getHtmlEmailTemplate(message, "Mở Khóa Tài Liệu & Nhận 15đ", verificationUrl, "https://www.bdbinhdanhocvu.com/mascot_quests.jpg", name);
     
     sendEmailSafe({
       to: email,
-      name: "BD Bình Dân Học Vụ - Cú BeeDee",
+      name: "BDBinhDanHocVu - Peter Vo",
       subject: subject,
       htmlBody: bodyHtml
     });

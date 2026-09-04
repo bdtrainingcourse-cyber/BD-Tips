@@ -8,9 +8,9 @@
     <title>Trắc Nghiệm Tính Cách B2B BD | Cú BeeDee | BD Bình Dân Học Vụ</title>
     <meta name="description" content="Trải nghiệm game quẹt thẻ tính cách BD cực thú vị để đo chỉ số B2B BD của bạn. Nhận quà 50đ và tải chứng chỉ độc quyền.">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css?v=2.4.3">
+    <link rel="stylesheet" href="style.css?v=2.4.4">
     <link rel="stylesheet" href="ai-chat.css?v=2.3.8">
-    <script src="theme-toggle.js?v=2.4.3"></script>
+    <script src="theme-toggle.js?v=2.4.4"></script>
     <style>
         .quiz-container {
             max-width: 600px;
@@ -337,7 +337,7 @@
     <!-- Chatbot -->
     <div id="ai-chat-root"></div>
 
-    <script src="script.js?v=2.3.80"></script>
+    <script src="script.js?v=2.4.4"></script>
     <script src="ai-chat.js?v=2.3.24"></script>
 
     <script>
@@ -397,6 +397,16 @@
         let currentX = 0;
 
         function startQuiz() {
+            if (!localStorage.getItem('profile_experience') && typeof window.triggerProfileOnboarding === 'function') {
+                window.triggerProfileOnboarding(() => {
+                    _proceedStartQuiz();
+                });
+                return;
+            }
+            _proceedStartQuiz();
+        }
+
+        function _proceedStartQuiz() {
             currentIdx = 0;
             isSwiping = false;
             scores = { E: 0, I: 0, S: 0, N: 0, T: 0, F: 0, J: 0, P: 0 };

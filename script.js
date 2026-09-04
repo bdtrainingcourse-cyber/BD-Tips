@@ -3711,6 +3711,16 @@ const initB2BApp = () => {
     }
 
     function openArcadeGame(gameId) {
+        if (!localStorage.getItem('profile_experience') && typeof window.triggerProfileOnboarding === 'function') {
+            window.triggerProfileOnboarding(() => {
+                _proceedOpenArcadeGame(gameId);
+            });
+            return;
+        }
+        _proceedOpenArcadeGame(gameId);
+    }
+
+    function _proceedOpenArcadeGame(gameId) {
         try {
             if (audioCtx && audioCtx.state === 'suspended') {
                 audioCtx.resume();
@@ -7657,24 +7667,8 @@ function checkPvPChallenge() {
         } catch (e) {
             console.error("Error in initWelcomeBackPopup:", e);
         }
-        try {
-            const pathName = window.location.pathname;
-            const isTargetPage = pathName.endsWith('index.html') || 
-                                 pathName.endsWith('quests.html') || 
-                                 pathName.endsWith('library.html') || 
-                                 pathName.endsWith('/') ||
-                                 pathName === '/' || 
-                                 pathName === '';
-            if (isTargetPage) {
-                setTimeout(() => {
-                    if (typeof window.triggerProfileOnboarding === 'function') {
-                        window.triggerProfileOnboarding();
-                    }
-                }, 3000);
-            }
-        } catch (e) {
-            console.error("Error in triggerProfileOnboarding onboarding:", e);
-        }
+        // Contextual onboarding: disabled automatic popup on page load per user preference.
+        // Onboarding is now only triggered contextually when starting Arcade Minigames or Personality Test.
     }
 
     if (document.readyState === 'loading') {

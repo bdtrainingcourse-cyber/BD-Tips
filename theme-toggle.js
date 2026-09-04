@@ -3396,36 +3396,38 @@ window.showSubtleProfileModal = function({ title, subtitle, options, fieldName, 
         return;
     }
 
+    const isDark = document.body.classList.contains('dark-theme');
+
     const overlay = document.createElement('div');
     overlay.style.position = 'fixed';
     overlay.style.top = '0';
     overlay.style.left = '0';
     overlay.style.width = '100vw';
     overlay.style.height = '100vh';
-    overlay.style.backgroundColor = 'rgba(10, 11, 18, 0.75)';
-    overlay.style.backdropFilter = 'blur(12px)';
-    overlay.style.webkitBackdropFilter = 'blur(12px)';
+    overlay.style.backgroundColor = isDark ? 'rgba(5, 7, 12, 0.65)' : 'rgba(15, 23, 42, 0.45)';
+    overlay.style.backdropFilter = 'blur(4px)';
+    overlay.style.webkitBackdropFilter = 'blur(4px)';
     overlay.style.zIndex = '10000';
     overlay.style.display = 'flex';
     overlay.style.alignItems = 'center';
     overlay.style.justifyContent = 'center';
-    overlay.style.padding = '20px';
+    overlay.style.padding = '16px';
     overlay.style.boxSizing = 'border-box';
     overlay.style.opacity = '0';
-    overlay.style.transition = 'opacity 0.3s ease';
+    overlay.style.transition = 'opacity 0.25s ease';
 
     const container = document.createElement('div');
     container.style.position = 'relative';
-    container.style.maxWidth = '460px';
+    container.style.maxWidth = '440px';
     container.style.width = '100%';
-    container.style.padding = '30px 24px 20px 24px';
+    container.style.padding = '28px 24px 20px 24px';
     container.style.borderRadius = '20px';
-    container.style.border = '1px solid #e2e8f0';
-    container.style.background = '#ffffff';
+    container.style.border = isDark ? '1px solid #334155' : '1px solid #e2e8f0';
+    container.style.background = isDark ? '#1e293b' : '#ffffff';
     container.style.textAlign = 'center';
-    container.style.boxShadow = '0 20px 40px rgba(15, 23, 42, 0.15)';
-    container.style.transform = 'scale(0.9)';
-    container.style.transition = 'transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)';
+    container.style.boxShadow = '0 20px 40px rgba(0, 0, 0, 0.25)';
+    container.style.transform = 'scale(0.95)';
+    container.style.transition = 'transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1)';
 
     const closeBtn = document.createElement('button');
     closeBtn.innerHTML = '&times;';
@@ -3437,52 +3439,52 @@ window.showSubtleProfileModal = function({ title, subtitle, options, fieldName, 
     closeBtn.style.border = 'none';
     closeBtn.style.fontSize = '1.6rem';
     closeBtn.style.lineHeight = '1';
-    closeBtn.style.color = '#94a3b8';
+    closeBtn.style.color = isDark ? '#94a3b8' : '#64748b';
     closeBtn.style.cursor = 'pointer';
     closeBtn.onclick = () => {
         localStorage.setItem('b2b_last_survey_prompt_time', Date.now().toString());
         overlay.style.opacity = '0';
-        container.style.transform = 'scale(0.9)';
+        container.style.transform = 'scale(0.95)';
         setTimeout(() => {
             overlay.remove();
             if (callback) callback();
-        }, 300);
+        }, 250);
     };
     container.appendChild(closeBtn);
 
     const iconEl = document.createElement('div');
-    iconEl.style.fontSize = '2.5rem';
-    iconEl.style.marginBottom = '12px';
+    iconEl.style.fontSize = '2.4rem';
+    iconEl.style.marginBottom = '10px';
     iconEl.innerHTML = '🦉';
 
     const titleEl = document.createElement('h3');
-    titleEl.style.margin = '0 0 10px 0';
-    titleEl.style.fontSize = '1.25rem';
+    titleEl.style.margin = '0 0 8px 0';
+    titleEl.style.fontSize = '1.2rem';
     titleEl.style.fontWeight = '800';
-    titleEl.style.color = '#0f172a';
+    titleEl.style.color = isDark ? '#f8fafc' : '#0f172a';
     titleEl.innerText = title;
 
     const subEl = document.createElement('p');
-    subEl.style.margin = '0 0 20px 0';
+    subEl.style.margin = '0 0 18px 0';
     subEl.style.fontSize = '0.85rem';
-    subEl.style.color = '#475569';
+    subEl.style.color = isDark ? '#94a3b8' : '#475569';
     subEl.style.lineHeight = '1.5';
     subEl.innerText = subtitle;
 
     const optionsContainer = document.createElement('div');
     optionsContainer.style.display = 'flex';
     optionsContainer.style.flexDirection = 'column';
-    optionsContainer.style.gap = '10px';
+    optionsContainer.style.gap = '8px';
 
     options.forEach(opt => {
         const btn = document.createElement('button');
         btn.style.width = '100%';
         btn.style.padding = '12px 16px';
         btn.style.fontSize = '0.88rem';
-        btn.style.fontWeight = 'bold';
-        btn.style.color = '#0f172a';
-        btn.style.background = '#f8fafc';
-        btn.style.border = '1px solid #e2e8f0';
+        btn.style.fontWeight = '600';
+        btn.style.color = isDark ? '#f1f5f9' : '#0f172a';
+        btn.style.background = isDark ? '#0f172a' : '#f8fafc';
+        btn.style.border = isDark ? '1px solid #334155' : '1px solid #e2e8f0';
         btn.style.borderRadius = '10px';
         btn.style.cursor = 'pointer';
         btn.style.textAlign = 'left';
@@ -3491,15 +3493,15 @@ window.showSubtleProfileModal = function({ title, subtitle, options, fieldName, 
         btn.innerHTML = opt;
 
         btn.onmouseenter = () => {
-            btn.style.background = 'rgba(243, 168, 59, 0.08)';
+            btn.style.background = isDark ? 'rgba(245, 158, 11, 0.15)' : 'rgba(243, 168, 59, 0.08)';
             btn.style.borderColor = '#f59e0b';
-            btn.style.color = '#d97706';
+            btn.style.color = '#f59e0b';
             btn.style.transform = 'translateX(4px)';
         };
         btn.onmouseleave = () => {
-            btn.style.background = '#f8fafc';
-            btn.style.borderColor = '#e2e8f0';
-            btn.style.color = '#0f172a';
+            btn.style.background = isDark ? '#0f172a' : '#f8fafc';
+            btn.style.border = isDark ? '1px solid #334155' : '1px solid #e2e8f0';
+            btn.style.color = isDark ? '#f1f5f9' : '#0f172a';
             btn.style.transform = 'none';
         };
 
@@ -3557,33 +3559,34 @@ window.showSubtleProfileModal = function({ title, subtitle, options, fieldName, 
             }
 
             overlay.style.opacity = '0';
-            container.style.transform = 'scale(0.9)';
+            container.style.transform = 'scale(0.95)';
             setTimeout(() => {
                 overlay.remove();
                 if (callback) callback();
-            }, 300);
+            }, 250);
         };
 
         optionsContainer.appendChild(btn);
     });
 
     const skipBtn = document.createElement('button');
-    skipBtn.innerText = 'Để sau (Bỏ qua câu hỏi này)';
+    skipBtn.innerText = 'Bỏ qua & Bắt đầu ngay ➔';
     skipBtn.style.background = 'transparent';
     skipBtn.style.border = 'none';
-    skipBtn.style.color = '#94a3b8';
+    skipBtn.style.color = isDark ? '#64748b' : '#94a3b8';
     skipBtn.style.fontSize = '0.8rem';
+    skipBtn.style.fontWeight = '500';
     skipBtn.style.cursor = 'pointer';
     skipBtn.style.marginTop = '14px';
     skipBtn.style.padding = '6px';
     skipBtn.onclick = () => {
         localStorage.setItem('b2b_last_survey_prompt_time', Date.now().toString());
         overlay.style.opacity = '0';
-        container.style.transform = 'scale(0.9)';
+        container.style.transform = 'scale(0.95)';
         setTimeout(() => {
             overlay.remove();
             if (callback) callback();
-        }, 300);
+        }, 250);
     };
 
     container.appendChild(iconEl);
