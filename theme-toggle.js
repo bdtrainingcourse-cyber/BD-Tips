@@ -2703,6 +2703,7 @@ function adjustHeaderUtilities() {
     const shareBtn = document.getElementById('nav-share-btn');
     const bell = document.getElementById('notification-bell-container');
     const themeToggle = document.getElementById('theme-toggle');
+    const hud = document.getElementById('navbar-user-hud');
     
     if (isMobile) {
         // Đưa liveCounter, share, bell, themeToggle vào ngăn kéo Drawer menu

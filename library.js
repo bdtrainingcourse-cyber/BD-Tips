@@ -867,8 +867,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 // User is already verified: allow direct browser download immediately
                 localStorage.setItem('b2b_user_verified', 'true');
                 localStorage.setItem('b2b_has_downloaded_before', 'true');
-                if (window.updateNavbarUserHUD) {
-                    window.updateNavbarUserHUD();
+                try {
+                    if (window.updateNavbarUserHUD) {
+                        window.updateNavbarUserHUD();
+                    }
+                } catch (hudErr) {
+                    console.warn('[HUD_WARN]', hudErr);
                 }
                 closeDownloadModal();
                 if (currentSelectedEbook) {
@@ -878,8 +882,12 @@ document.addEventListener('DOMContentLoaded', () => {
             } else {
                 // User is unverified or new: do NOT direct download, send via email
                 localStorage.setItem('b2b_user_verified', 'false');
-                if (window.updateNavbarUserHUD) {
-                    window.updateNavbarUserHUD();
+                try {
+                    if (window.updateNavbarUserHUD) {
+                        window.updateNavbarUserHUD();
+                    }
+                } catch (hudErr) {
+                    console.warn('[HUD_WARN]', hudErr);
                 }
                 if (window.trackUserBehavior) {
                     window.trackUserBehavior('ebook_sent_to_email', `Ebook: ${ebookTitle} | Email: ${email}`);
