@@ -280,7 +280,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const directUrl = `${currentOrigin}/library?ebook=${encodeURIComponent(ebook.id)}`;
 
         // Social crawler URL with dynamic OpenGraph meta tags
-        const socialShareUrl = `${origin}/api/share-ebook?id=${encodeURIComponent(ebook.id)}`;
+        const socialShareUrl = `${origin}/api/sync-newsletter?id=${encodeURIComponent(ebook.id)}`;
 
         const title = ebook.title;
         const text = `Tôi vừa đọc cuốn cẩm nang "${title}" của Peter Vo trên B2B BD Tips Portal! Kiến thức Business Development thực chiến rất sắc bén.`;
