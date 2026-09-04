@@ -406,29 +406,29 @@ module.exports = async (req, res) => {
       subject: `Pipeline của bạn có lạnh như thời tiết ${temp}°C? ❄️`,
       message: `Hôm nay ${dayName} thời tiết khá dịu mát (${temp}°C), thích hợp để ngồi sưởi ấm pipeline bằng vài deal mới. Tin tức hôm nay: "${newsTitle}". Hãy dùng trợ lý <b>Cold Email AI</b> để bứt phá tỉ lệ mở thư nhé!`,
       buttonText: "✍️ Soạn Cold Email Ngay",
-      buttonUrl: "https://bdbinhdanhocvu.com/email-assistant.html",
-      mascot: "https://bdbinhdanhocvu.com/mascot_ghost.jpg"
+      buttonUrl: "https://www.bdbinhdanhocvu.com/email-assistant.html",
+      mascot: "https://www.bdbinhdanhocvu.com/mascot_ghost.jpg"
     },
     {
       subject: `Nắng nóng ${temp}°C làm bạn quá tải? ☀️`,
       message: `Trời hôm nay đang nắng nóng gay gắt (${temp}°C) dễ làm tụt năng lượng. Tin nóng: "${newsTitle}". Hãy tạm nghỉ tay, thư giãn và khám phá phong cách sales của mình với trắc nghiệm <b>Test Tính Cách BD</b> nhé!`,
       buttonText: "📊 Test Tính Cách Ngay",
-      buttonUrl: "https://bdbinhdanhocvu.com/personality-test.html",
-      mascot: "https://bdbinhdanhocvu.com/mascot_architect.jpg"
+      buttonUrl: "https://www.bdbinhdanhocvu.com/personality-test.html",
+      mascot: "https://www.bdbinhdanhocvu.com/mascot_architect.jpg"
     },
     {
       subject: `Trời mưa rả rích, làm sao để lead không ghost? 🌧️`,
       message: `Thời tiết mưa ẩm dễ làm tinh thần đi xuống. Đọc ngay tin tiêu điểm: "${newsTitle}" và vào <b>Thư viện BD</b> xem mẹo rã đông lead từ anh Peter Vo!`,
       buttonText: "📚 Đọc Case-Study Ngay",
-      buttonUrl: "https://bdbinhdanhocvu.com/library.html",
-      mascot: "https://bdbinhdanhocvu.com/mascot_rain.jpg"
+      buttonUrl: "https://www.bdbinhdanhocvu.com/library.html",
+      mascot: "https://www.bdbinhdanhocvu.com/mascot_rain.jpg"
     },
     {
       subject: `Luyện phản xạ thực chiến ngày ${dayName}! 🦉`,
       message: `Bản tin kinh tế: "${newsTitle}". Hãy dành 2 phút giải trí và rèn luyện phản xạ xử lý từ chối cùng <b>Minigame B2B Challenge</b> để tích lũy điểm đổi quà nhé!`,
       buttonText: "🎮 Chơi Game Thực Chiến",
-      buttonUrl: "https://bdbinhdanhocvu.com/#minigame-section",
-      mascot: "https://bdbinhdanhocvu.com/mascot_challenge.jpg"
+      buttonUrl: "https://www.bdbinhdanhocvu.com/#minigame-section",
+      mascot: "https://www.bdbinhdanhocvu.com/mascot_challenge.jpg"
     }
   ];
 
@@ -556,11 +556,13 @@ YÊU CẦU NỘI DUNG & PHONG CÁCH:
     if (isUnverified) {
       resendResult = await sendVerificationReminderEmail({ email: targetEmail, name: targetName });
     } else {
+      const sep = template.buttonUrl.includes('?') ? '&' : '?';
+      const personalizedUrl = `${template.buttonUrl}${sep}sync_email=${encodeURIComponent(targetEmail)}&sync_name=${encodeURIComponent(targetName)}&utm_source=daily_email&utm_medium=email&utm_campaign=daily_reminder`;
       const emailHtml = renderHtmlEmailTemplate({
         greeting: `Chào bạn ${targetName}`,
         message: template.message,
         buttonText: template.buttonText,
-        buttonUrl: template.buttonUrl
+        buttonUrl: personalizedUrl
       });
       resendResult = await sendResendEmail({
         to: targetEmail,

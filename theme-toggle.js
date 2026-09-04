@@ -88,13 +88,28 @@ const initThemeToggle = () => {
         if (syncPoints) localStorage.setItem('b2b_points_balance', syncPoints);
         if (syncAvatar) localStorage.setItem('b2b_custom_avatar', syncAvatar);
         
+        // Rehydrate fresh profile, verified status and points from server
+        fetch(`/api/log-email?action=checkEmail&email=${encodeURIComponent(syncEmail)}`)
+            .then(res => res.json())
+            .then(data => {
+                if (data && data.exists && data.user) {
+                    if (data.user.points !== undefined) localStorage.setItem('b2b_points_balance', data.user.points.toString());
+                    if (data.user.name) localStorage.setItem('streak_name', data.user.name);
+                    if (data.user.id) localStorage.setItem('streak_user_id', data.user.id);
+                    if (data.user.verified) localStorage.setItem('b2b_user_verified', 'true');
+                    if (data.user.avatar) localStorage.setItem('b2b_custom_avatar', data.user.avatar);
+                    if (window.updateNavbarUserHUD) window.updateNavbarUserHUD();
+                }
+            })
+            .catch(() => {});
+
         // Clear query parameters
         window.history.replaceState({}, document.title, window.location.pathname);
         
         setTimeout(() => {
             window.showGlobalNotification(
                 '🔄 Đồng Bộ Thiết Bị Thành Công',
-                `Đã đồng bộ thành công tài khoản <strong>${syncName || syncEmail}</strong> và số điểm tích lũy ⚡ của bạn từ thiết bị khác!`
+                `Chào mừng <strong>${syncName || syncEmail}</strong> quay trở lại! Tài khoản và điểm tích lũy ⚡ đã được tự động kết nối.`
             );
             if (window.updateNavbarUserHUD) window.updateNavbarUserHUD();
             window.trackUserBehavior('device_sync_url', 'Sync via URL params');
