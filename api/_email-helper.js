@@ -56,39 +56,49 @@ function stripHtml(html) {
 }
 
 function renderHtmlEmailTemplate({ title, greeting, message, buttonText, buttonUrl, note }) {
+  const safeFontStack = "'Plus Jakarta Sans', 'Be Vietnam Pro', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif";
   return `
 <!DOCTYPE html>
 <html>
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700&family=Be+Vietnam+Pro:wght@500;600;700&display=swap" rel="stylesheet">
   <style>
-    body { font-family: 'Segoe UI', Helvetica, Arial, sans-serif; background-color: #f8fafc; margin: 0; padding: 0; }
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700&family=Be+Vietnam+Pro:wght@500;600;700&display=swap');
+    body, table, td, p, a, h1, h2, h3, span, div {
+      font-family: ${safeFontStack} !important;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+    body { font-family: ${safeFontStack}; background-color: #f8fafc; margin: 0; padding: 0; }
     .email-card { max-width: 580px; margin: 25px auto; background-color: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.06); }
-    .email-header { background: linear-gradient(135deg, #a20a0a 0%, #7c0808 100%); padding: 26px 20px; text-align: center; }
-    .email-header h1 { color: #ffffff; margin: 0; font-size: 20px; font-weight: 800; letter-spacing: 0.5px; }
-    .email-header p { color: #fecaca; margin: 6px 0 0 0; font-size: 13px; font-weight: 500; }
-    .email-body { padding: 30px 24px; color: #1e293b; font-size: 15px; line-height: 1.65; }
+    .email-header { background: linear-gradient(135deg, #a20a0a 0%, #7c0808 100%); background-color: #a20a0a; padding: 26px 20px; text-align: center; }
+    .email-header h1 { color: #ffffff; margin: 0; font-size: 21px; font-weight: 700; letter-spacing: 0.5px; font-family: ${safeFontStack}; line-height: 1.35; text-transform: uppercase; }
+    .email-header p { color: #fecaca; margin: 6px 0 0 0; font-size: 13.5px; font-weight: 500; font-family: ${safeFontStack}; line-height: 1.4; }
+    .email-body { padding: 30px 24px; color: #1e293b; font-size: 15px; line-height: 1.65; font-family: ${safeFontStack}; }
     .cta-container { text-align: center; margin: 30px 0 20px 0; }
-    .cta-btn { display: inline-block; background: linear-gradient(135deg, #a20a0a 0%, #dc2626 100%); color: #ffffff !important; text-decoration: none; padding: 13px 32px; font-size: 15px; font-weight: 800; border-radius: 30px; box-shadow: 0 4px 15px rgba(220, 38, 38, 0.35); }
-    .email-footer { background-color: #f1f5f9; padding: 20px; text-align: center; font-size: 12px; color: #64748b; border-top: 1px solid #e2e8f0; }
+    .cta-btn { display: inline-block; background: linear-gradient(135deg, #a20a0a 0%, #dc2626 100%); background-color: #dc2626; color: #ffffff !important; text-decoration: none; padding: 14px 34px; font-size: 15px; font-weight: 700; font-family: ${safeFontStack}; border-radius: 30px; box-shadow: 0 4px 15px rgba(220, 38, 38, 0.35); text-align: center; line-height: 1.4; }
+    .email-footer { background-color: #f1f5f9; padding: 20px; text-align: center; font-size: 12px; color: #64748b; border-top: 1px solid #e2e8f0; font-family: ${safeFontStack}; line-height: 1.5; }
     .accent-link { color: #a20a0a; text-decoration: none; font-weight: 700; }
   </style>
 </head>
-<body>
-  <div class="email-card">
-    <div class="email-header">
-      <h1>BD BÌNH DÂN HỌC VỤ</h1>
-      <p>Nơi Chiến Binh BD Bắt Đầu &bull; Peter Vo</p>
+<body style="margin: 0; padding: 0; background-color: #f8fafc; font-family: ${safeFontStack};">
+  <div class="email-card" style="max-width: 580px; margin: 25px auto; background-color: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.06);">
+    <div class="email-header" style="background: linear-gradient(135deg, #a20a0a 0%, #7c0808 100%); background-color: #a20a0a; padding: 26px 20px; text-align: center;">
+      <h1 style="color: #ffffff; margin: 0; font-size: 21px; font-weight: 700; letter-spacing: 0.5px; font-family: ${safeFontStack}; line-height: 1.35; text-transform: uppercase;">BD BÌNH DÂN HỌC VỤ</h1>
+      <p style="color: #fecaca; margin: 6px 0 0 0; font-size: 13.5px; font-weight: 500; font-family: ${safeFontStack}; line-height: 1.4;">Nơi Chiến Binh BD Bắt Đầu &bull; Peter Vo</p>
     </div>
-    <div class="email-body">
-      ${greeting ? `<p style="margin-top: 0; font-size: 16px;"><strong>${greeting}</strong>,</p>` : ''}
-      <div>${message}</div>
-      ${buttonUrl ? `<div class="cta-container"><a href="${buttonUrl}" class="cta-btn">${buttonText || 'Khám Phá Ngay &rarr;'}</a></div>` : ''}
-      ${note ? `<div style="margin-top: 20px; padding: 12px 16px; border-radius: 8px; background: #f0fdf4; border: 1px solid #bbf7d0; font-size: 13.5px; color: #166534;">${note}</div>` : ''}
+    <div class="email-body" style="padding: 30px 24px; color: #1e293b; font-size: 15px; line-height: 1.65; font-family: ${safeFontStack};">
+      ${greeting ? `<p style="margin-top: 0; font-size: 16px; font-family: ${safeFontStack};"><strong>${greeting}</strong>,</p>` : ''}
+      <div style="font-family: ${safeFontStack}; font-size: 15px; line-height: 1.65; color: #1e293b;">${message}</div>
+      ${buttonUrl ? `<div class="cta-container" style="text-align: center; margin: 30px 0 20px 0;"><a href="${buttonUrl}" class="cta-btn" style="display: inline-block; background: linear-gradient(135deg, #a20a0a 0%, #dc2626 100%); background-color: #dc2626; color: #ffffff !important; text-decoration: none; padding: 14px 34px; font-size: 15px; font-weight: 700; font-family: ${safeFontStack}; border-radius: 30px; box-shadow: 0 4px 15px rgba(220, 38, 38, 0.35); text-align: center; line-height: 1.4;">${buttonText || 'Khám Phá Ngay &rarr;'}</a></div>` : ''}
+      ${note ? `<div style="margin-top: 22px; padding: 14px 18px; border-radius: 10px; background-color: #f0fdf4; border: 1px solid #bbf7d0; font-size: 13.5px; color: #166534; font-family: ${safeFontStack}; line-height: 1.55;">${note}</div>` : ''}
     </div>
-    <div class="email-footer">
-      Bạn nhận được email này vì đã đăng ký tại <a href="https://www.bdbinhdanhocvu.com" class="accent-link">BD Bình Dân Học Vụ</a>.<br>
+    <div class="email-footer" style="background-color: #f1f5f9; padding: 20px; text-align: center; font-size: 12px; color: #64748b; border-top: 1px solid #e2e8f0; font-family: ${safeFontStack}; line-height: 1.5;">
+      Bạn nhận được email này vì đã đăng ký tại <a href="https://www.bdbinhdanhocvu.com" class="accent-link" style="color: #a20a0a; text-decoration: none; font-weight: 700; font-family: ${safeFontStack};">BD Bình Dân Học Vụ</a>.<br>
       &copy; 2026 BD Bình Dân Học Vụ &bull; Stay Hungry, Stay Foolish!
     </div>
   </div>
@@ -172,7 +182,7 @@ async function sendEbookEmail({ email, name, ebookTitle, fileUrl }) {
   const html = renderHtmlEmailTemplate({
     greeting: `Chào bạn ${name || 'Chiến binh B2B'}`,
     message: message,
-    buttonText: `📥 Tải Ebook: ${title.substring(0, 32)} &rarr;`,
+    buttonText: '📥 Tải Ebook Về Máy Ngay &rarr;',
     buttonUrl: actionButtonUrl,
     note: `💡 <strong>Mẹo nhỏ:</strong> Bạn hãy lưu tài liệu về máy để có thể xem lại bất cứ lúc nào. Chúc bạn gặt hái nhiều kết quả tốt trên hành trình BD!`
   });
