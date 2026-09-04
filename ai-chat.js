@@ -115,7 +115,7 @@ document.addEventListener('DOMContentLoaded', () => {
         },
         {
             keywords: [/peter vo/, /tân võ phước/, /liên hệ/, /zalo/, /sđt/, /tư vấn/, /founder/i],
-            reply: "Bạn muốn kết nối & tư vấn trực tiếp cùng **Founder Peter Vo (Tân Võ Phước)** – Chuyên gia BD B2B & Partnership Strategy?\n\n- 📞 SĐT / Zalo: **0931.100.569**\n- ✉️ Email: **vp.tan92@gmail.com**\n- 💼 LinkedIn: [LinkedIn Peter Vo](https://www.linkedin.com/in/vp-tan/)",
+            reply: "Bạn muốn kết nối & tư vấn trực tiếp cùng **Founder Peter Vo (Tân Võ Phước)** – Chuyên gia BD B2B & Partnership Strategy?\n\n- 📞 SĐT / Zalo: **0931.100.569**\n- ✉️ Email: **bdtraining@bdbinhdanhocvu.com**\n- 💼 LinkedIn: [LinkedIn Peter Vo](https://www.linkedin.com/in/vp-tan/)",
             navTarget: null,
             navLabel: "💬 Chat Zalo Trực Tiếp (0931100569)"
         },
@@ -157,6 +157,7 @@ document.addEventListener('DOMContentLoaded', () => {
             chatInput.focus();
         }
     }
+    window.toggleAIChatWidget = toggleWidget;
 
     function closeWidget() {
         widget.classList.remove('open');

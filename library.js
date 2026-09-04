@@ -737,6 +737,11 @@ document.addEventListener('DOMContentLoaded', () => {
     function closeDownloadModal() {
         downloadModal.classList.add('hidden');
         downloadForm.reset();
+        const submitBtn = downloadForm ? downloadForm.querySelector('button[type="submit"]') : null;
+        if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.textContent = '📨 Gửi Ebook Đến Email Của Tôi ➔';
+        }
     }
 
     function closeLimitModal() {
@@ -788,7 +793,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const submitBtn = downloadForm.querySelector('button[type="submit"]');
         if (submitBtn) {
             submitBtn.disabled = true;
-            submitBtn.textContent = 'Đang kiểm tra...';
+            submitBtn.textContent = '⏳ Đang gửi Ebook qua email...';
         }
 
         // Sync lead and send ebook verification email via backend
@@ -806,7 +811,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 downloadLink: downloadLink
             })
         })
-        .then(res => res.json())
+        .then(async (res) => {
+            const data = await res.json().catch(() => ({}));
+            if (!res.ok && !data.success) {
+                throw new Error(data.error || `Lỗi máy chủ (${res.status})`);
+            }
+            return data;
+        })
         .then(data => {
             if (submitBtn) {
                 submitBtn.disabled = false;
@@ -876,36 +887,23 @@ document.addEventListener('DOMContentLoaded', () => {
                 closeDownloadModal();
 
                 // Show clear instruction modal
-                window.showGlobalNotification(
-                    '✉️ Ebook Đã Được Gửi Đến Email Của Bạn!',
-                    `Cú BeeDee vừa gửi trọn bộ cuốn <strong>${ebookTitle}</strong> (kèm file PDF đính kèm) đến địa chỉ email <strong>${email}</strong>.<br><br>👉 <strong>Bước tiếp theo:</strong> Bạn hãy mở hòm thư email (hoặc mục <em>Spam / Thư rác</em>) để xem/tải trực tiếp file PDF về máy ngay nhé!`
-                );
+                if (window.showGlobalNotification) {
+                    window.showGlobalNotification(
+                        '✉️ Ebook Đã Được Gửi Đến Email Của Bạn!',
+                        `Cú BeeDee vừa gửi trọn bộ cuốn <strong>${ebookTitle}</strong> (kèm file PDF đính kèm) đến địa chỉ email <strong>${email}</strong>.<br><br>👉 <strong>Bước tiếp theo:</strong> Bạn hãy mở hòm thư email (hoặc mục <em>Spam / Thư rác</em>) để xem/tải trực tiếp file PDF về máy ngay nhé!`
+                    );
+                } else {
+                    alert(`✉️ Cú BeeDee đã gửi trọn bộ cuốn "${ebookTitle}" đến email ${email}!\n\n👉 Bạn hãy mở hòm thư để tải và xem Ebook ngay nhé!`);
+                }
             }
         })
         .catch(err => {
-            console.error(err);
+            console.error('[EBOOK_SUBMIT_ERROR]', err);
             if (submitBtn) {
                 submitBtn.disabled = false;
                 submitBtn.textContent = '📨 Gửi Ebook Đến Email Của Tôi ➔';
             }
-            // Fallback success
-            localStorage.setItem('streak_email', email);
-            localStorage.setItem('streak_name', firstName);
-            const registrationData = {
-                firstName,
-                email,
-                experience: experience,
-                registeredAt: new Date().toISOString()
-            };
-            localStorage.setItem('b2b_user_registration', JSON.stringify(registrationData));
-            if (window.updateNavbarUserHUD) {
-                window.updateNavbarUserHUD();
-            }
-            closeDownloadModal();
-            window.showGlobalNotification(
-                '✉️ Ebook Đã Được Gửi Đến Email Của Bạn!',
-                `Cú BeeDee đã gửi trọn bộ cuốn <strong>${ebookTitle}</strong> (kèm file PDF đính kèm) đến địa chỉ email <strong>${email}</strong>.<br><br>👉 Hãy mở hộp thư để tải và xem Ebook ngay nhé!`
-            );
+            alert(`Có trục trặc khi kết nối: ${err.message || 'Lỗi mạng'}. Vui lòng thử lại sau giây lát!`);
         });
     });
 
