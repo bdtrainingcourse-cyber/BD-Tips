@@ -3098,69 +3098,13 @@ function injectTourTriggerButtons() {
 }
 
 function showNewUserHelperWidget(pageId) {
-    if (document.getElementById('new-user-helper-widget')) return;
-
-    const widget = document.createElement('div');
-    widget.id = 'new-user-helper-widget';
-    widget.style.cssText = `
-        position: fixed;
-        bottom: 20px;
-        right: 20px;
-        z-index: 99999;
-        background: var(--card-bg);
-        border: 2px solid var(--accent);
-        border-radius: 16px;
-        padding: 15px;
-        width: 320px;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-        display: flex;
-        gap: 12px;
-        align-items: flex-start;
-        transition: all 0.3s ease;
-        animation: slideInUp 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    `;
-
-    widget.innerHTML = `
-        <span style="font-size: 2.2rem; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.15));">🦉</span>
-        <div style="flex: 1; display: flex; flex-direction: column;">
-            <h5 style="margin: 0 0 5px 0; font-weight: 800; font-size: 0.9rem; color: var(--accent); font-family: 'Plus Jakarta Sans', sans-serif;">Bạn là BD mới (Trong 24h đầu)!</h5>
-            <p style="margin: 0 0 10px 0; font-size: 0.78rem; color: var(--text-main); line-height: 1.45; text-align: left;">Bấm nút Hướng dẫn bên dưới để xem chi tiết cách thức rèn luyện phản xạ đàm phán đắt giá, cách gọi điện Pitching AI và săn điểm Bounty Cộng đồng nhé.</p>
-            <div style="display: flex; gap: 8px;">
-                <button id="btn-helper-start" style="background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); border: none; color: white; padding: 6px 12px; border-radius: 6px; font-weight: bold; font-size: 0.75rem; cursor: pointer; transition: transform 0.2s;">Xem Hướng dẫn</button>
-                <button id="btn-helper-dismiss" style="background: transparent; border: 1px solid var(--border-color); color: var(--text-light); padding: 5px 10px; border-radius: 6px; font-size: 0.72rem; cursor: pointer;">Đóng lại</button>
-            </div>
-        </div>
-    `;
-
-    document.body.appendChild(widget);
-
-    widget.querySelector('#btn-helper-start').addEventListener('click', () => {
-        window.startB2BOnboardingTour(pageId);
-    });
-
-    widget.querySelector('#btn-helper-dismiss').addEventListener('click', () => {
-        widget.style.opacity = '0';
-        widget.style.transform = 'translateY(20px)';
-        setTimeout(() => widget.remove(), 300);
-        localStorage.setItem('bd_tour_completed_' + pageId, 'true');
-    });
-
-    if (!document.getElementById('slide-in-keyframe')) {
-        const style = document.createElement('style');
-        style.id = 'slide-in-keyframe';
-        style.innerHTML = `
-            @keyframes slideInUp {
-                from { transform: translateY(50px); opacity: 0; }
-                to { transform: translateY(0); opacity: 1; }
-            }
-        `;
-        document.head.appendChild(style);
-    }
+    // Disabled to provide a clean, non-intrusive onboarding experience for new users
+    return;
 }
 
-// Check auto-trigger tour
+// Auto-trigger tour disabled to keep interface clean and non-intrusive
 setTimeout(() => {
-    injectTourTriggerButtons();
+    // Retain clean initialization without popping up modal or widget
     const path = window.location.pathname;
     let pageId = null;
     if (path.includes('community')) pageId = 'community';
@@ -3168,18 +3112,8 @@ setTimeout(() => {
     else if (path.includes('index') || path === '/' || path.endsWith('/')) pageId = 'challenge';
     
     if (pageId) {
-        // Track first visit time to define "New User within 24 hours"
-        let firstVisit = localStorage.getItem('bd_first_visit_time');
-        if (!firstVisit) {
-            firstVisit = Date.now().toString();
-            localStorage.setItem('bd_first_visit_time', firstVisit);
-        }
-        
-        const ageMs = Date.now() - parseInt(firstVisit, 10);
-        const isNew = ageMs < 24 * 60 * 60 * 1000;
-        
-        if (isNew && !localStorage.getItem('bd_tour_completed_' + pageId)) {
-            showNewUserHelperWidget(pageId);
+        if (!localStorage.getItem('bd_first_visit_time')) {
+            localStorage.setItem('bd_first_visit_time', Date.now().toString());
         }
     }
 }, 1500);

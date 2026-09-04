@@ -75,33 +75,28 @@
         </div>
     </header>
 
-    <!-- BeeDee Welcome Hub -->
-    <section class="beedee-welcome-hub container" style="margin-top: 25px; margin-bottom: 25px;">
-        <div class="glass-panel" style="padding: 24px; border-radius: 24px; border: 1.5px solid var(--primary); background: var(--card-bg); display: flex; gap: 24px; align-items: center; box-shadow: var(--shadow); flex-wrap: wrap;">
-            <!-- Left: Mascot Image -->
-            <div style="width: 140px; height: 140px; border-radius: 20px; overflow: hidden; border: 1px solid var(--border-color); flex-shrink: 0; position: relative; margin: 0 auto;">
-                <img id="beedee-homepage-mascot" src="beedee_mid_autumn.jpg?v=2.3.24" style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s ease;" alt="BeeDee Mascot">
+    <!-- BeeDee Smart Micro-Bar (Tối ưu không gian & thoáng đãng cho New User) -->
+    <section class="beedee-welcome-hub container" id="beedee-welcome-hub-section" style="margin-top: 14px; margin-bottom: 18px;">
+        <div class="beedee-micro-bar glass-panel" id="beedee-micro-bar">
+            <div class="beedee-micro-left">
+                <div class="beedee-avatar-wrapper">
+                    <img id="beedee-homepage-mascot" src="bd_mascot.png?v=2.3.24" alt="BeeDee Mascot" class="beedee-avatar-img">
+                    <span class="beedee-status-indicator" title="BeeDee sẵn sàng hỗ trợ"></span>
+                </div>
+                <div class="beedee-micro-content">
+                    <div class="beedee-micro-header">
+                        <span class="beedee-tag">🦉 Trợ Lý BD</span>
+                        <h4 class="beedee-micro-title" id="beedee-greeting-title">Xin chào bạn!</h4>
+                    </div>
+                    <p class="beedee-micro-text" id="beedee-greeting-text">Chào mừng bạn! Khám phá 9 công cụ B2B thực chiến hoặc thử nhanh thử thách bên dưới.</p>
+                </div>
             </div>
-            <!-- Right: Speech bubble & Text -->
-            <div style="flex: 1; text-align: left; min-width: 280px; display: flex; flex-direction: column; gap: 8px;">
-                <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
-                    <span style="background: var(--primary); color: white; padding: 4px 10px; border-radius: 20px; font-size: 0.68rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px;">🦉 Tôi là chú cú BeeDee Thông Thái</span>
-                    <h4 style="margin: 0; font-size: 1.15rem; font-weight: 800; color: var(--text-main);" id="beedee-greeting-title">Xin chào bạn!</h4>
-                </div>
-                <div class="beedee-speech-bubble" style="background: rgba(255,255,255,0.02); padding: 12px 16px; border-radius: 14px; border: 1px solid var(--border-color); font-size: 0.88rem; color: var(--text-light); line-height: 1.5; font-weight: 500; position: relative;">
-                    <p id="beedee-greeting-text" style="margin: 0;">Đang chuẩn bị lời chào hóm hỉnh...</p>
-                </div>
-                <div style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap; margin-top: 4px;">
-                    <button onclick="window.openAIChatBot()" class="btn btn-primary" style="padding: 8px 18px; font-size: 0.8rem; font-weight: 800; border-radius: 8px; border: none; background: linear-gradient(135deg, var(--primary) 0%, #ef4444 100%); color: white; cursor: pointer; box-shadow: 0 4px 10px rgba(162,10,10,0.2);">
-                        💬 Chat nhanh với BeeDee
-                    </button>
-                    <a href="quests.html" class="btn" style="padding: 8px 18px; font-size: 0.8rem; font-weight: 700; text-decoration: none; border-radius: 8px; border: 1px solid var(--border-color); background: rgba(255,255,255,0.03); color: var(--text-main);">
-                        🎯 Xem Nhiệm Vụ &rarr;
-                    </a>
-                    <a href="personality-test.html" class="btn" style="padding: 8px 18px; font-size: 0.8rem; font-weight: 700; text-decoration: none; border-radius: 8px; border: 1px solid rgba(243, 168, 59, 0.4); background: rgba(243, 168, 59, 0.05); color: var(--primary);">
-                        📊 Test Tính Cách BD
-                    </a>
-                </div>
+            <div class="beedee-micro-actions">
+                <button onclick="window.openAIChatBot()" class="beedee-action-btn beedee-chat-btn" title="Hỏi Cú BeeDee">
+                    <span class="beedee-btn-icon">💬</span>
+                    <span class="beedee-btn-label">Hỏi Trợ Lý</span>
+                </button>
+                <button onclick="window.dismissBeeDeeHub()" class="beedee-dismiss-btn" title="Đóng thanh chào mừng" aria-label="Đóng">&times;</button>
             </div>
         </div>
     </section>
@@ -109,7 +104,25 @@
     <!-- Inline script to guarantee immediate, cache-free personalized mascot greeting update -->
     <script>
         (function() {
+            // Check if user dismissed the welcome hub
+            if (localStorage.getItem('beedee_hub_dismissed') === 'true') {
+                const hub = document.getElementById('beedee-welcome-hub-section');
+                if (hub) hub.style.display = 'none';
+            }
+
+            window.dismissBeeDeeHub = function() {
+                const hub = document.getElementById('beedee-welcome-hub-section');
+                if (hub) {
+                    hub.style.transition = 'all 0.3s ease';
+                    hub.style.opacity = '0';
+                    hub.style.transform = 'translateY(-10px)';
+                    setTimeout(() => { hub.style.display = 'none'; }, 300);
+                }
+                localStorage.setItem('beedee_hub_dismissed', 'true');
+            };
+
             function updateHomepageGreeting() {
+                if (localStorage.getItem('beedee_hub_dismissed') === 'true') return;
                 const greetingTitle = document.getElementById('beedee-greeting-title');
                 const greetingText = document.getElementById('beedee-greeting-text');
                 const mascotImg = document.getElementById('beedee-homepage-mascot');
@@ -123,40 +136,33 @@
                 const userName = localStorage.getItem('streak_name') || '';
                 
                 const customAvatar = localStorage.getItem('b2b_custom_avatar');
-                const avatarHtml = customAvatar ? `<img src="${customAvatar}" style="width: 28px; height: 28px; border-radius: 50%; object-fit: cover; border: 1.5px solid var(--primary); display: inline-block; vertical-align: middle; margin-right: 6px;">` : '';
+                const avatarHtml = customAvatar ? `<img src="${customAvatar}" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover; border: 1.5px solid var(--primary); display: inline-block; vertical-align: middle; margin-right: 6px;">` : '';
 
                 if (isRegistered && userName && userName !== 'Khách' && userName !== 'Học viên') {
-                    greetingTitle.innerHTML = avatarHtml + 'Xin chào bạn <strong>' + userName + '</strong>!';
+                    greetingTitle.innerHTML = avatarHtml + 'Chào bạn <strong>' + userName + '</strong>!';
                 } else {
                     greetingTitle.innerHTML = avatarHtml + 'Xin chào bạn!';
                 }
                 
-                if (greetingText && (greetingText.innerHTML.includes('Đang chuẩn bị') || greetingText.innerHTML === '')) {
+                if (greetingText) {
                     if (!isRegistered) {
-                        greetingText.innerHTML = 'Bạn chưa đăng ký tích điểm kìa! Mau bật nhắc nhở để tui gửi bí kíp BD và tặng ngay 25 BD-Points nha!';
+                        greetingText.innerHTML = 'Chào mừng bạn! Khám phá 9 công cụ B2B thực chiến hoặc thử nhanh thử thách bên dưới.';
                     } else if (isRegistered && !isVerified) {
-                        greetingText.innerHTML = 'Bạn tích được <strong>' + balance + ' BD-Points</strong> rồi đó, nhưng chưa cài mật khẩu. Cài ngay kẻo ví điểm bay màu nha!';
+                        greetingText.innerHTML = 'Bạn đã tích được <strong>' + balance + ' BD-Points</strong>. Cài mật khẩu để bảo vệ tài khoản nhé!';
                     } else {
                         const day = new Date().getDay();
-                        let mascotSrc = 'mascot_quests.jpg';
-                        let msg = 'Bạn đang có <strong>' + balance + ' BD-Points</strong> trong ví. Hãy trau dồi thêm kỹ năng BD cùng tui nha!';
+                        let mascotSrc = 'bd_mascot.png';
+                        let msg = 'Số dư: <strong>' + balance + ' BD-Points</strong>. Cùng trau dồi thêm kỹ năng BD hôm nay!';
                         if (day === 1) {
-                            mascotSrc = 'mascot_commander.jpg';
-                            msg = 'Đầu tuần năng lượng lên bạn ơi! Mục tiêu tuần này của bạn là săn thêm bao nhiêu Deal đây? Mau vô mở kho tàng B2B thực chiến cùng tui nào!';
+                            msg = 'Đầu tuần tràn đầy năng lượng! Săn deal thành công cùng 9 công cụ B2B nhé!';
                         } else if (day === 2) {
-                            mascotSrc = 'mascot_architect.jpg';
-                            msg = 'Thứ ba là ngày thiết lập hệ thống! Hãy để tui giúp bạn lên kịch bản email tiếp cận lead tự động chuẩn chỉnh nhé!';
+                            msg = 'Thứ ba thiết lập hệ thống! Hãy thử AI Email Assistant để soạn mail tiếp cận chuẩn chỉnh!';
                         } else if (day === 3) {
-                            mascotSrc = 'mascot_kpi.jpg';
-                            msg = 'Giữa tuần rồi bạn ơi, KPI tuần này đã chạy được nửa chặng đường chưa? Mau vô ước tính KPI hoặc làm vài nhiệm vụ lấy điểm tích lũy thôi!';
+                            msg = 'Giữa tuần bứt phá KPI! Vào ước tính KPI hoặc thử sức tại B2B Challenge nhé!';
                         } else if (day === 4) {
-                            mascotSrc = 'mascot_salary.jpg';
-                            msg = 'Thứ năm rồi, cuối tuần cận kề rồi! Deal nào còn dang dở thì chốt nhanh để cuối tháng lượm hoa hồng ngập ví nha bạn!';
+                            msg = 'Thứ năm cận kề cuối tuần! Tối ưu hóa đàm phán và chốt hợp đồng thuận lợi nha!';
                         } else if (day === 5) {
-                            mascotSrc = 'mascot_champion.jpg';
-                            msg = 'Thứ sáu cuối tuần rồi bạn ơi! Gác lại áp lực, hãy cùng khách hàng xây dựng chemistry thật tốt rồi tận hưởng ngày nghỉ cuối tuần nhé!';
-                        } else {
-                            mascotSrc = 'mascot_farmer.jpg';
+                            msg = 'Thứ sáu tuyệt vời! Gác lại áp lực và xây dựng chemistry khách hàng thật tốt!';
                         }
                         if (mascotImg) mascotImg.src = mascotSrc;
                         greetingText.innerHTML = msg;

@@ -1473,21 +1473,7 @@ const initB2BApp = () => {
                 startGame();
             };
 
-            if (window.showSubtleProfileModal && !localStorage.getItem('profile_experience')) {
-                window.showSubtleProfileModal({
-                    title: '🦉 Tinh chỉnh độ khó AI',
-                    subtitle: 'Chào bạn! Để Cú BeeDee chuẩn bị bộ câu hỏi và kịch bản thực chiến phù hợp nhất với trình độ, bạn làm B2B Sales/BD được mấy năm rồi?',
-                    options: [
-                        'Dưới 2 năm (Tân binh)',
-                        'Từ 2-4 năm (Thực chiến)',
-                        '4 năm trở lên (Lão làng)'
-                    ],
-                    fieldName: 'experience',
-                    callback: proceedStart
-                });
-            } else {
-                proceedStart();
-            }
+            proceedStart();
         });
         nextBtn.addEventListener('click', loadNextQuestion);
         restartBtn.addEventListener('click', () => {
@@ -6353,19 +6339,12 @@ if (document.readyState === 'loading') {
     function initExitIntent() {
         if (isRegisteredUser() || localStorage.getItem('exit_intent_dismissed') === 'true') return;
 
-        // Desktop mouseleave exit intent
+        // Desktop mouseleave exit intent only (disabled on mobile to keep mobile experience clean)
         document.addEventListener('mouseleave', (e) => {
-            if (e.clientY < 50 && !exitIntentTriggered && !isRegisteredUser() && localStorage.getItem('exit_intent_dismissed') !== 'true') {
+            if (window.innerWidth > 768 && e.clientY < 50 && !exitIntentTriggered && !isRegisteredUser() && localStorage.getItem('exit_intent_dismissed') !== 'true') {
                 showExitIntentPopup();
             }
         });
-
-        // Mobile timer exit intent fallback
-        setTimeout(() => {
-            if (!exitIntentTriggered && !isRegisteredUser() && localStorage.getItem('exit_intent_dismissed') !== 'true') {
-                showExitIntentPopup();
-            }
-        }, 40000);
     }
 
     function showExitIntentPopup() {
