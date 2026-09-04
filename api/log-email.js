@@ -176,7 +176,7 @@ module.exports = async (req, res) => {
 
   const timestamp = new Date().toISOString();
   const cleanEmail = email.toLowerCase().trim();
-  const clientIp = req.headers['x-forwarded-for'] || req.socket.remoteAddress || '';
+  const clientIp = req.headers['x-forwarded-for'] || (req.socket && req.socket.remoteAddress) || '';
 
   // --- Simulated Database Persistence Logic ---
   const users = readUsers();
@@ -273,7 +273,7 @@ module.exports = async (req, res) => {
     });
   }
 
-  if (action === 'verifyUser') {
+  if (action === 'verifyUser' || action === 'downloadEbook') {
     if (localUser) {
       if (!localUser.verified) {
         localUser.verified = true;
@@ -316,6 +316,36 @@ module.exports = async (req, res) => {
       } catch (err) {
         console.error(`[SHEETS_SYNC_ERROR] Verify user forward failed:`, err.message);
       }
+    }
+
+    if (action === 'downloadEbook') {
+      const targetFile = fileUrl || downloadLink || 'ebooks/Quy trình hưởng trợ cấp thất nghiệp.pdf';
+      const cleanTarget = targetFile.replace(/^\/+/, '');
+      const redirectPdfUrl = 'https://www.bdbinhdanhocvu.com/' + encodeURI(cleanTarget);
+      
+      if (webhookUrl) {
+        try {
+          await httpPost(webhookUrl, {
+            action: 'logLead',
+            email: cleanEmail,
+            tool: 'ebook-download',
+            ebookTitle: ebookTitle || 'Cẩm nang B2B BD',
+            actionDetail: 'Tải Ebook từ Email',
+            additionalInfo: 'File: ' + targetFile,
+            device: 'Email-CTA',
+            date: timestamp,
+            secretKey: process.env.B2B_SECRET_KEY || '2108330119Snail!!'
+          });
+        } catch(e) {}
+      }
+
+      res.writeHead(302, {
+        'Location': redirectPdfUrl,
+        'Cache-Control': 'no-cache, no-store, must-revalidate',
+        'Pragma': 'no-cache',
+        'Expires': '0'
+      });
+      return res.end();
     }
 
     return res.status(200).json({

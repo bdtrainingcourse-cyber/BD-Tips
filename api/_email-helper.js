@@ -161,7 +161,7 @@ async function sendEbookEmail({ email, name, ebookTitle, fileUrl }) {
   const downloadPath = resolveEbookFile(title, fileUrl);
   const cleanSlug = title.toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_+|_+$/g, '');
   const utmTracking = `utm_source=email_ebook&utm_medium=email&utm_campaign=ebook_${cleanSlug}&utm_content=${encodeURIComponent(title)}`;
-  const actionButtonUrl = `https://www.bdbinhdanhocvu.com/api/download-ebook?email=${encodeURIComponent(email)}&file=${encodeURIComponent(downloadPath)}&title=${encodeURIComponent(title)}&${utmTracking}`;
+  const actionButtonUrl = `https://www.bdbinhdanhocvu.com/api/log-email?action=downloadEbook&email=${encodeURIComponent(email)}&fileUrl=${encodeURIComponent(downloadPath)}&ebookTitle=${encodeURIComponent(title)}&${utmTracking}`;
 
   const subject = `📚 [Tải Về Ngay] ${title} - BD Bình Dân Học Vụ`;
   const message = `
