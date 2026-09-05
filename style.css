@@ -3983,6 +3983,131 @@ body.dark-theme .beedee-micro-bar {
     }
 }
 
+/* --- Subtle Onboarding Hint Capsule (v2.5.1) --- */
+.beedee-tutorial-hint-capsule {
+    position: fixed;
+    bottom: 85px;
+    right: 20px;
+    background: rgba(255, 255, 255, 0.96);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border: 1.5px solid var(--primary);
+    box-shadow: 0 10px 32px rgba(0, 0, 0, 0.14), 0 0 16px rgba(239, 68, 68, 0.18);
+    border-radius: 50px;
+    padding: 8px 14px 8px 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    z-index: 99990;
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    animation: hintSlideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    font-family: inherit;
+    max-width: calc(100vw - 40px);
+}
+
+body.dark-theme .beedee-tutorial-hint-capsule {
+    background: rgba(26, 20, 20, 0.95);
+    border-color: var(--primary);
+    box-shadow: 0 10px 32px rgba(0, 0, 0, 0.5), 0 0 20px rgba(239, 68, 68, 0.25);
+}
+
+@keyframes hintSlideUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.hint-glow-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #10b981;
+    box-shadow: 0 0 8px #10b981;
+    flex-shrink: 0;
+    animation: pulseDot 2s infinite;
+}
+
+@keyframes pulseDot {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(0.85); }
+}
+
+.hint-mascot-icon {
+    font-size: 1.25rem;
+    flex-shrink: 0;
+    line-height: 1;
+}
+
+.hint-body {
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+    line-height: 1.25;
+}
+
+.hint-title {
+    font-size: 0.78rem;
+    font-weight: 800;
+    color: var(--text-main);
+}
+
+.hint-desc {
+    font-size: 0.72rem;
+    color: var(--text-light);
+    white-space: nowrap;
+}
+
+.hint-btn-action {
+    background: linear-gradient(135deg, var(--primary) 0%, #ef4444 100%);
+    color: #fff;
+    border: none;
+    border-radius: 20px;
+    padding: 5px 12px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: transform 0.2s, box-shadow 0.2s;
+    box-shadow: 0 2px 8px rgba(239, 68, 68, 0.25);
+}
+
+.hint-btn-action:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4);
+}
+
+.hint-btn-close {
+    background: transparent;
+    border: none;
+    color: var(--text-light);
+    font-size: 1.15rem;
+    cursor: pointer;
+    padding: 2px 4px;
+    line-height: 1;
+    opacity: 0.7;
+    transition: opacity 0.2s;
+}
+
+.hint-btn-close:hover {
+    opacity: 1;
+    color: var(--text-main);
+}
+
+@media (max-width: 768px) {
+    .beedee-tutorial-hint-capsule {
+        bottom: 72px;
+        right: 12px;
+        left: 12px;
+        border-radius: 16px;
+        padding: 8px 10px;
+        justify-content: space-between;
+    }
+    .hint-desc {
+        white-space: normal;
+        font-size: 0.68rem;
+        max-width: 170px;
+    }
+}
+
 
 
 

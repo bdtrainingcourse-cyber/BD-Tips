@@ -1935,32 +1935,38 @@ function initGlobalComponents() {
             left: 0 !important;
             width: 100vw !important;
             height: 100vh !important;
-            background: rgba(0,0,0,0.5) !important;
+            background: rgba(15, 23, 42, 0.45) !important;
+            backdrop-filter: blur(2px) !important;
+            -webkit-backdrop-filter: blur(2px) !important;
             z-index: 99999 !important;
-            pointer-events: none !important;
+            pointer-events: auto !important;
+            cursor: pointer !important;
             transition: opacity 0.3s !important;
             display: none;
         }
         .onboarding-tooltip {
             position: absolute !important;
             z-index: 1000000 !important;
-            background: var(--card-bg) !important;
-            border: 2px solid var(--accent) !important;
-            border-radius: 12px !important;
-            padding: 16px !important;
-            width: 280px !important;
-            box-shadow: 0 15px 40px rgba(0,0,0,0.4) !important;
-            transition: all 0.2s ease !important;
+            background: var(--card-bg, #ffffff) !important;
+            border: 1.5px solid var(--primary) !important;
+            border-radius: 16px !important;
+            padding: 18px 20px !important;
+            width: 320px !important;
+            max-width: calc(100vw - 32px) !important;
+            box-shadow: 0 20px 45px rgba(0,0,0,0.3) !important;
+            transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
             color: var(--text-main) !important;
             pointer-events: auto !important;
             display: none;
+            box-sizing: border-box !important;
         }
         .onboarding-highlight {
             position: relative !important;
             z-index: 999999 !important;
-            box-shadow: 0 0 0 9999px rgba(15, 23, 42, 0.75), 0 0 20px 8px var(--accent) !important;
-            pointer-events: none !important;
-            transition: box-shadow 0.2s ease !important;
+            box-shadow: 0 0 0 4px var(--primary), 0 0 25px rgba(239, 68, 68, 0.35) !important;
+            pointer-events: auto !important;
+            border-radius: 20px !important;
+            transition: box-shadow 0.3s ease !important;
         }
         .floating-chat-box {
             animation: chatSlideIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
@@ -2825,60 +2831,77 @@ function isNewUser() {
 }
 
 const TOURS = {
+    portal: [
+        {
+            elementId: 'beedee-welcome-hub-section',
+            title: '🦉 1. Chú Cú BeeDee Thông Thái',
+            text: 'Tôi là người bạn đồng hành 24/7 của bạn tại BD Bình Dân Học Vụ. Bấm "Chat nhanh với BeeDee" bất cứ khi nào bạn cần giải đáp kỹ năng B2B, tra cứu Luật Lao động hoặc nhận nhiệm vụ tích lũy điểm thưởng!'
+        },
+        {
+            elementId: 'ecosystem-section',
+            title: '🚀 2. Vũ Trụ 9 Công Cụ B2B Thực Chiến',
+            text: 'Bộ vũ khí thực chiến hoàn toàn miễn phí: AI Soạn Email tiếp cận, Tra cứu PIC Finder, Tính lương Gross/Net, Ước tính KPI và Thư viện Ebook chuyên sâu dành riêng cho BD.'
+        },
+        {
+            elementId: 'minigame-section',
+            title: '🎮 3. Đấu Trường B2B Challenge',
+            text: 'Nơi rèn phản xạ đối đáp khi gặp các tình huống Purchasing ép giá, từ chối hay chê đắt. Chọn giải pháp khôn ngoan để nhận ngay BD-Points và vinh danh Bảng Vàng!'
+        }
+    ],
     challenge: [
         {
             elementId: 'minigame-section',
             title: '🎮 1. Đấu trường B2B Sales Challenge',
-            text: '🦉 Cú BeeDeee mách nước: Bạn chuẩn bị bước vào nơi rèn phản xạ đàm phán đắt giá! Đây là chỗ để bạn luyện đối đáp khi bị Purchasing "hành xác" hoặc từ chối phũ phàng (chê đắt, đã có mối ruột,...).'
+            text: '🦉 Chú cú BeeDee thông thái mách bạn: Bạn chuẩn bị bước vào nơi rèn phản xạ đàm phán đắt giá! Đây là chỗ để bạn luyện đối đáp khi bị Purchasing "hành xác" hoặc từ chối phũ phàng (chê đắt, đã có mối ruột,...).'
         },
         {
             elementId: 'start-btn',
             title: '🎬 2. Bốc ca khó thực chiến',
-            text: '🦉 Cú BeeDeee mách nước: Nhấp nhẹ nút này để bốc ngẫu nhiên một tình huống Purchasing từ chối siêu kinh điển ngoài thực tế.'
+            text: '🦉 Chú cú BeeDee thông thái mách bạn: Nhấp nhẹ nút này để bốc ngẫu nhiên một tình huống Purchasing từ chối siêu kinh điển ngoài thực tế.'
         },
         {
             elementId: 'options-container',
             title: '⚡ 3. Lựa chọn tông giọng đàm phán',
-            text: '🦉 Cú BeeDeee mách nước: Đọc kỹ tình huống và chọn 1 trong 3 câu trả lời theo các tông giọng: Chuyên nghiệp (Professional), Giải pháp (Solution), hoặc Trực diện (Direct). AI sẽ chấm điểm và tặng bạn điểm thưởng BD-Points ⚡ nâng hạng!'
+            text: '🦉 Chú cú BeeDee thông thái mách bạn: Đọc kỹ tình huống và chọn 1 trong 3 câu trả lời theo các tông giọng: Chuyên nghiệp (Professional), Giải pháp (Solution), hoặc Trực diện (Direct). AI sẽ chấm điểm và tặng bạn điểm thưởng BD-Points ⚡ nâng hạng!'
         }
     ],
     pitching: [
         {
             elementId: 'scenarios-container-list',
             title: '🎙️ 1. Lựa chọn Đối mặt với Purchasing',
-            text: '🦉 Cú BeeDeee mách nước: Chọn một kịch bản thực tế đi săn lead: Gọi Cold Call chào hàng làm quen, hoặc gặp trực tiếp Giám đốc Purchasing của các tập đoàn lớn.'
+            text: '🦉 Chú cú BeeDee thông thái mách bạn: Chọn một kịch bản thực tế đi săn lead: Gọi Cold Call chào hàng làm quen, hoặc gặp trực tiếp Giám đốc Purchasing của các tập đoàn lớn.'
         },
         {
             elementId: 'btn-start-chat-simulation',
             title: '📞 2. Bắt đầu cuộc gọi đàm thoại',
-            text: '🦉 Cú BeeDeee mách nước: Bấm để kết nối giả lập. AI Buyer sẽ bắt máy và thử thách phản xạ đàm thoại trực tiếp của bạn.'
+            text: '🦉 Chú cú BeeDee thông thái mách bạn: Bấm để kết nối giả lập. AI Buyer sẽ bắt máy và thử thách phản xạ đàm thoại trực tiếp của bạn.'
         },
         {
             elementId: 'btn-voice-mic-main',
             title: '🎤 3. Nhấn Mic nói & Xem AI Coach nhắc bài',
-            text: '🦉 Cú BeeDeee mách nước: Nhấn giữ Mic để đối đáp. Điểm cực đỉnh: Góc dưới sẽ hiện mẹo ứng phó từ AI Coach khi bạn bị khách hàng dồn vào thế bí! Cuộc gọi kết thúc sẽ có bảng phân tích độ tự tin và tỷ lệ chốt cuộc hẹn.'
+            text: '🦉 Chú cú BeeDee thông thái mách bạn: Nhấn giữ Mic để đối đáp. Điểm cực đỉnh: Góc dưới sẽ hiện mẹo ứng phó từ AI Coach khi bạn bị khách hàng dồn vào thế bí! Cuộc gọi kết thúc sẽ có bảng phân tích độ tự tin và tỷ lệ chốt cuộc hẹn.'
         }
     ],
     community: [
         {
             elementId: 'posts-container',
             title: '🧠 1. Đấu trường Cộng đồng BD',
-            text: '🦉 Cú BeeDeee mách nước: Nơi giao lưu võ nghệ của giới BD. Bạn có thể đọc những câu chuyện bán hàng thực chiến xương máu hoặc học hỏi nghiệp vụ từ đồng nghiệp.'
+            text: '🦉 Chú cú BeeDee thông thái mách bạn: Nơi giao lưu võ nghệ của giới BD. Bạn có thể đọc những câu chuyện bán hàng thực chiến xương máu hoặc học hỏi nghiệp vụ từ đồng nghiệp.'
         },
         {
             elementId: 'vote-box',
             title: '🔺 2. Bộ đếm lượt Upvote uy tín',
-            text: '🦉 Cú BeeDeee mách nước: Đây là điểm đánh giá giá trị bài viết! Bài chia sẻ nào càng hay, càng thực chiến thì càng được nhiều Upvote (ví dụ như bài này có điểm uy tín là ▲ 15). Hãy tích cực bấm mũi tên đỏ để Upvote ủng hộ đồng nghiệp nhé!'
+            text: '🦉 Chú cú BeeDee thông thái mách bạn: Đây là điểm đánh giá giá trị bài viết! Bài chia sẻ nào càng hay, càng thực chiến thì càng được nhiều Upvote. Hãy tích cực bấm mũi tên đỏ để Upvote ủng hộ đồng nghiệp nhé!'
         },
         {
             elementId: 'btn-create-post',
             title: '✍️ 3. Săn & Treo thưởng điểm Bounty',
-            text: '🦉 Cú BeeDeee mách nước: Khi cần tìm thông tin PIC mua hàng gấp, bạn đăng bài và treo điểm Bounty ⚡. Đồng nghiệp chia sẻ liên hệ PIC đúng sẽ giật giải nhận điểm Bounty này của bạn!'
+            text: '🦉 Chú cú BeeDee thông thái mách bạn: Khi cần tìm thông tin PIC mua hàng gấp, bạn đăng bài và treo điểm Bounty ⚡. Đồng nghiệp chia sẻ liên hệ PIC đúng sẽ giật giải nhận điểm Bounty này của bạn!'
         },
         {
             elementId: 'btn-edit-profile',
             title: '🦉 4. Điền Email nhận 25⚡ lót tay',
-            text: '🦉 Cú BeeDeee mách nước: Xác thực Email công ty để kích hoạt danh tính BD. Bạn sẽ được mở khóa xem toàn bộ thông tin PIC mua hàng bảo mật và nhận ngay 25⚡ điểm thưởng!'
+            text: '🦉 Chú cú BeeDee thông thái mách bạn: Xác thực Email công ty để kích hoạt danh tính BD. Bạn sẽ được mở khóa xem toàn bộ thông tin PIC mua hàng bảo mật và nhận ngay 25⚡ điểm thưởng!'
         }
     ]
 };
@@ -2907,6 +2930,12 @@ window.startB2BOnboardingTour = function(pageId) {
     }
     tooltip.style.display = 'block';
 
+    function handleEscKey(e) {
+        if (e.key === 'Escape') endTour();
+    }
+    window.addEventListener('keydown', handleEscKey);
+    overlay.onclick = endTour;
+
     function showStep(index) {
         document.querySelectorAll('.onboarding-highlight').forEach(el => {
             el.classList.remove('onboarding-highlight');
@@ -2915,6 +2944,12 @@ window.startB2BOnboardingTour = function(pageId) {
         const step = steps[index];
         let targetEl = document.getElementById(step.elementId) || document.querySelector(`.${step.elementId}`);
 
+        if (!targetEl && step.elementId === 'beedee-welcome-hub-section') {
+            targetEl = document.querySelector('.beedee-welcome-hub');
+        }
+        if (!targetEl && step.elementId === 'ecosystem-section') {
+            targetEl = document.querySelector('.features-showcase');
+        }
         if (!targetEl && step.elementId === 'options-container') {
             targetEl = document.getElementById('minigame-section');
         }
@@ -2933,15 +2968,16 @@ window.startB2BOnboardingTour = function(pageId) {
         const isLast = index === steps.length - 1;
         
         tooltip.innerHTML = `
-            <button id="onboarding-close-x" style="position: absolute; top: 10px; right: 12px; background: transparent; border: none; color: var(--text-light); font-size: 1.2rem; cursor: pointer; line-height: 1; padding: 2px; font-weight: bold; transition: color 0.2s;" title="Thoát hướng dẫn">&times;</button>
-            <div style="font-weight: 800; font-size: 0.95rem; color: #f59e0b; margin-bottom: 8px; display: flex; align-items: center; justify-content: space-between; padding-right: 20px;">
-                <span>${step.title}</span>
-                <span style="font-size: 0.72rem; color: var(--text-light); font-weight: normal;">${index + 1}/${steps.length}</span>
+            <button id="onboarding-close-x" style="position: absolute; top: 12px; right: 14px; background: transparent; border: none; color: var(--text-light); font-size: 1.25rem; cursor: pointer; line-height: 1; padding: 2px; font-weight: bold; transition: color 0.2s;" title="Thoát hướng dẫn">&times;</button>
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; padding-bottom: 8px; border-bottom: 1px solid var(--border-color); padding-right: 20px;">
+                <span style="font-size: 0.72rem; font-weight: 800; color: var(--primary); text-transform: uppercase; letter-spacing: 0.5px;">🦉 Chú Cú BeeDee Thông Thái</span>
+                <span style="font-size: 0.72rem; color: var(--text-light); font-weight: 700; background: rgba(0,0,0,0.05); padding: 2px 8px; border-radius: 10px;">${index + 1}/${steps.length}</span>
             </div>
-            <p style="font-size: 0.84rem; line-height: 1.5; color: var(--text-main); margin: 0 0 14px 0; text-align: justify;">${step.text}</p>
+            <h4 style="margin: 0 0 6px 0; font-size: 0.95rem; font-weight: 800; color: var(--text-main); line-height: 1.35;">${step.title}</h4>
+            <p style="font-size: 0.82rem; line-height: 1.5; color: var(--text-light); margin: 0 0 14px 0; text-align: left;">${step.text}</p>
             <div style="display: flex; justify-content: space-between; align-items: center; gap: 8px; border-top: 1px dashed var(--border-color); padding-top: 10px;">
-                <button id="onboarding-skip-btn" style="background: transparent; border: none; color: var(--text-light); font-size: 0.75rem; cursor: pointer; padding: 4px;">Bỏ qua</button>
-                <button id="onboarding-next-btn" style="background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); border: none; color: #fff; padding: 6px 14px; border-radius: 6px; font-weight: bold; font-size: 0.78rem; cursor: pointer; min-width: 80px;">
+                <button id="onboarding-skip-btn" style="background: transparent; border: none; color: var(--text-light); font-size: 0.75rem; cursor: pointer; padding: 4px; font-weight: 600;">Bỏ qua</button>
+                <button id="onboarding-next-btn" style="background: linear-gradient(135deg, var(--primary) 0%, #ef4444 100%); border: none; color: #fff; padding: 6px 16px; border-radius: 8px; font-weight: 800; font-size: 0.78rem; cursor: pointer; min-width: 80px; box-shadow: 0 2px 8px rgba(162,10,10,0.2);">
                     ${isLast ? 'Hoàn tất ✓' : 'Tiếp tục &rarr;'}
                 </button>
             </div>
@@ -2992,39 +3028,57 @@ window.startB2BOnboardingTour = function(pageId) {
     }
 
     function endTour() {
+        window.removeEventListener('keydown', handleEscKey);
         document.querySelectorAll('.onboarding-highlight').forEach(el => {
             el.classList.remove('onboarding-highlight');
         });
         if (overlay) overlay.style.display = 'none';
         if (tooltip) tooltip.style.display = 'none';
         localStorage.setItem('bd_tour_completed_' + pageId, 'true');
+        localStorage.setItem('bd_tutorial_hint_dismissed', 'true');
         
-        // Hide the floating widget if it exists
-        const widget = document.getElementById('new-user-helper-widget');
-        if (widget) widget.style.display = 'none';
+        const hint = document.getElementById('beedee-tutorial-hint');
+        if (hint) hint.remove();
     }
 
     function positionTooltip(target, tip) {
+        if (window.innerWidth <= 768) {
+            tip.style.position = 'fixed';
+            tip.style.bottom = '16px';
+            tip.style.left = '16px';
+            tip.style.right = '16px';
+            tip.style.top = 'auto';
+            tip.style.width = 'auto';
+            tip.style.maxWidth = 'calc(100vw - 32px)';
+            tip.style.transform = 'none';
+            return;
+        }
+
         const rect = target.getBoundingClientRect();
-        const tipWidth = 280;
-        const tipHeight = tip.offsetHeight || 150;
+        const tipWidth = 320;
+        const tipHeight = tip.offsetHeight || 160;
         
-        let top = rect.bottom + 12;
+        let top = rect.bottom + 14;
         let left = rect.left + (rect.width / 2) - (tipWidth / 2);
         
-        if (left < 10) left = 10;
-        if (left + tipWidth > window.innerWidth - 10) {
-            left = window.innerWidth - tipWidth - 10;
+        if (left < 16) left = 16;
+        if (left + tipWidth > window.innerWidth - 16) {
+            left = window.innerWidth - tipWidth - 16;
         }
         
-        if (top + tipHeight > window.innerHeight - 10) {
-            top = rect.top - tipHeight - 12;
+        if (top + tipHeight > window.innerHeight - 16) {
+            top = rect.top - tipHeight - 14;
         }
         
-        if (top < 10) top = 10;
+        if (top < 16) top = 16;
         
+        tip.style.position = 'absolute';
         tip.style.top = `${top + window.scrollY}px`;
         tip.style.left = `${left}px`;
+        tip.style.right = 'auto';
+        tip.style.bottom = 'auto';
+        tip.style.width = `${tipWidth}px`;
+        tip.style.maxWidth = 'calc(100vw - 32px)';
         tip.style.transform = 'none';
     }
 
@@ -3097,26 +3151,65 @@ function injectTourTriggerButtons() {
     }
 }
 
-function showNewUserHelperWidget(pageId) {
-    // Disabled to provide a clean, non-intrusive onboarding experience for new users
-    return;
+// Subtle Hint Capsule for New Visitors (Non-blocking, elegant, dismissible)
+function initSubtleTutorialHint() {
+    const path = window.location.pathname;
+    const isHomepage = path.includes('index') || path === '/' || path.endsWith('/');
+    if (!isHomepage) return;
+
+    if (localStorage.getItem('bd_tour_completed_portal') === 'true' || localStorage.getItem('bd_tutorial_hint_dismissed') === 'true') {
+        return;
+    }
+
+    setTimeout(() => {
+        if (document.getElementById('beedee-tutorial-hint')) return;
+
+        const hint = document.createElement('div');
+        hint.id = 'beedee-tutorial-hint';
+        hint.className = 'beedee-tutorial-hint-capsule';
+        hint.innerHTML = `
+            <div class="hint-glow-dot"></div>
+            <span class="hint-mascot-icon">🦉</span>
+            <div class="hint-body">
+                <div class="hint-title">Chào bạn mới!</div>
+                <div class="hint-desc">Khám phá nhanh 3 tính năng cốt lõi (30s)</div>
+            </div>
+            <button class="hint-btn-action" onclick="window.startB2BOnboardingTour('portal'); window.dismissTutorialHint();">
+                Khám phá &rarr;
+            </button>
+            <button class="hint-btn-close" onclick="window.dismissTutorialHint();" title="Đóng">&times;</button>
+        `;
+        document.body.appendChild(hint);
+
+        window.dismissTutorialHint = function() {
+            const el = document.getElementById('beedee-tutorial-hint');
+            if (el) {
+                el.style.opacity = '0';
+                el.style.transform = 'translateY(15px)';
+                setTimeout(() => el.remove(), 300);
+            }
+            localStorage.setItem('bd_tutorial_hint_dismissed', 'true');
+        };
+    }, 2800);
 }
 
-// Auto-trigger tour disabled to keep interface clean and non-intrusive
+// Gentle initialization without intrusive popups
 setTimeout(() => {
-    // Retain clean initialization without popping up modal or widget
+    injectTourTriggerButtons();
+    initSubtleTutorialHint();
+    
     const path = window.location.pathname;
     let pageId = null;
     if (path.includes('community')) pageId = 'community';
     else if (path.includes('pitching')) pageId = 'pitching';
-    else if (path.includes('index') || path === '/' || path.endsWith('/')) pageId = 'challenge';
+    else if (path.includes('index') || path === '/' || path.endsWith('/')) pageId = 'portal';
     
     if (pageId) {
         if (!localStorage.getItem('bd_first_visit_time')) {
             localStorage.setItem('bd_first_visit_time', Date.now().toString());
         }
     }
-}, 1500);
+}, 1200);
 
 // --- B2B P2P Simulated Chat System (v=2.2.1) ---
 window.openDirectMessage = function(targetName, targetEmail = '') {
@@ -3127,7 +3220,7 @@ window.openDirectMessage = function(targetName, targetEmail = '') {
     }
 
     if (currentUser === targetName) {
-        alert('🦉 Cú BeeDeee mách nước: Bạn không thể tự chat với chính mình đâu nè!');
+        alert('🦉 Chú cú BeeDee thông thái mách bạn: Bạn không thể tự chat với chính mình đâu nè!');
         return;
     }
 
