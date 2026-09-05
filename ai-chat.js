@@ -7,7 +7,7 @@ document.addEventListener('DOMContentLoaded', () => {
     chatContainer.id = 'b2b-ai-chat-root';
     chatContainer.innerHTML = `
         <!-- Floating Launcher -->
-        <div class="ai-chat-launcher" id="ai-chat-launcher" title="Hỏi Trợ Lý B2B">
+        <div class="ai-chat-launcher" id="ai-chat-launcher" title="Hỏi Chú Cú BeeDee Thông Thái">
             <img src="bd_mascot.png?v=1.0.4" alt="BeeDee Mascot" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
             <span class="launcher-online-dot"></span>
         </div>
@@ -20,7 +20,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     <img src="bd_mascot.png?v=1.0.4" alt="BeeDee" style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover; border: 1.5px solid var(--chat-primary);">
                     <div class="chat-header-info">
                         <h3 style="margin: 0; display: flex; align-items: center; gap: 6px;">BeeDee AI</h3>
-                        <span style="font-size: 0.72rem; color: var(--chat-text-muted);">Trợ Lý B2B Cá Nhân</span>
+                        <span style="font-size: 0.72rem; color: var(--chat-text-muted);">Chú Cú BeeDee Thông Thái</span>
                     </div>
                 </div>
                 <button class="chat-close-btn" id="chat-close-btn">&times;</button>
@@ -32,7 +32,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     <img src="bd_mascot.png?v=1.0.4" class="chat-bot-avatar" alt="BeeDee">
                     <div class="chat-bubble-content">
                         <div class="chat-bubble">
-                            Xin chào! Tôi là <strong>BeeDee</strong>, trợ lý ảo của bạn. Tôi có thể giúp bạn giải đáp các kỹ năng BD B2B, tra cứu nhanh Luật Lao động (với 15 tình huống thực tế) hoặc hướng dẫn sử dụng các công cụ trên Portal. Hôm nay tôi có thể hỗ trợ gì cho bạn?
+                            Xin chào! Tôi là <strong>chú cú BeeDee thông thái</strong>. Tôi có thể giúp bạn giải đáp các kỹ năng BD B2B, tra cứu nhanh Luật Lao động (với 15 tình huống thực tế) hoặc hướng dẫn sử dụng các công cụ trên Portal. Hôm nay tôi có thể hỗ trợ gì cho bạn?
                         </div>
                     </div>
                 </div>
@@ -121,7 +121,7 @@ document.addEventListener('DOMContentLoaded', () => {
         },
         {
             keywords: [/chào/, /hello/, /hi/, /xin chào/i],
-            reply: "Xin chào! Rất vui được hỗ trợ bạn. Tôi là BeeDee, trợ lý ảo của BD Bình Dân Học Vụ. Bạn đang quan tâm đến tính năng hay câu hỏi nào về B2B BD?",
+            reply: "Xin chào! Rất vui được hỗ trợ bạn. Tôi là chú cú BeeDee thông thái của BD Bình Dân Học Vụ. Bạn đang quan tâm đến tính năng hay câu hỏi nào về B2B BD?",
             navTarget: null,
             navLabel: null
         },
