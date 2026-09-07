@@ -1,0 +1,70 @@
+{
+  "UID_1E43MJI6U": {
+    "email": "john.doe@gmail.com",
+    "name": "John",
+    "points": 25,
+    "lastIp": "::1",
+    "lastActive": "2026-08-20T02:03:47.103Z",
+    "id": "UID_1E43MJI6U"
+  },
+  "UID_MP2APTA9W": {
+    "email": "guest@b2bbd.com",
+    "name": "Học viên",
+    "points": 25,
+    "lastIp": "::1",
+    "lastActive": "2026-08-20T02:04:15.235Z",
+    "id": "UID_MP2APTA9W"
+  },
+  "UID_6IPB6E1V3": {
+    "email": "top.deal@stripe.com",
+    "name": "Học viên",
+    "points": 25,
+    "lastIp": "::1",
+    "lastActive": "2026-08-20T02:04:06.695Z",
+    "id": "UID_6IPB6E1V3"
+  },
+  "UID_DRLTFEQAV": {
+    "email": "test_e2e_sync@stripe.com",
+    "name": "ChienThanSync",
+    "points": 25,
+    "lastIp": "::1",
+    "lastActive": "2026-08-20T02:04:12.689Z",
+    "id": "UID_DRLTFEQAV"
+  },
+  "UID_43NNTFBGK": {
+    "id": "UID_43NNTFBGK",
+    "email": "vptanaia@gmail.com",
+    "name": "Võ Phước Tân",
+    "points": 215,
+    "verified": true,
+    "password": "6e659deaa85842cdabb5c6305fcc40033ba43772ec00d45c2a3c921741a5e377",
+    "lastIp": "127.0.0.1",
+    "lastActive": "2026-09-01T13:59:26.148Z",
+    "experience": "3-5 năm"
+  },
+  "UID_ME31VA55H": {
+    "id": "UID_ME31VA55H",
+    "email": "testlead99@gmail.com",
+    "name": "Nguyễn Văn A",
+    "points": 25,
+    "password": "",
+    "experience": "2-4 năm",
+    "industry": "",
+    "skill": "",
+    "lastIp": "127.0.0.1",
+    "lastActive": "2026-09-01T13:59:26.150Z"
+  },
+  "UID_8QXS09TYP": {
+    "id": "UID_8QXS09TYP",
+    "email": "bdtrainingcourse@gmail.com",
+    "name": "Test 0409",
+    "points": 40,
+    "password": "",
+    "experience": "Không chia sẻ",
+    "industry": "",
+    "skill": "",
+    "lastIp": "",
+    "lastActive": "2026-09-04T05:12:52.417Z",
+    "verified": true
+  }
+}

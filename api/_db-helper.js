@@ -4,6 +4,7 @@ const path = require('path');
 let memoryUsers = {};
 let memoryLogs = [];
 
+const usersPrimaryPath = path.join(__dirname, 'user_profiles.json');
 const usersFilePath = path.join(__dirname, '..', 'scratch', 'user_profiles.json');
 const logsFilePath = path.join(__dirname, '..', 'scratch', 'behavior_logs.json');
 
@@ -21,6 +22,12 @@ function readUsers() {
   try {
     if (fs.existsSync(usersFilePath)) {
       const content = fs.readFileSync(usersFilePath, 'utf8');
+      if (content.trim()) {
+        return JSON.parse(content);
+      }
+    }
+    if (fs.existsSync(usersPrimaryPath)) {
+      const content = fs.readFileSync(usersPrimaryPath, 'utf8');
       if (content.trim()) {
         return JSON.parse(content);
       }

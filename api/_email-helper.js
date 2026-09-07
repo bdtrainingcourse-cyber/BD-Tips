@@ -55,8 +55,9 @@ function stripHtml(html) {
              .trim();
 }
 
-function renderHtmlEmailTemplate({ title, greeting, message, buttonText, buttonUrl, note }) {
+function renderHtmlEmailTemplate({ title, greeting, message, buttonText, buttonUrl, note, mascotUrl }) {
   const safeFontStack = "'Plus Jakarta Sans', 'Be Vietnam Pro', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif";
+  const finalMascot = mascotUrl || 'https://www.bdbinhdanhocvu.com/mascot_quests.jpg';
   return `
 <!DOCTYPE html>
 <html>
@@ -92,6 +93,7 @@ function renderHtmlEmailTemplate({ title, greeting, message, buttonText, buttonU
       <p style="color: #fecaca; margin: 6px 0 0 0; font-size: 13.5px; font-weight: 500; font-family: ${safeFontStack}; line-height: 1.4;">Nơi Chiến Binh BD Bắt Đầu &bull; Peter Vo</p>
     </div>
     <div class="email-body" style="padding: 30px 24px; color: #1e293b; font-size: 15px; line-height: 1.65; font-family: ${safeFontStack};">
+      ${mascotUrl ? `<div style="text-align: center; margin-bottom: 22px;"><img src="${finalMascot}" alt="Cú BeeDee" style="width: 88px; height: 88px; border-radius: 50%; border: 3px solid #f59e0b; box-shadow: 0 4px 15px rgba(245, 158, 11, 0.25); display: inline-block;"></div>` : ''}
       ${greeting ? `<p style="margin-top: 0; font-size: 16px; font-family: ${safeFontStack};"><strong>${greeting}</strong>,</p>` : ''}
       <div style="font-family: ${safeFontStack}; font-size: 15px; line-height: 1.65; color: #1e293b;">${message}</div>
       ${buttonUrl ? `<div class="cta-container" style="text-align: center; margin: 30px 0 20px 0;"><a href="${buttonUrl}" class="cta-btn" style="display: inline-block; background: linear-gradient(135deg, #a20a0a 0%, #dc2626 100%); background-color: #dc2626; color: #ffffff !important; text-decoration: none; padding: 14px 34px; font-size: 15px; font-weight: 700; font-family: ${safeFontStack}; border-radius: 30px; box-shadow: 0 4px 15px rgba(220, 38, 38, 0.35); text-align: center; line-height: 1.4;">${buttonText || 'Khám Phá Ngay &rarr;'}</a></div>` : ''}
