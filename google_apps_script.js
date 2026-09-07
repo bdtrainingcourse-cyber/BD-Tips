@@ -58,6 +58,10 @@ function doPost(e) {
       return sendSingleEmail(postData);
     } else if (action === "sendVerificationReminder") {
       return sendVerificationReminder(email, name);
+    } else if (action === "getUsers") {
+      return getAllUsers();
+    } else if (action === "logDailyCampaign") {
+      return logDailyCampaign(postData);
     } else if (action === "updateProfile") {
       return updateProfile(email, postData.field, postData.value, postData.points);
     } else if (postData.tool === "course-registration") {
@@ -79,6 +83,8 @@ function doGet(e) {
     
     if (action === "checkEmail") {
       return checkEmail(email, name);
+    } else if (action === "getUsers") {
+      return getAllUsers();
     } else if (action === "verifyUser") {
       const points = e.parameter.points ? parseInt(e.parameter.points, 10) : 15;
       return verifyUser(email, points);
@@ -195,6 +201,61 @@ function checkEmail(email, name) {
     return createJsonResponse({ exists: false });
   } catch (err) {
     return createJsonResponse({ exists: false, error: err.message });
+  }
+}
+
+function getAllUsers() {
+  try {
+    const sheet = getOrCreateSheet("Học Viên Đăng Ký");
+    const data = sheet.getDataRange().getValues();
+    if (data.length <= 1) return createJsonResponse({ success: true, users: [] });
+    
+    const headers = data[0];
+    const idx = getHeaderIndices(headers);
+    const users = [];
+    
+    for (let i = 1; i < data.length; i++) {
+      const row = data[i];
+      const email = (idx.email !== -1 && row[idx.email]) ? row[idx.email].toString().toLowerCase().trim() : "";
+      if (!email || !email.includes("@")) continue;
+      
+      const name = (idx.name !== -1 && row[idx.name]) ? row[idx.name].toString().trim() : "Học viên";
+      const verifiedVal = idx.verified !== -1 ? row[idx.verified] : false;
+      const isVerified = (verifiedVal === true || verifiedVal.toString().toUpperCase() === "TRUE" || verifiedVal.toString().trim() === "Đã xác thực");
+      
+      users.push({
+        id: (idx.id !== -1 && row[idx.id]) ? row[idx.id].toString().trim() : "",
+        name: name,
+        email: email,
+        verified: isVerified
+      });
+    }
+    return createJsonResponse({ success: true, users: users });
+  } catch (err) {
+    return createJsonResponse({ success: false, error: err.message });
+  }
+}
+
+function logDailyCampaign(data) {
+  try {
+    const sheet = getOrCreateSheet("Nhật Ký Tương Tác");
+    const timestamp = data.timestamp || new Date().toISOString();
+    const subject = data.subject || "Daily Reminder";
+    const total = data.totalRecipients || 0;
+    const sent = data.successfulSends || 0;
+    sheet.appendRow([
+      formatTimestamp(timestamp),
+      "SYSTEM_RESEND_CRON",
+      "Daily Email Campaign",
+      subject,
+      "Sent via Resend",
+      "Success: " + sent + " / " + total,
+      "Serverless Cron",
+      "SYSTEM"
+    ]);
+    return createJsonResponse({ success: true, message: "Campaign logged" });
+  } catch (err) {
+    return createJsonResponse({ success: false, error: err.message });
   }
 }
 

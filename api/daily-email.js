@@ -594,34 +594,124 @@ YÊU CẦU NỘI DUNG & PHONG CÁCH:
     });
   }
 
-  // Otherwise, it's the automated daily cron run! Trigger Sheet to email all registered users!
-  console.log(`[DAILY_EMAIL_CRON] Cron mode. Triggering sheet daily dispatch...`);
+  // Otherwise, it's the automated daily cron run! Dispatch directly via RESEND to all registered users!
+  console.log(`[DAILY_EMAIL_CRON] Cron mode. Dispatching daily emails via Resend...`);
+
+  let targetUsers = [];
+  
+  // 1. Attempt to fetch fresh users from Google Sheets webhook
   if (webhookUrl) {
     try {
-      const response = await httpPost(webhookUrl, {
-        action: 'sendDailyEmails',
-        subject: subject,
-        message: template.message,
-        buttonText: template.buttonText,
-        buttonUrl: template.buttonUrl,
-        mascot: template.mascot
-      });
-      const resText = await response.text();
-      return res.status(200).json({
-        success: true,
-        message: 'Daily cron dispatch sent to Google Sheets Webhook',
-        sheetResponse: resText,
-        context: { temp, weatherDesc, newsTitle, mascot: template.mascot }
-      });
+      const sheetUsersRes = await httpPost(webhookUrl, { action: 'getUsers' });
+      if (sheetUsersRes.ok) {
+        const data = await sheetUsersRes.json();
+        if (data && data.success && Array.isArray(data.users) && data.users.length > 0) {
+          targetUsers = data.users;
+          console.log(`[DAILY_EMAIL_CRON] Loaded ${targetUsers.length} users from Google Sheets.`);
+        }
+      }
+    } catch (e) {
+      console.warn('[DAILY_EMAIL_CRON] Could not fetch live users from Google Sheets:', e.message);
+    }
+  }
+
+  // 2. Fallback to local user profiles database
+  if (!targetUsers || targetUsers.length === 0) {
+    try {
+      const localUsers = readUsers();
+      if (localUsers && typeof localUsers === 'object') {
+        targetUsers = Object.values(localUsers)
+          .filter(u => u && u.email && u.email.includes('@'))
+          .map(u => ({
+            email: u.email.toLowerCase().trim(),
+            name: u.name || 'Chiến thần B2B',
+            verified: u.verified !== false
+          }));
+        console.log(`[DAILY_EMAIL_CRON] Loaded ${targetUsers.length} users from local user profiles.`);
+      }
     } catch (err) {
-      console.error(`[DAILY_EMAIL_CRON_ERROR] Cron dispatch failed:`, err);
-      return res.status(500).json({ error: err.message });
+      console.warn('[DAILY_EMAIL_CRON] Local user profiles read failed:', err.message);
+    }
+  }
+
+  // 3. Deduplicate users by email
+  const seenEmails = new Set();
+  const uniqueRecipients = [];
+  for (const u of targetUsers) {
+    const cleanE = (u.email || '').toLowerCase().trim();
+    if (cleanE && cleanE.includes('@') && !seenEmails.has(cleanE)) {
+      seenEmails.add(cleanE);
+      uniqueRecipients.push({
+        email: cleanE,
+        name: (u.name && u.name !== 'Khách' && u.name !== 'Học viên') ? u.name : 'Chiến thần B2B',
+        verified: u.verified !== false
+      });
+    }
+  }
+
+  // 4. Dispatch each email via Resend with rate limit protection
+  const dispatchResults = [];
+  for (const user of uniqueRecipients) {
+    try {
+      let resendRes = null;
+      if (user.verified === false) {
+        resendRes = await sendVerificationReminderEmail({ email: user.email, name: user.name });
+      } else {
+        const sep = template.buttonUrl.includes('?') ? '&' : '?';
+        const personalizedUrl = `${template.buttonUrl}${sep}sync_email=${encodeURIComponent(user.email)}&sync_name=${encodeURIComponent(user.name)}&utm_source=daily_email&utm_medium=email&utm_campaign=daily_reminder`;
+        const emailHtml = renderHtmlEmailTemplate({
+          greeting: `Chào bạn ${user.name}`,
+          message: template.message,
+          buttonText: template.buttonText,
+          buttonUrl: personalizedUrl,
+          mascotUrl: template.mascot
+        });
+        resendRes = await sendResendEmail({
+          to: user.email,
+          subject: subject,
+          html: emailHtml
+        });
+      }
+
+      dispatchResults.push({
+        email: user.email,
+        ok: !!(resendRes && resendRes.ok),
+        id: resendRes && resendRes.data ? resendRes.data.id : null,
+        error: resendRes && resendRes.error ? resendRes.error : null
+      });
+
+      // Stay strictly within Resend rate limit (2 req/s)
+      await new Promise(resolve => setTimeout(resolve, 600));
+    } catch (err) {
+      console.error(`[DAILY_EMAIL_CRON] Resend error for ${user.email}:`, err.message);
+      dispatchResults.push({ email: user.email, ok: false, error: err.message });
+    }
+  }
+
+  // 5. Also sync campaign record to Google Sheets for logging
+  let sheetLogResponse = "";
+  if (webhookUrl) {
+    try {
+      const logRes = await httpPost(webhookUrl, {
+        action: 'logDailyCampaign',
+        subject: subject,
+        totalRecipients: uniqueRecipients.length,
+        successfulSends: dispatchResults.filter(r => r.ok).length,
+        timestamp: new Date().toISOString()
+      });
+      sheetLogResponse = await logRes.text();
+    } catch (err) {
+      console.warn('[DAILY_EMAIL_CRON] Sheet logging failed:', err.message);
     }
   }
 
   return res.status(200).json({
     success: true,
-    message: 'Mock cron run completed (Dev mode - no webhook URL)',
+    mode: 'resend_direct',
+    totalRecipients: uniqueRecipients.length,
+    successfulSends: dispatchResults.filter(r => r.ok).length,
+    results: dispatchResults,
+    sheetLog: sheetLogResponse,
     context: { temp, weatherDesc, newsTitle, mascot: template.mascot }
   });
 };
