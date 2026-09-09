@@ -1,6 +1,17 @@
 {
   "version": 2,
   "cleanUrls": true,
+  "headers": [
+    {
+      "source": "/ebooks/(.*)",
+      "headers": [
+        {
+          "key": "Content-Disposition",
+          "value": "attachment"
+        }
+      ]
+    }
+  ],
   "crons": [
     {
       "path": "/api/daily-email",

@@ -173,18 +173,18 @@ async function sendEbookEmail({ email, name, ebookTitle, fileUrl }) {
   const downloadPath = resolveEbookFile(title, fileUrl);
   const cleanSlug = title.toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_+|_+$/g, '');
   const utmTracking = `utm_source=email_ebook&utm_medium=email&utm_campaign=ebook_${cleanSlug}&utm_content=${encodeURIComponent(title)}`;
-  const actionButtonUrl = `https://www.bdbinhdanhocvu.com/library.html?download_file=${encodeURIComponent(downloadPath)}&ebook_title=${encodeURIComponent(title)}&verify_email=${encodeURIComponent(email)}&${utmTracking}`;
+  const actionButtonUrl = `https://www.bdbinhdanhocvu.com/api/log-email?action=downloadEbook&email=${encodeURIComponent(email)}&fileUrl=${encodeURIComponent(downloadPath)}&ebookTitle=${encodeURIComponent(title)}&${utmTracking}`;
 
   const subject = `Tài liệu: ${title} - BD Bình Dân Học Vụ`;
   const message = `
     Peter Vo và Cú BeeDee gửi bạn tài liệu <strong>"${title}"</strong>!<br><br>
-    Bạn hãy bấm vào nút bên dưới để mở trang tải tài liệu về máy. Đồng thời, địa chỉ email của bạn sẽ được kích hoạt tài khoản chính thức (+<strong>15đ tích lũy ⚡</strong>) trên hệ thống BD Bình Dân Học Vụ.
+    Bạn hãy bấm vào nút bên dưới để tải trực tiếp tài liệu về máy. Đồng thời, địa chỉ email của bạn sẽ được kích hoạt tài khoản chính thức (+<strong>15đ tích lũy ⚡</strong>) trên hệ thống BD Bình Dân Học Vụ.
   `;
 
   const html = renderHtmlEmailTemplate({
     greeting: `Chào bạn ${name || 'Chiến binh B2B'}`,
     message: message,
-    buttonText: '📥 Tải Ebook Về Máy Ngay &rarr;',
+    buttonText: '📥 Tải Trực Tiếp Ebook Về Máy &rarr;',
     buttonUrl: actionButtonUrl,
     note: `💡 <strong>Mẹo nhỏ:</strong> Bạn hãy lưu tài liệu về máy để có thể xem lại bất cứ lúc nào. Chúc bạn gặt hái nhiều kết quả tốt trên hành trình BD!`
   });

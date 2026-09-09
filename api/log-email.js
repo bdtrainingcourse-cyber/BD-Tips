@@ -283,19 +283,79 @@ module.exports = async (req, res) => {
   if (action === 'downloadEbook') {
     const targetFile = fileUrl || downloadLink || 'ebooks/Quy trình hưởng trợ cấp thất nghiệp.pdf';
     const cleanTarget = targetFile.replace(/^\/+/, '');
-    
-    // If it's a link pre-fetcher or automated security scanner, DO NOT verify or redirect to library with verify param
+    const directPdfUrl = 'https://www.bdbinhdanhocvu.com/' + encodeURI(cleanTarget);
+    const filename = cleanTarget.split('/').pop() || 'ebook.pdf';
+    const safeFilename = filename.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-zA-Z0-9._-]/g, '_');
+    const encodedFilename = encodeURIComponent(filename);
+
+    // If it's a link pre-fetcher or automated security scanner, redirect to PDF without verification
     if (isPrefetch || isBotCrawler) {
       console.log(`[BOT_PREFETCH_DETECTED] Ignoring prefetch for downloadEbook: ${cleanEmail}`);
-      const directPdfUrl = 'https://www.bdbinhdanhocvu.com/' + encodeURI(cleanTarget);
-      res.writeHead(302, { 'Location': directPdfUrl });
+      res.writeHead(302, { 
+        'Location': directPdfUrl,
+        'Content-Disposition': `attachment; filename="${safeFilename}"; filename*=UTF-8''${encodedFilename}`
+      });
       return res.end();
     }
 
-    // For human users clicking legacy email links, redirect them to library.html to confirm download and verify
-    const libraryRedirectUrl = `https://www.bdbinhdanhocvu.com/library.html?download_file=${encodeURIComponent(cleanTarget)}&ebook_title=${encodeURIComponent(ebookTitle || 'Ebook B2B')}&verify_email=${encodeURIComponent(cleanEmail)}`;
+    // REAL HUMAN USER CLICK:
+    // 1. Mark local user verified & award 15 points
+    if (localUser) {
+      if (!localUser.verified) {
+        localUser.verified = true;
+        localUser.points = (localUser.points || 0) + 15;
+      }
+      localUser.lastActive = timestamp;
+      localUser.lastIp = clientIp;
+      writeUsers(users);
+    } else {
+      const uid = 'UID_' + Math.random().toString(36).substr(2, 9).toUpperCase();
+      users[uid] = {
+        id: uid,
+        email: cleanEmail,
+        name: name || 'Học viên',
+        points: 40,
+        verified: true,
+        lastIp: clientIp,
+        lastActive: timestamp
+      };
+      writeUsers(users);
+      matchedUserId = uid;
+      localUser = users[uid];
+    }
+
+    // 2. Dispatch background updates to Google Sheets (non-blocking)
+    if (webhookUrl) {
+      httpPost(webhookUrl, {
+        action: 'verifyUser',
+        userId: localUser.id,
+        name: localUser.name || 'Học viên',
+        email: cleanEmail,
+        tool: 'email-verification',
+        points: 15,
+        date: timestamp,
+        password: localUser.password || '',
+        secretKey: process.env.B2B_SECRET_KEY || '2108330119Snail!!'
+      }).catch(e => console.warn('[ASYNC_VERIFY_SHEETS_WARN]', e.message));
+
+      httpPost(webhookUrl, {
+        action: 'logLead',
+        email: cleanEmail,
+        tool: 'ebook-download',
+        ebookTitle: ebookTitle || 'Cẩm nang B2B BD',
+        actionDetail: 'Tải trực tiếp Ebook từ Email',
+        additionalInfo: 'File: ' + targetFile,
+        device: 'Email-CTA',
+        date: timestamp,
+        secretKey: process.env.B2B_SECRET_KEY || '2108330119Snail!!'
+      }).catch(e => console.warn('[ASYNC_LOG_SHEETS_WARN]', e.message));
+    }
+
+    // 3. Immediately redirect to direct PDF file URL with Content-Disposition attachment!
+    // No website navigation, file downloads directly to user's device!
     res.writeHead(302, {
-      'Location': libraryRedirectUrl,
+      'Location': directPdfUrl,
+      'Content-Disposition': `attachment; filename="${safeFilename}"; filename*=UTF-8''${encodedFilename}`,
       'Cache-Control': 'no-cache, no-store, must-revalidate',
       'Pragma': 'no-cache',
       'Expires': '0'
