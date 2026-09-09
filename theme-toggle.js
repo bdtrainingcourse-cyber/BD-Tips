@@ -1619,6 +1619,9 @@ function initEmailRegistrations() {
 }
 
 async function checkEmailVerification() {
+    // Ignore automated headless crawlers and bots
+    if (typeof navigator !== 'undefined' && navigator.webdriver) return;
+
     const urlParams = new URLSearchParams(window.location.search);
     const verifyEmail = urlParams.get('verify_email');
     const downloadFile = urlParams.get('download_file');
@@ -1627,71 +1630,187 @@ async function checkEmailVerification() {
     const utmCampaign = urlParams.get('utm_campaign');
     const utmContent = urlParams.get('utm_content');
 
-    if (verifyEmail) {
-        try {
-            const res = await fetch(`/api/log-email?action=verifyUser&email=${encodeURIComponent(verifyEmail)}`);
-            const data = await res.json();
-            if (data.success) {
-                // Update local storage
-                localStorage.setItem('streak_active', 'true');
-                if (data.userId) localStorage.setItem('streak_user_id', data.userId);
-                localStorage.setItem('streak_email', verifyEmail);
-                localStorage.setItem('b2b_points_balance', data.points.toString());
-                localStorage.setItem('b2b_user_verified', 'true');
-                localStorage.setItem('b2b_has_downloaded_before', 'true');
-                
-                // Track UTM attribution & Ebook interest
-                if (window.trackUserBehavior) {
-                    const decodedTitle = ebookTitle ? decodeURIComponent(ebookTitle) : 'Ebook B2B BD';
-                    window.trackUserBehavior('ebook_email_button_verified', `Ebook: ${decodedTitle} | File: ${downloadFile || 'N/A'} | Campaign: ${utmCampaign || 'ebook_download'} | Content: ${utmContent || decodedTitle}`);
-                }
-                
-                // If this verification came from an Ebook download link
-                if (downloadFile) {
-                    const decodedTitle = ebookTitle ? decodeURIComponent(ebookTitle) : 'Ebook B2B BD';
-                    const cleanFile = downloadFile.replace(/^\/+/, '');
-                    const directPdfUrl = window.location.origin + '/' + encodeURI(cleanFile);
-                    window.showGlobalNotification(
-                        '🎉 Xác Thực Thành Công & Tải Ebook!',
-                        `Cảm ơn bạn! Email <strong>${verifyEmail}</strong> của bạn đã được xác thực chính thức (+<strong>15đ ⚡</strong>).<br><br>Cuốn Ebook <strong>${decodedTitle}</strong> đang được tự động tải về máy.<br><br><div style="text-align: center; margin: 15px 0;"><a href="${directPdfUrl}" download class="btn btn-primary" style="display: inline-block; background: linear-gradient(135deg, #a20a0a 0%, #dc2626 100%); color: #fff; padding: 12px 26px; border-radius: 12px; font-weight: 800; text-decoration: none; box-shadow: 0 4px 15px rgba(162, 10, 10, 0.35);">📥 Bấm Vào Đây Để Tải Ebook Ngay</a></div>`
-                    );
+    if (!verifyEmail) return;
 
-                    setTimeout(() => {
-                        window.location.href = directPdfUrl;
-                    }, 800);
-                } else {
-                    // Show standard verification notification modal
+    function cleanupUrl() {
+        urlParams.delete('verify_email');
+        urlParams.delete('download_file');
+        urlParams.delete('ebook_title');
+        urlParams.delete('utm_source');
+        urlParams.delete('utm_medium');
+        urlParams.delete('utm_campaign');
+        urlParams.delete('utm_content');
+        const newQuery = urlParams.toString();
+        const newUrl = window.location.pathname + (newQuery ? '?' + newQuery : '') + window.location.hash;
+        window.history.replaceState(null, null, newUrl);
+    }
+
+    if (downloadFile) {
+        const decodedTitle = ebookTitle ? decodeURIComponent(ebookTitle) : 'Tài liệu B2B BD';
+        const cleanFile = downloadFile.replace(/^\/+/, '');
+        const directPdfUrl = window.location.origin + '/' + encodeURI(cleanFile);
+
+        // Render interactive modal requiring human click to download & verify
+        let overlay = document.getElementById('ebook-download-confirm-modal');
+        if (!overlay) {
+            overlay = document.createElement('div');
+            overlay.id = 'ebook-download-confirm-modal';
+            overlay.className = 'global-modal-overlay';
+            overlay.innerHTML = `
+                <div class="global-modal-box" style="text-align: center; max-width: 480px; padding: 32px 24px;">
+                    <div style="font-size: 3rem; margin-bottom: 12px; line-height: 1;">📚</div>
+                    <h3 style="margin: 0 0 10px 0; font-size: 1.3rem; font-weight: 800; color: #a20a0a;">Tải Ebook & Kích Hoạt Tài Khoản</h3>
+                    <p style="font-size: 0.95rem; line-height: 1.65; color: #334155; margin: 0 0 24px 0;">
+                        Chào mừng bạn đến với BD Bình Dân Học Vụ!<br>
+                        Tài liệu <strong>"${decodedTitle}"</strong> đã sẵn sàng cho email <strong>${verifyEmail}</strong>.
+                    </p>
+                    <button id="btn-confirm-ebook-action" style="background: linear-gradient(135deg, #a20a0a 0%, #dc2626 100%); color: #ffffff; border: none; padding: 14px 28px; border-radius: 12px; font-weight: 800; font-size: 1.05rem; cursor: pointer; width: 100%; box-shadow: 0 4px 18px rgba(162, 10, 10, 0.35); transition: transform 0.2s ease, opacity 0.2s ease;">
+                        📥 Tải Ebook Về Máy & Xác Thực (+15đ ⚡)
+                    </button>
+                    <div style="margin-top: 14px;">
+                        <button id="btn-dismiss-ebook-action" style="background: transparent; border: none; color: #94a3b8; font-size: 0.85rem; cursor: pointer; text-decoration: underline;">Để sau</button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(overlay);
+
+            const actionBtn = overlay.querySelector('#btn-confirm-ebook-action');
+            const dismissBtn = overlay.querySelector('#btn-dismiss-ebook-action');
+
+            dismissBtn.addEventListener('click', () => {
+                overlay.classList.remove('active');
+                cleanupUrl();
+            });
+
+            actionBtn.addEventListener('click', async () => {
+                actionBtn.disabled = true;
+                actionBtn.style.opacity = '0.7';
+                actionBtn.textContent = '⏳ Đang xác thực & tải file...';
+
+                try {
+                    const res = await fetch(`/api/log-email?action=verifyUser&email=${encodeURIComponent(verifyEmail)}`);
+                    const data = await res.json();
+                    
+                    if (data && data.success) {
+                        localStorage.setItem('streak_active', 'true');
+                        if (data.userId) localStorage.setItem('streak_user_id', data.userId);
+                        localStorage.setItem('streak_email', verifyEmail);
+                        localStorage.setItem('b2b_points_balance', (data.points || 40).toString());
+                        localStorage.setItem('b2b_user_verified', 'true');
+                        localStorage.setItem('b2b_has_downloaded_before', 'true');
+
+                        if (window.trackUserBehavior) {
+                            window.trackUserBehavior('ebook_email_button_verified', `Ebook: ${decodedTitle} | File: ${downloadFile} | Campaign: ${utmCampaign || 'ebook_download'}`);
+                        }
+
+                        if (window.showPointToast) {
+                            window.showPointToast(15, "Xác thực Email thành công!");
+                        }
+                        if (window.updateNavbarUserHUD) {
+                            window.updateNavbarUserHUD();
+                        }
+                    }
+                } catch (err) {
+                    console.warn('[VERIFY_ERROR]', err.message);
+                }
+
+                // Trigger direct file download for the user
+                const downloadLinkEl = document.createElement('a');
+                downloadLinkEl.href = directPdfUrl;
+                downloadLinkEl.download = directPdfUrl.split('/').pop();
+                document.body.appendChild(downloadLinkEl);
+                downloadLinkEl.click();
+                document.body.removeChild(downloadLinkEl);
+
+                overlay.classList.remove('active');
+                cleanupUrl();
+
+                if (window.showGlobalNotification) {
+                    window.showGlobalNotification(
+                        '🎉 Tải Ebook & Xác Thực Thành Công!',
+                        `Email <strong>${verifyEmail}</strong> của bạn đã được kích hoạt chính thức (+<strong>15đ ⚡</strong>). File <strong>${decodedTitle}</strong> đang được tải về máy của bạn!`
+                    );
+                }
+            });
+        }
+
+        // Show modal smoothly
+        overlay.offsetHeight;
+        overlay.classList.add('active');
+    } else {
+        // Standard email verification (without ebook download) - requires explicit user confirmation
+        let overlay = document.getElementById('account-verify-confirm-modal');
+        if (!overlay) {
+            overlay = document.createElement('div');
+            overlay.id = 'account-verify-confirm-modal';
+            overlay.className = 'global-modal-overlay';
+            overlay.innerHTML = `
+                <div class="global-modal-box" style="text-align: center; max-width: 460px; padding: 32px 24px;">
+                    <div style="font-size: 3rem; margin-bottom: 12px; line-height: 1;">🎉</div>
+                    <h3 style="margin: 0 0 10px 0; font-size: 1.3rem; font-weight: 800; color: #a20a0a;">Kích Hoạt Tài Khoản Học Viên</h3>
+                    <p style="font-size: 0.95rem; line-height: 1.65; color: #334155; margin: 0 0 24px 0;">
+                        Chào bạn! Nhấn nút bên dưới để hoàn tất xác thực email <strong>${verifyEmail}</strong> và nhận ngay <strong>15đ tích lũy ⚡</strong> vào tài khoản.
+                    </p>
+                    <button id="btn-confirm-verify-user" style="background: linear-gradient(135deg, #a20a0a 0%, #dc2626 100%); color: #ffffff; border: none; padding: 14px 28px; border-radius: 12px; font-weight: 800; font-size: 1.05rem; cursor: pointer; width: 100%; box-shadow: 0 4px 18px rgba(162, 10, 10, 0.35); transition: transform 0.2s ease, opacity 0.2s ease;">
+                        ⚡ Kích Hoạt Tài Khoản & Nhận 15đ
+                    </button>
+                    <div style="margin-top: 14px;">
+                        <button id="btn-dismiss-verify-user" style="background: transparent; border: none; color: #94a3b8; font-size: 0.85rem; cursor: pointer; text-decoration: underline;">Để sau</button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(overlay);
+
+            const actionBtn = overlay.querySelector('#btn-confirm-verify-user');
+            const dismissBtn = overlay.querySelector('#btn-dismiss-verify-user');
+
+            dismissBtn.addEventListener('click', () => {
+                overlay.classList.remove('active');
+                cleanupUrl();
+            });
+
+            actionBtn.addEventListener('click', async () => {
+                actionBtn.disabled = true;
+                actionBtn.style.opacity = '0.7';
+                actionBtn.textContent = '⏳ Đang kích hoạt...';
+
+                try {
+                    const res = await fetch(`/api/log-email?action=verifyUser&email=${encodeURIComponent(verifyEmail)}`);
+                    const data = await res.json();
+                    
+                    if (data && data.success) {
+                        localStorage.setItem('streak_active', 'true');
+                        if (data.userId) localStorage.setItem('streak_user_id', data.userId);
+                        localStorage.setItem('streak_email', verifyEmail);
+                        localStorage.setItem('b2b_points_balance', (data.points || 40).toString());
+                        localStorage.setItem('b2b_user_verified', 'true');
+
+                        if (window.showPointToast) {
+                            window.showPointToast(15, "Xác thực Email thành công!");
+                        }
+                        if (window.updateNavbarUserHUD) {
+                            window.updateNavbarUserHUD();
+                        }
+                    }
+                } catch (err) {
+                    console.warn('[VERIFY_ERROR]', err.message);
+                }
+
+                overlay.classList.remove('active');
+                cleanupUrl();
+
+                if (window.showGlobalNotification) {
                     window.showGlobalNotification(
                         '🎉 Xác Thực Thành Công!',
-                        `Cảm ơn bạn đã xác nhận tham gia! Email <strong>${verifyEmail}</strong> của bạn đã được kích hoạt chính thức.<br><br>Cú BeeDee vừa cộng thêm <strong>15đ ⚡</strong> vào tài khoản tích lũy của bạn.`
+                        `Cảm ơn bạn đã xác nhận tham gia! Email <strong>${verifyEmail}</strong> của bạn đã được kích hoạt chính thức (+<strong>15đ ⚡</strong>).`
                     );
                 }
-                
-                // Trigger points toast
-                if (window.showPointToast) {
-                    window.showPointToast(15, "Xác thực Email thành công!");
-                }
-                
-                // Update HUD
-                if (window.updateNavbarUserHUD) {
-                    window.updateNavbarUserHUD();
-                }
-            }
-        } catch (e) {
-            console.error('Lỗi xác thực email:', e);
-        } finally {
-            // Remove verification query params from URL without reloading
-            urlParams.delete('verify_email');
-            urlParams.delete('download_file');
-            urlParams.delete('ebook_title');
-            urlParams.delete('utm_source');
-            urlParams.delete('utm_medium');
-            urlParams.delete('utm_campaign');
-            urlParams.delete('utm_content');
-            const newQuery = urlParams.toString();
-            const newUrl = window.location.pathname + (newQuery ? '?' + newQuery : '') + window.location.hash;
-            window.history.replaceState(null, null, newUrl);
+            });
         }
+
+        // Show modal smoothly
+        overlay.offsetHeight;
+        overlay.classList.add('active');
     }
 }
 

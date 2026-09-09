@@ -273,7 +273,43 @@ module.exports = async (req, res) => {
     });
   }
 
-  if (action === 'verifyUser' || action === 'downloadEbook') {
+  const isPrefetch = req.headers['purpose'] === 'prefetch' || 
+                     req.headers['sec-purpose'] === 'prefetch' || 
+                     req.headers['x-purpose'] === 'preview' || 
+                     req.headers['x-moz'] === 'prefetch';
+  const uaHeader = (req.headers['user-agent'] || '').toLowerCase();
+  const isBotCrawler = /bot|crawler|spider|google-safety|googleimageproxy|facebookexternalhit|slackbot|safelinks|virustotal|barracuda|proofpoint/i.test(uaHeader);
+
+  if (action === 'downloadEbook') {
+    const targetFile = fileUrl || downloadLink || 'ebooks/Quy trình hưởng trợ cấp thất nghiệp.pdf';
+    const cleanTarget = targetFile.replace(/^\/+/, '');
+    
+    // If it's a link pre-fetcher or automated security scanner, DO NOT verify or redirect to library with verify param
+    if (isPrefetch || isBotCrawler) {
+      console.log(`[BOT_PREFETCH_DETECTED] Ignoring prefetch for downloadEbook: ${cleanEmail}`);
+      const directPdfUrl = 'https://www.bdbinhdanhocvu.com/' + encodeURI(cleanTarget);
+      res.writeHead(302, { 'Location': directPdfUrl });
+      return res.end();
+    }
+
+    // For human users clicking legacy email links, redirect them to library.html to confirm download and verify
+    const libraryRedirectUrl = `https://www.bdbinhdanhocvu.com/library.html?download_file=${encodeURIComponent(cleanTarget)}&ebook_title=${encodeURIComponent(ebookTitle || 'Ebook B2B')}&verify_email=${encodeURIComponent(cleanEmail)}`;
+    res.writeHead(302, {
+      'Location': libraryRedirectUrl,
+      'Cache-Control': 'no-cache, no-store, must-revalidate',
+      'Pragma': 'no-cache',
+      'Expires': '0'
+    });
+    return res.end();
+  }
+
+  if (action === 'verifyUser') {
+    // Protect verifyUser against automated bot/pre-fetch engines
+    if (isPrefetch || isBotCrawler) {
+      console.log(`[BOT_PREFETCH_DETECTED] Rejecting verifyUser for ${cleanEmail} from crawler: ${uaHeader}`);
+      return res.status(200).json({ success: false, message: 'Bot/Prefetch request ignored' });
+    }
+
     if (localUser) {
       if (!localUser.verified) {
         localUser.verified = true;
@@ -316,36 +352,6 @@ module.exports = async (req, res) => {
       } catch (err) {
         console.error(`[SHEETS_SYNC_ERROR] Verify user forward failed:`, err.message);
       }
-    }
-
-    if (action === 'downloadEbook') {
-      const targetFile = fileUrl || downloadLink || 'ebooks/Quy trình hưởng trợ cấp thất nghiệp.pdf';
-      const cleanTarget = targetFile.replace(/^\/+/, '');
-      const redirectPdfUrl = 'https://www.bdbinhdanhocvu.com/' + encodeURI(cleanTarget);
-      
-      if (webhookUrl) {
-        try {
-          await httpPost(webhookUrl, {
-            action: 'logLead',
-            email: cleanEmail,
-            tool: 'ebook-download',
-            ebookTitle: ebookTitle || 'Cẩm nang B2B BD',
-            actionDetail: 'Tải Ebook từ Email',
-            additionalInfo: 'File: ' + targetFile,
-            device: 'Email-CTA',
-            date: timestamp,
-            secretKey: process.env.B2B_SECRET_KEY || '2108330119Snail!!'
-          });
-        } catch(e) {}
-      }
-
-      res.writeHead(302, {
-        'Location': redirectPdfUrl,
-        'Cache-Control': 'no-cache, no-store, must-revalidate',
-        'Pragma': 'no-cache',
-        'Expires': '0'
-      });
-      return res.end();
     }
 
     return res.status(200).json({
@@ -632,7 +638,7 @@ module.exports = async (req, res) => {
     let payload = {};
     if (action === 'sendEbookVerificationEmail' || tool === 'ebook-download') {
       payload = {
-        action: 'sendEbookVerificationEmail',
+        action: 'syncUser',
         userId: localUser.id,
         name: name || localUser.name,
         email,
@@ -646,7 +652,8 @@ module.exports = async (req, res) => {
         skill: localUser.skill || '',
         ebookTitle: ebookTitle || '',
         fileUrl: fileUrl || downloadLink || '',
-        downloadLink: downloadLink || ''
+        downloadLink: downloadLink || '',
+        skipEmail: true
       };
     } else if (action === 'syncUser' || tool === 'daily-points' || tool === 'exit-intent-ebook') {
       payload = {

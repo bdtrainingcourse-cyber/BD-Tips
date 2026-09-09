@@ -77,16 +77,17 @@ function doPost(e) {
 
 function doGet(e) {
   try {
-    const action = e.parameter.action;
-    const email = e.parameter.email ? e.parameter.email.toLowerCase().trim() : "";
-    const name = e.parameter.name || "Học viên";
+    const params = (e && e.parameter) ? e.parameter : {};
+    const action = params.action || "";
+    const email = params.email ? params.email.toLowerCase().trim() : "";
+    const name = params.name || "Học viên";
     
     if (action === "checkEmail") {
       return checkEmail(email, name);
     } else if (action === "getUsers") {
       return getAllUsers();
     } else if (action === "verifyUser") {
-      const points = e.parameter.points ? parseInt(e.parameter.points, 10) : 15;
+      const points = params.points ? parseInt(params.points, 10) : 15;
       return verifyUser(email, points);
     } else if (action === "diagnostics") {
       const quota = MailApp.getRemainingDailyQuota();
@@ -208,29 +209,34 @@ function getAllUsers() {
   try {
     const sheet = getOrCreateSheet("Học Viên Đăng Ký");
     const data = sheet.getDataRange().getValues();
-    if (data.length <= 1) return createJsonResponse({ success: true, users: [] });
+    if (data.length <= 1) return createJsonResponse({ success: true, users: [], totalCount: 0 });
     
     const headers = data[0];
     const idx = getHeaderIndices(headers);
+    const emailCol = idx.email !== -1 ? idx.email : 3;
+    const nameCol = idx.name !== -1 ? idx.name : 2;
+    const verifiedCol = idx.verified !== -1 ? idx.verified : 4;
+    const idCol = idx.id !== -1 ? idx.id : 0;
+    
     const users = [];
     
     for (let i = 1; i < data.length; i++) {
       const row = data[i];
-      const email = (idx.email !== -1 && row[idx.email]) ? row[idx.email].toString().toLowerCase().trim() : "";
+      const email = (row[emailCol]) ? row[emailCol].toString().toLowerCase().trim() : "";
       if (!email || !email.includes("@")) continue;
       
-      const name = (idx.name !== -1 && row[idx.name]) ? row[idx.name].toString().trim() : "Học viên";
-      const verifiedVal = idx.verified !== -1 ? row[idx.verified] : false;
-      const isVerified = (verifiedVal === true || verifiedVal.toString().toUpperCase() === "TRUE" || verifiedVal.toString().trim() === "Đã xác thực");
+      const name = (row[nameCol]) ? row[nameCol].toString().trim() : "Học viên";
+      const verifiedVal = row[verifiedCol];
+      const isVerified = (verifiedVal === true || (verifiedVal && verifiedVal.toString().toUpperCase() === "TRUE") || (verifiedVal && verifiedVal.toString().trim() === "Đã xác thực"));
       
       users.push({
-        id: (idx.id !== -1 && row[idx.id]) ? row[idx.id].toString().trim() : "",
+        id: (row[idCol]) ? row[idCol].toString().trim() : "",
         name: name,
         email: email,
         verified: isVerified
       });
     }
-    return createJsonResponse({ success: true, users: users });
+    return createJsonResponse({ success: true, users: users, totalCount: users.length });
   } catch (err) {
     return createJsonResponse({ success: false, error: err.message });
   }
@@ -312,12 +318,8 @@ function syncUser(data, skipEmail) {
       
       sheet.appendRow(newRow);
       
-      if (!skipEmail) {
-        if (data.action === "sendEbookVerificationEmail" || data.tool === "ebook-download" || data.ebookTitle) {
-          sendEbookVerificationEmail(email, name, data.ebookTitle, data.fileUrl || data.downloadLink, userId);
-        } else {
-          sendVerificationEmail(email, name);
-        }
+      if (data.action === "sendEbookVerificationEmail" || data.tool === "ebook-download" || data.ebookTitle) {
+        sendEbookVerificationEmail(email, name, data.ebookTitle, data.fileUrl || data.downloadLink, userId);
       }
       
       return createJsonResponse({ success: true, isNew: true, points: points, userId: userId });
@@ -335,7 +337,7 @@ function syncUser(data, skipEmail) {
       if (idx.phone !== -1 && data.phone) sheet.getRange(userRowIndex, idx.phone + 1).setValue(data.phone);
       if (idx.company !== -1 && data.company) sheet.getRange(userRowIndex, idx.company + 1).setValue(data.company);
       
-      if (!skipEmail && (data.action === "sendEbookVerificationEmail" || data.tool === "ebook-download" || data.ebookTitle)) {
+      if (data.action === "sendEbookVerificationEmail" || data.tool === "ebook-download" || data.ebookTitle) {
         sendEbookVerificationEmail(email, name, data.ebookTitle, data.fileUrl || data.downloadLink, userId);
       }
       
@@ -711,25 +713,11 @@ function sendEbookVerificationEmail(email, name, ebookTitle, fileUrl, userId) {
       Logger.log("Log ebook error: " + logErr.message);
     }
 
-    const subject = "📚 [Tải Ebook] " + title + " - Cú BeeDee";
-    const message = "Chào bạn <b>" + name + "</b>,<br><br>" +
-      "Cú BeeDee gửi bạn trọn bộ cẩm nang thực chiến chuyên sâu: <b>" + title + "</b>.<br><br>" +
-      "👉 Bạn hãy nhấn vào nút màu đỏ bên dưới để <b>Tải & Mở Ebook PDF Trực Tiếp Tốc Độ Cao</b> về máy (đồng thời hệ thống sẽ tự động kích hoạt tài khoản và tặng thêm <b>15đ ⚡</b> tích lũy cho bạn):";
-    
-    const bodyHtml = getHtmlEmailTemplate(message, "📥 Tải / Mở Ebook PDF Ngay", actionButtonUrl, "https://www.bdbinhdanhocvu.com/mascot_quests.jpg", name);
-    
-    // Gửi email tốc độ siêu tốc (dưới 0.3s) - Không bị ngắt kết nối Vercel Timeout
-    const mailResult = sendEmailSafe({
-      to: email,
-      name: "BD Bình Dân Học Vụ - Cú BeeDee",
-      subject: subject,
-      htmlBody: bodyHtml
-    });
-    
+    // Email sending is exclusively delegated to Resend on Vercel to maintain SPF/DKIM alignment and prevent spam/duplicate emails
     return createJsonResponse({ 
-      success: mailResult.success, 
-      method: mailResult.method, 
-      message: "Ebook email dispatched to " + email, 
+      success: true, 
+      method: "Delegated to Resend", 
+      message: "Ebook lead logged to sheet. Email dispatch handled by Resend.", 
       ebookTitle: title, 
       fileUrl: downloadPath 
     });

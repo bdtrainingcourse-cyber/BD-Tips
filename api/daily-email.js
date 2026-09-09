@@ -599,19 +599,35 @@ YÊU CẦU NỘI DUNG & PHONG CÁCH:
 
   let targetUsers = [];
   
-  // 1. Attempt to fetch fresh users from Google Sheets webhook
+  // 1. Attempt to fetch fresh users from Google Sheets webhook (POST with GET fallback)
   if (webhookUrl) {
     try {
-      const sheetUsersRes = await httpPost(webhookUrl, { action: 'getUsers' });
+      const sheetUsersRes = await httpPost(webhookUrl, { action: 'getUsers', secretKey: B2B_SECRET_KEY });
       if (sheetUsersRes.ok) {
         const data = await sheetUsersRes.json();
         if (data && data.success && Array.isArray(data.users) && data.users.length > 0) {
           targetUsers = data.users;
-          console.log(`[DAILY_EMAIL_CRON] Loaded ${targetUsers.length} users from Google Sheets.`);
+          console.log(`[DAILY_EMAIL_CRON] Loaded ${targetUsers.length} users from Google Sheets (POST).`);
         }
       }
     } catch (e) {
-      console.warn('[DAILY_EMAIL_CRON] Could not fetch live users from Google Sheets:', e.message);
+      console.warn('[DAILY_EMAIL_CRON] POST getUsers failed, trying GET fallback:', e.message);
+    }
+
+    if (!targetUsers || targetUsers.length === 0) {
+      try {
+        const getUrl = `${webhookUrl}?action=getUsers&secretKey=${encodeURIComponent(B2B_SECRET_KEY)}`;
+        const sheetGetRes = await httpGet(getUrl);
+        if (sheetGetRes.ok) {
+          const data = await sheetGetRes.json();
+          if (data && data.success && Array.isArray(data.users) && data.users.length > 0) {
+            targetUsers = data.users;
+            console.log(`[DAILY_EMAIL_CRON] Loaded ${targetUsers.length} users from Google Sheets (GET).`);
+          }
+        }
+      } catch (getErr) {
+        console.warn('[DAILY_EMAIL_CRON] GET fallback getUsers failed:', getErr.message);
+      }
     }
   }
 
