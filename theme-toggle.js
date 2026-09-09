@@ -1650,167 +1650,84 @@ async function checkEmailVerification() {
         const cleanFile = downloadFile.replace(/^\/+/, '');
         const directPdfUrl = window.location.origin + '/' + encodeURI(cleanFile);
 
-        // Render interactive modal requiring human click to download & verify
-        let overlay = document.getElementById('ebook-download-confirm-modal');
-        if (!overlay) {
-            overlay = document.createElement('div');
-            overlay.id = 'ebook-download-confirm-modal';
-            overlay.className = 'global-modal-overlay';
-            overlay.innerHTML = `
-                <div class="global-modal-box" style="text-align: center; max-width: 480px; padding: 32px 24px;">
-                    <div style="font-size: 3rem; margin-bottom: 12px; line-height: 1;">📚</div>
-                    <h3 style="margin: 0 0 10px 0; font-size: 1.3rem; font-weight: 800; color: #a20a0a;">Tải Ebook & Kích Hoạt Tài Khoản</h3>
-                    <p style="font-size: 0.95rem; line-height: 1.65; color: #334155; margin: 0 0 24px 0;">
-                        Chào mừng bạn đến với BD Bình Dân Học Vụ!<br>
-                        Tài liệu <strong>"${decodedTitle}"</strong> đã sẵn sàng cho email <strong>${verifyEmail}</strong>.
-                    </p>
-                    <button id="btn-confirm-ebook-action" style="background: linear-gradient(135deg, #a20a0a 0%, #dc2626 100%); color: #ffffff; border: none; padding: 14px 28px; border-radius: 12px; font-weight: 800; font-size: 1.05rem; cursor: pointer; width: 100%; box-shadow: 0 4px 18px rgba(162, 10, 10, 0.35); transition: transform 0.2s ease, opacity 0.2s ease;">
-                        📥 Tải Ebook Về Máy & Xác Thực (+15đ ⚡)
-                    </button>
-                    <div style="margin-top: 14px;">
-                        <button id="btn-dismiss-ebook-action" style="background: transparent; border: none; color: #94a3b8; font-size: 0.85rem; cursor: pointer; text-decoration: underline;">Để sau</button>
-                    </div>
-                </div>
-            `;
-            document.body.appendChild(overlay);
-
-            const actionBtn = overlay.querySelector('#btn-confirm-ebook-action');
-            const dismissBtn = overlay.querySelector('#btn-dismiss-ebook-action');
-
-            dismissBtn.addEventListener('click', () => {
-                overlay.classList.remove('active');
-                cleanupUrl();
-            });
-
-            actionBtn.addEventListener('click', async () => {
-                actionBtn.disabled = true;
-                actionBtn.style.opacity = '0.7';
-                actionBtn.textContent = '⏳ Đang xác thực & tải file...';
-
-                try {
-                    const res = await fetch(`/api/log-email?action=verifyUser&email=${encodeURIComponent(verifyEmail)}`);
-                    const data = await res.json();
-                    
-                    if (data && data.success) {
-                        localStorage.setItem('streak_active', 'true');
-                        if (data.userId) localStorage.setItem('streak_user_id', data.userId);
-                        localStorage.setItem('streak_email', verifyEmail);
-                        localStorage.setItem('b2b_points_balance', (data.points || 40).toString());
-                        localStorage.setItem('b2b_user_verified', 'true');
-                        localStorage.setItem('b2b_has_downloaded_before', 'true');
-
-                        if (window.trackUserBehavior) {
-                            window.trackUserBehavior('ebook_email_button_verified', `Ebook: ${decodedTitle} | File: ${downloadFile} | Campaign: ${utmCampaign || 'ebook_download'}`);
-                        }
-
-                        if (window.showPointToast) {
-                            window.showPointToast(15, "Xác thực Email thành công!");
-                        }
-                        if (window.updateNavbarUserHUD) {
-                            window.updateNavbarUserHUD();
-                        }
-                    }
-                } catch (err) {
-                    console.warn('[VERIFY_ERROR]', err.message);
-                }
-
-                // Trigger direct file download for the user
-                const downloadLinkEl = document.createElement('a');
-                downloadLinkEl.href = directPdfUrl;
-                downloadLinkEl.download = directPdfUrl.split('/').pop();
-                document.body.appendChild(downloadLinkEl);
-                downloadLinkEl.click();
-                document.body.removeChild(downloadLinkEl);
-
-                overlay.classList.remove('active');
-                cleanupUrl();
-
-                if (window.showGlobalNotification) {
-                    window.showGlobalNotification(
-                        '🎉 Tải Ebook & Xác Thực Thành Công!',
-                        `Email <strong>${verifyEmail}</strong> của bạn đã được kích hoạt chính thức (+<strong>15đ ⚡</strong>). File <strong>${decodedTitle}</strong> đang được tải về máy của bạn!`
-                    );
-                }
-            });
+        // 1. Trigger file download IMMEDIATELY without any intermediate modal popup
+        try {
+            const downloadLinkEl = document.createElement('a');
+            downloadLinkEl.href = directPdfUrl;
+            downloadLinkEl.download = directPdfUrl.split('/').pop();
+            document.body.appendChild(downloadLinkEl);
+            downloadLinkEl.click();
+            document.body.removeChild(downloadLinkEl);
+        } catch (dlErr) {
+            console.warn('[DOWNLOAD_TRIGGER_WARN]', dlErr);
+            window.location.href = directPdfUrl;
         }
 
-        // Show modal smoothly
-        overlay.offsetHeight;
-        overlay.classList.add('active');
+        // 2. Mark local storage verified and active
+        localStorage.setItem('streak_active', 'true');
+        localStorage.setItem('streak_email', verifyEmail);
+        localStorage.setItem('b2b_user_verified', 'true');
+        localStorage.setItem('b2b_has_downloaded_before', 'true');
+
+        // 3. Notify user with non-blocking toast
+        if (window.showPointToast) {
+            window.showPointToast(15, `Đang tải ${decodedTitle} (+15đ)!`);
+        }
+
+        if (window.updateNavbarUserHUD) {
+            window.updateNavbarUserHUD();
+        }
+
+        if (window.trackUserBehavior) {
+            window.trackUserBehavior('ebook_email_direct_download', `Ebook: ${decodedTitle} | File: ${downloadFile} | Campaign: ${utmCampaign || 'ebook_download'}`);
+        }
+
+        // 4. Sync verification to backend in background (fire-and-forget, non-blocking)
+        fetch(`/api/log-email?action=verifyUser&email=${encodeURIComponent(verifyEmail)}`)
+            .then(res => res.json())
+            .then(data => {
+                if (data && data.success) {
+                    if (data.userId) localStorage.setItem('streak_user_id', data.userId);
+                    if (data.points) localStorage.setItem('b2b_points_balance', data.points.toString());
+                    if (window.updateNavbarUserHUD) window.updateNavbarUserHUD();
+                }
+            })
+            .catch(err => console.warn('[ASYNC_VERIFY_WARN]', err.message));
+
+        cleanupUrl();
     } else {
-        // Standard email verification (without ebook download) - requires explicit user confirmation
-        let overlay = document.getElementById('account-verify-confirm-modal');
-        if (!overlay) {
-            overlay = document.createElement('div');
-            overlay.id = 'account-verify-confirm-modal';
-            overlay.className = 'global-modal-overlay';
-            overlay.innerHTML = `
-                <div class="global-modal-box" style="text-align: center; max-width: 460px; padding: 32px 24px;">
-                    <div style="font-size: 3rem; margin-bottom: 12px; line-height: 1;">🎉</div>
-                    <h3 style="margin: 0 0 10px 0; font-size: 1.3rem; font-weight: 800; color: #a20a0a;">Kích Hoạt Tài Khoản Học Viên</h3>
-                    <p style="font-size: 0.95rem; line-height: 1.65; color: #334155; margin: 0 0 24px 0;">
-                        Chào bạn! Nhấn nút bên dưới để hoàn tất xác thực email <strong>${verifyEmail}</strong> và nhận ngay <strong>15đ tích lũy ⚡</strong> vào tài khoản.
-                    </p>
-                    <button id="btn-confirm-verify-user" style="background: linear-gradient(135deg, #a20a0a 0%, #dc2626 100%); color: #ffffff; border: none; padding: 14px 28px; border-radius: 12px; font-weight: 800; font-size: 1.05rem; cursor: pointer; width: 100%; box-shadow: 0 4px 18px rgba(162, 10, 10, 0.35); transition: transform 0.2s ease, opacity 0.2s ease;">
-                        ⚡ Kích Hoạt Tài Khoản & Nhận 15đ
-                    </button>
-                    <div style="margin-top: 14px;">
-                        <button id="btn-dismiss-verify-user" style="background: transparent; border: none; color: #94a3b8; font-size: 0.85rem; cursor: pointer; text-decoration: underline;">Để sau</button>
-                    </div>
-                </div>
-            `;
-            document.body.appendChild(overlay);
+        // Standard email verification (without ebook download)
+        localStorage.setItem('streak_active', 'true');
+        localStorage.setItem('streak_email', verifyEmail);
+        localStorage.setItem('b2b_user_verified', 'true');
 
-            const actionBtn = overlay.querySelector('#btn-confirm-verify-user');
-            const dismissBtn = overlay.querySelector('#btn-dismiss-verify-user');
-
-            dismissBtn.addEventListener('click', () => {
-                overlay.classList.remove('active');
-                cleanupUrl();
-            });
-
-            actionBtn.addEventListener('click', async () => {
-                actionBtn.disabled = true;
-                actionBtn.style.opacity = '0.7';
-                actionBtn.textContent = '⏳ Đang kích hoạt...';
-
-                try {
-                    const res = await fetch(`/api/log-email?action=verifyUser&email=${encodeURIComponent(verifyEmail)}`);
-                    const data = await res.json();
-                    
-                    if (data && data.success) {
-                        localStorage.setItem('streak_active', 'true');
-                        if (data.userId) localStorage.setItem('streak_user_id', data.userId);
-                        localStorage.setItem('streak_email', verifyEmail);
-                        localStorage.setItem('b2b_points_balance', (data.points || 40).toString());
-                        localStorage.setItem('b2b_user_verified', 'true');
-
-                        if (window.showPointToast) {
-                            window.showPointToast(15, "Xác thực Email thành công!");
-                        }
-                        if (window.updateNavbarUserHUD) {
-                            window.updateNavbarUserHUD();
-                        }
-                    }
-                } catch (err) {
-                    console.warn('[VERIFY_ERROR]', err.message);
-                }
-
-                overlay.classList.remove('active');
-                cleanupUrl();
-
-                if (window.showGlobalNotification) {
-                    window.showGlobalNotification(
-                        '🎉 Xác Thực Thành Công!',
-                        `Cảm ơn bạn đã xác nhận tham gia! Email <strong>${verifyEmail}</strong> của bạn đã được kích hoạt chính thức (+<strong>15đ ⚡</strong>).`
-                    );
-                }
-            });
+        if (window.showPointToast) {
+            window.showPointToast(15, "Xác thực Email thành công (+15đ)!");
         }
 
-        // Show modal smoothly
-        overlay.offsetHeight;
-        overlay.classList.add('active');
+        if (window.showGlobalNotification) {
+            window.showGlobalNotification(
+                '🎉 Xác Thực Thành Công!',
+                `Cảm ơn bạn đã xác nhận tham gia! Email <strong>${verifyEmail}</strong> của bạn đã được kích hoạt chính thức (+<strong>15đ ⚡</strong>).`
+            );
+        }
+
+        if (window.updateNavbarUserHUD) {
+            window.updateNavbarUserHUD();
+        }
+
+        fetch(`/api/log-email?action=verifyUser&email=${encodeURIComponent(verifyEmail)}`)
+            .then(res => res.json())
+            .then(data => {
+                if (data && data.success) {
+                    if (data.userId) localStorage.setItem('streak_user_id', data.userId);
+                    if (data.points) localStorage.setItem('b2b_points_balance', data.points.toString());
+                    if (window.updateNavbarUserHUD) window.updateNavbarUserHUD();
+                }
+            })
+            .catch(err => console.warn('[ASYNC_VERIFY_WARN]', err.message));
+
+        cleanupUrl();
     }
 }
 
