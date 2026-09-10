@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BD Bình Dân Học Vụ - Để Bạn Không Đơn Độc Trên Hành Trình BD</title>
+  <meta name="description" content="Khám phá trọn bộ 9 vũ khí thực chiến của BD Bình Dân Học Vụ: Test tính cách, AI Email, Phễu KPI, Lương OTE, 9+ Ebook B2B. Để bạn không đơn độc trên hành trình BD!">
+  <meta property="og:title" content="BD Bình Dân Học Vụ - Để Bạn Không Đơn Độc Trên Hành Trình BD">
+  <meta property="og:description" content="Khám phá trọn bộ 9 vũ khí thực chiến cho dân Sales & Business Development B2B: Test tính cách, AI Email, Phễu KPI, Lương OTE, 9+ Ebook B2B độc quyền.">
+  <meta property="og:image" content="https://www.bdbinhdanhocvu.com/mascot_champion.jpg">
+  <meta property="og:url" content="https://www.bdbinhdanhocvu.com/slides.html">
+  <meta name="twitter:card" content="summary_large_image">
+  <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=Be+Vietnam+Pro:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    * { font-family: 'Plus Jakarta Sans', 'Be Vietnam Pro', sans-serif; }
+    .slide-anim { animation: fadeInScale 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+    @keyframes fadeInScale {
+      from { opacity: 0; transform: translateY(12px) scale(0.98); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    .orbit-spin-slow {
+      animation: spin 60s linear infinite;
+    }
+    @keyframes spin {
+      100% { transform: rotate(360deg); }
+    }
+    .pulse-glow-red {
+      box-shadow: 0 0 25px rgba(220, 38, 38, 0.35);
+    }
+  </style>
+</head>
+<body class="bg-[#F8F6F0] text-slate-800 min-h-screen flex flex-col items-center justify-start p-3 sm:p-5 select-none overflow-x-hidden">
+
+  <!-- TOP BAR & CONTROLS -->
+  <header class="w-full max-w-4xl bg-white/95 backdrop-blur-md border border-slate-200/90 rounded-2xl shadow-sm p-3 mb-4 flex flex-wrap items-center justify-between gap-3">
+    <!-- Brand Slogan Header -->
+    <div class="flex items-center gap-3">
+      <div class="w-11 h-11 rounded-full border-2 border-red-600 overflow-hidden bg-red-50 p-0.5 shadow-sm flex-shrink-0">
+        <img src="https://www.bdbinhdanhocvu.com/mascot_quests.jpg" alt="Cú BeeDee" class="w-full h-full object-cover rounded-full">
+      </div>
+      <div>
+        <div class="flex items-center gap-2">
+          <span class="font-extrabold text-slate-900 text-sm sm:text-base tracking-tight">BD BÌNH DÂN HỌC VỤ</span>
+          <span class="text-[10px] bg-red-600 text-white font-black px-2 py-0.5 rounded-full uppercase tracking-wider">Social Edition</span>
+        </div>
+        <p class="text-xs text-red-600 font-bold tracking-wide flex items-center gap-1">
+          <span>✨ "Để Bạn Không Đơn Độc Trên Hành Trình BD"</span>
+        </p>
+      </div>
+    </div>
+
+    <!-- Aspect Ratio Switcher (LinkedIn 4:5 vs TikTok 9:16 vs Desktop 16:9) -->
+    <div class="flex items-center bg-slate-100 p-1 rounded-xl border border-slate-200 text-xs font-bold">
+      <button onclick="setRatio('linkedin')" id="btnRatioLinkedin" class="px-3 py-1.5 rounded-lg transition text-white bg-red-600 shadow-sm flex items-center gap-1">
+        <span>📄</span> <span>LinkedIn (4:5)</span>
+      </button>
+      <button onclick="setRatio('tiktok')" id="btnRatioTiktok" class="px-3 py-1.5 rounded-lg transition text-slate-600 hover:text-slate-900 flex items-center gap-1">
+        <span>📱</span> <span>TikTok (9:16)</span>
+      </button>
+      <button onclick="setRatio('desktop')" id="btnRatioDesktop" class="px-3 py-1.5 rounded-lg transition text-slate-600 hover:text-slate-900 flex items-center gap-1">
+        <span>💻</span> <span>Ngang (16:9)</span>
+      </button>
+    </div>
+
+    <!-- Actions -->
+    <div class="flex items-center gap-2">
+      <span id="slideCounter" class="text-xs font-bold bg-slate-100 text-slate-700 px-2.5 py-1.5 rounded-lg border border-slate-200">1 / 11</span>
+      <button onclick="toggleAutoPlay()" id="btnAutoPlay" class="text-xs font-semibold bg-slate-100 hover:bg-slate-200 text-slate-700 px-2.5 py-1.5 rounded-lg border border-slate-200 transition">
+        ▶ Tự động
+      </button>
+      <a href="https://www.bdbinhdanhocvu.com" target="_blank" class="text-xs font-bold bg-gradient-to-r from-red-600 to-amber-600 text-white px-3.5 py-1.5 rounded-lg shadow-sm hover:opacity-95 transition flex items-center gap-1">
+        Portal ↗
+      </a>
+    </div>
+  </header>
+
+  <!-- SLIDE CONTAINER WRAPPER -->
+  <div id="slideFrameContainer" class="w-full max-w-[490px] transition-all duration-300 flex justify-center">
+    
+    <!-- MAIN CARD -->
+    <main id="slideCard" class="w-full min-h-[620px] bg-white border border-slate-200/90 rounded-3xl p-5 sm:p-7 shadow-xl shadow-slate-200/60 relative flex flex-col justify-between overflow-hidden transition-all duration-300">
+      
+      <!-- Top Decorative Glows -->
+      <div class="absolute -top-24 -right-24 w-72 h-72 bg-red-100/50 rounded-full blur-3xl pointer-events-none"></div>
+      <div class="absolute -bottom-24 -left-24 w-72 h-72 bg-amber-100/50 rounded-full blur-3xl pointer-events-none"></div>
+
+      <!-- SLIDE INNER CONTENT (Injected by JS) -->
+      <div id="slideContent" class="slide-anim flex-1 flex flex-col justify-between z-10">
+        <!-- Rendered by JS -->
+      </div>
+
+      <!-- BOTTOM NAVIGATION -->
+      <div class="pt-4 mt-4 border-t border-slate-100 flex items-center justify-between gap-3 z-10">
+        <!-- Dots -->
+        <div id="dotIndicators" class="flex items-center gap-1.5 flex-wrap max-w-[280px]">
+          <!-- Rendered by JS -->
+        </div>
+
+        <!-- Buttons -->
+        <div class="flex items-center gap-2 flex-shrink-0">
+          <button onclick="prevSlide()" class="w-9 h-9 rounded-xl bg-slate-100 hover:bg-slate-200 active:scale-95 text-slate-700 font-extrabold flex items-center justify-center transition border border-slate-200" title="Slide trước (Phím ←)">
+            &larr;
+          </button>
+          <button onclick="nextSlide()" class="px-4 h-9 rounded-xl bg-gradient-to-r from-red-600 to-amber-600 hover:from-red-500 hover:to-amber-500 active:scale-95 text-white font-bold text-xs flex items-center gap-1.5 shadow-md shadow-red-600/20 transition" title="Slide sau (Phím →)">
+            <span>Tiếp</span> <span>&rarr;</span>
+          </button>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <!-- SOCIAL TIPS FOOTER -->
+  <footer class="mt-4 text-center max-w-lg">
+    <p class="text-xs text-slate-500">
+      💡 Chụp ảnh từng slide theo chuẩn <b>LinkedIn (4:5)</b> hoặc <b>TikTok (9:16)</b> để đăng bài swipe carousel thu hút hàng ngàn lượt tương tác!
+    </p>
+  </footer>
+
+  <script>
+    const SLIDES_DATA = [
+      {
+        id: 1,
+        tag: "🌟 THÔNG ĐIỆP RA MẮT CHỦ ĐẠO",
+        tagClass: "bg-red-50 text-red-700 border-red-200",
+        sloganBadge: "BD BÌNH DÂN HỌC VỤ",
+        sloganHighlight: "Để Bạn Không Đơn Độc Trên Hành Trình BD",
+        title: "NƠI CHIẾN BINH B2B TÌM THẤY ĐỒNG ĐỘI",
+        subtitle: "Nghề BD/Sales B2B thường rất cô đơn: một mình gánh số, một mình thương thảo, một mình vượt qua từ chối... Nhưng từ hôm nay, bạn đã có Cú BeeDee & Peter Vo đồng hành!",
+        mascot: "https://www.bdbinhdanhocvu.com/mascot_champion.jpg",
+        mascotMood: "Cú BeeDee: 'Từ nay, bạn không còn phải chiến đấu một mình nữa!'",
+        bullets: [
+          { icon: "🤝", title: "Người Bạn Đồng Hành Đáng Tin Cậy", desc: "Không phán xét, không lý thuyết suông – sẵn sàng sát cánh trong từng deal khó." },
+          { icon: "🛡️", title: "Hệ Sinh Thái 9 Vũ Khí Thực Chiến", desc: "Trang bị đầy đủ từ kỹ năng, tâm lý, công cụ AI đến bảo vệ quyền lợi pháp lý." },
+          { icon: "🚀", title: "Cộng Đồng Thực Chiến Peter Vo", desc: "Kết nối hàng ngàn anh em sales B2B trên toàn quốc cùng học, cùng chốt deal." }
+        ],
+        ctaText: "Khám Phá Hệ Sinh Thái 9 Vũ Khí &rarr;",
+        ctaAction: "goToSlide(1)"
+      },
+      {
+        id: 2,
+        isOverview: true,
+        tag: "🪐 BẢN ĐỒ HỆ SINH THÁI THỰC CHIẾN",
+        tagClass: "bg-amber-50 text-amber-800 border-amber-200",
+        sloganBadge: "TỔNG QUAN 9 VỆ TINH",
+        sloganHighlight: "Trục Xoay Nâng Tầm Năng Lực BD Toàn Diện",
+        title: "VŨ TRỤ VŨ KHÍ BD BÌNH DÂN HỌC VỤ",
+        subtitle: "9 tính năng vệ tinh xoay quanh trung tâm, hỗ trợ bạn từ lúc bắt đầu ngày mới đến khi chốt hợp đồng thành công!",
+        features: [
+          { name: "Test Tính Cách", icon: "🧠", color: "from-pink-500 to-rose-500", slideIdx: 2 },
+          { name: "AI Email", icon: "📧", color: "from-indigo-500 to-blue-500", slideIdx: 3 },
+          { name: "Challenge Game", icon: "🎮", color: "from-emerald-500 to-teal-500", slideIdx: 4 },
+          { name: "Luật Lao Động", icon: "⚖️", color: "from-sky-500 to-blue-600", slideIdx: 5 },
+          { name: "Lương Gross-Net", icon: "💰", color: "from-amber-500 to-yellow-500", slideIdx: 6 },
+          { name: "Thư Viện BD", icon: "📚", color: "from-rose-500 to-red-500", slideIdx: 7 },
+          { name: "KPI & Phễu", icon: "📊", color: "from-purple-500 to-indigo-500", slideIdx: 8 },
+          { name: "Cộng Đồng B2B", icon: "🌐", color: "from-blue-500 to-cyan-500", slideIdx: 9 },
+          { name: "Sự Kiện B2B", icon: "📅", color: "from-teal-500 to-emerald-600", slideIdx: 9 }
+        ],
+        ctaText: "Khám Phá Từng Tính Năng Chi Tiết &rarr;",
+        ctaAction: "nextSlide()"
+      },
+      {
+        id: 3,
+        tag: "🧠 VỆ TINH 1: TEST TÍNH CÁCH B2B",
+        tagClass: "bg-pink-50 text-pink-700 border-pink-200",
+        sloganBadge: "DISCOVERY & DNA",
+        sloganHighlight: "Hiểu Mình Để Bách Chiến Bách Thắng",
+        title: "BẠN THUỘC NHÓM TÍNH CÁCH BÁN HÀNG NÀO?",
+        subtitle: "Trắc nghiệm độc bản khám phá nhóm tính cách bán hàng của bạn để áp dụng chiến thuật phù hợp nhất:",
+        mascot: "https://www.bdbinhdanhocvu.com/mascot_challenge.jpg",
+        mascotMood: "Cú Thám Tử: 'Biết rõ sở trường bản thân, không cần gồng ép theo người khác!'",
+        bullets: [
+          { icon: "🏹", title: "Thợ Săn (Hunter):", desc: "Xông xáo, nhạy bén tìm kiếm khách mới và áp sát chốt deal nhanh gọn." },
+          { icon: "🌾", title: "Nông Dân (Farmer):", desc: "Bền bỉ, chân thành, nuôi dưỡng và mở rộng hợp đồng từ khách hàng cũ." },
+          { icon: "📐", title: "Kiến Trúc Sư & Chỉ Huy:", desc: "Xây dựng giải pháp kỹ thuật bài bản hoặc dẫn dắt đàm phán chiến lược." }
+        ],
+        ctaText: "Test Tính Cách Ngay &rarr;",
+        ctaUrl: "https://www.bdbinhdanhocvu.com/personality-test.html"
+      },
+      {
+        id: 4,
+        tag: "✍️ VỆ TINH 2: TRỢ LÝ SOẠN EMAIL AI",
+        tagClass: "bg-blue-50 text-blue-700 border-blue-200",
+        sloganBadge: "AI POWERED ASSISTANT",
+        sloganHighlight: "Chấm Dứt Cảnh Khách 'Seen Không Rep'",
+        title: "SOẠN COLD EMAIL CHUẨN TRONG 10 GIÂY",
+        subtitle: "Mất cả buổi sáng để nghĩ câu mở đầu email chào hàng? Hãy để Cú BeeDee AI 'thổi hồn' văn phong B2B cực sắc!",
+        mascot: "https://www.bdbinhdanhocvu.com/mascot_email.jpg",
+        mascotMood: "Cú Thư Ký AI: 'Gõ 3 gạch đầu dòng, có ngay email triệu đô!'",
+        bullets: [
+          { icon: "📧", title: "Đa Dạng Tình Huống B2B", desc: "Gửi thư ngỏ (Cold Email), Follow-up nhẹ nhàng nhưng thấm, Chốt giá." },
+          { icon: "🎯", title: "Mô Hình Hook - Value - CTA", desc: "Ngắn gọn, chuyên nghiệp, tỷ lệ mở (Open Rate) và phản hồi tăng vọt." },
+          { icon: "⏱️", title: "Tiết Kiệm 80% Thời Gian", desc: "Dành thời gian đi gặp gỡ khách hàng lớn thay vì ngồi vò đầu bứt tai." }
+        ],
+        ctaText: "Thử Soạn Email AI &rarr;",
+        ctaUrl: "https://www.bdbinhdanhocvu.com/email-assistant.html"
+      },
+      {
+        id: 5,
+        tag: "🎮 VỆ TINH 3: CHALLENGE GAME B2B",
+        tagClass: "bg-emerald-50 text-emerald-800 border-emerald-200",
+        sloganBadge: "ARCADE & QUESTS",
+        sloganHighlight: "Học B2B Không Bao Giờ Buồn Ngủ",
+        title: "VƯỢT ẢI TÌNH HUỐNG – TÍCH ĐIỂM ĐỔI QUÀ",
+        subtitle: "Mô phỏng các tình huống bán hàng oái oăm nhất ngoài đời thực dưới dạng game tương tác vui nhộn!",
+        mascot: "https://www.bdbinhdanhocvu.com/mascot_quests.jpg",
+        mascotMood: "Cú Game Thủ: 'Vượt ải là có quà, lên rank chiến thần rực rỡ!'",
+        bullets: [
+          { icon: "🕹️", title: "Xử Lý Từ Chối Thực Chiến", desc: "Đúng hay Sai? Khách chê đắt, khách im lặng... bạn sẽ phản hồi thế nào?" },
+          { icon: "💎", title: "Tích Lũy Điểm Mở Khóa Tài Liệu", desc: "Mỗi ngày đăng nhập, mỗi lần học tập đều tích lũy điểm thưởng giá trị." },
+          { icon: "🏆", title: "Bảng Xếp Hạng Chiến Thần", desc: "So tài cùng hàng ngàn anh em sales B2B trên khắp cả nước." }
+        ],
+        ctaText: "Vào Vượt Ải Game &rarr;",
+        ctaUrl: "https://www.bdbinhdanhocvu.com/quests.html"
+      },
+      {
+        id: 6,
+        tag: "⚖️ VỆ TINH 4: LUẬT LAO ĐỘNG & BẢO HIỂM",
+        tagClass: "bg-sky-50 text-sky-800 border-sky-200",
+        sloganBadge: "LEGAL & PROTECTION",
+        sloganHighlight: "Bảo Vệ Bạn Trước Mọi Sóng Gió Thị Trường",
+        title: "NẮM VỮNG LUẬT ĐỂ TỰ BẢO VỆ MÌNH",
+        subtitle: "Thị trường biến động, sa thải, chậm lương? Cẩm nang pháp lý và bảo hiểm giúp bạn vững vàng sinh tồn.",
+        mascot: "https://www.bdbinhdanhocvu.com/mascot_law.jpg",
+        mascotMood: "Cú Luật Sư: 'Cầm cán chứ đừng cầm lưỡi! Nắm luật để không bị thiệt thòi.'",
+        bullets: [
+          { icon: "📑", title: "Nhận Tối Đa 11 Tháng Thất Nghiệp", desc: "Quy trình nộp Online Cổng Dịch Vụ Công, không xếp hàng, nhận đủ tiền." },
+          { icon: "🛡️", title: "Hợp Đồng & Đóng Bảo Hiểm Xã Hội", desc: "Hiểu đúng quyền lợi hợp pháp của người lao động theo luật 2026." },
+          { icon: "🧘", title: "Bệ Phóng Tinh Thần An Tâm", desc: "Chủ động tài chính để tự tin tái xuất mạnh mẽ ở chặng đường mới." }
+        ],
+        ctaText: "Xem Cẩm Nang Quyền Lợi &rarr;",
+        ctaUrl: "https://www.bdbinhdanhocvu.com/labor-law.html"
+      },
+      {
+        id: 7,
+        tag: "💰 VỆ TINH 5: TÍNH LƯƠNG GROSS-NET & OTE",
+        tagClass: "bg-amber-50 text-amber-800 border-amber-200",
+        sloganBadge: "COMPENSATION & OTE",
+        sloganHighlight: "Biết Mình Đáng Giá Bao Nhiêu Khi Deal Lương",
+        title: "MINH BẠCH TỪNG ĐỒNG THU NHẬP",
+        subtitle: "Base Salary, Commission Tier, OTE tính sao cho không bị 'hớ' khi phỏng vấn hoặc xét thưởng?",
+        mascot: "https://www.bdbinhdanhocvu.com/mascot_salary.jpg",
+        mascotMood: "Cú Thần Tài: 'Đếm tiền thưởng rủng rỉnh, minh bạch từng xu!'",
+        bullets: [
+          { icon: "💵", title: "Mô Phỏng Thu Nhập Theo % Target", desc: "Biết chính xác số tiền bỏ túi ở các mốc 80%, 100%, 150% doanh số." },
+          { icon: "🔍", title: "Bóc Tách Bẫy Hoa Hồng Lũy Tiến", desc: "Hiểu đúng luật chơi hoa hồng để đàm phán hợp đồng có lợi nhất." },
+          { icon: "⭐", title: "Quy Đổi Chuẩn Xác Gross Sang Net", desc: "Tránh mọi hiểu lầm về các khoản trừ bảo hiểm và thuế TNCN." }
+        ],
+        ctaText: "Tính Thử Lương OTE &rarr;",
+        ctaUrl: "https://www.bdbinhdanhocvu.com/salary.html"
+      },
+      {
+        id: 8,
+        tag: "📚 VỆ TINH 6: THƯ VIỆN EBOOK THỰC CHIẾN",
+        tagClass: "bg-rose-50 text-rose-800 border-rose-200",
+        sloganBadge: "PRACTICAL KNOWLEDGE",
+        sloganHighlight: "9 Cuốn Ebook 'Bốc Thuốc' Đúng Bệnh",
+        title: "KHO TÀNG CẨM NANG B2B ĐỘC QUYỀN",
+        subtitle: "Đừng đọc sách giáo khoa nữa! Đây là cẩm nang thực chiến sát sườn thị trường Việt Nam từ Peter Vo:",
+        mascot: "https://www.bdbinhdanhocvu.com/mascot_architect.jpg",
+        mascotMood: "Cú Kiến Trúc Sư: 'Đọc xong đổi vận, chốt deal không cần văn mẫu!'",
+        bullets: [
+          { icon: "📖", title: "Tư Duy BD 'Thép' & B2B Mindset", desc: "Bẻ khóa tâm lý khách hàng khó tính, làm chủ mọi cuộc đàm phán." },
+          { icon: "🚀", title: "Ngôn Từ B2B (5 Pha Chuyển Mình)", desc: "Bộ cẩm nang diễn đạt giúp nâng tầm vị thế người bán hàng." },
+          { icon: "⚡", title: "Tải Trực Tiếp 1 Cú Click Về Máy", desc: "Không vòng vo, không pop-up rườm rà – bấm là tải ngay PDF." }
+        ],
+        ctaText: "Mở Thư Viện Ebook &rarr;",
+        ctaUrl: "https://www.bdbinhdanhocvu.com/library.html"
+      },
+      {
+        id: 9,
+        tag: "📊 VỆ TINH 7: KPI & PHỄU DOANH THU",
+        tagClass: "bg-purple-50 text-purple-800 border-purple-200",
+        sloganBadge: "FUNNEL & METRICS",
+        sloganHighlight: "Chấm Dứt Ảo Tưởng KPI – Tính Chuẩn Từng Deal",
+        title: "CÔNG THỨC QUY ĐỔI NGƯỢC DOANH THU",
+        subtitle: "Sếp giao target 2 tỷ/tháng thì cần gọi bao nhiêu cuộc? Cần bao nhiêu Lead MQL/SQL?",
+        mascot: "https://www.bdbinhdanhocvu.com/mascot_kpi.jpg",
+        mascotMood: "Cú Bác Học: 'Toán học không nói dối, số liệu rõ ràng thì sếp thương!'",
+        bullets: [
+          { icon: "📈", title: "Quy Đổi Ngược Từ Doanh Thu Mục Tiêu", desc: "Nhập số tiền ➔ Tự tính số Deal, số Meeting, số Lead cần tiếp cận." },
+          { icon: "⚖️", title: "Cân Bằng Phễu Inbound & Outbound", desc: "Nhìn thấu điểm nghẽn chuyển đổi đang tắc ở khâu nào để tháo gỡ." },
+          { icon: "🛡️", title: "Cơ Sở Khoa Học Để Thương Lượng", desc: "Bảo vệ bạn trước những chỉ tiêu vô lý, làm việc với tâm thế tự tin." }
+        ],
+        ctaText: "Mở Bảng Tính Phễu KPI &rarr;",
+        ctaUrl: "https://www.bdbinhdanhocvu.com/kpi-estimation.html"
+      },
+      {
+        id: 10,
+        tag: "🌐 VỆ TINH 8 & 9: CỘNG ĐỒNG & SỰ KIỆN",
+        tagClass: "bg-cyan-50 text-cyan-800 border-cyan-200",
+        sloganBadge: "COMMUNITY & EVENTS",
+        sloganHighlight: "Kết Nối Chiến Hữu – Cùng Nhau Đi Xa",
+        title: "KHÔNG GIAN HỌC HỎI & CHIA SẺ CASE STUDY",
+        subtitle: "Muốn đi nhanh hãy đi một mình, muốn đi xa và chốt deal lớn hãy đi cùng đồng đội!",
+        mascot: "https://www.bdbinhdanhocvu.com/beedee_community.jpg",
+        mascotMood: "Cú Gắn Kết: 'Anh em B2B tụ họp, chia sẻ bí kíp không giấu nghề!'",
+        bullets: [
+          { icon: "🤝", title: "Cộng Đồng Chiến Binh BD Thực Chiến", desc: "Giao lưu, hỏi đáp các ca khó đỡ, học hỏi kinh nghiệm xương máu." },
+          { icon: "📅", title: "Sự Kiện & Workshop Chuyên Sâu", desc: "Cập nhật xu hướng bán hàng B2B, AI Sales, Social Selling 2026." },
+          { icon: "🔥", title: "Đồng Hành Cùng Peter Vo", desc: "Giải đáp trực tiếp các tình huống đàm phán hóc búa thực tế." }
+        ],
+        ctaText: "Gia Nhập Cộng Đồng Ngay &rarr;",
+        ctaUrl: "https://www.bdbinhdanhocvu.com/community.html"
+      },
+      {
+        id: 11,
+        tag: "🚀 KẾT NỐI VÀ BỨT PHÁ",
+        tagClass: "bg-red-50 text-red-700 border-red-200",
+        sloganBadge: "BD BÌNH DÂN HỌC VỤ",
+        sloganHighlight: "Để Bạn Không Đơn Độc Trên Hành Trình BD",
+        title: "BẮT ĐẦU HÀNH TRÌNH B2B RỰC RỠ CÙNG CÚ BEEDEE",
+        subtitle: "Tất cả các vũ khí, công cụ AI và kho tài liệu trên cổng thông tin đều hoàn toàn MIỄN PHÍ dành cho bạn!",
+        mascot: "https://www.bdbinhdanhocvu.com/mascot_commander.jpg",
+        mascotMood: "Cú Tổng Tư Lệnh: 'Chiến trường B2B đang vẫy gọi, xuất kích thôi!'",
+        bullets: [
+          { icon: "🌐", title: "Cổng Thông Tin Chính Thức:", desc: "www.bdbinhdanhocvu.com (Miễn phí 100%)" },
+          { icon: "📩", title: "Email Daily Cú BeeDee:", desc: "Mẹo thực chiến & năng lượng tích cực mỗi sáng 7:00 AM." },
+          { icon: "⭐", title: "Cam Kết Đồng Hành:", desc: "Để bạn luôn tự tin, vững vàng và không bao giờ đơn độc!" }
+        ],
+        ctaText: "TRẢI NGHIỆM MIỄN PHÍ NGAY &rarr;",
+        ctaUrl: "https://www.bdbinhdanhocvu.com"
+      }
+    ];
+
+    let currentSlide = 0;
+    let autoPlayTimer = null;
+    let currentRatio = 'linkedin'; // 'linkedin' (4:5) | 'tiktok' (9:16) | 'desktop' (16:9)
+
+    function setRatio(mode) {
+      currentRatio = mode;
+      const frameContainer = document.getElementById("slideFrameContainer");
+      const card = document.getElementById("slideCard");
+
+      ['btnRatioLinkedin', 'btnRatioTiktok', 'btnRatioDesktop'].forEach(id => {
+        const btn = document.getElementById(id);
+        btn.className = "px-3 py-1.5 rounded-lg transition text-slate-600 hover:text-slate-900 flex items-center gap-1";
+      });
+
+      if (mode === 'linkedin') {
+        frameContainer.className = "w-full max-w-[490px] transition-all duration-300 flex justify-center";
+        card.className = "w-full min-h-[620px] bg-white border border-slate-200/90 rounded-3xl p-5 sm:p-7 shadow-xl shadow-slate-200/60 relative flex flex-col justify-between overflow-hidden";
+        document.getElementById("btnRatioLinkedin").className = "px-3 py-1.5 rounded-lg transition text-white bg-red-600 shadow-sm flex items-center gap-1";
+      } else if (mode === 'tiktok') {
+        frameContainer.className = "w-full max-w-[390px] transition-all duration-300 flex justify-center";
+        card.className = "w-full min-h-[690px] bg-white border border-slate-200/90 rounded-3xl p-5 sm:p-6 shadow-xl shadow-slate-200/60 relative flex flex-col justify-between overflow-hidden";
+        document.getElementById("btnRatioTiktok").className = "px-3 py-1.5 rounded-lg transition text-white bg-red-600 shadow-sm flex items-center gap-1";
+      } else {
+        frameContainer.className = "w-full max-w-4xl transition-all duration-300 flex justify-center";
+        card.className = "w-full min-h-[530px] bg-white border border-slate-200/90 rounded-3xl p-6 sm:p-8 shadow-xl shadow-slate-200/60 relative flex flex-col justify-between overflow-hidden";
+        document.getElementById("btnRatioDesktop").className = "px-3 py-1.5 rounded-lg transition text-white bg-red-600 shadow-sm flex items-center gap-1";
+      }
+
+      renderSlide(currentSlide);
+    }
+
+    function renderSlide(index) {
+      const slide = SLIDES_DATA[index];
+      const container = document.getElementById("slideContent");
+
+      // SPECIAL OVERVIEW SLIDE (Slide 2 - Ecosystem Diagram như trong ảnh của người dùng)
+      if (slide.isOverview) {
+        renderOverviewSlide(slide, container);
+        updateNavigation(index);
+        return;
+      }
+
+      const bulletsHtml = slide.bullets.map(b => `
+        <div class="flex items-start gap-2.5 bg-slate-50 hover:bg-slate-100/90 border border-slate-200/70 p-3 rounded-xl transition duration-150">
+          <span class="text-xl mt-0.5">${b.icon}</span>
+          <div>
+            <h4 class="text-xs sm:text-sm font-bold text-slate-900 leading-snug">${b.title}</h4>
+            <p class="text-[11px] sm:text-xs text-slate-600 mt-0.5 leading-relaxed">${b.desc}</p>
+          </div>
+        </div>
+      `).join("");
+
+      const actionHtml = slide.ctaUrl
+        ? `<a href="${slide.ctaUrl}" target="_blank" class="w-full py-2.5 bg-gradient-to-r from-red-600 to-amber-600 hover:from-red-500 hover:to-amber-500 text-white font-extrabold text-xs sm:text-sm rounded-xl shadow-md transition active:scale-95 text-center inline-block">${slide.ctaText}</a>`
+        : `<button onclick="${slide.ctaAction}" class="w-full py-2.5 bg-gradient-to-r from-red-600 to-amber-600 hover:from-red-500 hover:to-amber-500 text-white font-extrabold text-xs sm:text-sm rounded-xl shadow-md transition active:scale-95 text-center">${slide.ctaText}</button>`;
+
+      if (currentRatio === 'desktop') {
+        // Desktop 2 columns
+        container.innerHTML = `
+          <div class="grid grid-cols-12 gap-6 items-center flex-1">
+            <div class="col-span-7 flex flex-col items-start text-left">
+              
+              <!-- SLOGAN CALLOUT -->
+              <div class="mb-2 flex items-center gap-2">
+                <span class="text-[10px] font-black px-2.5 py-0.5 rounded-md border ${slide.tagClass} uppercase tracking-wider">${slide.sloganBadge}</span>
+                <span class="text-xs font-black text-red-600 tracking-tight">★ ${slide.sloganHighlight}</span>
+              </div>
+
+              <h2 class="text-2xl sm:text-3xl font-black text-slate-900 leading-tight mb-2 tracking-tight">
+                ${slide.title}
+              </h2>
+              <p class="text-xs sm:text-sm text-slate-600 font-medium mb-3.5 leading-relaxed">
+                ${slide.subtitle}
+              </p>
+
+              <div class="w-full space-y-2 mb-4">
+                ${bulletsHtml}
+              </div>
+
+              <div class="w-full max-w-xs">
+                ${actionHtml}
+              </div>
+            </div>
+
+            <div class="col-span-5 flex flex-col items-center justify-center text-center">
+              <div class="w-52 h-52 sm:w-60 sm:h-60 rounded-2xl overflow-hidden border-2 border-amber-400 bg-amber-50/50 p-1 shadow-xl relative">
+                <img src="${slide.mascot}" alt="Cú BeeDee" class="w-full h-full object-cover rounded-xl">
+                <div class="absolute bottom-2 right-2 bg-white/90 backdrop-blur-sm text-[10px] font-extrabold text-slate-900 px-2 py-0.5 rounded-lg border border-slate-200">
+                  🦉 Cú BeeDee
+                </div>
+              </div>
+              <div class="mt-3 bg-amber-50/90 border border-amber-200/90 px-3.5 py-2 rounded-xl text-center max-w-xs">
+                <p class="text-[11px] font-bold text-amber-900 italic leading-snug">
+                  ${slide.mascotMood}
+                </p>
+              </div>
+            </div>
+          </div>
+        `;
+      } else {
+        // Mobile / Vertical (LinkedIn 4:5 & TikTok 9:16)
+        container.innerHTML = `
+          <div class="flex flex-col items-center text-center flex-1">
+            
+            <!-- SLOGAN HEADER BANNER -->
+            <div class="mb-1.5 flex flex-col items-center">
+              <span class="text-[10px] font-black px-2.5 py-0.5 rounded-md border ${slide.tagClass} uppercase tracking-wider mb-1">
+                ${slide.sloganBadge}
+              </span>
+              <span class="text-[11px] sm:text-xs font-black text-red-600 tracking-tight flex items-center gap-1">
+                <span>✨</span> <span>${slide.sloganHighlight}</span>
+              </span>
+            </div>
+
+            <h2 class="text-lg sm:text-xl font-black text-slate-900 leading-tight mb-1 tracking-tight">
+              ${slide.title}
+            </h2>
+            <p class="text-[11px] sm:text-xs text-slate-600 font-medium mb-2.5 px-1 leading-relaxed">
+              ${slide.subtitle}
+            </p>
+
+            <!-- MASCOT HERO -->
+            <div class="relative w-32 h-32 sm:w-40 sm:h-40 rounded-2xl overflow-hidden border-2 border-amber-400 bg-amber-50 p-1 shadow-lg mb-2">
+              <img src="${slide.mascot}" alt="Cú BeeDee" class="w-full h-full object-cover rounded-xl">
+              <div class="absolute bottom-1.5 right-1.5 bg-white/90 backdrop-blur-sm text-[9px] font-extrabold text-slate-900 px-1.5 py-0.5 rounded border border-slate-200">
+                🦉 Cú BeeDee
+              </div>
+            </div>
+
+            <!-- MOOD SPEECH -->
+            <div class="bg-amber-50/90 border border-amber-200/80 px-3 py-1 rounded-xl mb-2.5 max-w-xs">
+              <p class="text-[10px] sm:text-[11px] font-bold text-amber-900 italic">
+                ${slide.mascotMood}
+              </p>
+            </div>
+
+            <!-- BULLETS -->
+            <div class="w-full space-y-1.5 text-left mb-3">
+              ${bulletsHtml}
+            </div>
+
+            <!-- CTA -->
+            <div class="w-full">
+              ${actionHtml}
+            </div>
+
+          </div>
+        `;
+      }
+
+      updateNavigation(index);
+    }
+
+    // SPECIAL RENDER FOR OVERVIEW ECOSYSTEM (Tái hiện sơ đồ vũ trụ trong ảnh)
+    function renderOverviewSlide(slide, container) {
+      const gridItems = slide.features.map(f => `
+        <button onclick="goToSlide(${f.slideIdx})" class="group flex flex-col items-center justify-center p-2.5 bg-slate-50 hover:bg-red-50/60 border border-slate-200 hover:border-red-300 rounded-2xl transition duration-200 hover:scale-105 active:scale-95 shadow-2xs">
+          <div class="w-10 h-10 rounded-xl bg-white shadow-sm border border-slate-200 flex items-center justify-center text-xl group-hover:border-red-400 transition">
+            ${f.icon}
+          </div>
+          <span class="text-[10px] sm:text-xs font-extrabold text-slate-800 group-hover:text-red-700 mt-1.5 text-center leading-tight">
+            ${f.name}
+          </span>
+        </button>
+      `).join("");
+
+      container.innerHTML = `
+        <div class="flex flex-col items-center text-center flex-1 justify-between">
+          
+          <div>
+            <div class="mb-1.5 flex flex-col items-center">
+              <span class="text-[10px] font-black px-2.5 py-0.5 rounded-md border ${slide.tagClass} uppercase tracking-wider mb-1">
+                ${slide.sloganBadge}
+              </span>
+              <span class="text-xs sm:text-sm font-black text-red-600 tracking-tight flex items-center gap-1">
+                <span>✨</span> <span>${slide.sloganHighlight}</span>
+              </span>
+            </div>
+
+            <h2 class="text-lg sm:text-2xl font-black text-slate-900 leading-tight mb-1 tracking-tight">
+              ${slide.title}
+            </h2>
+            <p class="text-[11px] sm:text-xs text-slate-600 font-medium mb-3 max-w-md mx-auto">
+              ${slide.subtitle}
+            </p>
+          </div>
+
+          <!-- VISUAL SOLAR SYSTEM CENTER -->
+          <div class="relative w-full max-w-sm my-1 py-3 flex items-center justify-center">
+            
+            <!-- Orbit Ring -->
+            <div class="absolute w-64 h-64 sm:w-72 sm:h-72 rounded-full border border-dashed border-slate-300/80 pointer-events-none"></div>
+
+            <!-- Center Core -->
+            <div class="w-24 h-24 sm:w-28 sm:h-28 rounded-full bg-gradient-to-br from-red-600 via-red-600 to-amber-600 text-white flex flex-col items-center justify-center p-2 text-center shadow-xl pulse-glow-red z-10 border-2 border-white">
+              <span class="text-lg">🦉</span>
+              <span class="text-[9px] sm:text-[10px] font-black uppercase tracking-tight leading-tight mt-0.5">BD BÌNH DÂN<br>HỌC VỤ</span>
+            </div>
+          </div>
+
+          <!-- 9 VỆ TINH GRID (Interactive Quick Links) -->
+          <div class="w-full">
+            <p class="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-2">Bấm vào từng vệ tinh để xem chi tiết:</p>
+            <div class="grid grid-cols-3 gap-2 w-full max-w-md mx-auto mb-3">
+              ${gridItems}
+            </div>
+
+            <button onclick="nextSlide()" class="w-full py-2.5 bg-gradient-to-r from-red-600 to-amber-600 hover:from-red-500 hover:to-amber-500 text-white font-extrabold text-xs sm:text-sm rounded-xl shadow-md transition active:scale-95 text-center">
+              ${slide.ctaText}
+            </button>
+          </div>
+
+        </div>
+      `;
+    }
+
+    function updateNavigation(index) {
+      document.getElementById("slideCounter").innerText = `${index + 1} / ${SLIDES_DATA.length}`;
+      const dotsContainer = document.getElementById("dotIndicators");
+      dotsContainer.innerHTML = SLIDES_DATA.map((_, i) => `
+        <button onclick="goToSlide(${i})" class="h-2 rounded-full transition-all duration-200 ${i === index ? 'w-5 bg-red-600' : 'w-2 bg-slate-300 hover:bg-slate-400'}" title="Slide ${i+1}"></button>
+      `).join("");
+    }
+
+    function nextSlide() {
+      currentSlide = (currentSlide + 1) % SLIDES_DATA.length;
+      renderSlide(currentSlide);
+    }
+
+    function prevSlide() {
+      currentSlide = (currentSlide - 1 + SLIDES_DATA.length) % SLIDES_DATA.length;
+      renderSlide(currentSlide);
+    }
+
+    function goToSlide(index) {
+      currentSlide = index;
+      renderSlide(currentSlide);
+    }
+
+    function toggleAutoPlay() {
+      const btn = document.getElementById("btnAutoPlay");
+      if (autoPlayTimer) {
+        clearInterval(autoPlayTimer);
+        autoPlayTimer = null;
+        btn.innerText = "▶ Tự động";
+        btn.classList.remove("bg-red-600", "text-white");
+      } else {
+        autoPlayTimer = setInterval(nextSlide, 5000);
+        btn.innerText = "⏸ Tạm dừng";
+        btn.classList.add("bg-red-600", "text-white");
+      }
+    }
+
+    window.addEventListener("keydown", (e) => {
+      if (e.key === "ArrowRight" || e.key === " ") nextSlide();
+      else if (e.key === "ArrowLeft") prevSlide();
+    });
+
+    // Default start with LinkedIn Mode (4:5)
+    setRatio('linkedin');
+  </script>
+</body>
+</html>
