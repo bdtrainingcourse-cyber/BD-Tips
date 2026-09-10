@@ -61,6 +61,9 @@ function doPost(e) {
       return sendVerificationReminder(email, name);
     } else if (action === "getUsers") {
       return getAllUsers();
+    } else if (action === "initColumn" || action === "ensureColumns") {
+      const col = ensureDailyEmailColumn();
+      return createJsonResponse({ success: true, message: "Daily email column initialized", columnIndex: col });
     } else if (action === "logDailyCampaign") {
       return logDailyCampaign(postData);
     } else if (action === "updateProfile") {
@@ -87,6 +90,9 @@ function doGet(e) {
       return checkEmail(email, name);
     } else if (action === "getUsers") {
       return getAllUsers();
+    } else if (action === "initColumn" || action === "ensureColumns") {
+      const col = ensureDailyEmailColumn();
+      return createJsonResponse({ success: true, message: "Daily email column initialized", columnIndex: col });
     } else if (action === "verifyUser") {
       const points = params.points ? parseInt(params.points, 10) : 15;
       return verifyUser(email, points);
@@ -206,8 +212,44 @@ function checkEmail(email, name) {
   }
 }
 
+function ensureDailyEmailColumn() {
+  try {
+    const sheet = getOrCreateSheet("Học Viên Đăng Ký");
+    const data = sheet.getDataRange().getValues();
+    if (data.length === 0) return -1;
+
+    const headers = data[0];
+    const idx = getHeaderIndices(headers);
+    if (idx.lastDailyEmail !== -1) {
+      return idx.lastDailyEmail;
+    }
+
+    // Nếu chưa có cột, tự động chèn ngay sau cột "Hoạt Động Cuối"
+    let insertColIndex = -1;
+    if (idx.lastActivity !== -1) {
+      sheet.insertColumnAfter(idx.lastActivity + 1);
+      insertColIndex = idx.lastActivity + 1;
+    } else {
+      insertColIndex = headers.length;
+    }
+
+    const cell = sheet.getRange(1, insertColIndex + 1);
+    cell.setValue("Email Daily Gần Nhất");
+    try {
+      cell.setFontWeight("bold");
+    } catch (e) {}
+
+    SpreadsheetApp.flush();
+    return insertColIndex;
+  } catch (err) {
+    Logger.log("ensureDailyEmailColumn error: " + err.message);
+    return -1;
+  }
+}
+
 function getAllUsers() {
   try {
+    ensureDailyEmailColumn();
     const sheet = getOrCreateSheet("Học Viên Đăng Ký");
     const data = sheet.getDataRange().getValues();
     if (data.length <= 1) return createJsonResponse({ success: true, users: [], totalCount: 0 });
@@ -247,6 +289,9 @@ function getAllUsers() {
 
 function updateUsersDailyEmailTimestamp(emails, timestampStr) {
   try {
+    const dailyCol = ensureDailyEmailColumn();
+    if (dailyCol === -1) return;
+
     if (!emails) return;
     const emailList = Array.isArray(emails) ? emails : [emails];
     if (emailList.length === 0) return;
@@ -264,26 +309,8 @@ function updateUsersDailyEmailTimestamp(emails, timestampStr) {
     const data = sheet.getDataRange().getValues();
     if (data.length <= 1) return;
 
-    let headers = data[0];
-    let idx = getHeaderIndices(headers);
-    let dailyCol = idx.lastDailyEmail;
-
-    // Nếu cột chưa tồn tại trên Sheet, tự động chèn cột mới ngay phía sau cột "Hoạt Động Cuối"
-    if (dailyCol === -1) {
-      if (idx.lastActivity !== -1) {
-        // Chèn ngay sau cột Hoạt Động Cuối (1-indexed)
-        sheet.insertColumnAfter(idx.lastActivity + 1);
-        dailyCol = idx.lastActivity + 1;
-      } else {
-        // Fallback chèn ở cuối
-        dailyCol = headers.length;
-      }
-      sheet.getRange(1, dailyCol + 1).setValue("Email Daily Gần Nhất");
-      try {
-        sheet.getRange(1, dailyCol + 1).setFontWeight("bold");
-      } catch (e) {}
-    }
-
+    const headers = data[0];
+    const idx = getHeaderIndices(headers);
     const emailCol = idx.email !== -1 ? idx.email : 3;
     const formattedTime = formatTimestamp(timestampStr || new Date().toISOString());
     const numRows = data.length - 1;
@@ -313,6 +340,7 @@ function updateUsersDailyEmailTimestamp(emails, timestampStr) {
 
 function logDailyCampaign(data) {
   try {
+    ensureDailyEmailColumn();
     const sheet = getOrCreateSheet("Nhật Ký Tương Tác");
     const timestamp = data.timestamp || new Date().toISOString();
     const subject = data.subject || "Daily Reminder";
