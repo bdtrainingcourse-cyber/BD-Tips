@@ -571,14 +571,19 @@ YÊU CẦU NỘI DUNG & PHONG CÁCH:
       });
     }
 
-    // Also sync to Google Sheets for records
+    // Also sync to Google Sheets for records & update "Email Daily Gần Nhất"
     let sheetText = "";
     if (webhookUrl) {
       try {
-        const payload = isUnverified 
-          ? { action: 'sendVerificationReminder', email: targetEmail, name: targetName }
-          : { action: 'sendSingleEmail', to: targetEmail, name: targetName, subject, message: template.message, buttonText: template.buttonText, buttonUrl: template.buttonUrl };
-        const emailRes = await httpPost(webhookUrl, payload);
+        const isSuccess = !!(resendResult && resendResult.ok);
+        const emailRes = await httpPost(webhookUrl, {
+          action: 'logDailyCampaign',
+          subject: subject,
+          totalRecipients: 1,
+          successfulSends: isSuccess ? 1 : 0,
+          sentEmails: isSuccess ? [targetEmail] : [],
+          timestamp: new Date().toISOString()
+        });
         sheetText = await emailRes.text();
       } catch (err) {
         console.warn(`[DAILY_EMAIL_SHEET_SYNC_WARN]`, err.message);
@@ -713,6 +718,7 @@ YÊU CẦU NỘI DUNG & PHONG CÁCH:
         subject: subject,
         totalRecipients: uniqueRecipients.length,
         successfulSends: dispatchResults.filter(r => r.ok).length,
+        sentEmails: dispatchResults.filter(r => r.ok).map(r => r.email),
         timestamp: new Date().toISOString()
       });
       sheetLogResponse = await logRes.text();

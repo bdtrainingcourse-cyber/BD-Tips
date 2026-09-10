@@ -7,8 +7,9 @@
  * 1. SHEET "Học Viên Đăng Ký":
  * Col A: User ID | Col B: Thời gian đăng ký | Col C: Họ và Tên | Col D: Email 
  * Col E: Trạng thái xác thực | Col F: Điểm tích lũy | Col G: Hoạt Động Cuối 
- * Col H: Thiết Bị | Col I: Công Cụ Đăng Ký | Col J: Kinh Nghiệm | Col K: Ngành Nghề 
- * Col L: Kỹ Năng | Col M: Tên Ebook Đã Tải | Col N: Số Điện Thoại | Col O: Công Ty
+ * Col H: Email Daily Gần Nhất | Col I: Thiết Bị | Col J: Công Cụ Đăng Ký 
+ * Col K: Kinh Nghiệm | Col L: Ngành Nghề | Col M: Kỹ Năng | Col N: Tên Ebook Đã Tải 
+ * Col O: Số Điện Thoại | Col P: Công Ty
  *
  * 2. SHEET "Nhật Ký Tương Tác":
  * Col A: Thời gian ghi nhận | Col B: Email người dùng | Col C: Tính năng chính 
@@ -217,6 +218,7 @@ function getAllUsers() {
     const nameCol = idx.name !== -1 ? idx.name : 2;
     const verifiedCol = idx.verified !== -1 ? idx.verified : 4;
     const idCol = idx.id !== -1 ? idx.id : 0;
+    const lastDailyCol = idx.lastDailyEmail;
     
     const users = [];
     
@@ -233,12 +235,79 @@ function getAllUsers() {
         id: (row[idCol]) ? row[idCol].toString().trim() : "",
         name: name,
         email: email,
-        verified: isVerified
+        verified: isVerified,
+        lastDailyEmail: (lastDailyCol !== -1 && row[lastDailyCol]) ? row[lastDailyCol].toString().trim() : ""
       });
     }
     return createJsonResponse({ success: true, users: users, totalCount: users.length });
   } catch (err) {
     return createJsonResponse({ success: false, error: err.message });
+  }
+}
+
+function updateUsersDailyEmailTimestamp(emails, timestampStr) {
+  try {
+    if (!emails) return;
+    const emailList = Array.isArray(emails) ? emails : [emails];
+    if (emailList.length === 0) return;
+
+    const targetEmails = new Set(
+      emailList.map(function(e) {
+        return (e || "").toString().toLowerCase().trim();
+      }).filter(function(e) {
+        return e && e.indexOf("@") !== -1;
+      })
+    );
+    if (targetEmails.size === 0) return;
+
+    const sheet = getOrCreateSheet("Học Viên Đăng Ký");
+    const data = sheet.getDataRange().getValues();
+    if (data.length <= 1) return;
+
+    let headers = data[0];
+    let idx = getHeaderIndices(headers);
+    let dailyCol = idx.lastDailyEmail;
+
+    // Nếu cột chưa tồn tại trên Sheet, tự động chèn cột mới ngay phía sau cột "Hoạt Động Cuối"
+    if (dailyCol === -1) {
+      if (idx.lastActivity !== -1) {
+        // Chèn ngay sau cột Hoạt Động Cuối (1-indexed)
+        sheet.insertColumnAfter(idx.lastActivity + 1);
+        dailyCol = idx.lastActivity + 1;
+      } else {
+        // Fallback chèn ở cuối
+        dailyCol = headers.length;
+      }
+      sheet.getRange(1, dailyCol + 1).setValue("Email Daily Gần Nhất");
+      try {
+        sheet.getRange(1, dailyCol + 1).setFontWeight("bold");
+      } catch (e) {}
+    }
+
+    const emailCol = idx.email !== -1 ? idx.email : 3;
+    const formattedTime = formatTimestamp(timestampStr || new Date().toISOString());
+    const numRows = data.length - 1;
+
+    if (numRows > 0) {
+      const colRange = sheet.getRange(2, dailyCol + 1, numRows, 1);
+      const colValues = colRange.getValues();
+      let hasChanges = false;
+
+      for (let i = 0; i < numRows; i++) {
+        const rowEmail = (data[i + 1][emailCol] || "").toString().toLowerCase().trim();
+        if (targetEmails.has(rowEmail)) {
+          colValues[i][0] = formattedTime;
+          hasChanges = true;
+        }
+      }
+
+      if (hasChanges) {
+        colRange.setValues(colValues);
+        SpreadsheetApp.flush();
+      }
+    }
+  } catch (err) {
+    Logger.log("Error updateUsersDailyEmailTimestamp: " + err.message);
   }
 }
 
@@ -259,7 +328,13 @@ function logDailyCampaign(data) {
       "Serverless Cron",
       "SYSTEM"
     ]);
-    return createJsonResponse({ success: true, message: "Campaign logged" });
+
+    // Cập nhật cột "Email Daily Gần Nhất" trong sheet "Học Viên Đăng Ký"
+    if (data.sentEmails && Array.isArray(data.sentEmails) && data.sentEmails.length > 0) {
+      updateUsersDailyEmailTimestamp(data.sentEmails, timestamp);
+    }
+
+    return createJsonResponse({ success: true, message: "Campaign logged and daily email timestamps updated" });
   } catch (err) {
     return createJsonResponse({ success: false, error: err.message });
   }
@@ -306,6 +381,7 @@ function syncUser(data, skipEmail) {
       if (idx.verified !== -1) newRow[idx.verified] = "Chưa xác thực";
       if (idx.points !== -1) newRow[idx.points] = points;
       if (idx.lastActivity !== -1) newRow[idx.lastActivity] = date; // Cột G: Hoạt Động Cuối
+      if (idx.lastDailyEmail !== -1) newRow[idx.lastDailyEmail] = ""; // Cột H: Email Daily Gần Nhất
       if (idx.device !== -1) newRow[idx.device] = device;
       if (idx.tool !== -1) newRow[idx.tool] = tool;
       if (idx.experience !== -1) newRow[idx.experience] = data.experience || "";
@@ -498,6 +574,7 @@ function sendDailyEmailsSynchronously(data) {
     if (idx.email === -1) return createJsonResponse({ success: false, error: "Email column not found." });
     
     let sentCount = 0;
+    const sentEmails = [];
     for (let i = 1; i < sheetData.length; i++) {
       const email = sheetData[i][idx.email].toString().toLowerCase().trim();
       if (!email || !email.includes("@")) continue;
@@ -515,6 +592,7 @@ function sendDailyEmailsSynchronously(data) {
             htmlBody: bodyHtml
           });
           sentCount++;
+          sentEmails.push(email);
           Utilities.sleep(1500); 
         } catch (err) {
           Logger.log("Failed to send daily email to " + email + ": " + err.message);
@@ -533,11 +611,15 @@ function sendDailyEmailsSynchronously(data) {
             htmlBody: bodyHtml
           });
           sentCount++;
+          sentEmails.push(email);
           Utilities.sleep(1500); 
         } catch (err) {
           Logger.log("Failed to send verification reminder to " + email + ": " + err.message);
         }
       }
+    }
+    if (sentEmails.length > 0) {
+      updateUsersDailyEmailTimestamp(sentEmails, new Date().toISOString());
     }
     return createJsonResponse({ success: true, message: "Campaign sent to " + sentCount + " users successfully." });
   } catch (err) {
@@ -558,6 +640,10 @@ function sendSingleEmail(data) {
       htmlBody: bodyHtml
     });
     
+    if (email) {
+      updateUsersDailyEmailTimestamp([email], new Date().toISOString());
+    }
+
     return createJsonResponse(res);
   } catch (err) {
     return createJsonResponse({ success: false, error: err.message });
@@ -577,6 +663,11 @@ function sendVerificationReminder(email, name) {
       subject: unverifiedSubject,
       htmlBody: bodyHtml
     });
+
+    if (email) {
+      updateUsersDailyEmailTimestamp([email], new Date().toISOString());
+    }
+
     return createJsonResponse({ success: true, message: "Verification reminder email sent." });
   } catch (err) {
     return createJsonResponse({ success: false, error: err.message });
@@ -896,6 +987,7 @@ function getHeaderIndices(headers) {
     verified: -1,
     points: -1,
     lastActivity: -1,
+    lastDailyEmail: -1,
     device: -1,
     tool: -1,
     experience: -1,
@@ -913,6 +1005,8 @@ function getHeaderIndices(headers) {
 
     if (h.includes("ebook") || h.includes("tai lieu") || h.includes("sach")) {
       result.ebook = i;
+    } else if (h.includes("daily") || ((h.includes("email") || h.includes("thu")) && (h.includes("gan nhat") || h.includes("cuoi") || h.includes("last")))) {
+      result.lastDailyEmail = i;
     } else if (h.includes("hoat dong") || h.includes("last activity") || h.includes("lan cuoi") || h.includes("gan nhat")) {
       result.lastActivity = i;
     } else if (h.includes("ngay") || h.includes("thoi gian") || h.includes("created") || h.includes("date")) {
@@ -954,7 +1048,8 @@ function getHeaderIndices(headers) {
     result.verified = 4;
     result.points = 5;
     result.lastActivity = 6;
-    result.device = 7;
+    result.lastDailyEmail = 7;
+    result.device = 8;
   }
 
   return result;
@@ -1025,7 +1120,7 @@ function getOrCreateSheet(sheetName) {
   if (sheetName.includes("Học Viên") || sheetName === "Học Viên Đăng Ký") {
     sheet.appendRow([
       "UserID", "Thời gian đăng ký", "Họ và Tên", "Email", "Trạng Thái Xác Thực",
-      "Điểm Tích Lũy", "Hoạt Động Cuối", "Thiết Bị", "Công Cụ Đăng Ký", "Kinh Nghiệm",
+      "Điểm Tích Lũy", "Hoạt Động Cuối", "Email Daily Gần Nhất", "Thiết Bị", "Công Cụ Đăng Ký", "Kinh Nghiệm",
       "Ngành Nghề", "Kỹ Năng", "Tên Ebook Đã Tải", "Số Điện Thoại", "Công Ty"
     ]);
   } else if (sheetName.includes("Nhật Ký") || sheetName === "Nhật Ký Tương Tác") {
