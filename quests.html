@@ -11,6 +11,101 @@
     <link rel="stylesheet" href="style.css?v=2.4.4">
     <link rel="stylesheet" href="ai-chat.css?v=2.1.2">
     <script src="theme-toggle.js?v=2.4.7"></script>
+    <style>
+    /* Horizontal Dashboard & High Contrast Theme Compatibility */
+    .quests-main-layout {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 290px;
+        gap: 22px;
+        align-items: start;
+        margin-top: 15px;
+    }
+    @media (max-width: 960px) {
+        .quests-main-layout {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    /* VIP Referral Card Styles (100% Theme-Adaptive) */
+    .vip-pass-card {
+        background: #ffffff;
+        border: 2px solid #f3a83b;
+        border-radius: 16px;
+        padding: 20px 22px;
+        box-shadow: 0 8px 24px rgba(243, 168, 59, 0.12);
+        position: relative;
+        overflow: hidden;
+    }
+    body.dark-theme .vip-pass-card {
+        background: linear-gradient(135deg, #1c1106 0%, #261406 100%);
+        border: 2px solid rgba(243, 168, 59, 0.5);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+    }
+    .vip-pass-card h3, .vip-pass-card h4, .vip-pass-card h5 {
+        color: var(--text-main, #1e293b) !important;
+    }
+    .vip-pass-card p {
+        color: var(--text-light, #64748b) !important;
+    }
+
+    /* Milestones Grid */
+    .vip-milestones-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 10px;
+        margin-top: 12px;
+    }
+    @media (max-width: 650px) {
+        .vip-milestones-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+    .vip-milestone-item {
+        background: #fffcf7;
+        border: 1.5px solid rgba(243, 168, 59, 0.35);
+        border-radius: 10px;
+        padding: 12px;
+    }
+    body.dark-theme .vip-milestone-item {
+        background: rgba(255, 255, 255, 0.04);
+        border: 1.5px solid rgba(243, 168, 59, 0.35);
+    }
+
+    /* Perks 4-Grid */
+    .vip-perks-matrix {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 10px;
+        margin-bottom: 18px;
+    }
+    .vip-perk-box {
+        background: var(--card-bg, #ffffff);
+        border: 1.5px solid rgba(243, 168, 59, 0.25);
+        border-radius: 10px;
+        padding: 12px 14px;
+        display: flex;
+        gap: 10px;
+        align-items: flex-start;
+        transition: all 0.2s ease;
+    }
+    body.dark-theme .vip-perk-box {
+        background: rgba(255, 255, 255, 0.03);
+    }
+    .vip-perk-box:hover {
+        border-color: #f3a83b;
+        transform: translateY(-2px);
+    }
+
+    /* Sidebar compact styling */
+    .sidebar-compact-card {
+        padding: 12px !important;
+        border-radius: 14px !important;
+    }
+    .sidebar-compact-card img {
+        max-height: 120px !important;
+        object-fit: cover !important;
+    }
+    </style>
 </head>
 <body>
     <!-- Navbar -->
@@ -50,147 +145,46 @@
         </div>
     </header>
 
-    <main class="container" style="max-width: 1050px; margin: 40px auto; padding: 0 20px;">
+    <main class="container" style="max-width: 1140px; margin: 30px auto; padding: 0 16px;">
         <!-- Hero Section -->
-        <section class="quests-hero" style="text-align: center; margin-bottom: 40px;">
-            <span class="hero-badge" style="background: rgba(243, 168, 59, 0.15); color: var(--primary); padding: 6px 16px; border-radius: 20px; font-size: 0.8rem; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; display: inline-block; margin-bottom: 15px; border: 1px solid rgba(243, 168, 59, 0.3);">
+        <section class="quests-hero" style="text-align: center; margin-bottom: 25px;">
+            <span class="hero-badge" style="background: rgba(243, 168, 59, 0.15); color: var(--primary); padding: 5px 14px; border-radius: 20px; font-size: 0.78rem; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; display: inline-block; margin-bottom: 10px; border: 1px solid rgba(243, 168, 59, 0.3);">
                 Gamification Thực Chiến
             </span>
-            <h1 class="hero-title" style="font-size: 2.5rem; font-weight: 800; margin: 0 0 10px 0; background: linear-gradient(135deg, var(--text-main) 0%, var(--primary) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
-                NHIỆM VỤ & QUÀ TẶNG
+            <h1 class="hero-title" style="font-size: 2.2rem; font-weight: 800; margin: 0 0 8px 0; background: linear-gradient(135deg, var(--text-main) 0%, var(--primary) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+                NHIỆM VỤ &amp; QUÀ TẶNG
             </h1>
-            <p class="hero-subtitle" style="font-size: 1.1rem; color: var(--text-light); max-width: 600px; margin: 0 auto; line-height: 1.5;">
+            <p class="hero-subtitle" style="font-size: 1rem; color: var(--text-light); max-width: 620px; margin: 0 auto; line-height: 1.5;">
                 Rèn luyện kỹ năng BD mỗi ngày, tích lũy BD-Points để mở khóa phần thưởng thực chiến độc quyền!
             </p>
-            <div style="margin-top: 20px; display: flex; justify-content: center;">
-                <div style="border-radius: 16px; overflow: hidden; border: 1.5px solid var(--border-color); box-shadow: var(--shadow); height: 140px; width: 185px;">
-                    <img src="mascot_quests.jpg?v=2.3.14" style="width: 100%; height: 100%; object-fit: cover;" alt="BeeDee Quests">
-                </div>
-            </div>
         </section>
 
         <!-- Main Layout with Sidebar -->
         <div class="quests-main-layout">
             <!-- Quests Panel Container -->
-            <div class="streak-reward-card glass-panel" id="quests-section" style="padding: 28px; border-radius: 16px; border: 1px solid var(--primary); background: rgba(243, 168, 59, 0.02); box-shadow: 0 15px 35px rgba(0, 0, 0, 0.25);">
-                <div class="streak-tabs-header" style="margin-bottom: 25px; display: flex; gap: 10px; flex-wrap: wrap;">
-                    <button class="streak-tab-link active" id="tab-streak-btn" style="font-size: 1.05rem; padding: 12px 24px;">🎯 NHIỆM VỤ & CHIẾN DỊCH</button>
+            <div class="streak-reward-card glass-panel" id="quests-section" style="padding: 22px; border-radius: 16px; border: 1px solid var(--primary); background: rgba(243, 168, 59, 0.02); box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);">
+                <div class="streak-tabs-header" style="margin-bottom: 18px; display: flex; gap: 8px; flex-wrap: wrap;">
+                    <button class="streak-tab-link active" id="tab-streak-btn" style="font-size: 0.95rem; padding: 10px 18px; font-weight: 700;">🎯 NHIỆM VỤ &amp; CHIẾN DỊCH</button>
                     <!-- VIP Tab: Chỉ hiển thị cho Alumni VIP, ẩn hoàn toàn với user thường -->
-                    <button class="streak-tab-link" id="tab-vip-btn" style="display: none; font-size: 1.05rem; padding: 12px 24px; border: 1.5px solid rgba(243, 168, 59, 0.45); color: #f3a83b; background: rgba(243, 168, 59, 0.08); font-weight: 800;">⭐ ĐẶC QUYỀN ALUMNI VIP</button>
-                    <button class="streak-tab-link" id="tab-rewards-btn" style="font-size: 1.05rem; padding: 12px 24px;">🎁 CỬA HÀNG ĐỔI QUÀ</button>
+                    <button class="streak-tab-link" id="tab-vip-btn" style="display: none; font-size: 0.95rem; padding: 10px 18px; border: 1.5px solid rgba(243, 168, 59, 0.45); color: #d97706; background: rgba(243, 168, 59, 0.08); font-weight: 800;">⭐ ĐẶC QUYỀN ALUMNI VIP</button>
+                    <button class="streak-tab-link" id="tab-rewards-btn" style="font-size: 0.95rem; padding: 10px 18px; font-weight: 700;">🎁 CỬA HÀNG ĐỔI QUÀ</button>
                 </div>
 
             <!-- Tab Content: Streak form -->
             <div id="tab-content-streak">
-                <!-- =============================================================== -->
-                <!-- KHU VỰC RIÊNG CHO USER VIP (ẨN HOÀN TOÀN VỚI USER THƯỜNG)       -->
-                <!-- =============================================================== -->
-                <div class="vip-quests-lounge-card" id="vip-quests-lounge-card" style="display: none; margin-bottom: 25px; border-radius: 18px; padding: 22px 24px; border: 2px solid rgba(243, 168, 59, 0.4); background: linear-gradient(135deg, rgba(162, 10, 10, 0.07) 0%, rgba(243, 168, 59, 0.06) 100%); box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12); position: relative; overflow: hidden;">
-                    <div style="position: absolute; top: 0; left: 0; right: 0; height: 4px; background: linear-gradient(90deg, #a20a0a, #f3a83b, #a20a0a);"></div>
-
-                    <!-- Header with Mascot -->
-                    <div style="display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin-bottom: 16px;">
-                        <div style="display: flex; align-items: center; gap: 14px;">
-                            <img src="mascot_champion.jpg" alt="BeeDee VIP Champion" style="width: 64px; height: 64px; border-radius: 50%; object-fit: cover; border: 3px solid #f3a83b; box-shadow: 0 4px 16px rgba(243, 168, 59, 0.35); flex-shrink: 0;">
-                            <div>
-                                <div style="display: inline-flex; align-items: center; gap: 6px; padding: 3px 10px; border-radius: 14px; font-size: 0.75rem; font-weight: 800; text-transform: uppercase; background: rgba(243, 168, 59, 0.15); color: #f3a83b; border: 1px solid rgba(243, 168, 59, 0.35);">
-                                    👑 KHU VỰC ĐẶC QUYỀN ALUMNI VIP
-                                </div>
-                                <h4 style="margin: 5px 0 0 0; font-size: 1.15rem; font-weight: 800; color: var(--text-main);">
-                                    Khu Vực Riêng Dành Cho Học Viên Khóa BD Thực Chiến
-                                </h4>
-                                <p style="margin: 2px 0 0 0; font-size: 0.84rem; color: var(--text-light); line-height: 1.45;">
-                                    Đặc quyền tìm 3 PIC chất lượng cùng anh Peter Võ và tham gia nhiệm vụ VIP nhận x2 điểm thưởng BD-Points!
-                                </p>
-                            </div>
-                        </div>
-                        <div id="vip-quests-hud-status">
-                            <span style="font-size: 0.82rem; padding: 5px 12px; border-radius: 14px; background: rgba(16, 185, 129, 0.15); color: #34d399; font-weight: 800; border: 1px solid rgba(16, 185, 129, 0.35);">
-                                ⭐ VIP ĐÃ KÍCH HOẠT
-                            </span>
-                        </div>
+                <!-- VIP Quick Status Bar (1-Line Sleek Banner for VIP users only) -->
+                <div id="vip-quick-badge" style="display: none; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; background: linear-gradient(135deg, rgba(243, 168, 59, 0.12) 0%, rgba(162, 10, 10, 0.08) 100%); border: 1.5px solid rgba(243, 168, 59, 0.4); border-radius: 12px; padding: 10px 16px; margin-bottom: 16px;">
+                    <div style="display: flex; align-items: center; gap: 8px; font-size: 0.85rem; font-weight: 700; color: var(--text-main);">
+                        <span style="font-size: 1.2rem;">👑</span>
+                        <span>Alumni VIP: <strong id="vip-quick-nickname" style="color: #d97706;">Chiến Binh VIP</strong> &bull; Còn <strong id="vip-quick-credits" style="color: #059669;">3/3 lượt</strong> tìm PIC</span>
                     </div>
-
-                    <!-- VIP Active Session Details & Action Center -->
-                    <div id="vip-quests-active-box" style="background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(243, 168, 59, 0.25); border-radius: 12px; padding: 16px; margin-bottom: 16px;">
-                        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
-                            <div>
-                                <div style="font-size: 0.78rem; color: #f3a83b; font-weight: 800; letter-spacing: 0.5px;">🎖️ ĐÃ XÁC THỰC ALUMNI VIP</div>
-                                <div style="font-size: 1.05rem; font-weight: 800; color: var(--text-main); margin-top: 2px;">
-                                    Chiến binh: <span id="vip-quests-nickname" style="color: #f3a83b;">Chiến Binh VIP</span> (<span id="vip-quests-email" style="font-size: 0.85rem; color: var(--text-light);">--</span>)
-                                </div>
-                                <div style="font-size: 0.82rem; color: var(--text-light); margin-top: 4px;">
-                                    🎯 Số lượt tìm PIC: <strong id="vip-quests-credits" style="color: #10b981; font-size: 0.95rem;">3/3 lượt</strong> &bull; Thời hạn: <strong>90 Ngày</strong>
-                                </div>
-                            </div>
-                            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-                                <a href="finder.html" class="btn btn-primary" style="padding: 9px 18px; font-size: 0.85rem; font-weight: 800; border-radius: 8px; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; background: linear-gradient(135deg, #a20a0a, #7c0808); border: 1px solid #f3a83b; color: #fff; box-shadow: 0 4px 14px rgba(162, 10, 10, 0.3);">
-                                    🎯 Vào Cổng Tìm PIC &rarr;
-                                </a>
-                                <a href="community.html" class="btn" style="padding: 9px 16px; font-size: 0.85rem; font-weight: 700; border-radius: 8px; text-decoration: none; border: 1px solid var(--border-color); color: var(--text-main); background: rgba(255,255,255,0.04);">
-                                    🤝 Săn PIC Cộng Đồng
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- VIP Vé Mời Đồng Đội Box -->
-                    <div style="background: rgba(243, 168, 59, 0.06); border: 1px dashed rgba(243, 168, 59, 0.35); border-radius: 12px; padding: 14px 18px; margin-bottom: 16px;">
-                        <div style="display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap;">
-                            <div style="flex: 1; min-width: 240px;">
-                                <div style="font-size: 0.84rem; font-weight: 800; color: #f3a83b;">🎟️ Vé Mời VIP Đồng Đội (3 Suất Độc Quyền)</div>
-                                <p style="margin: 2px 0 0 0; font-size: 0.76rem; color: var(--text-light); line-height: 1.4;">
-                                    Tặng vé cho đồng nghiệp: người nhận được tặng ngay <strong>50 Points</strong> + tải Ebook B2B đầu tiên!
-                                </p>
-                            </div>
-                            <div style="display: flex; gap: 8px;">
-                                <button type="button" id="btn-copy-ref-quests" class="btn btn-primary" style="padding: 6px 14px; font-size: 0.78rem; font-weight: 800; border-radius: 6px; background: linear-gradient(135deg, #f3a83b, #d97706); color: #1e293b; border: none; cursor: pointer;">
-                                    📋 Copy Link Tặng Quà
-                                </button>
-                                <a href="finder.html" class="btn" style="padding: 6px 12px; font-size: 0.78rem; font-weight: 700; border-radius: 6px; border: 1px solid rgba(243, 168, 59, 0.3); color: #f3a83b; text-decoration: none; background: rgba(255,255,255,0.03);">
-                                    Xem 3 Mốc Thưởng &rarr;
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- VIP Special Missions Grid -->
-                    <div>
-                        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; flex-wrap: wrap; gap: 6px;">
-                            <span style="font-size: 0.82rem; font-weight: 800; color: #f3a83b; text-transform: uppercase; letter-spacing: 0.5px;">
-                                💎 NHIỆM VỤ ĐẶC QUYỀN ALUMNI VIP (ĐIỂM THƯỞNG CAO)
-                            </span>
-                            <span style="font-size: 0.75rem; color: var(--text-light);">Hệ số thưởng: <strong style="color: #f3a83b;">x2 BD-Points</strong></span>
-                        </div>
-                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 10px;">
-                            <div style="padding: 12px 14px; border-radius: 10px; background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(243, 168, 59, 0.2); display: flex; align-items: center; justify-content: space-between; gap: 10px;">
-                                <div>
-                                    <div style="font-size: 0.82rem; font-weight: 700; color: var(--text-main);">🎯 Gửi 01 Yêu Cầu Tìm PIC Mục Tiêu</div>
-                                    <div style="font-size: 0.7rem; color: var(--text-light); margin-top: 2px;">Cổng VIP B2B PIC Finder</div>
-                                </div>
-                                <a href="finder.html" style="font-size: 0.78rem; font-weight: 800; color: #f3a83b; text-decoration: none; padding: 4px 10px; border-radius: 6px; background: rgba(243, 168, 59, 0.12); border: 1px solid rgba(243, 168, 59, 0.3); white-space: nowrap;">
-                                    +150đ 🪙
-                                </a>
-                            </div>
-                            <div style="padding: 12px 14px; border-radius: 10px; background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(243, 168, 59, 0.2); display: flex; align-items: center; justify-content: space-between; gap: 10px;">
-                                <div>
-                                    <div style="font-size: 0.82rem; font-weight: 700; color: var(--text-main);">📢 Báo Cáo Trạng Thái Tiếp Cận PIC</div>
-                                    <div style="font-size: 0.7rem; color: var(--text-light); margin-top: 2px;">Nhắn tin cập nhật cho anh Peter qua Zalo</div>
-                                </div>
-                                <a href="https://zalo.me/0931100569" target="_blank" style="font-size: 0.78rem; font-weight: 800; color: #34d399; text-decoration: none; padding: 4px 10px; border-radius: 6px; background: rgba(16, 185, 129, 0.12); border: 1px solid rgba(16, 185, 129, 0.3); white-space: nowrap;">
-                                    +200đ 🪙
-                                </a>
-                            </div>
-                            <div style="padding: 12px 14px; border-radius: 10px; background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(243, 168, 59, 0.2); display: flex; align-items: center; justify-content: space-between; gap: 10px;">
-                                <div>
-                                    <div style="font-size: 0.82rem; font-weight: 700; color: var(--text-main);">💡 Chia Sẻ Góc Nhìn / Case Study BD</div>
-                                    <div style="font-size: 0.7rem; color: var(--text-light); margin-top: 2px;">Đăng 1 bài thảo luận trong Cộng Đồng</div>
-                                </div>
-                                <a href="community.html" style="font-size: 0.78rem; font-weight: 800; color: #f3a83b; text-decoration: none; padding: 4px 10px; border-radius: 6px; background: rgba(243, 168, 59, 0.12); border: 1px solid rgba(243, 168, 59, 0.3); white-space: nowrap;">
-                                    +100đ 🪙
-                                </a>
-                            </div>
-                        </div>
+                    <div style="display: flex; gap: 8px;">
+                        <button type="button" onclick="document.getElementById('tab-vip-btn').click();" class="btn btn-primary" style="padding: 5px 12px; font-size: 0.78rem; font-weight: 800; border-radius: 6px; background: linear-gradient(135deg, #f3a83b, #d97706); color: #1e293b; border: none; cursor: pointer;">
+                            ⭐ Xem Đặc Quyền &amp; Vé Mời VIP &rarr;
+                        </button>
+                        <a href="finder.html" class="btn" style="padding: 5px 10px; font-size: 0.78rem; font-weight: 700; border-radius: 6px; border: 1px solid rgba(243, 168, 59, 0.35); text-decoration: none; color: var(--text-main);">
+                            🎯 Tìm PIC
+                        </a>
                     </div>
                 </div>
 
@@ -212,263 +206,309 @@
 
                 <!-- Quests & Campaigns Dashboard (Visible when registered) -->
                 <div id="quests-dashboard-box" class="hidden">
-                    <!-- Wallet & Progress HUD -->
-                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 25px; border-bottom: 1px solid var(--border-color); padding-bottom: 18px;">
+                    <!-- Top Action Toolbar (Compact Horizontal Row) -->
+                    <div style="display: flex; align-items: center; justify-content: space-between; gap: 14px; flex-wrap: wrap; background: rgba(243, 168, 59, 0.05); border: 1.5px solid rgba(243, 168, 59, 0.25); border-radius: 14px; padding: 12px 18px; margin-bottom: 20px;">
+                        <!-- Left: Points balance -->
                         <div style="display: flex; align-items: center; gap: 10px;">
-                            <span style="font-size: 2rem; line-height: 1;">🪙</span>
+                            <span style="font-size: 1.8rem; line-height: 1;">🪙</span>
                             <div>
-                                <div style="font-size: 0.8rem; color: var(--text-light);">Số dư tích lũy</div>
-                                <div style="font-size: 1.5rem; font-weight: 800; color: var(--primary);" id="hud-points-val">0 BD-Points</div>
+                                <div style="font-size: 0.72rem; color: var(--text-light); text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px;">Số dư tích lũy</div>
+                                <div style="font-size: 1.35rem; font-weight: 800; color: #d97706;" id="hud-points-val">0 BD-Points</div>
                             </div>
                         </div>
-                        <div style="text-align: right;">
-                            <div style="font-size: 0.75rem; color: var(--text-light); margin-bottom: 6px;" id="hud-next-gift-lbl">Cách quà tiếp theo: 200đ</div>
-                            <div style="width: 140px; height: 8px; background: rgba(255,255,255,0.05); border-radius: 4px; overflow: hidden; display: inline-block;">
-                                <div id="hud-next-gift-bar" style="width: 0%; height: 100%; background: var(--primary); transition: width 0.3s ease;"></div>
+
+                        <!-- Center: Next gift progress -->
+                        <div style="display: flex; flex-direction: column; gap: 4px; min-width: 160px; flex: 1; max-width: 260px;">
+                            <div style="font-size: 0.74rem; color: var(--text-light); font-weight: 600;" id="hud-next-gift-lbl">Cách quà tiếp theo: 200đ</div>
+                            <div style="width: 100%; height: 8px; background: rgba(0,0,0,0.06); border-radius: 4px; overflow: hidden;">
+                                <div id="hud-next-gift-bar" style="width: 0%; height: 100%; background: linear-gradient(90deg, #f3a83b, #10b981); transition: width 0.3s ease;"></div>
                             </div>
+                        </div>
+
+                        <!-- Right: Promo Code Inline Form -->
+                        <div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap;">
+                            <input type="text" id="gift-code-input" placeholder="Mã quà tặng..." style="width: 130px; padding: 7px 10px; border-radius: 8px; border: 1px solid var(--border-color); background: var(--bg-input, #fff); color: var(--text-main); font-size: 0.8rem; font-weight: 700; text-transform: uppercase; outline: none;">
+                            <button id="btn-claim-gift-code" class="btn btn-primary" style="padding: 7px 14px; font-size: 0.8rem; font-weight: 800; border-radius: 8px; white-space: nowrap;">Đổi Mã</button>
                         </div>
                     </div>
 
-                    <!-- Gift Code / Promo Code Input Form -->
-                    <div style="background: rgba(243, 168, 59, 0.04); border: 1.5px dashed rgba(243, 168, 59, 0.25); padding: 15px; border-radius: 12px; margin-bottom: 20px; display: flex; gap: 12px; align-items: center; justify-content: space-between; flex-wrap: wrap;">
-                        <div style="flex: 1; min-width: 200px; text-align: left;">
-                            <h5 style="margin: 0; font-size: 0.85rem; font-weight: 800; color: var(--primary);">🎁 NHẬP MÃ QUÀ TẶNG / PROMO CODE</h5>
-                            <p style="margin: 3px 0 0 0; font-size: 0.72rem; color: var(--text-light);">Nhập các mã khuyến mãi, sự kiện để nhận ngay điểm thưởng BD-Points.</p>
-                        </div>
-                        <div style="display: flex; gap: 8px; flex-shrink: 0;">
-                            <input type="text" id="gift-code-input" placeholder="Mã quà tặng..." style="width: 140px; padding: 8px 12px; border-radius: 6px; border: 1px solid var(--border-color); background: rgba(255,255,255,0.02); color: var(--text-main); font-family: inherit; font-size: 0.82rem; font-weight: 700; text-transform: uppercase;">
-                            <button id="btn-claim-gift-code" class="btn btn-primary" style="padding: 8px 16px; font-size: 0.8rem; font-weight: bold; border-radius: 6px;">Đổi Mã</button>
-                        </div>
-                    </div>
-
-                    <!-- Grid layout for Quests and Campaign -->
-                    <div style="display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 20px;" class="quests-columns-grid">
-                        
+                    <!-- Grid layout for Quests and Campaign (2 Columns) -->
+                    <div style="display: grid; grid-template-columns: 1.15fr 0.85fr; gap: 18px;" class="quests-columns-grid">
                         <!-- Daily & Weekly Quests Column -->
-                        <div style="border-right: 1px solid var(--border-color); padding-right: 20px;" class="quests-column-left">
-                            <h5 style="margin: 0 0 12px 0; font-size: 0.9rem; font-weight: 800; color: var(--text-main); display: flex; align-items: center; gap: 6px;">📅 NHIỆM VỤ HÀNG NGÀY</h5>
-                            <div id="daily-quests-list" style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 25px;">
+                        <div style="border-right: 1px solid var(--border-color); padding-right: 16px;" class="quests-column-left">
+                            <h5 style="margin: 0 0 10px 0; font-size: 0.88rem; font-weight: 800; color: var(--text-main); display: flex; align-items: center; gap: 6px;">📅 NHIỆM VỤ HÀNG NGÀY</h5>
+                            <div id="daily-quests-list" style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 20px;">
                                 <!-- Dynamically rendered Daily Quests -->
                             </div>
                             
-                            <h5 style="margin: 25px 0 12px 0; font-size: 0.9rem; font-weight: 800; color: var(--text-main); display: flex; align-items: center; gap: 6px;">🗓️ NHIỆM VỤ HÀNG TUẦN</h5>
-                            <div id="weekly-quests-list" style="display: flex; flex-direction: column; gap: 10px;">
+                            <h5 style="margin: 18px 0 10px 0; font-size: 0.88rem; font-weight: 800; color: var(--text-main); display: flex; align-items: center; gap: 6px;">🗓️ NHIỆM VỤ HÀNG TUẦN</h5>
+                            <div id="weekly-quests-list" style="display: flex; flex-direction: column; gap: 8px;">
                                 <!-- Dynamically rendered Weekly Quests -->
                             </div>
                         </div>
 
                         <!-- Campaigns Column -->
                         <div class="quests-column-right">
-                            <h5 style="margin: 0 0 12px 0; font-size: 0.9rem; font-weight: 800; color: var(--primary); display: flex; align-items: center; gap: 6px;">🚀 CHIẾN DỊCH TUẦN</h5>
-                            <div id="active-campaign-box" style="display: flex; flex-direction: column; gap: 14px;">
+                            <h5 style="margin: 0 0 10px 0; font-size: 0.88rem; font-weight: 800; color: #d97706; display: flex; align-items: center; gap: 6px;">🚀 CHIẾN DỊCH TUẦN</h5>
+                            <div id="active-campaign-box" style="display: flex; flex-direction: column; gap: 10px;">
                                 <!-- Dynamically rendered Active Campaigns -->
                             </div>
                         </div>
-
                     </div>
                     
-                    <!-- Lịch sử Hoạt động / Điểm tích lũy -->
-                    <div style="margin-top: 30px; border-top: 1px solid var(--border-color); padding-top: 20px;">
-                        <h5 style="margin: 0 0 15px 0; font-size: 0.95rem; font-weight: 800; color: var(--primary); display: flex; align-items: center; gap: 6px;">📜 LỊCH SỬ HOẠT ĐỘNG TÍCH ĐIỂM & ĐỔI QUÀ</h5>
-                        <div id="points-history-list" style="display: flex; flex-direction: column; gap: 8px; max-height: 250px; overflow-y: auto; padding-right: 5px; margin-top: 10px;">
+                    <!-- Lịch sử Hoạt động / Điểm tích lũy (Dạng Collapsible gọn gàng) -->
+                    <details style="margin-top: 20px; border: 1px solid var(--border-color); border-radius: 10px; padding: 10px 14px; background: rgba(0,0,0,0.01);">
+                        <summary style="cursor: pointer; font-size: 0.85rem; font-weight: 800; color: var(--text-main); display: flex; align-items: center; gap: 6px;">
+                            <span>📜 Lịch sử tích điểm &amp; đổi quà</span>
+                            <span style="font-size: 0.72rem; color: var(--text-light); font-weight: 500;">(Nhấn để xem chi tiết)</span>
+                        </summary>
+                        <div id="points-history-list" style="display: flex; flex-direction: column; gap: 6px; max-height: 200px; overflow-y: auto; margin-top: 10px; padding-right: 4px;">
                             <!-- Sẽ render bằng JS -->
                         </div>
-                    </div>
+                    </details>
                 </div>
             </div>
 
             <!-- Tab Content: Reward list -->
             <div id="tab-content-rewards" class="hidden">
-                <p style="font-size: 0.85rem; color: var(--text-light); margin: 0 0 15px 0; line-height: 1.5;">
+                <p style="font-size: 0.85rem; color: var(--text-light); margin: 0 0 14px 0; line-height: 1.5;">
                     Luyện tập đều đặn để tích lũy ngày Streak và nhận quà tương ứng:
                 </p>
                 <div class="reward-grid">
                     <!-- Ebook reward -->
                     <div class="reward-card">
-                        <span style="font-size: 1.8rem;">📖</span>
+                        <span style="font-size: 1.6rem;">📖</span>
                         <span style="font-size: 0.8rem; font-weight: bold; color: var(--text-main);">Tải 01 Ebook BD Hiệu Quả</span>
-                        <span style="font-size: 0.72rem; color: var(--accent); font-weight: bold;">Mốc 500 Điểm 🪙</span>
-                        <button class="btn btn-secondary btn-claim" data-reward="Tải 01 Ebook hiệu quả cho bạn khi làm BD" data-requirement="500" style="padding: 5px 10px; font-size: 0.7rem; margin-top: 8px; width: 100%;">Khóa (500đ) 🔒</button>
+                        <span style="font-size: 0.72rem; color: #b45309; font-weight: bold;">Mốc 500 Điểm 🪙</span>
+                        <button class="btn btn-secondary btn-claim" data-reward="Tải 01 Ebook hiệu quả cho bạn khi làm BD" data-requirement="500" style="padding: 5px 10px; font-size: 0.7rem; margin-top: 6px; width: 100%;">Khóa (500đ) 🔒</button>
                     </div>
                     <!-- Milk Tea reward -->
                     <div class="reward-card">
-                        <span style="font-size: 1.8rem;">🥤</span>
+                        <span style="font-size: 1.6rem;">🥤</span>
                         <span style="font-size: 0.8rem; font-weight: bold; color: var(--text-main);">Trà Sữa L Mát Lạnh</span>
-                        <span style="font-size: 0.72rem; color: var(--accent); font-weight: bold;">Mốc 850 Điểm 🪙</span>
-                        <button class="btn btn-secondary btn-claim" data-reward="Ly Trà Sữa Size L Mát Lạnh giải nhiệt" data-requirement="850" style="padding: 5px 10px; font-size: 0.7rem; margin-top: 8px; width: 100%;">Khóa (850đ) 🔒</button>
+                        <span style="font-size: 0.72rem; color: #b45309; font-weight: bold;">Mốc 850 Điểm 🪙</span>
+                        <button class="btn btn-secondary btn-claim" data-reward="Ly Trà Sữa Size L Mát Lạnh giải nhiệt" data-requirement="850" style="padding: 5px 10px; font-size: 0.7rem; margin-top: 6px; width: 100%;">Khóa (850đ) 🔒</button>
                     </div>
                     <!-- Notebook & Desk Decor reward -->
                     <div class="reward-card" style="border: 1.5px solid var(--primary); background: rgba(243, 168, 59, 0.03);">
-                        <span style="font-size: 1.8rem;">📒</span>
+                        <span style="font-size: 1.6rem;">📒</span>
                         <span style="font-size: 0.8rem; font-weight: bold; color: var(--primary);">Sổ Tay / Đồ Decor Cute</span>
-                        <span style="font-size: 0.72rem; color: var(--accent); font-weight: bold;">Mốc 1500 Điểm 🪙</span>
-                        <button class="btn btn-secondary btn-claim" data-reward="Cuốn sổ tay thực chiến hoặc Vật trang trí bàn làm việc cute" data-requirement="1500" style="padding: 5px 10px; font-size: 0.7rem; margin-top: 8px; width: 100%;">Khóa (1500đ) 🔒</button>
+                        <span style="font-size: 0.72rem; color: #b45309; font-weight: bold;">Mốc 1500 Điểm 🪙</span>
+                        <button class="btn btn-secondary btn-claim" data-reward="Cuốn sổ tay thực chiến hoặc Vật trang trí bàn làm việc cute" data-requirement="1500" style="padding: 5px 10px; font-size: 0.7rem; margin-top: 6px; width: 100%;">Khóa (1500đ) 🔒</button>
                     </div>
                     <!-- 1-1 Consultation reward (30 mins) -->
                     <div class="reward-card">
-                        <span style="font-size: 1.8rem;">💻</span>
+                        <span style="font-size: 1.6rem;">💻</span>
                         <span style="font-size: 0.8rem; font-weight: bold; color: var(--text-main);">30 Phút Tư Vấn Online 1-1</span>
-                        <span style="font-size: 0.72rem; color: var(--accent); font-weight: bold;">Mốc 3500 Điểm 🪙</span>
-                        <button class="btn btn-secondary btn-claim" data-reward="30 Phút Tư Vấn Online 1-1 Thiết Kế B2B Sales Pipeline cùng anh Peter Vo" data-requirement="3500" style="padding: 5px 10px; font-size: 0.7rem; margin-top: 8px; width: 100%;">Khóa (3500đ) 🔒</button>
+                        <span style="font-size: 0.72rem; color: #b45309; font-weight: bold;">Mốc 3500 Điểm 🪙</span>
+                        <button class="btn btn-secondary btn-claim" data-reward="30 Phút Tư Vấn Online 1-1 Thiết Kế B2B Sales Pipeline cùng anh Peter Vo" data-requirement="3500" style="padding: 5px 10px; font-size: 0.7rem; margin-top: 6px; width: 100%;">Khóa (3500đ) 🔒</button>
                     </div>
                     <!-- Voucher 30% reward -->
                     <div class="reward-card">
-                        <span style="font-size: 1.8rem;">🎓</span>
+                        <span style="font-size: 1.6rem;">🎓</span>
                         <span style="font-size: 0.8rem; font-weight: bold; color: var(--text-main);">Voucher Giảm 30% Học Phí</span>
-                        <span style="font-size: 0.72rem; color: var(--accent); font-weight: bold;">Mốc 5500 Điểm 🪙</span>
-                        <button class="btn btn-secondary btn-claim" data-reward="Voucher Giảm Tối Đa 30% Học Phí Khóa Học BD Thực Chiến (Peter Vo)" data-requirement="5500" style="padding: 5px 10px; font-size: 0.7rem; margin-top: 8px; width: 100%;">Khóa (5500đ) 🔒</button>
+                        <span style="font-size: 0.72rem; color: #b45309; font-weight: bold;">Mốc 5500 Điểm 🪙</span>
+                        <button class="btn btn-secondary btn-claim" data-reward="Voucher Giảm Tối Đa 30% Học Phí Khóa Học BD Thực Chiến (Peter Vo)" data-requirement="5500" style="padding: 5px 10px; font-size: 0.7rem; margin-top: 6px; width: 100%;">Khóa (5500đ) 🔒</button>
                     </div>
                     <!-- Steak Lunch reward -->
                     <div class="reward-card">
-                        <span style="font-size: 1.8rem;">🥩</span>
+                        <span style="font-size: 1.6rem;">🥩</span>
                         <span style="font-size: 0.8rem; font-weight: bold; color: var(--text-main);">Ăn Trưa Cùng Anh Peter</span>
-                        <span style="font-size: 0.72rem; color: var(--accent); font-weight: bold;">Mốc 9500 Điểm 🪙</span>
-                        <button class="btn btn-secondary btn-claim" data-reward="Ăn Trưa Cùng Anh Peter (Anh Peter lo hết từ A-Z)" data-requirement="9500" style="padding: 5px 10px; font-size: 0.7rem; margin-top: 8px; width: 100%;">Khóa (9500đ) 🔒</button>
+                        <span style="font-size: 0.72rem; color: #b45309; font-weight: bold;">Mốc 9500 Điểm 🪙</span>
+                        <button class="btn btn-secondary btn-claim" data-reward="Ăn Trưa Cùng Anh Peter (Anh Peter lo hết từ A-Z)" data-requirement="9500" style="padding: 5px 10px; font-size: 0.7rem; margin-top: 6px; width: 100%;">Khóa (9500đ) 🔒</button>
                     </div>
                 </div>
                 
-                <!-- B2B Community Card - Centered below -->
-                <div class="reward-card highlight-card" style="margin: 25px auto 0 auto; width: 100%; max-width: 500px; box-sizing: border-box; background: linear-gradient(135deg, rgba(243, 168, 59, 0.12), rgba(243, 168, 59, 0.05)); border: 1.5px dashed var(--primary); text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; gap: 8px; border-radius: 12px;">
-                    <span style="font-size: 2rem; margin-bottom: 5px;">💬</span>
-                    <span style="font-size: 0.9rem; font-weight: 800; color: var(--primary);">Cộng Đồng BD B2B Thực Chiến</span>
-                    <p style="font-size: 0.78rem; color: var(--text-light); margin: 5px 0 12px 0; line-height: 1.4;">Nơi thảo luận các case-study hóc búa, nhận feedback trực tiếp từ anh Peter Vo và tăng tốc Streak học tập của bạn!</p>
-                    <a href="community.html" class="btn btn-primary" style="padding: 8px 20px; font-size: 0.8rem; font-weight: bold; text-decoration: none; width: fit-content; border-radius: 8px; display: inline-block;">👉 Tham Gia Ngay (Free)</a>
-                </div>
-            </div>
-
-            <!-- Tab Content: VIP Exclusive Lounge & Perks -->
-            <div id="tab-content-vip" class="hidden">
-                <div style="background: linear-gradient(135deg, rgba(162, 10, 10, 0.07) 0%, rgba(243, 168, 59, 0.05) 100%); border: 2px solid rgba(243, 168, 59, 0.35); border-radius: 18px; padding: 28px 24px; margin-bottom: 25px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);">
-                    <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 22px; flex-wrap: wrap;">
-                        <img src="mascot_champion.jpg" alt="BeeDee VIP Mascot" style="width: 76px; height: 76px; border-radius: 50%; object-fit: cover; border: 3.5px solid #f3a83b; box-shadow: 0 6px 20px rgba(243, 168, 59, 0.4);">
+                <!-- B2B Community Ribbon -->
+                <div style="margin: 18px 0 0 0; background: linear-gradient(135deg, rgba(243, 168, 59, 0.1), rgba(243, 168, 59, 0.04)); border: 1.5px dashed var(--primary); border-radius: 12px; padding: 12px 18px; display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;">
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <span style="font-size: 1.6rem;">💬</span>
                         <div>
-                            <span class="vip-badge-tag" style="background: rgba(243, 168, 59, 0.15); color: #f3a83b; border: 1px solid rgba(243, 168, 59, 0.4); padding: 4px 14px; border-radius: 16px; font-size: 0.8rem; font-weight: 800;">
-                                ⭐ ĐẶC QUYỀN TRỌN ĐỜI CHO ALUMNI KHÓA BD
-                            </span>
-                            <h3 style="margin: 8px 0 4px 0; font-size: 1.45rem; font-weight: 800; color: var(--text-main);">
-                                Cổng Đặc Quyền & Quyền Lợi Dành Riêng Cho Cựu Học Viên
-                            </h3>
-                            <p style="margin: 0; font-size: 0.9rem; color: var(--text-light); line-height: 1.5;">
-                                Sứ mệnh của BD Bình Dân Học Vụ: <em>"Để bạn không bao giờ đơn độc trên hành trình BD".</em>
-                            </p>
+                            <span style="font-size: 0.88rem; font-weight: 800; color: var(--text-main);">Cộng Đồng BD B2B Thực Chiến</span>
+                            <p style="font-size: 0.76rem; color: var(--text-light); margin: 2px 0 0 0;">Thảo luận case-study, nhận feedback trực tiếp từ anh Peter và tăng tốc Streak học tập!</p>
+                        </div>
+                    </div>
+                    <a href="community.html" class="btn btn-primary" style="padding: 7px 16px; font-size: 0.8rem; font-weight: bold; text-decoration: none; border-radius: 8px;">👉 Vào Cộng Đồng (Free)</a>
+                </div>
+            </div>
+
+            <!-- Tab Content: VIP Exclusive Lounge & Perks (Bố trí ngang & Fix màu font 100%) -->
+            <div id="tab-content-vip" class="hidden">
+                <!-- 1. VIP Profile Strip (Top HUD) -->
+                <div style="display: flex; align-items: center; justify-content: space-between; gap: 14px; flex-wrap: wrap; background: linear-gradient(135deg, rgba(243, 168, 59, 0.12) 0%, rgba(162, 10, 10, 0.08) 100%); border: 1.5px solid rgba(243, 168, 59, 0.4); border-radius: 14px; padding: 12px 18px; margin-bottom: 16px;">
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                        <img src="mascot_champion.jpg" alt="VIP Mascot" style="width: 46px; height: 46px; border-radius: 50%; object-fit: cover; border: 2.5px solid #f3a83b; box-shadow: 0 4px 12px rgba(243, 168, 59, 0.3);">
+                        <div>
+                            <div style="display: flex; align-items: center; gap: 6px;">
+                                <span style="font-size: 0.72rem; padding: 2px 8px; border-radius: 10px; background: rgba(243, 168, 59, 0.2); color: #b45309; font-weight: 800; border: 1px solid rgba(243, 168, 59, 0.4);">👑 ALUMNI VIP</span>
+                                <strong id="vip-quests-nickname" style="font-size: 0.95rem; color: var(--text-main);">Chiến Binh VIP</strong>
+                            </div>
+                            <div style="font-size: 0.78rem; color: var(--text-light); margin-top: 2px;">
+                                🎯 Quota: <strong id="vip-quests-credits" style="color: #059669; font-weight: 800;">3/3 lượt tìm PIC</strong> &bull; Hạn dùng: <strong>90 Ngày</strong>
+                            </div>
+                        </div>
+                    </div>
+                    <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                        <a href="finder.html" class="btn btn-primary" style="padding: 7px 16px; font-size: 0.82rem; font-weight: 800; border-radius: 8px; text-decoration: none; background: linear-gradient(135deg, #a20a0a, #7c0808); border: 1px solid #f3a83b; color: #fff; box-shadow: 0 4px 12px rgba(162, 10, 10, 0.25);">
+                            🎯 Mở Cổng Tìm PIC &rarr;
+                        </a>
+                        <a href="https://zalo.me/0931100569" target="_blank" class="btn" style="padding: 7px 14px; font-size: 0.82rem; font-weight: 700; border-radius: 8px; text-decoration: none; border: 1px solid #059669; color: #059669; background: rgba(5, 150, 105, 0.08);">
+                            💬 Zalo Peter Võ
+                        </a>
+                    </div>
+                </div>
+
+                <!-- 2. Lưới 4 Đặc Quyền (Compact 2x2 Grid) -->
+                <div style="margin-bottom: 16px;">
+                    <div style="font-size: 0.8rem; font-weight: 800; color: var(--text-main); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; display: flex; align-items: center; justify-content: space-between;">
+                        <span>⭐ 4 ĐẶC QUYỀN TRỌN ĐỜI CHO ALUMNI KHÓA BD</span>
+                        <span style="font-size: 0.72rem; color: var(--text-light); font-weight: 600;">Độc quyền cựu học viên</span>
+                    </div>
+                    <div class="vip-perks-matrix">
+                        <!-- Tile 1 -->
+                        <div class="vip-perk-box">
+                            <span style="font-size: 1.35rem; line-height: 1;">🎯</span>
+                            <div>
+                                <h5 style="margin: 0; font-size: 0.86rem; font-weight: 800; color: var(--text-main);">1. B2B PIC Finder</h5>
+                                <p style="margin: 2px 0 0 0; font-size: 0.74rem; color: var(--text-light); line-height: 1.35;">3 lượt/3 tháng xác thực PIC C-Level, HR, IT &amp; Marketing từ 30k LinkedIn.</p>
+                            </div>
+                        </div>
+                        <!-- Tile 2 -->
+                        <div class="vip-perk-box">
+                            <span style="font-size: 1.35rem; line-height: 1;">📚</span>
+                            <div>
+                                <h5 style="margin: 0; font-size: 0.86rem; font-weight: 800; color: var(--text-main);">2. Ebook B2B Thực Chiến</h5>
+                                <p style="margin: 2px 0 0 0; font-size: 0.74rem; color: var(--text-light); line-height: 1.35;">Mở khóa trọn bộ tài liệu mật: Tâm lý B2B, Social Selling &amp; 9 Nguyên tắc chốt deal.</p>
+                            </div>
+                        </div>
+                        <!-- Tile 3 -->
+                        <div class="vip-perk-box">
+                            <span style="font-size: 1.35rem; line-height: 1;">✍️</span>
+                            <div>
+                                <h5 style="margin: 0; font-size: 0.86rem; font-weight: 800; color: var(--text-main);">3. AI Email Assistant Pro</h5>
+                                <p style="margin: 2px 0 0 0; font-size: 0.74rem; color: var(--text-light); line-height: 1.35;">Trợ lý ảo soạn email chào hàng, follow-up &amp; kịch bản xử lý từ chối giá thực tế.</p>
+                            </div>
+                        </div>
+                        <!-- Tile 4 -->
+                        <div class="vip-perk-box">
+                            <span style="font-size: 1.35rem; line-height: 1;">📊</span>
+                            <div>
+                                <h5 style="margin: 0; font-size: 0.86rem; font-weight: 800; color: var(--text-main);">4. Ma Trận KPI &amp; Lương OTE</h5>
+                                <p style="margin: 2px 0 0 0; font-size: 0.74rem; color: var(--text-light); line-height: 1.35;">Dự toán phễu chuyển đổi doanh thu, tra cứu Luật Lao Động 2026 &amp; tính Gross - Net.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 3. VIP Referral Boarding Pass Card (Fix Font Color & Contrast 100%) -->
+                <div class="vip-pass-card">
+                    <div style="position: absolute; top: 0; left: 0; right: 0; height: 3.5px; background: linear-gradient(90deg, #f3a83b, #ef4444, #f3a83b);"></div>
+
+                    <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-bottom: 12px;">
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <span style="font-size: 1.8rem; line-height: 1;">🎟️</span>
+                            <div>
+                                <h4 class="vip-pass-title">
+                                    Vé Mời VIP Đồng Đội (Giver Mentality)
+                                </h4>
+                                <p class="vip-pass-desc">
+                                    Tặng 3 vé VIP cho đồng nghiệp: Người nhận được ngay <strong style="color: #b45309;">+50 BD-Points</strong> &amp; <strong>Ebook B2B đầu tiên</strong>. Bạn nhận thưởng mốc khi đồng nghiệp tham gia!
+                                </p>
+                            </div>
+                        </div>
+                        <div style="background: rgba(243, 168, 59, 0.15); border: 1px solid rgba(243, 168, 59, 0.4); padding: 5px 14px; border-radius: 20px; text-align: center;">
+                            <span style="font-size: 0.72rem; color: var(--text-light, #64748b); display: block; font-weight: 600;">Vé Còn Lại</span>
+                            <span style="font-size: 1.05rem; font-weight: 800; color: #b45309;"><span id="ref-quests-tickets">3</span> / 3 Vé</span>
                         </div>
                     </div>
 
-                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; margin-bottom: 24px;">
-                        <div style="background: rgba(255, 255, 255, 0.03); border: 1px solid var(--border-color); border-radius: 14px; padding: 18px;">
-                            <div style="font-size: 1.6rem; margin-bottom: 8px;">🎯</div>
-                            <h5 style="margin: 0 0 6px 0; font-size: 1rem; font-weight: 800; color: #f3a83b;">1. B2B PIC Finder (3 lượt / 3 tháng)</h5>
-                            <p style="margin: 0; font-size: 0.84rem; color: var(--text-light); line-height: 1.55;">
-                                Anh Peter Võ trực tiếp rà soát mạng lưới 30,000+ LinkedIn connections để tìm và xác thực PIC các khối C-Level, HR, Marketing & IT.
-                            </p>
+                    <!-- Link Bar & 2 Buttons -->
+                    <div style="display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; background: rgba(0, 0, 0, 0.03); border: 1px solid var(--border-color); border-radius: 10px; padding: 8px 12px; margin-bottom: 12px;">
+                        <div style="flex: 1; min-width: 220px; display: flex; align-items: center; gap: 8px;">
+                            <span style="font-size: 0.78rem; color: var(--text-light, #64748b); font-weight: 700; white-space: nowrap;">Link VIP Của Bạn:</span>
+                            <input type="text" id="vip-quests-link-input" readonly value="https://www.bdbinhdanhocvu.com/?ref=VIP" style="width: 100%; background: transparent; border: none; outline: none; font-size: 0.88rem; font-weight: 800; color: #b45309;">
                         </div>
-                        <div style="background: rgba(255, 255, 255, 0.03); border: 1px solid var(--border-color); border-radius: 14px; padding: 18px;">
-                            <div style="font-size: 1.6rem; margin-bottom: 8px;">📚</div>
-                            <h5 style="margin: 0 0 6px 0; font-size: 1rem; font-weight: 800; color: #f3a83b;">2. Thư Viện Ebook Thực Chiến</h5>
-                            <p style="margin: 0; font-size: 0.84rem; color: var(--text-light); line-height: 1.55;">
-                                Toàn quyền truy cập kho tài liệu mật: Quy trình trợ cấp thất nghiệp, Tâm lý học B2B, Social Selling LinkedIn, 9 Nguyên tắc chốt deal đỉnh cao.
-                            </p>
-                        </div>
-                        <div style="background: rgba(255, 255, 255, 0.03); border: 1px solid var(--border-color); border-radius: 14px; padding: 18px;">
-                            <div style="font-size: 1.6rem; margin-bottom: 8px;">✍️</div>
-                            <h5 style="margin: 0 0 6px 0; font-size: 1rem; font-weight: 800; color: #f3a83b;">3. AI Email Assistant Pro</h5>
-                            <p style="margin: 0; font-size: 0.84rem; color: var(--text-light); line-height: 1.55;">
-                                Trợ lý ảo soạn email chào hàng, follow-up, xử lý từ chối giá dựa trên các kịch bản thực tế đã kiểm chứng của anh Peter.
-                            </p>
-                        </div>
-                        <div style="background: rgba(255, 255, 255, 0.03); border: 1px solid var(--border-color); border-radius: 14px; padding: 18px;">
-                            <div style="font-size: 1.6rem; margin-bottom: 8px;">📊</div>
-                            <h5 style="margin: 0 0 6px 0; font-size: 1rem; font-weight: 800; color: #f3a83b;">4. Ma Trận Phễu KPI B2B & Công Cụ Nghề</h5>
-                            <p style="margin: 0; font-size: 0.84rem; color: var(--text-light); line-height: 1.55;">
-                                Tính toán phễu chuyển đổi doanh thu, tra cứu Luật Lao Động 2026, tính lương Gross - Net thực nhận chuẩn xác.
-                            </p>
+                        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                            <button type="button" id="btn-copy-ref-quests" class="btn btn-primary" style="padding: 6px 14px; font-size: 0.78rem; font-weight: 800; border-radius: 6px; background: linear-gradient(135deg, #f3a83b, #d97706); color: #1e293b; border: none; cursor: pointer;">
+                                📋 Copy Link
+                            </button>
+                            <button type="button" id="btn-copy-ref-msg-quests" class="btn" style="padding: 6px 12px; font-size: 0.78rem; font-weight: 700; border-radius: 6px; border: 1px solid var(--border-color); color: var(--text-main, #1e293b); background: var(--card-bg, #ffffff); cursor: pointer;">
+                                💬 Copy Lời Mời Mẫu
+                            </button>
                         </div>
                     </div>
 
-                    <!-- VIP Referral Loop Card inside Tab Content -->
-                    <div style="background: linear-gradient(135deg, rgba(243, 168, 59, 0.1) 0%, rgba(162, 10, 10, 0.08) 100%); border: 2px solid rgba(243, 168, 59, 0.35); border-radius: 14px; padding: 20px; margin-bottom: 22px;">
-                        <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; margin-bottom: 12px;">
-                            <div style="display: flex; align-items: center; gap: 10px;">
-                                <span style="font-size: 1.8rem;">🎟️</span>
-                                <div>
-                                    <h4 style="margin: 0; font-size: 1.1rem; font-weight: 800; color: #ffffff;">Vé Mời VIP Đồng Đội (Giver Mentality)</h4>
-                                    <p style="margin: 2px 0 0 0; font-size: 0.8rem; color: #cbd5e1;">Tặng 3 vé VIP cho đồng nghiệp: bạn nhận thưởng theo mốc, người nhận được ngay +50 Points &amp; Ebook thực chiến!</p>
+                    <!-- 3 Milestone Cards Row (Horizontal Grid 3 Columns) -->
+                    <div>
+                        <div style="font-size: 0.78rem; font-weight: 800; color: #b45309; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; display: flex; align-items: center; justify-content: space-between;">
+                            <span>🏆 3 MỐC THƯỞNG MILESTONE KHI ĐỒNG ĐỘI THAM GIA</span>
+                            <span style="font-size: 0.72rem; color: var(--text-light, #64748b); font-weight: 600;">Tiến độ: <strong id="ref-quests-count" style="color: #047857;">0</strong> / 5 bạn</span>
+                        </div>
+                        <div class="vip-milestones-grid">
+                            <!-- Milestone 1 -->
+                            <div class="vip-milestone-item" style="border-color: rgba(245, 158, 11, 0.4);">
+                                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px;">
+                                    <span style="font-size: 0.74rem; font-weight: 800; color: #b45309;">MỐC 1 (Rủ 1 Bạn)</span>
+                                    <span style="font-size: 0.7rem; padding: 2px 7px; border-radius: 8px; background: rgba(245, 158, 11, 0.15); color: #b45309; font-weight: 700;">+50đ 🪙</span>
                                 </div>
+                                <div style="font-size: 0.85rem; font-weight: 800; color: var(--text-main, #1e293b);">Bộ Slide Mẫu Pitching B2B</div>
+                                <p style="font-size: 0.74rem; color: var(--text-light, #64748b); margin: 3px 0 0 0; line-height: 1.35;">Template thuyết trình chuẩn thực chiến dành cho BD.</p>
                             </div>
-                            <a href="finder.html" class="btn btn-primary" style="padding: 8px 16px; font-size: 0.82rem; font-weight: 800; border-radius: 8px; text-decoration: none; background: linear-gradient(135deg, #f3a83b, #d97706); color: #1e293b;">
-                                📋 Lấy Link &amp; Quản Lý Vé &rarr;
-                            </a>
+                            <!-- Milestone 2 -->
+                            <div class="vip-milestone-item" style="border-color: rgba(239, 68, 68, 0.4);">
+                                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px;">
+                                    <span style="font-size: 0.74rem; font-weight: 800; color: #be123c;">MỐC 2 (Rủ 3 Bạn)</span>
+                                    <span style="font-size: 0.7rem; padding: 2px 7px; border-radius: 8px; background: rgba(239, 68, 68, 0.12); color: #be123c; font-weight: 700;">⭐ HOT</span>
+                                </div>
+                                <div style="font-size: 0.85rem; font-weight: 800; color: var(--text-main, #1e293b);">Vé Private B2B Roundtable</div>
+                                <p style="font-size: 0.74rem; color: var(--text-light, #64748b); margin: 3px 0 0 0; line-height: 1.35;">Zoom kín hàng tháng cùng Peter Võ &amp; Giám đốc Kinh doanh.</p>
+                            </div>
+                            <!-- Milestone 3 -->
+                            <div class="vip-milestone-item" style="border-color: rgba(16, 185, 129, 0.4);">
+                                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px;">
+                                    <span style="font-size: 0.74rem; font-weight: 800; color: #047857;">MỐC 3 (Rủ 5 Bạn)</span>
+                                    <span style="font-size: 0.7rem; padding: 2px 7px; border-radius: 8px; background: rgba(16, 185, 129, 0.15); color: #047857; font-weight: 700;">🎁 Tận Nhà</span>
+                                </div>
+                                <div style="font-size: 0.85rem; font-weight: 800; color: var(--text-main, #1e293b);">Quà Tri Ân Độc Quyền Tận Nhà</div>
+                                <p style="font-size: 0.74rem; color: var(--text-light, #64748b); margin: 3px 0 0 0; line-height: 1.35;">Sổ tay BD thực chiến cao cấp hoặc Áo thun Cú BeeDee.</p>
+                            </div>
                         </div>
-                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 10px;">
-                            <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(251,191,36,0.3); border-radius: 10px; padding: 12px;">
-                                <div style="font-size: 0.76rem; font-weight: 800; color: #fbbf24;">MỐC 1 (1 Bạn)</div>
-                                <div style="font-size: 0.84rem; font-weight: 700; color: #fff; margin-top: 2px;">+50 Points + Slide Mẫu Pitching B2B</div>
-                            </div>
-                            <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(243,168,59,0.4); border-radius: 10px; padding: 12px;">
-                                <div style="font-size: 0.76rem; font-weight: 800; color: #f3a83b;">MỐC 2 (3 Bạn)</div>
-                                <div style="font-size: 0.84rem; font-weight: 700; color: #fff; margin-top: 2px;">Vé Private B2B Roundtable (Zoom Kín)</div>
-                            </div>
-                            <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(16,185,129,0.4); border-radius: 10px; padding: 12px;">
-                                <div style="font-size: 0.76rem; font-weight: 800; color: #34d399;">MỐC 3 (5 Bạn)</div>
-                                <div style="font-size: 0.84rem; font-weight: 700; color: #fff; margin-top: 2px;">Quà Tri Ân Tận Nhà (Sổ tay / Áo thun Cú)</div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div style="text-align: center; padding-top: 15px; border-top: 1px solid var(--border-color); display: flex; justify-content: center; gap: 14px; flex-wrap: wrap;">
-                        <a href="finder.html" class="btn btn-primary" style="padding: 12px 30px; font-weight: 800; font-size: 1rem; border-radius: 25px; background: linear-gradient(135deg, #a20a0a, #7c0808); border: 1.5px solid #f3a83b; color: #fff; text-decoration: none; box-shadow: 0 4px 16px rgba(162, 10, 10, 0.35);">
-                            🚀 Vào Cổng Đặc Quyền Alumni VIP (Tìm PIC) &rarr;
-                        </a>
-                        <a href="https://zalo.me/0931100569" target="_blank" class="btn" style="padding: 12px 24px; font-weight: 700; font-size: 0.95rem; border-radius: 25px; background: #059669; border: none; color: #fff; text-decoration: none; box-shadow: 0 4px 14px rgba(5, 150, 105, 0.3);">
-                            💬 Chat Trực Tiếp Với Anh Peter Qua Zalo
-                        </a>
                     </div>
                 </div>
             </div>
             </div>
 
-            <!-- Sidebar Wrapper (Right Column) -->
-            <div style="display: flex; flex-direction: column; gap: 20px; width: 100%; max-width: 380px; margin: 0 auto;">
-                
+            <!-- Sidebar Wrapper (Right Column - Compact) -->
+            <div style="display: flex; flex-direction: column; gap: 14px; width: 100%; margin: 0 auto;">
                 <!-- Sidebar: LinkedIn QR Banner -->
-                <div class="peter-slogan-card glass-panel" style="padding: 14px; border-radius: 20px; border: 1.5px solid var(--primary); background: rgba(243, 168, 59, 0.03); display: flex; flex-direction: column; align-items: center; text-align: center; box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3); width: 100%; box-sizing: border-box; backdrop-filter: blur(10px);">
+                <div class="peter-slogan-card glass-panel sidebar-compact-card" style="padding: 12px; border-radius: 16px; border: 1.5px solid var(--primary); background: rgba(243, 168, 59, 0.03); display: flex; flex-direction: column; align-items: center; text-align: center; box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2); width: 100%; box-sizing: border-box;">
                     <a href="https://www.linkedin.com/in/vp-tan/" target="_blank" style="display: block; width: 100%;">
-                        <img src="peter_slogan.png?v=2.3.74" alt="BD khó có Peter lo" style="width: 100%; border-radius: 14px; display: block; height: auto; transition: transform 0.2s ease;">
+                        <img src="peter_slogan.png?v=2.3.74" alt="BD khó có Peter lo" style="width: 100%; border-radius: 10px; display: block; height: auto; max-height: 110px; object-fit: contain;">
                     </a>
-                    <p style="margin: 14px 0 0 0; font-size: 0.8rem; color: var(--text-light); line-height: 1.45; font-weight: 600;">
-                        Scan mã QR hoặc nhấp vào ảnh để kết nối LinkedIn với anh <strong>Peter Vo</strong> để nhận thêm nhiều bí kíp BD hữu ích!
-                    </p>
-                    <a href="https://www.linkedin.com/in/vp-tan/" target="_blank" class="btn btn-primary" style="margin-top: 14px; width: 100%; padding: 10px 16px; font-size: 0.82rem; font-weight: 800; border-radius: 8px; text-decoration: none; text-align: center; box-sizing: border-box; background: linear-gradient(135deg, #f3a83b, #d97706); border: none; color: #ffffff; cursor: pointer; transition: all 0.2s;">
+                    <a href="https://www.linkedin.com/in/vp-tan/" target="_blank" class="btn btn-primary" style="margin-top: 10px; width: 100%; padding: 8px 12px; font-size: 0.78rem; font-weight: 800; border-radius: 6px; text-decoration: none; text-align: center; box-sizing: border-box; background: linear-gradient(135deg, #f3a83b, #d97706); border: none; color: #ffffff;">
                         👉 Kết nối LinkedIn
                     </a>
                 </div>
 
                 <!-- Banner 1: Cộng Đồng B2B Thực Chiến -->
-                <div class="peter-slogan-card glass-panel" style="padding: 14px; border-radius: 20px; border: 1.5px solid var(--primary); background: rgba(243, 168, 59, 0.03); display: flex; flex-direction: column; align-items: center; text-align: center; box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3); width: 100%; box-sizing: border-box; backdrop-filter: blur(10px);">
+                <div class="peter-slogan-card glass-panel sidebar-compact-card" style="padding: 12px; border-radius: 16px; border: 1.5px solid var(--primary); background: rgba(243, 168, 59, 0.03); display: flex; flex-direction: column; align-items: center; text-align: center; box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2); width: 100%; box-sizing: border-box;">
                     <a href="community.html" style="display: block; width: 100%;">
-                        <img src="beedee_community.jpg?v=2.3.27" alt="Cộng Đồng B2B" style="width: 100%; border-radius: 14px; display: block; height: 160px; object-fit: cover; transition: transform 0.2s ease;">
+                        <img src="beedee_community.jpg?v=2.3.27" alt="Cộng Đồng B2B" style="width: 100%; border-radius: 10px; display: block; height: 110px; object-fit: cover;">
                     </a>
-                    <p style="margin: 14px 0 0 0; font-size: 0.8rem; color: var(--text-light); line-height: 1.45; font-weight: 600;">
-                        Thảo luận case-study thực tế, kết nối PIC sếp mua hàng và cùng giải đáp nghiệp vụ.
-                    </p>
-                    <a href="community.html" class="btn btn-primary" style="margin-top: 14px; width: 100%; padding: 10px 16px; font-size: 0.82rem; font-weight: 800; border-radius: 8px; text-decoration: none; text-align: center; box-sizing: border-box; background: linear-gradient(135deg, #f3a83b, #d97706); border: none; color: #ffffff; cursor: pointer; transition: all 0.2s;">
+                    <a href="community.html" class="btn btn-primary" style="margin-top: 10px; width: 100%; padding: 8px 12px; font-size: 0.78rem; font-weight: 800; border-radius: 6px; text-decoration: none; text-align: center; box-sizing: border-box; background: linear-gradient(135deg, #f3a83b, #d97706); border: none; color: #ffffff;">
                         💬 Vào Cộng Đồng
                     </a>
                 </div>
 
                 <!-- Banner 2: Thư Viện Tài Liệu B2B -->
-                <div class="peter-slogan-card glass-panel" style="padding: 14px; border-radius: 20px; border: 1.5px solid var(--primary); background: rgba(243, 168, 59, 0.03); display: flex; flex-direction: column; align-items: center; text-align: center; box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3); width: 100%; box-sizing: border-box; backdrop-filter: blur(10px);">
+                <div class="peter-slogan-card glass-panel sidebar-compact-card" style="padding: 12px; border-radius: 16px; border: 1.5px solid var(--primary); background: rgba(243, 168, 59, 0.03); display: flex; flex-direction: column; align-items: center; text-align: center; box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2); width: 100%; box-sizing: border-box;">
                     <a href="library.html" style="display: block; width: 100%;">
-                        <img src="mascot_challenge.jpg?v=2.3.27" alt="Thư Viện B2B" style="width: 100%; border-radius: 14px; display: block; height: 160px; object-fit: cover; transition: transform 0.2s ease;">
+                        <img src="mascot_challenge.jpg?v=2.3.27" alt="Thư Viện B2B" style="width: 100%; border-radius: 10px; display: block; height: 110px; object-fit: cover;">
                     </a>
-                    <p style="margin: 14px 0 0 0; font-size: 0.8rem; color: var(--text-light); line-height: 1.45; font-weight: 600;">
-                        Tải trọn bộ Ebook thực chiến B2B, cẩm nang doanh nghiệp, script chào hàng đỉnh cao.
-                    </p>
-                    <a href="library.html" class="btn btn-primary" style="margin-top: 14px; width: 100%; padding: 10px 16px; font-size: 0.82rem; font-weight: 800; border-radius: 8px; text-decoration: none; text-align: center; box-sizing: border-box; background: linear-gradient(135deg, #f3a83b, #d97706); border: none; color: #ffffff; cursor: pointer; transition: all 0.2s;">
-                        📖 Vào Thư Viện
+                    <a href="library.html" class="btn btn-primary" style="margin-top: 10px; width: 100%; padding: 8px 12px; font-size: 0.78rem; font-weight: 800; border-radius: 6px; text-decoration: none; text-align: center; box-sizing: border-box; background: linear-gradient(135deg, #f3a83b, #d97706); border: none; color: #ffffff;">
+                        📖 Vào Thư Viện Ebook
                     </a>
                 </div>
-
             </div>
         </div>
     </main>
@@ -540,56 +580,71 @@
         if (tabVipBtn) tabVipBtn.addEventListener('click', () => switchQuestsTab('vip'));
         if (tabRewardsBtn) tabRewardsBtn.addEventListener('click', () => switchQuestsTab('rewards'));
 
-        // VIP Lounge HUD & Session Sync
-        const vipActiveBox = document.getElementById('vip-quests-active-box');
-        const vipLockBox = document.getElementById('vip-quests-lock-box');
-        const vipNicknameEl = document.getElementById('vip-quests-nickname');
-        const vipEmailEl = document.getElementById('vip-quests-email');
-        const vipCreditsEl = document.getElementById('vip-quests-credits');
-        const vipHudStatus = document.getElementById('vip-quests-hud-status');
-        const vipPassInput = document.getElementById('quests-vip-pass-input');
-        const btnUnlockVip = document.getElementById('btn-unlock-vip-quests');
-        const btnDemoVip = document.getElementById('btn-demo-vip-quests');
-        const vipUnlockMsg = document.getElementById('vip-quests-unlock-msg');
-
         function renderVipLounge(session) {
-            const loungeCard = document.getElementById('vip-quests-lounge-card');
+            const vipQuickBadge = document.getElementById('vip-quick-badge');
+            const vipQuickNickname = document.getElementById('vip-quick-nickname');
+            const vipQuickCredits = document.getElementById('vip-quick-credits');
+            const vipNicknameEl = document.getElementById('vip-quests-nickname');
+            const vipCreditsEl = document.getElementById('vip-quests-credits');
+            const refLinkInput = document.getElementById('vip-quests-link-input');
+            const refTicketsEl = document.getElementById('ref-quests-tickets');
+            const refCountEl = document.getElementById('ref-quests-count');
+
             if (session && session.isVip) {
                 if (tabVipBtn) tabVipBtn.style.display = 'inline-flex';
-                if (loungeCard) loungeCard.style.display = 'block';
-                if (vipActiveBox) vipActiveBox.style.display = 'block';
-                if (vipLockBox) vipLockBox.style.display = 'none';
-                if (vipNicknameEl) vipNicknameEl.textContent = session.nickname || 'Chiến Binh VIP';
-                if (vipEmailEl) vipEmailEl.textContent = session.email || 'alumni@bdbinhdanhocvu.com';
+                if (vipQuickBadge) vipQuickBadge.style.display = 'flex';
+                
+                const nickname = session.nickname || 'Chiến Binh VIP';
                 const credits = session.remainingCredits !== undefined ? session.remainingCredits : 3;
-                if (vipCreditsEl) vipCreditsEl.textContent = `${credits}/3 lượt`;
-                if (vipHudStatus) {
-                    vipHudStatus.innerHTML = `
-                        <span style="font-size: 0.82rem; padding: 5px 12px; border-radius: 14px; background: rgba(16, 185, 129, 0.15); color: #34d399; font-weight: 800; border: 1px solid rgba(16, 185, 129, 0.35);">
-                            ⭐ VIP ĐÃ KÍCH HOẠT (${credits} lượt)
-                        </span>
-                    `;
-                }
+
+                if (vipQuickNickname) vipQuickNickname.textContent = nickname;
+                if (vipQuickCredits) vipQuickCredits.textContent = `${credits}/3 lượt`;
+                if (vipNicknameEl) vipNicknameEl.textContent = nickname;
+                if (vipCreditsEl) vipCreditsEl.textContent = `${credits}/3 lượt tìm PIC`;
+
+                // Setup personal referral link
+                const cleanRefCode = (session.nickname || session.name || 'Alumni_VIP').trim().replace(/\s+/g, '_');
+                const generatedRefLink = `https://www.bdbinhdanhocvu.com/?ref=${encodeURIComponent(cleanRefCode)}`;
+                if (refLinkInput) refLinkInput.value = generatedRefLink;
+
+                const refKeyName = `b2b_ref_count_${cleanRefCode}`;
+                const refKeyEmail = `b2b_ref_count_${session.email || 'default'}`;
+                const refCount = Math.max(
+                    parseInt(localStorage.getItem(refKeyName) || '0', 10),
+                    parseInt(localStorage.getItem(refKeyEmail) || '0', 10)
+                );
+                if (refCountEl) refCountEl.textContent = refCount;
+                if (refTicketsEl) refTicketsEl.textContent = Math.max(0, 3 - refCount);
             } else {
                 if (tabVipBtn) tabVipBtn.style.display = 'none';
-                if (loungeCard) loungeCard.style.display = 'none';
-                if (vipActiveBox) vipActiveBox.style.display = 'none';
-                if (vipLockBox) vipLockBox.style.display = 'none';
+                if (vipQuickBadge) vipQuickBadge.style.display = 'none';
                 switchQuestsTab('streak');
             }
         }
 
-        // Copy referral link in quests lounge
+        // Copy referral link & message in quests lounge
         const btnCopyRefQuests = document.getElementById('btn-copy-ref-quests');
+        const btnCopyRefMsgQuests = document.getElementById('btn-copy-ref-msg-quests');
         if (btnCopyRefQuests) {
             btnCopyRefQuests.addEventListener('click', () => {
-                const s = savedSession || JSON.parse(localStorage.getItem('alumni_vip_session') || '{}');
-                const cleanRefCode = (s.nickname || s.name || 'Alumni_VIP').trim().replace(/\s+/g, '_');
-                const link = `https://www.bdbinhdanhocvu.com/?ref=${encodeURIComponent(cleanRefCode)}`;
+                const refLinkInput = document.getElementById('vip-quests-link-input');
+                const link = refLinkInput ? refLinkInput.value : 'https://www.bdbinhdanhocvu.com';
                 navigator.clipboard.writeText(link).then(() => {
                     alert('Đã sao chép link Vé Mời VIP của bạn! Hãy gửi cho đồng nghiệp BD nhé.');
                 }).catch(() => {
                     alert('Link Vé Mời VIP của bạn:\n' + link);
+                });
+            });
+        }
+        if (btnCopyRefMsgQuests) {
+            btnCopyRefMsgQuests.addEventListener('click', () => {
+                const refLinkInput = document.getElementById('vip-quests-link-input');
+                const link = refLinkInput ? refLinkInput.value : 'https://www.bdbinhdanhocvu.com';
+                const sampleMsg = `Chào bạn, mình vừa nhận được 03 Vé Mời VIP độc quyền từ BD Bình Dân Học Vụ dành cho anh em làm B2B BD thực chiến. Mình gửi tặng bạn 1 suất: khi đăng ký qua link này bạn sẽ được nhận ngay 50 BD-Points và tải miễn phí Ebook thực chiến đầu tiên: ${link}`;
+                navigator.clipboard.writeText(sampleMsg).then(() => {
+                    alert('Đã sao chép lời mời mẫu! Bạn có thể dán gửi Zalo/LinkedIn ngay cho đồng nghiệp.');
+                }).catch(() => {
+                    alert('Lời mời mẫu:\n' + sampleMsg);
                 });
             });
         }
