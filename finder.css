@@ -952,12 +952,30 @@ body.dark-theme .results-table tbody tr:hover {
     background: rgba(243, 168, 59, 0.05);
 }
 
+/* VIP Mascot Avatar */
+.vip-mascot-avatar {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3.5px solid #f3a83b;
+    box-shadow: 0 6px 25px rgba(243, 168, 59, 0.5);
+    margin: 0 auto 16px auto;
+    display: block;
+    animation: floatMascot 4s ease-in-out infinite;
+}
+
+@keyframes floatMascot {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-6px); }
+}
+
 .vip-quota-label {
-    font-size: 0.85rem;
-    color: #94a3b8;
+    font-size: 0.88rem;
+    color: #cbd5e1;
     text-transform: uppercase;
     letter-spacing: 0.5px;
-    font-weight: 600;
+    font-weight: 700;
     margin-bottom: 6px;
 }
 
@@ -968,14 +986,15 @@ body.dark-theme .results-table tbody tr:hover {
 }
 
 .vip-quota-sub {
-    font-size: 0.85rem;
-    color: #e2e8f0;
+    font-size: 0.88rem;
+    color: #f8fafc;
     margin-top: 4px;
+    font-weight: 500;
 }
 
 .vip-progress-bar {
     height: 6px;
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.15);
     border-radius: 10px;
     margin-top: 12px;
     overflow: hidden;
@@ -988,11 +1007,11 @@ body.dark-theme .results-table tbody tr:hover {
     transition: width 0.4s ease;
 }
 
-/* Department Radio Pill Selector */
+/* Department Radio Pill Selector (4 Blocks: HR, Marketing, C-Level, IT) */
 .dept-pill-grid {
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
 }
 
 .dept-pill-label {
@@ -1000,15 +1019,15 @@ body.dark-theme .results-table tbody tr:hover {
     flex-direction: column;
     padding: 16px;
     border-radius: 14px;
-    background: rgba(255, 255, 255, 0.03);
-    border: 2px solid rgba(255, 255, 255, 0.08);
+    background: rgba(255, 255, 255, 0.05);
+    border: 2px solid rgba(255, 255, 255, 0.15);
     cursor: pointer;
     transition: all 0.2s ease;
 }
 
 .dept-pill-label:hover {
-    border-color: rgba(243, 168, 59, 0.4);
-    background: rgba(255, 255, 255, 0.06);
+    border-color: rgba(243, 168, 59, 0.6);
+    background: rgba(255, 255, 255, 0.09);
 }
 
 .dept-pill-label input[type="radio"] {
@@ -1017,13 +1036,13 @@ body.dark-theme .results-table tbody tr:hover {
 
 .dept-pill-label.active {
     border-color: #f3a83b;
-    background: rgba(243, 168, 59, 0.12);
-    box-shadow: 0 4px 15px rgba(243, 168, 59, 0.2);
+    background: rgba(243, 168, 59, 0.16);
+    box-shadow: 0 4px 18px rgba(243, 168, 59, 0.3);
 }
 
 .dept-pill-title {
-    font-weight: 700;
-    font-size: 1rem;
+    font-weight: 800;
+    font-size: 1.05rem;
     color: #ffffff;
     display: flex;
     align-items: center;
@@ -1031,9 +1050,32 @@ body.dark-theme .results-table tbody tr:hover {
 }
 
 .dept-pill-desc {
-    font-size: 0.85rem;
-    color: #94a3b8;
-    margin-top: 4px;
+    font-size: 0.88rem;
+    color: #e2e8f0;
+    margin-top: 5px;
+    line-height: 1.45;
+    font-weight: 500;
+}
+
+/* VIP Disclaimer Box */
+.vip-disclaimer-box {
+    margin-top: 20px;
+    padding: 14px 20px;
+    border-radius: 14px;
+    background: rgba(243, 168, 59, 0.12);
+    border-left: 5px solid #f3a83b;
+    color: #fef08a;
+    font-size: 0.92rem;
+    line-height: 1.6;
+    font-weight: 500;
+}
+
+.vip-security-note {
+    font-size: 0.84rem;
+    color: #e2e8f0;
+    margin-top: 14px;
+    line-height: 1.5;
+    text-align: center;
 }
 
 /* History List */

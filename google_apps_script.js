@@ -1365,7 +1365,7 @@ function processSingleAlumniRow(sheet, rowNum) {
     changed = true;
   }
   
-  // 2. VIP Password / Code (Mã VIP cá nhân)
+  // 2. VIP Password / Code (Mã VIP cá nhân ngắn gọn, độc nhất)
   if (!vipPass) {
     let seedStr = (email || fullName).toLowerCase();
     let numCode = 0;
@@ -1373,7 +1373,7 @@ function processSingleAlumniRow(sheet, rowNum) {
       numCode = ((numCode << 5) - numCode) + seedStr.charCodeAt(c);
       numCode |= 0;
     }
-    const shortCode = "BD-VIP-" + (Math.abs(numCode) % 9000 + 1000);
+    const shortCode = "BD-" + (Math.abs(numCode) % 9000 + 1000);
     vipPass = shortCode;
     sheet.getRange(rowNum, 4).setValue(vipPass);
     changed = true;
@@ -1399,9 +1399,9 @@ function processSingleAlumniRow(sheet, rowNum) {
     changed = true;
   }
   
-  // 6. Link VIP 1-Click Trực Tiếp
+  // 6. Link VIP 1-Click Trực Tiếp kèm Mật Khẩu Riêng
   if (!link && email) {
-    const magicUrl = "https://www.bdbinhdanhocvu.com/finder.html?email=" + encodeURIComponent(email) + "&vip_pass=BDTHUCCHIEN";
+    const magicUrl = "https://www.bdbinhdanhocvu.com/finder.html?email=" + encodeURIComponent(email) + "&vip_pass=" + encodeURIComponent(vipPass || "BDTHUCCHIEN");
     sheet.getRange(rowNum, 8).setValue(magicUrl);
     changed = true;
   }

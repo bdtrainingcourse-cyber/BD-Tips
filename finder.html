@@ -96,51 +96,47 @@
             <p class="hero-subtitle">Cổng kết nối Person-in-Charge (PIC) & Tìm kiếm thông tin liên hệ cho BD Thực Chiến</p>
         </section>
 
-        <!-- Mode Switcher Tabs -->
-        <div class="finder-tabs-nav" id="finder-tabs-nav">
-            <button type="button" class="finder-tab-btn active" id="tab-btn-vip">
-                ⭐ Đặc Quyền Alumni VIP (Tìm PIC Concierge)
-            </button>
-            <button type="button" class="finder-tab-btn" id="tab-btn-scraper">
-                🛠️ Bộ Công Cụ Tự Tìm Kiếm (Scraper)
-            </button>
-        </div>
-
         <!-- =============================================================== -->
         <!-- 1. ALUMNI VIP CONCIERGE PORTAL (MỤC SỐ 4 - CẦN PASSWORD BẢO MẬT) -->
         <!-- =============================================================== -->
         <section id="alumni-vip-section">
             <!-- State A: VIP Password Gate (Hiển thị khi chưa mở khóa) -->
             <div class="vip-gate-card" id="vip-gate-card">
-                <div class="vip-gate-icon">🔒</div>
-                <div class="vip-badge-tag">Đặc Quyền Riêng Biệt</div>
+                <!-- Mascot Image Đặc Biệt Dành Riêng Cho VIP -->
+                <img src="mascot_champion.jpg" alt="Chú Cú BeeDee Chiến Thần VIP" class="vip-mascot-avatar">
+                
+                <div class="vip-badge-tag">⭐ ĐẶC QUYỀN ALUMNI VIP - KHÓA BD THỰC CHIẾN</div>
                 <h2 class="vip-gate-title">Khu Vực Alumni VIP</h2>
-                <p class="vip-gate-desc">
-                    Tính năng <strong>"Hỗ Trợ Tìm PIC"</strong> (3 contacts / 3 tháng) chuyên khối <strong>HR & Marketing</strong> qua mạng lưới 30,000+ kết nối LinkedIn của anh <strong>Peter Võ</strong> là đặc quyền chỉ dành riêng cho cựu học viên Khóa BD Thực Chiến.
+                <p class="vip-gate-desc" style="color: #f8fafc; font-size: 1.05rem; font-weight: 500; line-height: 1.65;">
+                    Chương trình <strong style="color: #f3a83b;">"Hỗ Trợ Tìm PIC"</strong> (3 contacts / 3 tháng) chuyên khối <strong style="color: #60a5fa;">C-Level, HR, Marketing & IT</strong> qua mạng lưới 30,000+ kết nối LinkedIn của anh <strong style="color: #ffffff;">Peter Võ</strong> là đặc quyền chỉ dành riêng cho cựu học viên Khóa BD Thực Chiến.
                 </p>
 
                 <form id="vip-auth-form" class="vip-gate-form">
                     <div class="form-group">
-                        <label for="vip-passcode-input" style="color: #cbd5e1; font-weight: 600;">Mật Khẩu VIP <span style="color: #f3a83b;">*</span></label>
-                        <input type="password" id="vip-passcode-input" class="vip-input" placeholder="Nhập Mật khẩu VIP (VD: BDTHUCCHIEN hoặc Mã VIP trong email)..." required autocomplete="current-password">
+                        <label for="vip-passcode-input" style="color: #ffffff; font-weight: 700; font-size: 0.95rem;">Mật Khẩu VIP Cá Nhân <span style="color: #f3a83b;">*</span></label>
+                        <input type="password" id="vip-passcode-input" class="vip-input" placeholder="Nhập Mật khẩu VIP riêng của bạn (VD: BD-xxxx hoặc BDTHUCCHIEN)..." required autocomplete="current-password">
                     </div>
 
                     <div class="form-group">
-                        <label for="vip-email-input" style="color: #cbd5e1; font-weight: 600;">Email Học Viên <span style="color: #94a3b8; font-size: 0.85rem;">(tùy chọn để lấy đúng Nickname)</span></label>
+                        <label for="vip-email-input" style="color: #ffffff; font-weight: 700; font-size: 0.95rem;">Email Học Viên <span style="color: #cbd5e1; font-weight: 500; font-size: 0.85rem;">(để hiển thị đúng Funny Nickname của bạn)</span></label>
                         <input type="email" id="vip-email-input" class="vip-input" placeholder="Ví dụ: name@company.com" autocomplete="email">
                     </div>
 
                     <div id="vip-error-msg" class="vip-error-msg">Mật khẩu VIP chưa chính xác. Vui lòng kiểm tra lại.</div>
 
-                    <button type="submit" id="btn-unlock-vip" class="btn btn-primary" style="padding: 14px; font-weight: 800; font-size: 1rem; margin-top: 10px; width: 100%;">
+                    <button type="submit" id="btn-unlock-vip" class="btn btn-primary" style="padding: 14px; font-weight: 800; font-size: 1.05rem; margin-top: 10px; width: 100%; box-shadow: 0 4px 18px rgba(243, 168, 59, 0.35);">
                         🚀 Mở Khóa Đặc Quyền Alumni VIP
                     </button>
 
-                    <div style="text-align: center; margin-top: 15px;">
+                    <div style="text-align: center; margin-top: 12px;">
                         <button type="button" id="btn-quick-fill-pass" class="vip-demo-pill" title="Click để thử nhanh mật khẩu VIP demo">
-                            🔑 Thử Nhanh Pass: <strong>BDTHUCCHIEN</strong>
+                            🔑 Thử Nhanh Pass Demo: <strong>BDTHUCCHIEN</strong>
                         </button>
                     </div>
+
+                    <p class="vip-security-note">
+                        🔒 <strong>Cơ chế bảo mật:</strong> Mỗi học viên được cấp một Mật khẩu VIP riêng biệt gửi qua email. Mật khẩu gắn liền với 3 lượt tìm PIC của bạn, vui lòng <strong>không chia sẻ cho người lạ</strong> để tránh bị dùng mất lượt nhé!
+                    </p>
                 </form>
             </div>
 
@@ -148,16 +144,19 @@
             <div class="vip-dashboard-card" id="vip-dashboard-card" style="display: none;">
                 <!-- User Profile Bar -->
                 <div class="vip-header-bar">
-                    <div>
-                        <div class="vip-badge-tag" style="margin-bottom: 6px;">⭐ ALUMNI VIP - KHÓA BD THỰC CHIẾN</div>
-                        <h2 class="vip-user-greeting">
-                            Chào mừng, <span id="vip-display-nickname" class="vip-nickname-highlight">Tân Săn Deal Khủng</span>! 👋
-                        </h2>
-                        <p style="color: #94a3b8; font-size: 0.9rem; margin: 4px 0 0 0;">
-                            Email: <strong id="vip-display-email" style="color: #cbd5e1;">hocvien@bdbinhdanhocvu.com</strong>
-                        </p>
+                    <div style="display: flex; align-items: center; gap: 18px; flex-wrap: wrap;">
+                        <img src="mascot_champion.jpg" alt="Chú Cú BeeDee Chiến Thần VIP" style="width: 75px; height: 75px; border-radius: 50%; object-fit: cover; border: 3px solid #f3a83b; box-shadow: 0 4px 16px rgba(243, 168, 59, 0.45);">
+                        <div>
+                            <div class="vip-badge-tag" style="margin-bottom: 4px;">⭐ ALUMNI VIP - KHÓA BD THỰC CHIẾN</div>
+                            <h2 class="vip-user-greeting">
+                                Chào mừng, <span id="vip-display-nickname" class="vip-nickname-highlight">Tân Săn Deal Khủng</span>! 👋
+                            </h2>
+                            <p style="color: #e2e8f0; font-size: 0.95rem; margin: 4px 0 0 0; font-weight: 500;">
+                                Email: <strong id="vip-display-email" style="color: #60a5fa;">hocvien@bdbinhdanhocvu.com</strong>
+                            </p>
+                        </div>
                     </div>
-                    <button type="button" id="btn-lock-vip" class="btn btn-secondary" style="font-size: 0.85rem; padding: 8px 18px; border-radius: 20px;">
+                    <button type="button" id="btn-lock-vip" class="btn btn-secondary" style="font-size: 0.88rem; padding: 10px 20px; border-radius: 20px; font-weight: 700; background: rgba(255,255,255,0.08); color: #ffffff; border: 1px solid rgba(255,255,255,0.2);">
                         🔒 Khóa Lại / Đổi Tài Khoản
                     </button>
                 </div>
@@ -166,7 +165,7 @@
                 <div class="vip-quota-grid">
                     <div class="vip-quota-box primary-box">
                         <div class="vip-quota-label">Lượt Tìm PIC Còn Lại</div>
-                        <div class="vip-quota-value"><span id="vip-credits-val">3</span> / 3 <span style="font-size: 1.1rem; font-weight: 600; color: #f3a83b;">Lượt</span></div>
+                        <div class="vip-quota-value"><span id="vip-credits-val">3</span> / 3 <span style="font-size: 1.1rem; font-weight: 700; color: #f3a83b;">Lượt</span></div>
                         <div class="vip-progress-bar">
                             <div class="vip-progress-fill" id="vip-progress-fill" style="width: 100%;"></div>
                         </div>
@@ -175,34 +174,39 @@
 
                     <div class="vip-quota-box">
                         <div class="vip-quota-label">Thời Hạn Sử Dụng</div>
-                        <div class="vip-quota-value" style="font-size: 1.5rem;">90 Ngày</div>
+                        <div class="vip-quota-value" style="font-size: 1.6rem; color: #ffffff;">90 Ngày</div>
                         <div class="vip-quota-sub" id="vip-expiry-text">Hạn dùng trong vòng 3 tháng kể từ ngày kích hoạt</div>
                     </div>
 
                     <div class="vip-quota-box">
-                        <div class="vip-quota-label">Phạm Vi Bảo Chứng</div>
-                        <div class="vip-quota-value" style="font-size: 1.3rem; color: #60a5fa;">HR & Marketing</div>
-                        <div class="vip-quota-sub">30.000+ Kết nối LinkedIn uy tín của anh Peter Võ</div>
+                        <div class="vip-quota-label">Phạm Vi Hỗ Trợ</div>
+                        <div class="vip-quota-value" style="font-size: 1.25rem; color: #60a5fa;">C-Level, HR, MKT, IT</div>
+                        <div class="vip-quota-sub">30.000+ Kết nối LinkedIn của anh Peter Võ</div>
                     </div>
                 </div>
 
+                <!-- Disclaimer Notice -->
+                <div class="vip-disclaimer-box">
+                    ⚠️ <strong>Lưu ý quan trọng:</strong> Thông tin PIC cung cấp có thể là <strong>Số điện thoại (SĐT)</strong>, <strong>Email</strong>, hoặc <strong>cả hai</strong> tùy theo khả năng và dữ liệu xác thực thực tế của anh Peter Võ.
+                </div>
+
                 <!-- Request Form (Tinh gọn - 4 trường) -->
-                <div style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.08); border-radius: 18px; padding: 28px;">
-                    <h3 style="font-size: 1.3rem; font-weight: 800; color: #ffffff; margin-bottom: 8px; display: flex; align-items: center; gap: 8px;">
+                <div style="background: rgba(255,255,255,0.03); border: 1.5px solid rgba(243, 168, 59, 0.25); border-radius: 20px; padding: 30px; margin-top: 25px;">
+                    <h3 style="font-size: 1.35rem; font-weight: 800; color: #ffffff; margin-bottom: 8px; display: flex; align-items: center; gap: 8px;">
                         <span>🎯</span> Gửi Yêu Cầu Tìm PIC Cho Anh Peter Võ
                     </h3>
-                    <p style="color: #94a3b8; font-size: 0.92rem; margin-bottom: 22px;">
-                        Điền thông tin doanh nghiệp bạn muốn tiếp cận. Anh Peter Võ sẽ trực tiếp rà soát qua network cá nhân và phản hồi thông tin PIC phù hợp trong 24h - 48h.
+                    <p style="color: #e2e8f0; font-size: 0.95rem; margin-bottom: 24px; line-height: 1.6;">
+                        Điền thông tin doanh nghiệp bạn muốn tiếp cận. Anh Peter Võ sẽ trực tiếp rà soát qua network cá nhân và phản hồi thông tin PIC phù hợp trong <strong>24h - 48h</strong>.
                     </p>
 
                     <form id="vip-request-form" class="form-grid">
                         <div class="form-group">
-                            <label for="pic-target-company" style="font-weight: 700;">1. Tên Doanh Nghiệp Mục Tiêu <span class="required">*</span></label>
+                            <label for="pic-target-company" style="font-weight: 800; color: #ffffff; font-size: 1rem;">1. Tên Doanh Nghiệp Mục Tiêu <span class="required" style="color: #f3a83b;">*</span></label>
                             <input type="text" id="pic-target-company" class="vip-input" placeholder="Ví dụ: Shopee, VNG, Momo, FPT Software, Techcombank, Unilever..." required>
                         </div>
 
                         <div class="form-group">
-                            <label style="font-weight: 700;">2. Bộ Phận Bạn Muốn Tiếp Cận <span class="required">*</span></label>
+                            <label style="font-weight: 800; color: #ffffff; font-size: 1rem;">2. Bộ Phận Bạn Muốn Tiếp Cận <span class="required" style="color: #f3a83b;">*</span></label>
                             <div class="dept-pill-grid">
                                 <label class="dept-pill-label active" id="label-dept-hr">
                                     <input type="radio" name="target_dept" value="Nhân Sự (HR)" checked>
@@ -214,22 +218,32 @@
                                     <span class="dept-pill-title">📢 Khối Marketing</span>
                                     <span class="dept-pill-desc">CMO, Marketing Director, Brand Manager, Growth Lead</span>
                                 </label>
+                                <label class="dept-pill-label" id="label-dept-clevel">
+                                    <input type="radio" name="target_dept" value="C-Level">
+                                    <span class="dept-pill-title">👔 Khối C-Level / Ban Giám Đốc</span>
+                                    <span class="dept-pill-desc">CEO, COO, Founder, Managing Director, Phó Tổng GĐ</span>
+                                </label>
+                                <label class="dept-pill-label" id="label-dept-it">
+                                    <input type="radio" name="target_dept" value="Công Nghệ (IT)">
+                                    <span class="dept-pill-title">💻 Khối Công Nghệ & Kỹ Thuật (IT)</span>
+                                    <span class="dept-pill-desc">CTO, Head of IT, IT Director, Tech Lead, Engineering Manager</span>
+                                </label>
                             </div>
                         </div>
 
                         <div class="form-group">
-                            <label for="pic-target-role" style="font-weight: 700;">3. Chức Danh Cụ Thể & Mục Đích Kết Nối <span class="required">*</span></label>
-                            <textarea id="pic-target-role" class="vip-input" rows="2" placeholder="Ví dụ: Cần tìm HRD hoặc Talent Lead để đề xuất gói khám sức khỏe / đào tạo nội bộ cho quý 4..." required></textarea>
+                            <label for="pic-target-role" style="font-weight: 800; color: #ffffff; font-size: 1rem;">3. Chức Danh Cụ Thể & Mục Đích Kết Nối <span class="required" style="color: #f3a83b;">*</span></label>
+                            <textarea id="pic-target-role" class="vip-input" rows="2" placeholder="Ví dụ: Cần tìm HRD hoặc CTO để đề xuất giải pháp B2B / đào tạo nội bộ cho quý 4..." required></textarea>
                         </div>
 
                         <div class="form-group">
-                            <label for="pic-target-notes" style="font-weight: 700;">4. Ghi Chú Thêm / Link Tuyển Dụng <span style="color: #94a3b8; font-size: 0.85rem;">(nếu có)</span></label>
-                            <input type="text" id="pic-target-notes" class="vip-input" placeholder="Dán link bài đăng hoặc thông tin bối cảnh giúp Peter tìm chính xác hơn...">
+                            <label for="pic-target-notes" style="font-weight: 800; color: #ffffff; font-size: 1rem;">4. Ghi Chú Thêm / Link Tuyển Dụng <span style="color: #cbd5e1; font-weight: 500; font-size: 0.85rem;">(nếu có)</span></label>
+                            <input type="text" id="pic-target-notes" class="vip-input" placeholder="Dán link bài đăng hoặc bối cảnh deal giúp Peter tìm chính xác hơn...">
                         </div>
 
                         <div id="pic-submit-feedback" style="display: none; padding: 16px; border-radius: 12px; font-weight: 600; font-size: 0.95rem;"></div>
 
-                        <button type="submit" id="btn-submit-pic" class="btn btn-primary btn-block" style="padding: 14px; font-size: 1.05rem; font-weight: 800; margin-top: 10px;">
+                        <button type="submit" id="btn-submit-pic" class="btn btn-primary btn-block" style="padding: 16px; font-size: 1.1rem; font-weight: 800; margin-top: 10px; box-shadow: 0 4px 20px rgba(243, 168, 59, 0.4);">
                             🚀 Gửi Yêu Cầu Tìm PIC Cho Anh Peter Võ
                         </button>
                     </form>
@@ -238,22 +252,43 @@
                 <!-- History of Requests -->
                 <div class="vip-history-section">
                     <div class="vip-history-title">
-                        <span>📋 Lịch Sử Yêu Cầu Của Bạn</span>
-                        <span id="vip-history-count" style="font-size: 0.85rem; color: #94a3b8; font-weight: 500;">0 yêu cầu</span>
+                        <span style="color: #ffffff;">📋 Lịch Sử Yêu Cầu Của Bạn</span>
+                        <span id="vip-history-count" style="font-size: 0.88rem; color: #f3a83b; font-weight: 700;">0 yêu cầu</span>
                     </div>
                     <div id="vip-history-list">
-                        <div style="color: #64748b; font-size: 0.9rem; text-align: center; padding: 20px;">
+                        <div style="color: #cbd5e1; font-size: 0.95rem; text-align: center; padding: 25px; font-weight: 500;">
                             Bạn chưa gửi yêu cầu nào. Hãy tận dụng 3 lượt đặc quyền của bạn nhé!
                         </div>
                     </div>
                 </div>
             </div>
+
+            <!-- =============================================================== -->
+            <!-- COMMUNITY INVITATION CARD (DÀNH CHO NON-ALUMNI & KIẾM THÊM PIC) -->
+            <!-- =============================================================== -->
+            <div class="glass-panel community-invite-card" style="margin-top: 40px; border-radius: 24px; padding: 35px 30px; border: 2px solid rgba(16, 185, 129, 0.4); background: linear-gradient(145deg, rgba(16, 185, 129, 0.08), rgba(6, 78, 59, 0.2)); text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.3);">
+                <div style="font-size: 2.8rem; margin-bottom: 12px;">🤝</div>
+                <div class="vip-badge-tag" style="background: rgba(16, 185, 129, 0.15); color: #34d399; border-color: rgba(16, 185, 129, 0.4); font-size: 0.85rem;">
+                    CỘNG ĐỒNG BD THỰC CHIẾN
+                </div>
+                <h3 style="font-size: 1.5rem; font-weight: 800; color: #ffffff; margin: 12px 0 10px 0;">
+                    Chưa Phải Alumni VIP? Tham Gia Ngay Cộng Đồng Để Săn PIC!
+                </h3>
+                <p style="color: #f1f5f9; font-size: 1rem; max-width: 720px; margin: 0 auto 25px auto; line-height: 1.65; font-weight: 500;">
+                    Kết nối trực tiếp cùng hơn <strong style="color: #34d399;">500+ anh em BD thực chiến</strong> trên toàn quốc. Tham gia các buổi thảo luận, chia sẻ cơ hội hợp tác và cùng nhau <strong>săn & giới thiệu PIC chất lượng</strong> từ các hoạt động kết nối thực tế trong cộng đồng!
+                </p>
+                <a href="community.html" class="btn" style="display: inline-flex; align-items: center; gap: 10px; padding: 14px 36px; border-radius: 30px; font-weight: 800; font-size: 1.05rem; background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: #ffffff; text-decoration: none; box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4); border: 1px solid #34d399;">
+                    🔥 Tham Gia Cộng Đồng & Săn PIC Cùng Anh Em &rarr;
+                </a>
+            </div>
         </section>
 
         <!-- =============================================================== -->
-        <!-- 2. PUBLIC SCRAPER PORTAL (BỘ CÔNG CỤ TỰ TÌM KIẾM CŨ)          -->
+        <!-- 2. PUBLIC SCRAPER PORTAL (ẨN HOÀN TOÀN ĐỂ TẬP TRUNG ALUMNI & CỘNG ĐỒNG) -->
         <!-- =============================================================== -->
-        <div id="scraper-portal-section" style="display: none;">
+        <div id="scraper-portal-section" style="display: none !important;">
+        <!-- Configuration Grid -->
+        <div class="dashboard-grid">
         <!-- Configuration Grid -->
         <div class="dashboard-grid">
             <!-- Left panel: Search & Filters -->

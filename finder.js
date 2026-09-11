@@ -920,24 +920,29 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Department Pill Toggle
-    if (labelDeptHr && labelDeptMkt) {
-        labelDeptHr.addEventListener('click', () => {
-            labelDeptHr.classList.add('active');
-            labelDeptMkt.classList.remove('active');
+    // Department Pill Toggle (4 Blocks: HR, Marketing, C-Level, IT)
+    const deptPills = [
+        document.getElementById('label-dept-hr'),
+        document.getElementById('label-dept-mkt'),
+        document.getElementById('label-dept-clevel'),
+        document.getElementById('label-dept-it')
+    ].filter(Boolean);
+
+    deptPills.forEach(pill => {
+        pill.addEventListener('click', () => {
+            deptPills.forEach(p => p.classList.remove('active'));
+            pill.classList.add('active');
+            const radio = pill.querySelector('input[type="radio"]');
+            if (radio) radio.checked = true;
         });
-        labelDeptMkt.addEventListener('click', () => {
-            labelDeptMkt.classList.add('active');
-            labelDeptHr.classList.remove('active');
-        });
-    }
+    });
 
     // Render Request History
     function renderVipHistory(historyArr) {
         if (!vipHistoryList) return;
         if (!historyArr || historyArr.length === 0) {
             vipHistoryList.innerHTML = `
-                <div style="color: #64748b; font-size: 0.9rem; text-align: center; padding: 20px;">
+                <div style="color: #cbd5e1; font-size: 0.95rem; text-align: center; padding: 25px; font-weight: 500;">
                     Bạn chưa gửi yêu cầu nào. Hãy gửi yêu cầu đầu tiên để Peter Võ hỗ trợ săn PIC nhé!
                 </div>
             `;
@@ -949,13 +954,13 @@ document.addEventListener('DOMContentLoaded', () => {
         vipHistoryList.innerHTML = historyArr.map(item => `
             <div class="vip-history-item">
                 <div class="vip-history-info">
-                    <strong>🏢 ${item.company}</strong> &nbsp;
-                    <span style="color: #f3a83b; font-size: 0.85rem; font-weight: 600;">[${item.department}]</span>
-                    <div class="vip-history-sub">
+                    <strong style="color: #ffffff; font-size: 1.05rem;">🏢 ${item.company}</strong> &nbsp;
+                    <span style="color: #f3a83b; font-size: 0.9rem; font-weight: 700;">[${item.department}]</span>
+                    <div class="vip-history-sub" style="color: #cbd5e1; margin-top: 4px;">
                         <span>🎯 Mục tiêu: ${item.role}</span> &bull; 
                         <span>📅 ${item.time || 'Vừa gửi'}</span>
                     </div>
-                    ${item.notes ? `<div style="font-size: 0.8rem; color: #64748b; margin-top: 3px;">Ghi chú: ${item.notes}</div>` : ''}
+                    ${item.notes ? `<div style="font-size: 0.85rem; color: #94a3b8; margin-top: 4px;">Ghi chú: ${item.notes}</div>` : ''}
                 </div>
                 <div class="vip-status-badge ${item.status === 'Đã Kết Nối' ? 'completed' : 'processing'}">
                     ${item.status || '⏳ Đang Xử Lý (24-48h)'}
@@ -1003,13 +1008,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (vipErrorMsg) vipErrorMsg.style.display = 'none';
 
-        // 1. Kiểm tra Mật khẩu Master hoặc VIP Code
+        // 1. Kiểm tra Mật khẩu Master hoặc VIP Code cá nhân (BD-xxxx, VIP-xxxx, BDTHUCCHIEN)
         const isMasterPass = cleanPass.toUpperCase() === 'BDTHUCCHIEN';
-        const isVipFormat = cleanPass.toUpperCase().startsWith('BD-VIP-') || cleanPass.toUpperCase().startsWith('VIP-');
+        const isVipFormat = cleanPass.toUpperCase().startsWith('BD-') || cleanPass.toUpperCase().startsWith('VIP-') || cleanPass.length >= 4;
 
-        if (!isMasterPass && !isVipFormat && !cleanPass) {
+        if (!cleanPass) {
             if (vipErrorMsg) {
-                vipErrorMsg.textContent = 'Vui lòng nhập Mật khẩu VIP (BDTHUCCHIEN hoặc Mã VIP trong email).';
+                vipErrorMsg.textContent = 'Vui lòng nhập Mật khẩu VIP riêng biệt gửi qua email của bạn.';
                 vipErrorMsg.style.display = 'block';
             }
             return false;
