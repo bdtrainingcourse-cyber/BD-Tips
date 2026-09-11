@@ -84,6 +84,43 @@ async function httpPost(url, body) {
   return response;
 }
 
+// Robust date matching helper to verify if a user already received daily email today (GMT+7)
+function isSentToday(val, targetVnYear, targetVnMonth, targetVnDate) {
+  if (!val) return false;
+  const s = String(val).trim();
+  if (!s) return false;
+
+  const mm = String(targetVnMonth + 1).padStart(2, '0');
+  const dd = String(targetVnDate).padStart(2, '0');
+  const yyyy = String(targetVnYear);
+
+  // Direct substring matches: YYYY-MM-DD, DD/MM/YYYY, YYYY/MM/DD, DD-MM-YYYY
+  if (s.includes(`${yyyy}-${mm}-${dd}`) || s.includes(`${dd}/${mm}/${yyyy}`) || s.includes(`${yyyy}/${mm}/${dd}`) || s.includes(`${dd}-${mm}-${yyyy}`)) {
+    return true;
+  }
+
+  // English month abbreviation checks (e.g. "Fri Sep 11 2026 ...")
+  const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  const monthAbbr = MONTHS[targetVnMonth];
+  if (s.includes(monthAbbr) && s.includes(String(targetVnDate)) && s.includes(yyyy)) {
+    return true;
+  }
+
+  // Date object parsing (safely strips trailing timezone description in parentheses like "(Giờ Đông Dương)")
+  try {
+    const cleaned = s.replace(/\(.*?\)/g, '').trim();
+    const d = new Date(cleaned);
+    if (!isNaN(d.getTime())) {
+      const vnD = new Date(d.getTime() + 7 * 3600 * 1000);
+      if (vnD.getUTCFullYear() === targetVnYear && vnD.getUTCMonth() === targetVnMonth && vnD.getUTCDate() === targetVnDate) {
+        return true;
+      }
+    }
+  } catch (e) {}
+
+  return false;
+}
+
 function httpGet(url, maxRedirects = 5) {
   return new Promise((resolve) => {
     try {
@@ -678,17 +715,38 @@ YÊU CẦU NỘI DUNG & PHONG CÁCH:
     }
   }
 
-  // 3. Deduplicate users by email and filter out unsubscribed users
+  // 3. Time calculation & Strict Per-User Deduplication (Idempotency Guard)
+  const nowMs = Date.now();
+  const vnNow = new Date(nowMs + 7 * 3600 * 1000);
+  const vnYear = vnNow.getUTCFullYear();
+  const vnMonth = vnNow.getUTCMonth();
+  const vnDate = vnNow.getUTCDate();
+  const todayStrDisplay = `${String(vnDate).padStart(2, '0')}/${String(vnMonth + 1).padStart(2, '0')}/${vnYear}`;
+
   const seenEmails = new Set();
   const uniqueRecipients = [];
+  const alreadySentUsers = [];
+  const optedOutUsers = [];
+
   for (const u of targetUsers) {
     const cleanE = (u.email || '').toLowerCase().trim();
     if (cleanE && cleanE.includes('@') && !seenEmails.has(cleanE)) {
+      seenEmails.add(cleanE);
+
       if (u.unsubscribed === true) {
         console.log(`[DAILY_EMAIL_CRON] User opted out, skipping: ${cleanE}`);
+        optedOutUsers.push(cleanE);
         continue;
       }
-      seenEmails.add(cleanE);
+
+      // Check if user already received an email today
+      const alreadySent = isSentToday(u.lastDailyEmail, vnYear, vnMonth, vnDate);
+      if (alreadySent && !req.query.force) {
+        console.log(`[DAILY_EMAIL_CRON] User ${cleanE} ALREADY received email today (${u.lastDailyEmail}). Strictly skipping to guarantee no duplicate.`);
+        alreadySentUsers.push({ email: cleanE, lastSent: u.lastDailyEmail });
+        continue;
+      }
+
       uniqueRecipients.push({
         email: cleanE,
         name: (u.name && u.name !== 'Khách' && u.name !== 'Học viên') ? u.name : 'Chiến thần B2B',
@@ -697,31 +755,19 @@ YÊU CẦU NỘI DUNG & PHONG CÁCH:
     }
   }
 
-  // 4. Calculate Staggered Scheduling (2-minute intervals across 7:00 AM - 11:00 AM VN)
-  const nowMs = Date.now();
-  const vnNow = new Date(nowMs + 7 * 3600 * 1000);
-  const vnYear = vnNow.getUTCFullYear();
-  const vnMonth = vnNow.getUTCMonth();
-  const vnDate = vnNow.getUTCDate();
+  console.log(`[DAILY_EMAIL_CRON] Candidates: ${seenEmails.size} | Already sent today: ${alreadySentUsers.length} | Opted out: ${optedOutUsers.length} | Eligible to send: ${uniqueRecipients.length}`);
 
-  // 4.1 Idempotency Guard: Prevent double-dispatch on the same calendar day
-  if (!req.query.force) {
-    const todayStrYMD = `${vnYear}-${String(vnMonth + 1).padStart(2, '0')}-${String(vnDate).padStart(2, '0')}`;
-    const todayStrDMY = `${String(vnDate).padStart(2, '0')}/${String(vnMonth + 1).padStart(2, '0')}/${vnYear}`;
-    const alreadyDispatchedToday = targetUsers.filter(u => {
-      const l = (u.lastDailyEmail || '');
-      return l.includes(todayStrYMD) || l.includes(todayStrDMY);
-    }).length;
-
-    if (uniqueRecipients.length > 0 && alreadyDispatchedToday >= Math.min(5, uniqueRecipients.length * 0.5)) {
-      console.log(`[DAILY_EMAIL_CRON] Already dispatched today (${alreadyDispatchedToday} recipients marked). Skipping.`);
-      return res.status(200).json({
-        success: true,
-        skipped: true,
-        message: `Daily emails already dispatched today (${alreadyDispatchedToday} recipients marked). Skipping duplicate run to protect domain reputation. Use ?force=true to override.`,
-        date: todayStrYMD
-      });
-    }
+  // If no eligible recipients remain to send today, safely skip duplicate run!
+  if (uniqueRecipients.length === 0) {
+    console.log(`[DAILY_EMAIL_CRON] Zero recipients remaining to send today (${todayStrDisplay}). All ${alreadySentUsers.length} users already received reminder.`);
+    return res.status(200).json({
+      success: true,
+      skipped: true,
+      message: `Tất cả user (${alreadySentUsers.length} người) đã nhận email reminder hôm nay (${todayStrDisplay}). Hệ thống tự động khóa để bảo đảm KHÔNG gửi trùng lặp và bảo vệ uy tín hòm thư (domain reputation). Dùng ?force=true nếu muốn ép gửi lại.`,
+      date: todayStrDisplay,
+      alreadySentCount: alreadySentUsers.length,
+      alreadySentUsers: alreadySentUsers.map(u => u.email)
+    });
   }
 
   // 07:00 AM VN = 00:00 UTC today
