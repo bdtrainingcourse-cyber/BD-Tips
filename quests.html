@@ -444,9 +444,12 @@
 
                     <!-- Link Bar & 2 Buttons -->
                     <div style="display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; background: rgba(0, 0, 0, 0.03); border: 1px solid var(--border-color); border-radius: 10px; padding: 8px 12px; margin-bottom: 12px;">
-                        <div style="flex: 1; min-width: 220px; display: flex; align-items: center; gap: 8px;">
-                            <span style="font-size: 0.78rem; color: var(--text-light, #64748b); font-weight: 700; white-space: nowrap;">Link VIP Của Bạn:</span>
-                            <input type="text" id="vip-quests-link-input" readonly value="https://www.bdbinhdanhocvu.com/?ref=VIP" style="width: 100%; background: transparent; border: none; outline: none; font-size: 0.88rem; font-weight: 800; color: #b45309;">
+                        <div style="flex: 1; min-width: 220px; display: flex; align-items: center; justify-content: space-between; gap: 8px;">
+                            <div style="display: flex; align-items: center; gap: 6px; flex: 1;">
+                                <span style="font-size: 0.78rem; color: var(--text-light, #64748b); font-weight: 700; white-space: nowrap;">Link VIP Của Bạn:</span>
+                                <input type="text" id="vip-quests-link-input" readonly value="https://www.bdbinhdanhocvu.com/?ref=VIP" style="width: 100%; background: transparent; border: none; outline: none; font-size: 0.88rem; font-weight: 800; color: #b45309;">
+                            </div>
+                            <span style="font-size: 0.7rem; background: rgba(243, 168, 59, 0.18); color: #b45309; border: 1px solid rgba(243, 168, 59, 0.35); padding: 2px 7px; border-radius: 6px; font-weight: 700; white-space: nowrap;">Mã VIP: <strong id="vip-quests-user-id">UID_VIP</strong></span>
                         </div>
                         <div style="display: flex; gap: 8px; flex-wrap: wrap;">
                             <button type="button" id="btn-copy-ref-quests" class="btn btn-primary" style="padding: 6px 14px; font-size: 0.78rem; font-weight: 800; border-radius: 6px; background: linear-gradient(135deg, #f3a83b, #d97706); color: #1e293b; border: none; cursor: pointer;">
@@ -600,6 +603,27 @@
         if (tabVipBtn) tabVipBtn.addEventListener('click', () => switchQuestsTab('vip'));
         if (tabRewardsBtn) tabRewardsBtn.addEventListener('click', () => switchQuestsTab('rewards'));
 
+        // Helper to get or generate persistent unique VIP User ID
+        function getVipUserId(session) {
+            if (!session) return 'UID_VIP';
+            if (session.userId) return session.userId;
+            const streakUid = localStorage.getItem('streak_user_id');
+            if (streakUid) return streakUid;
+            if (session.vipCode && session.vipCode.toUpperCase() !== 'BDTHUCCHIEN') {
+                return session.vipCode.toUpperCase().replace(/\s+/g, '_');
+            }
+            const userEmail = (session.email || '').toLowerCase().trim();
+            const cacheKey = userEmail ? `vip_uid_${userEmail}` : 'vip_uid_current';
+            let uniqueUid = localStorage.getItem(cacheKey);
+            if (!uniqueUid) {
+                const cleanPrefix = (session.name || session.nickname || 'VIP').replace(/[^a-zA-Z0-9]/g, '').toUpperCase().slice(0, 6);
+                const rand = Math.random().toString(36).substr(2, 6).toUpperCase();
+                uniqueUid = cleanPrefix ? `UID_${cleanPrefix}_${rand}` : `UID_${rand}`;
+                localStorage.setItem(cacheKey, uniqueUid);
+            }
+            return uniqueUid;
+        }
+
         function renderVipLounge(session) {
             const vipQuickBadge = document.getElementById('vip-quick-badge');
             const vipQuickNickname = document.getElementById('vip-quick-nickname');
@@ -609,6 +633,7 @@
             const refLinkInput = document.getElementById('vip-quests-link-input');
             const refTicketsEl = document.getElementById('ref-quests-tickets');
             const refCountEl = document.getElementById('ref-quests-count');
+            const vipUserIdEl = document.getElementById('vip-quests-user-id');
 
             if (session && session.isVip) {
                 if (tabVipBtn) tabVipBtn.style.display = 'inline-flex';
@@ -622,14 +647,23 @@
                 if (vipNicknameEl) vipNicknameEl.textContent = nickname;
                 if (vipCreditsEl) vipCreditsEl.textContent = `${credits}/3 lượt tìm PIC`;
 
-                // Setup personal referral link
-                const cleanRefCode = (session.nickname || session.name || 'Alumni_VIP').trim().replace(/\s+/g, '_');
-                const generatedRefLink = `https://www.bdbinhdanhocvu.com/?ref=${encodeURIComponent(cleanRefCode)}`;
+                // Setup personal referral link with Unique User ID
+                const vipUserId = getVipUserId(session);
+                session.userId = vipUserId;
+                try { localStorage.setItem('alumni_vip_session', JSON.stringify(session)); } catch (e) {}
+
+                if (vipUserIdEl) vipUserIdEl.textContent = vipUserId;
+
+                const cleanDisplayName = (session.nickname || session.name || 'Alumni VIP').trim();
+                const cleanNameParam = cleanDisplayName.replace(/\s+/g, '_');
+                const generatedRefLink = `https://www.bdbinhdanhocvu.com/?ref=${encodeURIComponent(vipUserId)}&name=${encodeURIComponent(cleanNameParam)}`;
                 if (refLinkInput) refLinkInput.value = generatedRefLink;
 
-                const refKeyName = `b2b_ref_count_${cleanRefCode}`;
+                const refKeyId = `b2b_ref_count_${vipUserId}`;
+                const refKeyName = `b2b_ref_count_${cleanNameParam}`;
                 const refKeyEmail = `b2b_ref_count_${session.email || 'default'}`;
                 const refCount = Math.max(
+                    parseInt(localStorage.getItem(refKeyId) || '0', 10),
                     parseInt(localStorage.getItem(refKeyName) || '0', 10),
                     parseInt(localStorage.getItem(refKeyEmail) || '0', 10)
                 );

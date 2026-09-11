@@ -969,6 +969,27 @@ document.addEventListener('DOMContentLoaded', () => {
         `).join('');
     }
 
+    // Helper to get or generate persistent unique VIP User ID
+    function getVipUserId(session) {
+        if (!session) return 'UID_VIP';
+        if (session.userId) return session.userId;
+        const streakUid = localStorage.getItem('streak_user_id');
+        if (streakUid) return streakUid;
+        if (session.vipCode && session.vipCode.toUpperCase() !== 'BDTHUCCHIEN') {
+            return session.vipCode.toUpperCase().replace(/\s+/g, '_');
+        }
+        const userEmail = (session.email || '').toLowerCase().trim();
+        const cacheKey = userEmail ? `vip_uid_${userEmail}` : 'vip_uid_current';
+        let uniqueUid = localStorage.getItem(cacheKey);
+        if (!uniqueUid) {
+            const cleanPrefix = (session.name || session.nickname || 'VIP').replace(/[^a-zA-Z0-9]/g, '').toUpperCase().slice(0, 6);
+            const rand = Math.random().toString(36).substr(2, 6).toUpperCase();
+            uniqueUid = cleanPrefix ? `UID_${cleanPrefix}_${rand}` : `UID_${rand}`;
+            localStorage.setItem(cacheKey, uniqueUid);
+        }
+        return uniqueUid;
+    }
+
     // Update VIP Session UI
     function renderVipSession(session) {
         if (!session) {
@@ -997,18 +1018,29 @@ document.addEventListener('DOMContentLoaded', () => {
             vipExpiryText.textContent = `Hạn dùng: ${session.expiry} (3 tháng)`;
         }
 
-        // Referral Link & Giver Mentality
+        // Referral Link & Giver Mentality (Unique User ID Based)
         const refLinkInput = document.getElementById('vip-referral-link-input');
         const refTicketsLeft = document.getElementById('ref-tickets-left');
         const refCountDisplay = document.getElementById('ref-count-display');
-        const cleanRefCode = (session.nickname || session.name || 'Alumni_VIP').trim().replace(/\s+/g, '_');
-        const generatedRefLink = `https://www.bdbinhdanhocvu.com/?ref=${encodeURIComponent(cleanRefCode)}`;
+        const vipUserIdDisplay = document.getElementById('vip-user-id-display');
+
+        const vipUserId = getVipUserId(session);
+        session.userId = vipUserId;
+        try { localStorage.setItem('alumni_vip_session', JSON.stringify(session)); } catch (e) {}
+
+        if (vipUserIdDisplay) vipUserIdDisplay.textContent = vipUserId;
+
+        const cleanDisplayName = (session.nickname || session.name || 'Alumni VIP').trim();
+        const cleanNameParam = cleanDisplayName.replace(/\s+/g, '_');
+        const generatedRefLink = `https://www.bdbinhdanhocvu.com/?ref=${encodeURIComponent(vipUserId)}&name=${encodeURIComponent(cleanNameParam)}`;
         
         if (refLinkInput) refLinkInput.value = generatedRefLink;
         
-        const refKeyName = `b2b_ref_count_${cleanRefCode}`;
+        const refKeyId = `b2b_ref_count_${vipUserId}`;
+        const refKeyName = `b2b_ref_count_${cleanNameParam}`;
         const refKeyEmail = `b2b_ref_count_${session.email || 'default'}`;
         const refCount = Math.max(
+            parseInt(localStorage.getItem(refKeyId) || '0', 10),
             parseInt(localStorage.getItem(refKeyName) || '0', 10),
             parseInt(localStorage.getItem(refKeyEmail) || '0', 10)
         );
@@ -1087,7 +1119,8 @@ document.addEventListener('DOMContentLoaded', () => {
                         email: data.email || cleanEmail || 'alumni@bdbinhdanhocvu.com',
                         remainingCredits: data.remainingCredits !== undefined ? data.remainingCredits : 3,
                         expiry: data.expiry || '3 Tháng',
-                        vipCode: data.vipCode || cleanPass
+                        vipCode: data.vipCode || cleanPass,
+                        userId: data.userId || null
                     };
                 }
             }
@@ -1108,7 +1141,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 email: cleanEmail || (existing && existing.email) || 'alumni@bdbinhdanhocvu.com',
                 remainingCredits: currentCredits,
                 expiry: '90 Ngày',
-                vipCode: cleanPass
+                vipCode: cleanPass,
+                userId: (existing && existing.userId) || null
             };
         }
 

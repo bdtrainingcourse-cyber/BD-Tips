@@ -7831,10 +7831,15 @@ function checkPvPChallenge() {
         try {
             const urlParams = new URLSearchParams(window.location.search);
             const refCode = urlParams.get('ref');
+            const refName = urlParams.get('name') || urlParams.get('from');
             if (!refCode) return;
 
-            const cleanRef = decodeURIComponent(refCode).replace(/_/g, ' ').trim();
-            const claimedKey = `b2b_ref_claimed_${cleanRef.replace(/\s+/g, '_')}`;
+            const cleanRefCode = decodeURIComponent(refCode).trim();
+            const cleanRefName = refName ? decodeURIComponent(refName).replace(/_/g, ' ').trim() : '';
+
+            // Unique key to prevent claiming multiple times from same referral code
+            const safeRefKey = cleanRefCode.replace(/[^a-zA-Z0-9_-]/g, '_');
+            const claimedKey = `b2b_ref_claimed_${safeRefKey}`;
             const alreadyClaimed = localStorage.getItem(claimedKey);
 
             if (!alreadyClaimed) {
@@ -7843,15 +7848,26 @@ function checkPvPChallenge() {
                 const newPoints = currentPoints + 50;
                 localStorage.setItem('b2b_points_balance', newPoints.toString());
                 localStorage.setItem(claimedKey, 'true');
-                localStorage.setItem('b2b_referred_by', cleanRef);
+                localStorage.setItem('b2b_referred_by_id', cleanRefCode);
+                if (cleanRefName) localStorage.setItem('b2b_referred_by_name', cleanRefName);
+                localStorage.setItem('b2b_referred_by', cleanRefName || cleanRefCode);
 
-                // Increment referrer counter locally
-                const refCountKey = `b2b_ref_count_${cleanRef.replace(/\s+/g, '_')}`;
-                const curCount = parseInt(localStorage.getItem(refCountKey) || '0', 10);
-                localStorage.setItem(refCountKey, (curCount + 1).toString());
+                // Increment referrer counter locally (for User ID and Name fallback)
+                const refCountKeyId = `b2b_ref_count_${safeRefKey}`;
+                const curCount = parseInt(localStorage.getItem(refCountKeyId) || '0', 10);
+                localStorage.setItem(refCountKeyId, (curCount + 1).toString());
+
+                if (cleanRefName) {
+                    const refCountKeyName = `b2b_ref_count_${cleanRefName.replace(/\s+/g, '_')}`;
+                    const curNameCount = parseInt(localStorage.getItem(refCountKeyName) || '0', 10);
+                    localStorage.setItem(refCountKeyName, (curNameCount + 1).toString());
+                }
 
                 // Send tracking beacon to /api/track-behavior
                 const visitorEmail = localStorage.getItem('user_email') || localStorage.getItem('streak_email') || ('guest_ref_' + Date.now() + '@bdbinhdanhocvu.com');
+                const displayName = cleanRefName || cleanRefCode;
+                const detailText = `Nhận vé mời VIP từ User ID: ${cleanRefCode}${cleanRefName ? ' (' + cleanRefName + ')' : ''} (+50 BD-Points)`;
+
                 fetch('/api/track-behavior', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -7859,20 +7875,22 @@ function checkPvPChallenge() {
                         email: visitorEmail,
                         action: 'vip_referral_accepted',
                         category: 'referral',
-                        detail: `Nhận vé mời VIP từ: ${cleanRef} (+50 BD-Points)`
+                        referrerId: cleanRefCode,
+                        referrerName: cleanRefName || '',
+                        detail: detailText
                     })
                 }).catch(() => {});
 
                 // Show Point Toast
                 setTimeout(() => {
                     if (window.showPointToast) {
-                        window.showPointToast(50, `Vé Mời VIP từ ${cleanRef}`);
+                        window.showPointToast(50, `Vé Mời VIP từ ${displayName}`);
                     }
                 }, 800);
 
                 // Show Welcome Modal
                 setTimeout(() => {
-                    showReferralWelcomeModal(cleanRef);
+                    showReferralWelcomeModal(displayName, cleanRefCode);
                 }, 1200);
             }
         } catch (e) {
@@ -7880,13 +7898,17 @@ function checkPvPChallenge() {
         }
     }
 
-    function showReferralWelcomeModal(referrerName) {
+    function showReferralWelcomeModal(referrerName, referrerId) {
         const modalId = 'b2b-ref-welcome-modal';
         if (document.getElementById(modalId)) return;
 
         const overlay = document.createElement('div');
         overlay.id = modalId;
         overlay.style.cssText = 'position: fixed; inset: 0; z-index: 999999; background: rgba(0, 0, 0, 0.82); backdrop-filter: blur(8px); display: flex; align-items: center; justify-content: center; padding: 20px; animation: fadeIn 0.3s ease; font-family: inherit;';
+
+        const idBadge = (referrerId && referrerId !== referrerName) 
+            ? `<div style="font-size: 0.78rem; opacity: 0.85; color: #f3a83b; margin-top: 3px;">(Mã Định Danh VIP: <strong>${referrerId}</strong>)</div>`
+            : '';
 
         overlay.innerHTML = `
             <div style="background: linear-gradient(135deg, #1e1208 0%, #2d1808 100%); border: 2px solid #f3a83b; border-radius: 24px; padding: 32px 28px; max-width: 520px; width: 100%; text-align: center; box-shadow: 0 25px 60px rgba(0,0,0,0.6); position: relative; color: #ffffff;">
@@ -7904,6 +7926,7 @@ function checkPvPChallenge() {
                 
                 <p style="margin: 0 0 20px 0; font-size: 0.95rem; color: #e2e8f0; line-height: 1.55;">
                     Bạn vừa nhận được <strong>Vé Mời VIP Đồng Đội</strong> từ <span style="color: #f3a83b; font-weight: 800;">${referrerName}</span>!
+                    ${idBadge}
                 </p>
 
                 <div style="background: rgba(0, 0, 0, 0.35); border: 1px dashed rgba(243, 168, 59, 0.4); border-radius: 14px; padding: 16px; margin-bottom: 24px; text-align: left;">
