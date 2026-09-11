@@ -62,6 +62,15 @@ function httpGet(url) {
 
 const B2B_SECRET_KEY = process.env.B2B_SECRET_KEY || "2108330119Snail!!";
 
+// Strict Whitelist of test email accounts belonging to the admin/author
+// All tests, debugging, and verification flows are strictly confined to these accounts
+const ALLOWED_TEST_EMAILS = [
+  'vptanaia@gmail.com',
+  'bdtrainingcourse@gmail.com',
+  'bdmastery.ai@petervo.vn',
+  'ocsen.fashion@gmail.com'
+];
+
 // Native fetch POST helper with automatic secretKey injection
 async function httpPost(url, body) {
   let postBody = body;
@@ -587,9 +596,32 @@ YÊU CẦU NỘI DUNG & PHONG CÁCH:
     const isUnverified = req.query.verified === 'false';
     const targetEmail = req.query.email.toLowerCase().trim();
     const targetName = req.query.name || 'Chiến thần B2B';
+
+    // Strict Test Whitelist Guard: Only allow sending to the 3 whitelisted test accounts or resend test sink
+    const isWhitelisted = ALLOWED_TEST_EMAILS.includes(targetEmail) || targetEmail.endsWith('@resend.dev');
+    if (!isWhitelisted && !req.query.force_real) {
+      console.warn(`[DAILY_EMAIL_SECURITY] Blocked attempt to send test email to non-whitelisted address: ${targetEmail}`);
+      return res.status(403).json({
+        success: false,
+        error: `Test Safety Guard: Email '${targetEmail}' không thuộc danh sách thử nghiệm an toàn. Theo quy định bảo vệ user, mọi thử nghiệm chỉ được phép gửi tới 3 email admin: ${ALLOWED_TEST_EMAILS.join(', ')}.`,
+        whitelist: ALLOWED_TEST_EMAILS
+      });
+    }
+
     const shouldSchedule = req.query.schedule === 'true';
     const delayMinutes = req.query.delay ? parseFloat(req.query.delay) : 2;
     const scheduledTimeIso = shouldSchedule ? new Date(Date.now() + delayMinutes * 60 * 1000).toISOString() : null;
+
+    if (req.query.dryRun === 'true') {
+      return res.status(200).json({
+        success: true,
+        dryRun: true,
+        mode: 'dry_run_single',
+        targetEmail: targetEmail,
+        scheduledAt: scheduledTimeIso,
+        message: `[DRY RUN] Mô phỏng thành công cho email ${targetEmail} (không gửi thật).`
+      });
+    }
 
     console.log(`[DAILY_EMAIL_TEST] Dispatching test email to ${targetEmail} via Resend (Scheduled: ${scheduledTimeIso || 'IMMEDIATE'})...`);
 
@@ -715,6 +747,29 @@ YÊU CẦU NỘI DUNG & PHONG CÁCH:
     }
   }
 
+  // Operational Safety Guard: Distinguish genuine Vercel Cron vs Test vs Inspection
+  const isVercelCron = Boolean(req.headers['x-vercel-cron']);
+  const isExplicitCron = req.query.cron === 'true';
+  const isTestMode = req.query.test === 'true';
+  const isDryRun = req.query.dryRun === 'true';
+
+  // If in test mode, restrict candidate users STRICTLY to ALLOWED_TEST_EMAILS!
+  if (isTestMode) {
+    console.log(`[DAILY_EMAIL_TEST] Test mode active (?test=true). Filtering candidates STRICTLY to ${ALLOWED_TEST_EMAILS.length} whitelist accounts.`);
+    targetUsers = targetUsers.filter(u => ALLOWED_TEST_EMAILS.includes((u.email || '').toLowerCase().trim()));
+  } else if (!isVercelCron && !isExplicitCron) {
+    // Neither Vercel Cron nor ?cron=true nor ?test=true
+    // Protect real users: do NOT run bulk email! Return safe inspection mode!
+    console.log(`[DAILY_EMAIL_SAFETY] Endpoint accessed without Vercel Cron header, ?cron=true, or ?test=true. Defaulting to Safe Inspection Mode.`);
+    return res.status(200).json({
+      success: true,
+      mode: 'safe_inspection',
+      message: 'Hệ thống bảo vệ người dùng thật: Yêu cầu header Vercel Cron hoặc ?cron=true để gửi thật, hoặc ?test=true để thử nghiệm an toàn trên 3 email admin. Tuyệt đối không gửi email cho user thật ngoài lịch trình.',
+      whitelistTestEmails: ALLOWED_TEST_EMAILS,
+      totalUsersInSystem: targetUsers.length
+    });
+  }
+
   // 3. Time calculation & Strict Per-User Deduplication (Idempotency Guard)
   const nowMs = Date.now();
   const vnNow = new Date(nowMs + 7 * 3600 * 1000);
@@ -765,6 +820,20 @@ YÊU CẦU NỘI DUNG & PHONG CÁCH:
       skipped: true,
       message: `Tất cả user (${alreadySentUsers.length} người) đã nhận email reminder hôm nay (${todayStrDisplay}). Hệ thống tự động khóa để bảo đảm KHÔNG gửi trùng lặp và bảo vệ uy tín hòm thư (domain reputation). Dùng ?force=true nếu muốn ép gửi lại.`,
       date: todayStrDisplay,
+      alreadySentCount: alreadySentUsers.length,
+      alreadySentUsers: alreadySentUsers.map(u => u.email)
+    });
+  }
+
+  // Dry-Run Mode: If ?dryRun=true, return simulation without calling Resend or modifying DB
+  if (isDryRun) {
+    console.log(`[DAILY_EMAIL_DRY_RUN] Dry-run completed. Zero emails dispatched.`);
+    return res.status(200).json({
+      success: true,
+      dryRun: true,
+      message: '[DRY RUN] Mô phỏng kiểm tra luồng hoàn tất thành công mà không gửi bất kỳ email nào.',
+      eligibleRecipients: uniqueRecipients.map(u => u.email),
+      eligibleCount: uniqueRecipients.length,
       alreadySentCount: alreadySentUsers.length,
       alreadySentUsers: alreadySentUsers.map(u => u.email)
     });
