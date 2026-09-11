@@ -469,6 +469,10 @@ document.addEventListener('DOMContentLoaded', () => {
         resultsPanel.classList.add('hidden');
         searchResults = [];
         
+        if (window.trackUserBehavior) {
+            window.trackUserBehavior('pic_search', `Company: ${company}, Roles: ${activeTags.join(', ')}`);
+        }
+        
         log(`Initializing Search & Lead Finder pipeline...`, 'system');
         log(`Target Company: ${company}`, 'system');
         if (domain) log(`Target Domain: ${domain}`, 'system');
@@ -835,6 +839,401 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
     });
+
+    // ==========================================================================
+    // ALUMNI VIP PIC CONCIERGE LOGIC (MỤC SỐ 4)
+    // ==========================================================================
+    const GAS_WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbzhevaZUCV0ITOxOeeFTx4lFG4jqknpCFV1EJ4l_L75-zkgmmY0eJlKc68jEgk_mVU/exec';
+    
+    // Elements
+    const tabBtnVip = document.getElementById('tab-btn-vip');
+    const tabBtnScraper = document.getElementById('tab-btn-scraper');
+    const alumniVipSection = document.getElementById('alumni-vip-section');
+    const scraperPortalSection = document.getElementById('scraper-portal-section');
+
+    const vipGateCard = document.getElementById('vip-gate-card');
+    const vipDashboardCard = document.getElementById('vip-dashboard-card');
+    const vipAuthForm = document.getElementById('vip-auth-form');
+    const vipPasscodeInput = document.getElementById('vip-passcode-input');
+    const vipEmailInput = document.getElementById('vip-email-input');
+    const vipErrorMsg = document.getElementById('vip-error-msg');
+    const btnQuickFillPass = document.getElementById('btn-quick-fill-pass');
+    const btnLockVip = document.getElementById('btn-lock-vip');
+
+    const vipDisplayNickname = document.getElementById('vip-display-nickname');
+    const vipDisplayEmail = document.getElementById('vip-display-email');
+    const vipCreditsVal = document.getElementById('vip-credits-val');
+    const vipProgressFill = document.getElementById('vip-progress-fill');
+    const vipExpiryText = document.getElementById('vip-expiry-text');
+
+    const vipRequestForm = document.getElementById('vip-request-form');
+    const picTargetCompany = document.getElementById('pic-target-company');
+    const picTargetRole = document.getElementById('pic-target-role');
+    const picTargetNotes = document.getElementById('pic-target-notes');
+    const picSubmitFeedback = document.getElementById('pic-submit-feedback');
+    const btnSubmitPic = document.getElementById('btn-submit-pic');
+    const vipHistoryList = document.getElementById('vip-history-list');
+    const vipHistoryCount = document.getElementById('vip-history-count');
+
+    const labelDeptHr = document.getElementById('label-dept-hr');
+    const labelDeptMkt = document.getElementById('label-dept-mkt');
+
+    // Deterministic Funny BD Titles for instant client-side fallback
+    const CLIENT_BD_TITLES = [
+        "Săn Deal Khủng", "Bách Phát Bách Trúng", "Chốt Đơn Xuyên Màn Đêm",
+        "Chiến Thần Cold Call", "Sát Thủ Doanh Số", "Vua Hẹn Gặp",
+        "Đàm Phán Bất Bại", "Cãi Sếp Giành Hoa Hồng", "Chúa Tể Networking",
+        "Bóp Còi Chốt Deal", "Thần Giao Kèo", "Kẻ Hủy Diệt Từ Chối",
+        "Đào Mỏ Pitching", "Trùm Chuyển Đổi", "Thợ Săn Cá Mập",
+        "Thần Gió Pipeline", "Tín Đồ Hợp Đồng", "Bậc Thầy Upsell",
+        "Cá Mập Chốt Sales", "Chuyên Gia Đòi Nợ Xong Deal"
+    ];
+
+    function getFunnyNickname(name, email) {
+        if (!name) name = "Chiến Binh BD";
+        const parts = name.trim().split(/\s+/);
+        const firstName = parts[parts.length - 1];
+        const seed = ((email || name) + "BD_VIP_SALT").toLowerCase();
+        let hash = 0;
+        for (let i = 0; i < seed.length; i++) {
+            hash = ((hash << 5) - hash) + seed.charCodeAt(i);
+            hash |= 0;
+        }
+        const title = CLIENT_BD_TITLES[Math.abs(hash) % CLIENT_BD_TITLES.length];
+        return firstName + " " + title;
+    }
+
+    // Tab Switching
+    if (tabBtnVip && tabBtnScraper) {
+        tabBtnVip.addEventListener('click', () => {
+            tabBtnVip.classList.add('active');
+            tabBtnScraper.classList.remove('active');
+            if (alumniVipSection) alumniVipSection.style.display = 'block';
+            if (scraperPortalSection) scraperPortalSection.style.display = 'none';
+        });
+
+        tabBtnScraper.addEventListener('click', () => {
+            tabBtnScraper.classList.add('active');
+            tabBtnVip.classList.remove('active');
+            if (alumniVipSection) alumniVipSection.style.display = 'none';
+            if (scraperPortalSection) scraperPortalSection.style.display = 'block';
+        });
+    }
+
+    // Department Pill Toggle
+    if (labelDeptHr && labelDeptMkt) {
+        labelDeptHr.addEventListener('click', () => {
+            labelDeptHr.classList.add('active');
+            labelDeptMkt.classList.remove('active');
+        });
+        labelDeptMkt.addEventListener('click', () => {
+            labelDeptMkt.classList.add('active');
+            labelDeptHr.classList.remove('active');
+        });
+    }
+
+    // Render Request History
+    function renderVipHistory(historyArr) {
+        if (!vipHistoryList) return;
+        if (!historyArr || historyArr.length === 0) {
+            vipHistoryList.innerHTML = `
+                <div style="color: #64748b; font-size: 0.9rem; text-align: center; padding: 20px;">
+                    Bạn chưa gửi yêu cầu nào. Hãy gửi yêu cầu đầu tiên để Peter Võ hỗ trợ săn PIC nhé!
+                </div>
+            `;
+            if (vipHistoryCount) vipHistoryCount.textContent = '0 yêu cầu';
+            return;
+        }
+
+        if (vipHistoryCount) vipHistoryCount.textContent = `${historyArr.length} yêu cầu`;
+        vipHistoryList.innerHTML = historyArr.map(item => `
+            <div class="vip-history-item">
+                <div class="vip-history-info">
+                    <strong>🏢 ${item.company}</strong> &nbsp;
+                    <span style="color: #f3a83b; font-size: 0.85rem; font-weight: 600;">[${item.department}]</span>
+                    <div class="vip-history-sub">
+                        <span>🎯 Mục tiêu: ${item.role}</span> &bull; 
+                        <span>📅 ${item.time || 'Vừa gửi'}</span>
+                    </div>
+                    ${item.notes ? `<div style="font-size: 0.8rem; color: #64748b; margin-top: 3px;">Ghi chú: ${item.notes}</div>` : ''}
+                </div>
+                <div class="vip-status-badge ${item.status === 'Đã Kết Nối' ? 'completed' : 'processing'}">
+                    ${item.status || '⏳ Đang Xử Lý (24-48h)'}
+                </div>
+            </div>
+        `).join('');
+    }
+
+    // Update VIP Session UI
+    function renderVipSession(session) {
+        if (!session) {
+            if (vipGateCard) vipGateCard.style.display = 'block';
+            if (vipDashboardCard) vipDashboardCard.style.display = 'none';
+            return;
+        }
+
+        if (vipGateCard) vipGateCard.style.display = 'none';
+        if (vipDashboardCard) vipDashboardCard.style.display = 'block';
+
+        if (vipDisplayNickname) vipDisplayNickname.textContent = session.nickname || 'Chiến Binh BD';
+        if (vipDisplayEmail) vipDisplayEmail.textContent = session.email || 'Alumni VIP Member';
+        
+        const credits = session.remainingCredits !== undefined ? session.remainingCredits : 3;
+        if (vipCreditsVal) vipCreditsVal.textContent = credits;
+        if (vipProgressFill) {
+            const pct = Math.max(0, Math.min(100, (credits / 3) * 100));
+            vipProgressFill.style.width = pct + '%';
+            if (pct <= 33) vipProgressFill.style.background = '#ef4444';
+            else if (pct <= 66) vipProgressFill.style.background = '#f59e0b';
+            else vipProgressFill.style.background = 'linear-gradient(90deg, #f3a83b, #10b981)';
+        }
+
+        if (vipExpiryText && session.expiry) {
+            vipExpiryText.textContent = `Hạn dùng: ${session.expiry} (3 tháng)`;
+        }
+
+        const history = JSON.parse(localStorage.getItem(`vip_history_${session.email || 'default'}`) || '[]');
+        renderVipHistory(history);
+    }
+
+    // Authenticate / Unlock
+    async function unlockVip(passcode, emailInput) {
+        const cleanPass = (passcode || '').trim();
+        const cleanEmail = (emailInput || '').trim().toLowerCase();
+
+        if (vipErrorMsg) vipErrorMsg.style.display = 'none';
+
+        // 1. Kiểm tra Mật khẩu Master hoặc VIP Code
+        const isMasterPass = cleanPass.toUpperCase() === 'BDTHUCCHIEN';
+        const isVipFormat = cleanPass.toUpperCase().startsWith('BD-VIP-') || cleanPass.toUpperCase().startsWith('VIP-');
+
+        if (!isMasterPass && !isVipFormat && !cleanPass) {
+            if (vipErrorMsg) {
+                vipErrorMsg.textContent = 'Vui lòng nhập Mật khẩu VIP (BDTHUCCHIEN hoặc Mã VIP trong email).';
+                vipErrorMsg.style.display = 'block';
+            }
+            return false;
+        }
+
+        // 2. Thử xác thực với Google Apps Script Webhook nếu có mạng
+        let session = null;
+        try {
+            const resp = await fetch(`${GAS_WEBHOOK_URL}?action=verifyAlumni&passcode=${encodeURIComponent(cleanPass)}&email=${encodeURIComponent(cleanEmail)}`, {
+                method: 'GET',
+                mode: 'cors'
+            });
+            if (resp.ok) {
+                const data = await resp.json();
+                if (data.success && data.isAlumni) {
+                    session = {
+                        isVip: true,
+                        name: data.name,
+                        nickname: data.nickname,
+                        email: data.email || cleanEmail || 'alumni@bdbinhdanhocvu.com',
+                        remainingCredits: data.remainingCredits !== undefined ? data.remainingCredits : 3,
+                        expiry: data.expiry || '3 Tháng',
+                        vipCode: data.vipCode || cleanPass
+                    };
+                }
+            }
+        } catch (netErr) {
+            console.warn('Network call to GAS verifyAlumni failed, using client-side validation:', netErr);
+        }
+
+        // 3. Fallback client-side validation nếu pass hợp lệ
+        if (!session && (isMasterPass || isVipFormat)) {
+            const existingRaw = localStorage.getItem('alumni_vip_session');
+            const existing = existingRaw ? JSON.parse(existingRaw) : null;
+            const currentCredits = (existing && existing.remainingCredits !== undefined) ? existing.remainingCredits : 3;
+
+            session = {
+                isVip: true,
+                name: (existing && existing.name) || (cleanEmail ? cleanEmail.split('@')[0] : 'Alumni VIP'),
+                nickname: getFunnyNickname(cleanEmail ? cleanEmail.split('@')[0] : 'Tân Võ Phước', cleanEmail),
+                email: cleanEmail || (existing && existing.email) || 'alumni@bdbinhdanhocvu.com',
+                remainingCredits: currentCredits,
+                expiry: '90 Ngày',
+                vipCode: cleanPass
+            };
+        }
+
+        if (session) {
+            localStorage.setItem('alumni_vip_session', JSON.stringify(session));
+            renderVipSession(session);
+            return true;
+        } else {
+            if (vipErrorMsg) {
+                vipErrorMsg.textContent = 'Mật khẩu VIP không hợp lệ. Vui lòng kiểm tra lại.';
+                vipErrorMsg.style.display = 'block';
+            }
+            return false;
+        }
+    }
+
+    // Event: Quick Fill Pass
+    if (btnQuickFillPass) {
+        btnQuickFillPass.addEventListener('click', () => {
+            if (vipPasscodeInput) vipPasscodeInput.value = 'BDTHUCCHIEN';
+            if (vipEmailInput && !vipEmailInput.value) {
+                const savedEmail = localStorage.getItem('user_email') || localStorage.getItem('user_gated_email') || '';
+                if (savedEmail) vipEmailInput.value = savedEmail;
+            }
+            unlockVip('BDTHUCCHIEN', vipEmailInput ? vipEmailInput.value : '');
+        });
+    }
+
+    // Event: Submit Unlock Form
+    if (vipAuthForm) {
+        vipAuthForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const pass = vipPasscodeInput ? vipPasscodeInput.value : '';
+            const email = vipEmailInput ? vipEmailInput.value : '';
+            unlockVip(pass, email);
+        });
+    }
+
+    // Event: Lock / Logout
+    if (btnLockVip) {
+        btnLockVip.addEventListener('click', () => {
+            localStorage.removeItem('alumni_vip_session');
+            renderVipSession(null);
+        });
+    }
+
+    // Event: Submit PIC Request
+    if (vipRequestForm) {
+        vipRequestForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const sessionRaw = localStorage.getItem('alumni_vip_session');
+            if (!sessionRaw) {
+                alert('Vui lòng mở khóa bằng Mật Khẩu VIP trước khi gửi yêu cầu.');
+                renderVipSession(null);
+                return;
+            }
+            const session = JSON.parse(sessionRaw);
+
+            if (session.remainingCredits <= 0) {
+                alert('Bạn đã sử dụng hết 3/3 lượt tìm PIC đặc quyền. Vui lòng liên hệ trực tiếp Peter Võ qua Zalo: 0931.100.569.');
+                return;
+            }
+
+            const company = picTargetCompany ? picTargetCompany.value.trim() : '';
+            const selectedDeptInput = document.querySelector('input[name="target_dept"]:checked');
+            const department = selectedDeptInput ? selectedDeptInput.value : 'Nhân Sự (HR)';
+            const role = picTargetRole ? picTargetRole.value.trim() : '';
+            const notes = picTargetNotes ? picTargetNotes.value.trim() : '';
+
+            if (!company || !role) {
+                alert('Vui lòng nhập Tên Doanh Nghiệp Mục Tiêu và Vị Trí / Mục Tiêu Kết Nối.');
+                return;
+            }
+
+            if (btnSubmitPic) {
+                btnSubmitPic.disabled = true;
+                btnSubmitPic.textContent = '⏳ Đang gửi yêu cầu...';
+            }
+
+            // Trừ 1 lượt
+            session.remainingCredits = Math.max(0, session.remainingCredits - 1);
+            localStorage.setItem('alumni_vip_session', JSON.stringify(session));
+
+            // Lưu vào lịch sử local
+            const histKey = `vip_history_${session.email || 'default'}`;
+            const history = JSON.parse(localStorage.getItem(histKey) || '[]');
+            const newRequest = {
+                company: company,
+                department: department,
+                role: role,
+                notes: notes,
+                time: new Date().toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }),
+                status: '⏳ Đang Tìm Kiếm'
+            };
+            history.unshift(newRequest);
+            localStorage.setItem(histKey, JSON.stringify(history));
+
+            // Gửi dữ liệu lên Google Apps Script Webhook
+            try {
+                fetch(GAS_WEBHOOK_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        action: 'requestPIC',
+                        email: session.email,
+                        name: session.name,
+                        nickname: session.nickname,
+                        targetCompany: company,
+                        department: department,
+                        targetRole: role,
+                        notes: notes,
+                        vipCode: session.vipCode || 'BDTHUCCHIEN'
+                    })
+                }).catch(e => console.warn('Background sync to GAS failed:', e));
+            } catch (err) {}
+
+            // Cập nhật UI
+            if (picSubmitFeedback) {
+                picSubmitFeedback.style.display = 'block';
+                picSubmitFeedback.style.background = 'rgba(16, 185, 129, 0.15)';
+                picSubmitFeedback.style.border = '1px solid #10b981';
+                picSubmitFeedback.style.color = '#6ee7b7';
+                picSubmitFeedback.innerHTML = `
+                    🎉 <strong>Yêu cầu tìm PIC đã được gửi thành công!</strong><br>
+                    Anh Peter Võ sẽ trực tiếp rà soát mạng lưới 30,000+ LinkedIn connections và phản hồi thông tin PIC cho bạn qua Zalo/Email trong 24h - 48h tới.<br>
+                    <span style="font-size: 0.85rem; color: #f3a83b; margin-top: 4px; display: inline-block;">Số lượt còn lại của bạn: ${session.remainingCredits} / 3 lượt.</span>
+                `;
+            }
+
+            renderVipSession(session);
+
+            // Reset form input
+            if (picTargetCompany) picTargetCompany.value = '';
+            if (picTargetRole) picTargetRole.value = '';
+            if (picTargetNotes) picTargetNotes.value = '';
+
+            if (btnSubmitPic) {
+                btnSubmitPic.disabled = false;
+                btnSubmitPic.textContent = '🚀 Gửi Yêu Cầu Tìm PIC Cho Anh Peter Võ';
+            }
+        });
+    }
+
+    // On Page Load: Check URL parameters & Local Session
+    (function initVipPortal() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const vipPassParam = urlParams.get('vip_pass') || urlParams.get('vip');
+        const emailParam = urlParams.get('email') || urlParams.get('sync_email');
+        const tabParam = urlParams.get('tab');
+
+        if (tabParam === 'scraper') {
+            if (tabBtnScraper) tabBtnScraper.click();
+        }
+
+        if (emailParam && vipEmailInput) {
+            vipEmailInput.value = emailParam;
+        }
+
+        // Tự động mở khóa nếu có query param vip_pass=BDTHUCCHIEN
+        if (vipPassParam) {
+            if (vipPasscodeInput) vipPasscodeInput.value = vipPassParam;
+            unlockVip(vipPassParam, emailParam || '');
+            return;
+        }
+
+        // Kiểm tra session đã lưu trong localStorage
+        const savedSession = localStorage.getItem('alumni_vip_session');
+        if (savedSession) {
+            try {
+                const sess = JSON.parse(savedSession);
+                renderVipSession(sess);
+            } catch (e) {
+                renderVipSession(null);
+            }
+        } else {
+            renderVipSession(null);
+        }
+    })();
 
     // Expose for testing
     window.renderResultsTable = renderResultsTable;

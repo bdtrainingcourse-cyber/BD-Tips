@@ -21,6 +21,45 @@
 const B2B_SECRET_KEY = "2108330119Snail!!";
 
 // ------------------------------------------------------------------
+// 0. GOOGLE SHEETS UI MENU & ONEDIT TRIGGERS (TỰ ĐỘNG HÓA HỌC VIÊN CŨ)
+// ------------------------------------------------------------------
+function onOpen() {
+  try {
+    SpreadsheetApp.getUi()
+      .createMenu("🎓 Quản Lý Học Viên BD")
+      .addItem("⚡ Khởi Tạo / Cập Nhật Nickname & Mã VIP Tự Động", "menuAutoProcessAlumni")
+      .addToUi();
+  } catch (e) {
+    Logger.log("onOpen error: " + e.message);
+  }
+}
+
+function menuAutoProcessAlumni() {
+  const res = autoProcessAlumniSheet();
+  SpreadsheetApp.getUi().alert("Thông Báo Tự Động Hóa", res.message || "Đã hoàn tất xử lý danh sách học viên.", SpreadsheetApp.getUi().ButtonSet.OK);
+}
+
+function onEdit(e) {
+  try {
+    if (!e || !e.range) return;
+    const sheet = e.range.getSheet();
+    const sheetName = sheet.getName();
+    if (sheetName !== "Học Viên Đã Học") return;
+    
+    const row = e.range.getRow();
+    if (row <= 1) return; // Bỏ qua tiêu đề
+    
+    const col = e.range.getColumn();
+    // Nếu dán hoặc gõ vào cột A (Họ Tên) hoặc cột B (Email)
+    if (col === 1 || col === 2) {
+      processSingleAlumniRow(sheet, row);
+    }
+  } catch (err) {
+    Logger.log("onEdit Error: " + err.message);
+  }
+}
+
+// ------------------------------------------------------------------
 // 1. DOPOST & DOGET ROUTER
 // ------------------------------------------------------------------
 function doPost(e) {
@@ -28,19 +67,25 @@ function doPost(e) {
     const rawData = e.postData ? e.postData.contents : "{}";
     const postData = JSON.parse(rawData);
     
-    // Kiểm tra Secret Key bảo mật
-    if (B2B_SECRET_KEY) {
+    // Kiểm tra Secret Key bảo mật (ngoại trừ verifyAlumni & requestPIC để web hoạt động mượt mà)
+    const action = postData.action;
+    if (B2B_SECRET_KEY && action !== "verifyAlumni" && action !== "requestPIC") {
       if (!postData.secretKey || postData.secretKey !== B2B_SECRET_KEY) {
         return createJsonResponse({ success: false, error: "Unauthorized: Invalid secretKey." });
       }
     }
     
-    const action = postData.action;
     const email = postData.email ? postData.email.toLowerCase().trim() : "";
     const name = postData.name || "Học viên";
     
     // Điều hướng các tác vụ
-    if (action === "checkEmail") {
+    if (action === "verifyAlumni") {
+      return verifyAlumni(postData.passcode || postData.vipPass || postData.vipCode || postData.password, email);
+    } else if (action === "requestPIC") {
+      return handlePICRequest(postData);
+    } else if (action === "syncAlumniBatch") {
+      return createJsonResponse(autoProcessAlumniSheet());
+    } else if (action === "checkEmail") {
       return checkEmail(email, name);
     } else if (action === "sendEbookVerificationEmail" || (action === "syncUser" && (postData.tool === "ebook-download" || postData.ebookTitle)) || postData.tool === "ebook-download") {
       syncUser(postData, true);
@@ -86,7 +131,13 @@ function doGet(e) {
     const email = params.email ? params.email.toLowerCase().trim() : "";
     const name = params.name || "Học viên";
     
-    if (action === "checkEmail") {
+    if (action === "verifyAlumni") {
+      return verifyAlumni(params.passcode || params.vipPass || params.vipCode || params.password, email);
+    } else if (action === "requestPIC") {
+      return handlePICRequest(params);
+    } else if (action === "syncAlumniBatch") {
+      return createJsonResponse(autoProcessAlumniSheet());
+    } else if (action === "checkEmail") {
       return checkEmail(email, name);
     } else if (action === "getUsers") {
       return getAllUsers();
@@ -1126,29 +1177,42 @@ function getOrCreateGuestId(guestKey) {
 
 function getOrCreateSheet(sheetName) {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
+  let sheet = ss.getSheetByName(sheetName);
+  if (sheet) return sheet;
+
   const allSheets = ss.getSheets();
-  
   const cleanTarget = sheetName.toLowerCase().replace(/[^a-z0-9]/g, '');
-  for (let i = 0; i < allSheets.length; i++) {
-    const s = allSheets[i];
-    const sClean = s.getName().toLowerCase().replace(/[^a-z0-9]/g, '');
-    if (cleanTarget.includes("hocvien") || cleanTarget.includes("leads") || cleanTarget.includes("coursereg")) {
-      if (sClean.includes("hocvien") || sClean.includes("leads") || sClean.includes("coursereg")) {
-        return s;
-      }
-    } else if (cleanTarget.includes("nhatky") || cleanTarget.includes("tuongtac") || cleanTarget.includes("log")) {
-      if (sClean.includes("nhatky") || sClean.includes("tuongtac") || sClean.includes("log")) {
-        return s;
-      }
-    } else if (cleanTarget.includes("guest")) {
-      if (sClean.includes("guest")) {
-        return s;
+
+  // Đặc biệt: Phân biệt rõ "Học Viên Đã Học" với "Học Viên Đăng Ký"
+  if (cleanTarget.includes("dahoc") || cleanTarget.includes("alumni")) {
+    for (let i = 0; i < allSheets.length; i++) {
+      const sClean = allSheets[i].getName().toLowerCase().replace(/[^a-z0-9]/g, '');
+      if (sClean.includes("dahoc") || sClean.includes("alumni")) return allSheets[i];
+    }
+  } else if (cleanTarget.includes("yeucautimpic") || cleanTarget.includes("picrequest")) {
+    for (let i = 0; i < allSheets.length; i++) {
+      const sClean = allSheets[i].getName().toLowerCase().replace(/[^a-z0-9]/g, '');
+      if (sClean.includes("yeucautimpic") || sClean.includes("picrequest")) return allSheets[i];
+    }
+  } else {
+    for (let i = 0; i < allSheets.length; i++) {
+      const s = allSheets[i];
+      const sClean = s.getName().toLowerCase().replace(/[^a-z0-9]/g, '');
+      if (cleanTarget.includes("dangky") || cleanTarget.includes("leads") || cleanTarget.includes("coursereg")) {
+        if (sClean.includes("dangky") || sClean.includes("leads") || sClean.includes("coursereg")) {
+          return s;
+        }
+      } else if (cleanTarget.includes("nhatky") || cleanTarget.includes("tuongtac") || cleanTarget.includes("log")) {
+        if (sClean.includes("nhatky") || sClean.includes("tuongtac") || sClean.includes("log")) {
+          return s;
+        }
+      } else if (cleanTarget.includes("guest")) {
+        if (sClean.includes("guest")) {
+          return s;
+        }
       }
     }
   }
-
-  let sheet = ss.getSheetByName(sheetName);
-  if (sheet) return sheet;
 
   if (allSheets.length === 1 && (allSheets[0].getName().startsWith("Sheet") || allSheets[0].getName().startsWith("Trang tính"))) {
     allSheets[0].setName(sheetName);
@@ -1156,7 +1220,27 @@ function getOrCreateSheet(sheetName) {
   }
 
   sheet = ss.insertSheet(sheetName);
-  if (sheetName.includes("Học Viên") || sheetName === "Học Viên Đăng Ký") {
+  if (sheetName === "Học Viên Đã Học" || cleanTarget.includes("dahoc") || cleanTarget.includes("alumni")) {
+    sheet.appendRow([
+      "Họ và Tên", "Email", "Funny Nickname", "Mã VIP / Password",
+      "Số Lượt PIC Còn Lại", "Ngày Kích Hoạt", "Hạn Sử Dụng (90 Ngày)",
+      "Link VIP Trực Tiếp", "Lịch Sử Yêu Cầu PIC"
+    ]);
+    try {
+      sheet.getRange(1, 1, 1, 9).setFontWeight("bold").setBackground("#fef3c7");
+      sheet.setFrozenRows(1);
+    } catch (e) {}
+  } else if (sheetName === "Yêu Cầu Tìm PIC" || cleanTarget.includes("yeucautimpic") || cleanTarget.includes("picrequest")) {
+    sheet.appendRow([
+      "Thời Gian Gửi", "Email Học Viên", "Họ và Tên", "Funny Nickname",
+      "Công Ty Mục Tiêu", "Bộ Phận (HR / Marketing)", "Chức Danh & Mục Tiêu Tiếp Cận",
+      "Ghi Chú / Link Bổ Sung", "Trạng Thái Xử Lý"
+    ]);
+    try {
+      sheet.getRange(1, 1, 1, 9).setFontWeight("bold").setBackground("#dbeafe");
+      sheet.setFrozenRows(1);
+    } catch (e) {}
+  } else if (sheetName.includes("Học Viên") || sheetName === "Học Viên Đăng Ký") {
     sheet.appendRow([
       "UserID", "Thời gian đăng ký", "Họ và Tên", "Email", "Trạng Thái Xác Thực",
       "Điểm Tích Lũy", "Hoạt Động Cuối", "Email Daily Gần Nhất", "Thiết Bị", "Công Cụ Đăng Ký", "Kinh Nghiệm",
@@ -1171,6 +1255,327 @@ function getOrCreateSheet(sheetName) {
     sheet.appendRow(["Guest Key", "Guest ID", "Date Created"]);
   }
   return sheet;
+}
+
+// ------------------------------------------------------------------
+// 12. ALUMNI VIP & PIC REQUEST AUTOMATION ENGINE (HỌC VIÊN ĐÃ HỌC)
+// ------------------------------------------------------------------
+const BD_FUNNY_TITLES = [
+  "Săn Deal Khủng",
+  "Bách Phát Bách Trúng",
+  "Chốt Đơn Xuyên Màn Đêm",
+  "Chiến Thần Cold Call",
+  "Sát Thủ Doanh Số",
+  "Vua Hẹn Gặp",
+  "Đàm Phán Bất Bại",
+  "Cãi Sếp Giành Hoa Hồng",
+  "Chúa Tể Networking",
+  "Bóp Còi Chốt Deal",
+  "Thần Giao Kèo",
+  "Kẻ Hủy Diệt Từ Chối",
+  "Đào Mỏ Pitching",
+  "Trùm Chuyển Đổi",
+  "Thợ Săn Cá Mập",
+  "Thần Gió Pipeline",
+  "Tín Đồ Hợp Đồng",
+  "Bậc Thầy Upsell",
+  "Cá Mập Chốt Sales",
+  "Chuyên Gia Đòi Nợ Xong Deal",
+  "Bậc Thầy Nịnh Khách",
+  "Thánh Bào Ngân Sách",
+  "Trùm Đọc Vị Đối Tác",
+  "Thợ Rèn Cơ Hội",
+  "Chiến Hạm B2B",
+  "Bậc Thầy Follow Up",
+  "Chúa Tể Thuyết Phục",
+  "Vua Đóng Thầu",
+  "Phù Thủy Hợp Tác",
+  "Thợ Săn Doanh Nghiệp"
+];
+
+function generateFunnyNickname(fullName, email) {
+  if (!fullName) fullName = "Chiến Binh BD";
+  const parts = fullName.trim().split(/\s+/);
+  const firstName = parts[parts.length - 1]; // Lấy từ cuối cùng (Tên gọi)
+  
+  // Tính hash nhất quán từ email hoặc họ tên để nickname cố định
+  const seed = ((email || fullName) + "BD_VIP_SALT").toLowerCase();
+  let hash = 0;
+  for (let i = 0; i < seed.length; i++) {
+    hash = ((hash << 5) - hash) + seed.charCodeAt(i);
+    hash |= 0;
+  }
+  const index = Math.abs(hash) % BD_FUNNY_TITLES.length;
+  const title = BD_FUNNY_TITLES[index];
+  return firstName + " " + title;
+}
+
+function autoProcessAlumniSheet() {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  let sheet = ss.getSheetByName("Học Viên Đã Học");
+  if (!sheet) {
+    sheet = getOrCreateSheet("Học Viên Đã Học");
+  }
+  
+  const expectedHeaders = [
+    "Họ và Tên", "Email", "Funny Nickname", "Mã VIP / Password",
+    "Số Lượt PIC Còn Lại", "Ngày Kích Hoạt", "Hạn Sử Dụng (90 Ngày)",
+    "Link VIP Trực Tiếp", "Lịch Sử Yêu Cầu PIC"
+  ];
+  
+  const range = sheet.getDataRange();
+  const values = range.getValues();
+  
+  if (values.length === 0 || values[0].length < 2 || !values[0][0]) {
+    sheet.getRange(1, 1, 1, expectedHeaders.length).setValues([expectedHeaders]);
+    sheet.getRange(1, 1, 1, expectedHeaders.length).setFontWeight("bold").setBackground("#fef3c7");
+    SpreadsheetApp.flush();
+    return { success: true, message: "Đã khởi tạo bảng 'Học Viên Đã Học'. Bạn hãy dán Họ Tên (Cột A) và Email (Cột B)." };
+  }
+  
+  let processedCount = 0;
+  for (let r = 2; r <= values.length; r++) {
+    const updated = processSingleAlumniRow(sheet, r);
+    if (updated) processedCount++;
+  }
+  
+  SpreadsheetApp.flush();
+  return { success: true, message: "Đã tự động tạo Nickname và Mã VIP cho " + processedCount + " học viên cũ." };
+}
+
+function processSingleAlumniRow(sheet, rowNum) {
+  const rowVals = sheet.getRange(rowNum, 1, 1, 9).getValues()[0];
+  const fullName = rowVals[0] ? rowVals[0].toString().trim() : "";
+  const email = rowVals[1] ? rowVals[1].toString().trim().toLowerCase() : "";
+  
+  if (!fullName && !email) return false;
+  
+  let changed = false;
+  let nickname = rowVals[2] ? rowVals[2].toString().trim() : "";
+  let vipPass = rowVals[3] ? rowVals[3].toString().trim() : "";
+  let remaining = rowVals[4];
+  let activated = rowVals[5];
+  let expiry = rowVals[6];
+  let link = rowVals[7] ? rowVals[7].toString().trim() : "";
+  
+  // 1. Sinh Funny Nickname
+  if (!nickname) {
+    nickname = generateFunnyNickname(fullName, email);
+    sheet.getRange(rowNum, 3).setValue(nickname);
+    changed = true;
+  }
+  
+  // 2. VIP Password / Code (Mã VIP cá nhân)
+  if (!vipPass) {
+    let seedStr = (email || fullName).toLowerCase();
+    let numCode = 0;
+    for (let c = 0; c < seedStr.length; c++) {
+      numCode = ((numCode << 5) - numCode) + seedStr.charCodeAt(c);
+      numCode |= 0;
+    }
+    const shortCode = "BD-VIP-" + (Math.abs(numCode) % 9000 + 1000);
+    vipPass = shortCode;
+    sheet.getRange(rowNum, 4).setValue(vipPass);
+    changed = true;
+  }
+  
+  // 3. Số Lượt PIC Còn Lại (mặc định: 3)
+  if (remaining === "" || remaining === null || isNaN(parseInt(remaining, 10))) {
+    sheet.getRange(rowNum, 5).setValue(3);
+    changed = true;
+  }
+  
+  // 4. Ngày Kích Hoạt
+  const now = new Date();
+  if (!activated) {
+    sheet.getRange(rowNum, 6).setValue(Utilities.formatDate(now, "Asia/Ho_Chi_Minh", "dd/MM/yyyy"));
+    changed = true;
+  }
+  
+  // 5. Hạn Sử Dụng (90 ngày)
+  if (!expiry) {
+    const expDate = new Date(now.getTime() + 90 * 24 * 60 * 60 * 1000);
+    sheet.getRange(rowNum, 7).setValue(Utilities.formatDate(expDate, "Asia/Ho_Chi_Minh", "dd/MM/yyyy"));
+    changed = true;
+  }
+  
+  // 6. Link VIP 1-Click Trực Tiếp
+  if (!link && email) {
+    const magicUrl = "https://www.bdbinhdanhocvu.com/finder.html?email=" + encodeURIComponent(email) + "&vip_pass=BDTHUCCHIEN";
+    sheet.getRange(rowNum, 8).setValue(magicUrl);
+    changed = true;
+  }
+  
+  return changed;
+}
+
+function verifyAlumni(identifier, emailParam) {
+  try {
+    const cleanId = (identifier || "").toString().trim();
+    const cleanEmail = (emailParam || "").toString().trim().toLowerCase();
+    
+    const ss = SpreadsheetApp.getActiveSpreadsheet();
+    let sheet = ss.getSheetByName("Học Viên Đã Học");
+    
+    // Nếu sheet chưa có hoặc chưa có dữ liệu, hỗ trợ master pass BDTHUCCHIEN
+    if (!sheet) {
+      if (cleanId.toUpperCase() === "BDTHUCCHIEN") {
+        return createJsonResponse({
+          success: true,
+          isAlumni: true,
+          name: "Học Viên VIP",
+          nickname: cleanEmail ? generateFunnyNickname("Chiến Binh BD", cleanEmail) : "Tân Săn Deal Khủng",
+          email: cleanEmail,
+          remainingCredits: 3,
+          expiry: "3 Tháng",
+          vipCode: "BDTHUCCHIEN"
+        });
+      }
+      return createJsonResponse({ success: false, isAlumni: false, error: "Mật khẩu VIP không chính xác." });
+    }
+    
+    const data = sheet.getDataRange().getValues();
+    if (data.length <= 1) {
+      if (cleanId.toUpperCase() === "BDTHUCCHIEN") {
+        return createJsonResponse({
+          success: true,
+          isAlumni: true,
+          name: "Học Viên VIP",
+          nickname: cleanEmail ? generateFunnyNickname("Chiến Binh BD", cleanEmail) : "Tân Săn Deal Khủng",
+          email: cleanEmail,
+          remainingCredits: 3,
+          expiry: "3 Tháng",
+          vipCode: "BDTHUCCHIEN"
+        });
+      }
+      return createJsonResponse({ success: false, isAlumni: false, error: "Chưa có thông tin học viên." });
+    }
+    
+    // Quét tìm học viên theo Email, VIP Code, hoặc Master Pass
+    for (let r = 1; r < data.length; r++) {
+      const row = data[r];
+      const rName = row[0] ? row[0].toString().trim() : "";
+      const rEmail = row[1] ? row[1].toString().trim().toLowerCase() : "";
+      const rNick = row[2] ? row[2].toString().trim() : "";
+      const rPass = row[3] ? row[3].toString().trim() : "";
+      const rRem = !isNaN(parseInt(row[4], 10)) ? parseInt(row[4], 10) : 3;
+      const rExp = row[6] ? row[6].toString().trim() : "90 Ngày";
+      
+      const matchEmail = cleanEmail && rEmail === cleanEmail;
+      const matchPass = cleanId && (rPass.toUpperCase() === cleanId.toUpperCase() || cleanId.toUpperCase() === "BDTHUCCHIEN");
+      const matchIdAsEmail = cleanId.includes("@") && rEmail === cleanId.toLowerCase();
+      
+      if (matchEmail || (matchPass && (cleanEmail === "" || matchEmail)) || matchIdAsEmail) {
+        return createJsonResponse({
+          success: true,
+          isAlumni: true,
+          name: rName || "Học Viên VIP",
+          nickname: rNick || generateFunnyNickname(rName, rEmail),
+          email: rEmail,
+          remainingCredits: rRem,
+          expiry: rExp,
+          vipCode: rPass || "BDTHUCCHIEN"
+        });
+      }
+    }
+    
+    // Nếu nhập pass chung BDTHUCCHIEN nhưng email chưa nằm trong sheet
+    if (cleanId.toUpperCase() === "BDTHUCCHIEN") {
+      return createJsonResponse({
+        success: true,
+        isAlumni: true,
+        name: "Alumni VIP",
+        nickname: cleanEmail ? generateFunnyNickname("Chiến Binh BD", cleanEmail) : "Tân Săn Deal Khủng",
+        email: cleanEmail,
+        remainingCredits: 3,
+        expiry: "3 Tháng",
+        vipCode: "BDTHUCCHIEN"
+      });
+    }
+    
+    return createJsonResponse({ success: false, isAlumni: false, error: "Mật khẩu VIP hoặc Email không khớp với danh sách Alumni." });
+  } catch (err) {
+    return createJsonResponse({ success: false, error: err.message });
+  }
+}
+
+function handlePICRequest(postData) {
+  try {
+    const email = (postData.email || "").toString().trim().toLowerCase();
+    const name = (postData.name || "Học Viên VIP").toString().trim();
+    const nickname = (postData.nickname || "").toString().trim();
+    const targetCompany = (postData.targetCompany || postData.company || "").toString().trim();
+    const department = (postData.department || "Nhân Sự (HR)").toString().trim();
+    const targetRole = (postData.targetRole || postData.objective || "").toString().trim();
+    const notes = (postData.notes || "").toString().trim();
+    
+    if (!targetCompany || !targetRole) {
+      return createJsonResponse({ success: false, error: "Vui lòng điền Doanh nghiệp mục tiêu và Vị trí / Mục tiêu kết nối." });
+    }
+    
+    const ss = SpreadsheetApp.getActiveSpreadsheet();
+    
+    // 1. Kiểm tra và trừ lượt trong sheet "Học Viên Đã Học"
+    let sheetAlumni = ss.getSheetByName("Học Viên Đã Học");
+    let remaining = 3;
+    let foundRow = -1;
+    
+    if (sheetAlumni) {
+      const aData = sheetAlumni.getDataRange().getValues();
+      for (let r = 1; r < aData.length; r++) {
+        const row = aData[r];
+        const rEmail = row[1] ? row[1].toString().trim().toLowerCase() : "";
+        if (email && rEmail === email) {
+          foundRow = r + 1;
+          const currentRem = !isNaN(parseInt(row[4], 10)) ? parseInt(row[4], 10) : 3;
+          if (currentRem <= 0) {
+            return createJsonResponse({ success: false, error: "Bạn đã dùng hết 3/3 lượt tìm PIC đặc quyền. Vui lòng liên hệ trực tiếp Peter Võ nếu có nhu cầu phát sinh." });
+          }
+          remaining = currentRem - 1;
+          sheetAlumni.getRange(foundRow, 5).setValue(remaining);
+          
+          // Ghi thêm vào lịch sử
+          const currentHist = row[8] ? row[8].toString() : "";
+          const newHistEntry = "[" + Utilities.formatDate(new Date(), "Asia/Ho_Chi_Minh", "dd/MM") + "] " + targetCompany + " (" + department + ")";
+          sheetAlumni.getRange(foundRow, 9).setValue(currentHist ? currentHist + " | " + newHistEntry : newHistEntry);
+          break;
+        }
+      }
+    }
+    
+    // 2. Ghi nhận vào sheet "Yêu Cầu Tìm PIC"
+    let sheetRequests = getOrCreateSheet("Yêu Cầu Tìm PIC");
+    const nowStr = Utilities.formatDate(new Date(), "Asia/Ho_Chi_Minh", "yyyy-MM-dd HH:mm:ss");
+    sheetRequests.appendRow([
+      nowStr, email, name, nickname, targetCompany, department, targetRole, notes, "⏳ Đang Xử Lý"
+    ]);
+    
+    // 3. Gửi email thông báo cho Peter Võ (bdtraining@bdbinhdanhocvu.com)
+    sendEmailSafe({
+      to: "bdtraining@bdbinhdanhocvu.com",
+      name: "Cú BeeDee - Hệ Thống VIP",
+      subject: "🎯 [Yêu Cầu Tìm PIC] " + (nickname || name) + " cần tìm PIC tại " + targetCompany,
+      htmlBody: "<div style='font-family: Arial, sans-serif; font-size: 14px; line-height: 1.6;'>"
+        + "<h2 style='color: #a20a0a;'>Yêu Cầu Tìm PIC Mới Từ Alumni VIP</h2>"
+        + "<p><strong>Học viên:</strong> " + name + " (<em>" + nickname + "</em>)</p>"
+        + "<p><strong>Email:</strong> " + email + "</p>"
+        + "<p><strong>Doanh nghiệp mục tiêu:</strong> " + targetCompany + "</p>"
+        + "<p><strong>Bộ phận:</strong> " + department + "</p>"
+        + "<p><strong>Chức danh / Mục tiêu:</strong> " + targetRole + "</p>"
+        + "<p><strong>Ghi chú:</strong> " + (notes || "Không có") + "</p>"
+        + "<p><strong>Số lượt còn lại:</strong> " + remaining + " / 3 lượt</p>"
+        + "</div>"
+    });
+    
+    return createJsonResponse({
+      success: true,
+      remainingCredits: remaining,
+      message: "Yêu cầu đã được gửi tới Peter Võ thành công! Peter sẽ tìm kiếm qua mạng lưới LinkedIn và phản hồi cho bạn trong 24h - 48h."
+    });
+  } catch (err) {
+    Logger.log("handlePICRequest error: " + err.message);
+    return createJsonResponse({ success: false, error: err.message });
+  }
 }
 
 function deleteTriggerByName(functionName) {
