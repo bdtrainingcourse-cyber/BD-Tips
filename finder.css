@@ -1150,3 +1150,147 @@ body.dark-theme .results-table tbody tr:hover {
     }
 }
 
+/* =============================================================== */
+/* Community Invitation Card (Key Visual: Brand Red & Warm Gold)   */
+/* =============================================================== */
+.community-invite-card {
+    margin-top: 40px;
+    border-radius: 24px;
+    padding: 38px 28px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    
+    /* Light Theme (Default) */
+    background: linear-gradient(145deg, #ffffff 0%, #fffbf5 100%);
+    border: 2px solid rgba(162, 10, 10, 0.2);
+    box-shadow: 0 12px 36px rgba(162, 10, 10, 0.08), 0 2px 6px rgba(0, 0, 0, 0.04);
+}
+
+.community-invite-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 5px;
+    background: linear-gradient(90deg, #a20a0a 0%, #f3a83b 50%, #a20a0a 100%);
+}
+
+.community-invite-avatar-wrapper {
+    position: relative;
+    display: inline-block;
+    margin-bottom: 14px;
+}
+
+.community-invite-avatar {
+    width: 88px;
+    height: 88px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3.5px solid #f3a83b;
+    box-shadow: 0 6px 20px rgba(243, 168, 59, 0.35);
+    transition: transform 0.3s ease;
+}
+
+.community-invite-card:hover .community-invite-avatar {
+    transform: scale(1.05);
+}
+
+.community-invite-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-size: 0.82rem;
+    font-weight: 800;
+    letter-spacing: 0.6px;
+    text-transform: uppercase;
+    background: rgba(162, 10, 10, 0.08);
+    color: #a20a0a;
+    border: 1.5px solid rgba(162, 10, 10, 0.25);
+    margin-bottom: 12px;
+}
+
+.community-invite-title {
+    font-size: 1.6rem;
+    font-weight: 900;
+    color: #1e293b;
+    margin: 8px 0 12px 0;
+    line-height: 1.35;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+.community-invite-title .highlight-gold {
+    color: #b45309;
+}
+
+.community-invite-desc {
+    color: #475569;
+    font-size: 1.02rem;
+    max-width: 740px;
+    margin: 0 auto 26px auto;
+    line-height: 1.7;
+    font-weight: 500;
+}
+
+.community-invite-desc strong {
+    color: #a20a0a;
+    font-weight: 700;
+}
+
+.community-invite-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 15px 38px;
+    border-radius: 30px;
+    font-weight: 800;
+    font-size: 1.05rem;
+    background: linear-gradient(135deg, #a20a0a 0%, #7c0808 100%);
+    color: #ffffff !important;
+    text-decoration: none;
+    border: 1.5px solid #f3a83b;
+    box-shadow: 0 8px 24px rgba(162, 10, 10, 0.3);
+    transition: all 0.25s ease;
+}
+
+.community-invite-btn:hover {
+    transform: translateY(-2px);
+    background: linear-gradient(135deg, #b91c1c 0%, #991b1b 100%);
+    box-shadow: 0 12px 28px rgba(243, 168, 59, 0.4);
+}
+
+/* Dark Theme Adaptations */
+body.dark-theme .community-invite-card {
+    background: linear-gradient(145deg, rgba(26, 15, 15, 0.95), rgba(15, 10, 10, 0.95));
+    border-color: rgba(243, 168, 59, 0.35);
+    box-shadow: 0 14px 40px rgba(0, 0, 0, 0.45);
+}
+
+body.dark-theme .community-invite-badge {
+    background: rgba(243, 168, 59, 0.15);
+    color: #f3a83b;
+    border-color: rgba(243, 168, 59, 0.4);
+}
+
+body.dark-theme .community-invite-title {
+    color: #ffffff;
+}
+
+body.dark-theme .community-invite-title .highlight-gold {
+    color: #f3a83b;
+}
+
+body.dark-theme .community-invite-desc {
+    color: #e2e8f0;
+}
+
+body.dark-theme .community-invite-desc strong {
+    color: #f3a83b;
+}
+
+
