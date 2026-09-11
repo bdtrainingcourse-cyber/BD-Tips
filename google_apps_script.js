@@ -29,6 +29,8 @@ function onOpen() {
       .createMenu("🎓 Quản Lý Học Viên BD")
       .addItem("➕ Khởi Tạo Tab 'Học Viên Đã Học' & 'Yêu Cầu Tìm PIC'", "menuInitAlumniSheets")
       .addItem("⚡ Xử Lý Nickname & Mã VIP Tự Động Cho Toàn Bộ Học Viên", "menuAutoProcessAlumni")
+      .addSeparator()
+      .addItem("🧪 Gửi Thử Email Launching VIP (Đến vptanaia@gmail.com)", "menuTestSendVipLaunchingEmail")
       .addToUi();
   } catch (e) {
     Logger.log("onOpen error: " + e.message);
@@ -41,7 +43,7 @@ function menuInitAlumniSheets() {
   SpreadsheetApp.getUi().alert(
     "Khởi Tạo Bảng Thành Công!",
     "✅ Đã tạo/chuẩn hóa 2 tab trên Google Sheet:\n\n" +
-    "1. Tab 'Học Viên Đã Học': Chuẩn 9 cột định dạng đẹp mắt (Màu vàng). Bạn chỉ cần dán Họ Tên (Cột A) và Email (Cột B).\n" +
+    "1. Tab 'Học Viên Đã Học': Chuẩn 10 cột định dạng đẹp mắt (Màu vàng). Có sẵn cột 'User ID (Mã VIP)' và cột 'Trạng Thái Vào Web' để theo dõi ai đã click CTA.\n" +
     "2. Tab 'Yêu Cầu Tìm PIC': Chuẩn 9 cột tiếp nhận yêu cầu (Màu đỏ).\n\n" +
     "👉 Bạn có thể dán danh sách học viên cũ vào ngay bây giờ!",
     SpreadsheetApp.getUi().ButtonSet.OK
@@ -51,8 +53,8 @@ function menuInitAlumniSheets() {
 function initAlumniSheet() {
   const sheet = getOrCreateSheet("Học Viên Đã Học");
   const expectedHeaders = [
-    "Họ và Tên", "Email", "Funny Nickname", "Mã VIP / Password",
-    "Số Lượt PIC Còn Lại", "Ngày Kích Hoạt", "Hạn Sử Dụng (90 Ngày)",
+    "Họ và Tên", "Email", "Funny Nickname", "User ID (Mã VIP)",
+    "Số Lượt PIC Còn Lại", "Trạng Thái Vào Web", "Ngày Kích Hoạt", "Hạn Sử Dụng (90 Ngày)",
     "Link VIP Trực Tiếp", "Lịch Sử Yêu Cầu PIC"
   ];
   if (sheet.getLastRow() === 0) {
@@ -69,6 +71,15 @@ function initAlumniSheet() {
     sheet.autoResizeColumns(1, expectedHeaders.length);
   } catch (e) {}
   return sheet;
+}
+
+function menuTestSendVipLaunchingEmail() {
+  const res = sendVipLaunchingEmail("vptanaia@gmail.com");
+  if (res.success) {
+    SpreadsheetApp.getUi().alert("Thành Công!", "Đã gửi thử email Launching VIP kèm hình ảnh 9 Vũ Khí B2B tới hộp thư vptanaia@gmail.com. Hãy kiểm tra hộp thư nhé!", SpreadsheetApp.getUi().ButtonSet.OK);
+  } else {
+    SpreadsheetApp.getUi().alert("Thông Báo", res.error || "Không thể gửi email. Vui lòng kiểm tra lại.", SpreadsheetApp.getUi().ButtonSet.OK);
+  }
 }
 
 function initPicRequestsSheet() {
@@ -1404,7 +1415,7 @@ function autoProcessAlumniSheet() {
 }
 
 function processSingleAlumniRow(sheet, rowNum) {
-  const rowVals = sheet.getRange(rowNum, 1, 1, 9).getValues()[0];
+  const rowVals = sheet.getRange(rowNum, 1, 1, 10).getValues()[0];
   const fullName = rowVals[0] ? rowVals[0].toString().trim() : "";
   const email = rowVals[1] ? rowVals[1].toString().trim().toLowerCase() : "";
   
@@ -1414,9 +1425,10 @@ function processSingleAlumniRow(sheet, rowNum) {
   let nickname = rowVals[2] ? rowVals[2].toString().trim() : "";
   let vipPass = rowVals[3] ? rowVals[3].toString().trim() : "";
   let remaining = rowVals[4];
-  let activated = rowVals[5];
-  let expiry = rowVals[6];
-  let link = rowVals[7] ? rowVals[7].toString().trim() : "";
+  let webStatus = rowVals[5] ? rowVals[5].toString().trim() : "";
+  let activated = rowVals[6];
+  let expiry = rowVals[7];
+  let link = rowVals[8] ? rowVals[8].toString().trim() : "";
   
   // 1. Sinh Funny Nickname
   if (!nickname) {
@@ -1444,25 +1456,31 @@ function processSingleAlumniRow(sheet, rowNum) {
     sheet.getRange(rowNum, 5).setValue(3);
     changed = true;
   }
+
+  // 4. Trạng Thái Vào Web (mặc định: ⏳ Chưa mở link)
+  if (!webStatus) {
+    sheet.getRange(rowNum, 6).setValue("⏳ Chưa mở link");
+    changed = true;
+  }
   
-  // 4. Ngày Kích Hoạt
+  // 5. Ngày Kích Hoạt
   const now = new Date();
   if (!activated) {
-    sheet.getRange(rowNum, 6).setValue(Utilities.formatDate(now, "Asia/Ho_Chi_Minh", "dd/MM/yyyy"));
+    sheet.getRange(rowNum, 7).setValue(Utilities.formatDate(now, "Asia/Ho_Chi_Minh", "dd/MM/yyyy"));
     changed = true;
   }
   
-  // 5. Hạn Sử Dụng (90 ngày)
+  // 6. Hạn Sử Dụng (90 ngày)
   if (!expiry) {
     const expDate = new Date(now.getTime() + 90 * 24 * 60 * 60 * 1000);
-    sheet.getRange(rowNum, 7).setValue(Utilities.formatDate(expDate, "Asia/Ho_Chi_Minh", "dd/MM/yyyy"));
+    sheet.getRange(rowNum, 8).setValue(Utilities.formatDate(expDate, "Asia/Ho_Chi_Minh", "dd/MM/yyyy"));
     changed = true;
   }
   
-  // 6. Link VIP 1-Click Trực Tiếp kèm Mật Khẩu Riêng
+  // 7. Link VIP 1-Click Trực Tiếp kèm Mật Khẩu Riêng
   if (!link && email) {
     const magicUrl = "https://www.bdbinhdanhocvu.com/finder.html?email=" + encodeURIComponent(email) + "&vip_pass=" + encodeURIComponent(vipPass || "BDTHUCCHIEN");
-    sheet.getRange(rowNum, 8).setValue(magicUrl);
+    sheet.getRange(rowNum, 9).setValue(magicUrl);
     changed = true;
   }
   
@@ -1480,9 +1498,11 @@ function verifyAlumni(identifier, emailParam) {
     // Nếu sheet chưa có hoặc chưa có dữ liệu, hỗ trợ master pass BDTHUCCHIEN
     if (!sheet) {
       if (cleanId.toUpperCase() === "BDTHUCCHIEN") {
+        const fallbackUid = cleanEmail ? ("UID_" + cleanEmail.split('@')[0].toUpperCase().replace(/[^A-Z0-9]/g, '')) : "UID_VIP";
         return createJsonResponse({
           success: true,
           isAlumni: true,
+          userId: fallbackUid,
           name: "Học Viên VIP",
           nickname: cleanEmail ? generateFunnyNickname("Chiến Binh BD", cleanEmail) : "Tân Săn Deal Khủng",
           email: cleanEmail,
@@ -1497,9 +1517,11 @@ function verifyAlumni(identifier, emailParam) {
     const data = sheet.getDataRange().getValues();
     if (data.length <= 1) {
       if (cleanId.toUpperCase() === "BDTHUCCHIEN") {
+        const fallbackUid = cleanEmail ? ("UID_" + cleanEmail.split('@')[0].toUpperCase().replace(/[^A-Z0-9]/g, '')) : "UID_VIP";
         return createJsonResponse({
           success: true,
           isAlumni: true,
+          userId: fallbackUid,
           name: "Học Viên VIP",
           nickname: cleanEmail ? generateFunnyNickname("Chiến Binh BD", cleanEmail) : "Tân Săn Deal Khủng",
           email: cleanEmail,
@@ -1519,7 +1541,7 @@ function verifyAlumni(identifier, emailParam) {
       const rNick = row[2] ? row[2].toString().trim() : "";
       const rPass = row[3] ? row[3].toString().trim() : "";
       const rRem = !isNaN(parseInt(row[4], 10)) ? parseInt(row[4], 10) : 3;
-      const rExp = row[6] ? row[6].toString().trim() : "90 Ngày";
+      const rExp = row[7] ? row[7].toString().trim() : "90 Ngày";
       
       const matchEmail = cleanEmail && rEmail === cleanEmail;
       const matchPass = cleanId && (rPass.toUpperCase() === cleanId.toUpperCase() || cleanId.toUpperCase() === "BDTHUCCHIEN");
@@ -1527,6 +1549,56 @@ function verifyAlumni(identifier, emailParam) {
       
       if (matchEmail || (matchPass && (cleanEmail === "" || matchEmail)) || matchIdAsEmail) {
         const uid = rPass || (rEmail ? ("UID_" + rEmail.split('@')[0].toUpperCase().replace(/[^A-Z0-9]/g, '')) : "UID_VIP");
+        const nowTimeStr = Utilities.formatDate(new Date(), "Asia/Ho_Chi_Minh", "dd/MM HH:mm");
+
+        // 1. Cập nhật Trạng Thái Vào Web trong sheet Học Viên Đã Học
+        try {
+          sheet.getRange(r + 1, 6).setValue("✅ Đã vào web [" + nowTimeStr + "]");
+        } catch (e) {}
+
+        // 2. Tự động đồng bộ tài khoản sang sheet Học Viên Đăng Ký (nếu chưa có)
+        try {
+          const sheetMain = getOrCreateSheet("Học Viên Đăng Ký");
+          const mData = sheetMain.getDataRange().getValues();
+          const mIdx = getHeaderIndices(mData[0]);
+          const userRow = findUserRowIndex(mData, rEmail, mIdx.email);
+          if (userRow === -1) {
+            sheetMain.appendRow([
+              uid,                                                                          // Col A: User ID
+              Utilities.formatDate(new Date(), "Asia/Ho_Chi_Minh", "yyyy-MM-dd HH:mm:ss"), // Col B: Thời gian đăng ký
+              rName || "Học Viên VIP",                                                     // Col C: Họ Tên
+              rEmail,                                                                       // Col D: Email
+              "Đã xác thực",                                                                // Col E: Trạng thái xác thực
+              50,                                                                           // Col F: Điểm tích lũy khởi đầu (+50đ)
+              nowTimeStr,                                                                   // Col G: Hoạt động cuối
+              "",                                                                           // Col H: Email daily gần nhất
+              "Desktop",                                                                    // Col I: Thiết bị
+              "VIP-Alumni-Lounge"                                                           // Col J: Công cụ đăng ký
+            ]);
+          } else {
+            if (mIdx.lastActivity !== -1) {
+              sheetMain.getRange(userRow + 1, mIdx.lastActivity + 1).setValue(nowTimeStr);
+            }
+          }
+        } catch (syncErr) {
+          Logger.log("Auto-sync VIP to main users error: " + syncErr.message);
+        }
+
+        // 3. Ghi nhận nhật ký tương tác
+        try {
+          const logSheet = getOrCreateSheet("Nhật Ký Tương Tác");
+          logSheet.appendRow([
+            Utilities.formatDate(new Date(), "Asia/Ho_Chi_Minh", "yyyy-MM-dd HH:mm:ss"),
+            rEmail,
+            "VIP Launching",
+            "vip_magic_link_accessed",
+            "Click CTA Email Launching",
+            "Đã kích hoạt VIP Lounge",
+            "Desktop",
+            uid
+          ]);
+        } catch (logErr) {}
+
         return createJsonResponse({
           success: true,
           isAlumni: true,
@@ -1560,6 +1632,97 @@ function verifyAlumni(identifier, emailParam) {
     return createJsonResponse({ success: false, isAlumni: false, error: "Mật khẩu VIP hoặc Email không khớp với danh sách Alumni." });
   } catch (err) {
     return createJsonResponse({ success: false, error: err.message });
+  }
+}
+
+function getHeaderIndices(headers) {
+  const indices = { email: -1, lastActivity: -1 };
+  if (!headers || !Array.isArray(headers)) return indices;
+  for (let i = 0; i < headers.length; i++) {
+    const h = headers[i].toString().toLowerCase();
+    if (h.includes("email")) indices.email = i;
+    if (h.includes("hoạt động cuối") || h.includes("hoat dong cuoi") || h.includes("last")) indices.lastActivity = i;
+  }
+  return indices;
+}
+
+function findUserRowIndex(data, email, emailColIndex) {
+  if (emailColIndex === -1 || !email) return -1;
+  for (let i = 1; i < data.length; i++) {
+    const rowEmail = data[i][emailColIndex] ? data[i][emailColIndex].toString().trim().toLowerCase() : "";
+    if (rowEmail === email) return i;
+  }
+  return -1;
+}
+
+// Hàm gửi Email Launching đính kèm hình ảnh Hệ Sinh Thái 9 Vũ Khí B2B
+function sendVipLaunchingEmail(targetEmail) {
+  try {
+    const ss = SpreadsheetApp.getActiveSpreadsheet();
+    const sheet = ss.getSheetByName("Học Viên Đã Học");
+    if (!sheet) return { success: false, error: "Chưa có sheet 'Học Viên Đã Học'." };
+
+    const data = sheet.getDataRange().getValues();
+    const cleanTarget = (targetEmail || "").toString().trim().toLowerCase();
+
+    for (let r = 1; r < data.length; r++) {
+      const row = data[r];
+      const name = row[0] ? row[0].toString().trim() : "Bạn";
+      const email = row[1] ? row[1].toString().trim().toLowerCase() : "";
+      const nickname = row[2] ? row[2].toString().trim() : "Chiến Binh BD";
+      const vipCode = row[3] ? row[3].toString().trim() : "BDTHUCCHIEN";
+      const magicLink = row[8] ? row[8].toString().trim() : ("https://www.bdbinhdanhocvu.com/finder.html?email=" + encodeURIComponent(email) + "&vip_pass=" + encodeURIComponent(vipCode));
+
+      if (email === cleanTarget || cleanTarget === "all") {
+        const subject = "🎉 [Đặc Quyền Alumni VIP] Ra Mắt Hệ Sinh Thái 9 Vũ Khí B2B & 3 Lượt Tìm PIC";
+        const messageHtml = [
+          "<p>Chào <strong>" + name + "</strong> (<em>" + nickname + "</em>),</p>",
+          "<p>Cảm ơn bạn vì đã luôn là một phần thân thiết trong cộng đồng <strong>BD Bình Dân Học Vụ</strong>. Peter rất trân quý tinh thần thực chiến và sự đồng hành của bạn trong suốt thời gian qua.</p>",
+          "<p>Hôm nay, Peter chính thức ra mắt <strong>Hệ Sinh Thái 9 Vũ Khí B2B Toàn Diện</strong> — trạm tiếp sức chiến đấu được thiết kế để bạn không còn phải \"đơn độc\" trên hành trình săn deal và xây dựng quan hệ B2B:</p>",
+          "<div style=\"text-align: center; margin: 24px 0;\">",
+          "  <a href=\"" + magicLink + "\" target=\"_blank\">",
+          "    <img src=\"https://www.bdbinhdanhocvu.com/b2b_ecosystem_9_weapons.png\" alt=\"Vũ Trụ 9 Vũ Khí B2B Bình Dân Học Vụ\" style=\"width: 100%; max-width: 540px; border-radius: 12px; border: 1px solid #e2e8f0; box-shadow: 0 4px 18px rgba(0,0,0,0.08); display: block; margin: 0 auto;\">",
+          "  </a>",
+          "</div>",
+          "<div style=\"background: #fef3c7; border-left: 4px solid #f59e0b; padding: 14px 18px; border-radius: 8px; margin: 20px 0; text-align: left;\">",
+          "  <strong style=\"color: #92400e; font-size: 15px; display: block; margin-bottom: 6px;\">👑 3 ĐẶC QUYỀN ALUMNI VIP DÀNH RIÊNG CHO BẠN:</strong>",
+          "  <ul style=\"margin: 0; padding-left: 18px; color: #78350f; font-size: 13.5px; line-height: 1.6;\">",
+          "    <li>🎯 <strong>3 Lượt Tìm PIC Đặc Quyền:</strong> Peter Võ trực tiếp kết nối Person-in-Charge khối HR &amp; Marketing qua 30.000+ kết nối LinkedIn (Hạn 90 ngày).</li>",
+          "    <li>🎟️ <strong>3 Vé Mời VIP Đồng Đội (Giver Mentality):</strong> Tặng bạn bè đồng nghiệp nhận +50 BD-Points và tải Ebook thực chiến đầu tiên. Bạn nhận +50đ/bạn và tự động mở khóa các Mốc Quà (<em>Slide Pitching</em>, <em>Ly Trà Sữa Size L</em>, <em>30 Phút Online 1-1 cùng Peter Võ</em>).</li>",
+          "    <li>⚡ <strong>Mở Khóa Trọn Đời 9 Công Cụ &amp; Thư Viện Ebook:</strong> Trọn quyền sử dụng toàn bộ tính năng hỗ trợ nghề BD.</li>",
+          "  </ul>",
+          "</div>",
+          "<div style=\"background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 12px 16px; font-size: 13px; color: #475569; margin-bottom: 22px; text-align: left;\">",
+          "  <strong>Thông Tin Mở Khóa Tài Khoản:</strong><br>",
+          "  • Email học viên: <code>" + email + "</code><br>",
+          "  • User ID / Mã VIP riêng: <strong style=\"color: #b45309;\">" + vipCode + "</strong><br>",
+          "  • Đăng nhập tự động: Chỉ cần bấm nút bên dưới, hệ thống sẽ tự động đăng nhập không cần gõ pass.",
+          "</div>"
+        ].join("\n");
+
+        const fullHtml = getHtmlEmailTemplate(
+          messageHtml,
+          "🚀 MỞ KHÓA ĐẶC QUYỀN VIP CỦA BẠN NGAY &rarr;",
+          magicLink,
+          "https://www.bdbinhdanhocvu.com/mascot_quests.jpg",
+          name
+        );
+
+        sendEmailSafe({
+          to: email,
+          name: "Peter Võ - BD Bình Dân Học Vụ",
+          subject: subject,
+          htmlBody: fullHtml
+        });
+
+        if (cleanTarget !== "all") {
+          return { success: true, message: "Đã gửi email tới: " + email };
+        }
+      }
+    }
+    return { success: true, message: "Hoàn tất xử lý gửi email." };
+  } catch (e) {
+    return { success: false, error: e.message };
   }
 }
 
