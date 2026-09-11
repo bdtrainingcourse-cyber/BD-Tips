@@ -27,11 +27,71 @@ function onOpen() {
   try {
     SpreadsheetApp.getUi()
       .createMenu("🎓 Quản Lý Học Viên BD")
-      .addItem("⚡ Khởi Tạo / Cập Nhật Nickname & Mã VIP Tự Động", "menuAutoProcessAlumni")
+      .addItem("➕ Khởi Tạo Tab 'Học Viên Đã Học' & 'Yêu Cầu Tìm PIC'", "menuInitAlumniSheets")
+      .addItem("⚡ Xử Lý Nickname & Mã VIP Tự Động Cho Toàn Bộ Học Viên", "menuAutoProcessAlumni")
       .addToUi();
   } catch (e) {
     Logger.log("onOpen error: " + e.message);
   }
+}
+
+function menuInitAlumniSheets() {
+  initAlumniSheet();
+  initPicRequestsSheet();
+  SpreadsheetApp.getUi().alert(
+    "Khởi Tạo Bảng Thành Công!",
+    "✅ Đã tạo/chuẩn hóa 2 tab trên Google Sheet:\n\n" +
+    "1. Tab 'Học Viên Đã Học': Chuẩn 9 cột định dạng đẹp mắt (Màu vàng). Bạn chỉ cần dán Họ Tên (Cột A) và Email (Cột B).\n" +
+    "2. Tab 'Yêu Cầu Tìm PIC': Chuẩn 9 cột tiếp nhận yêu cầu (Màu đỏ).\n\n" +
+    "👉 Bạn có thể dán danh sách học viên cũ vào ngay bây giờ!",
+    SpreadsheetApp.getUi().ButtonSet.OK
+  );
+}
+
+function initAlumniSheet() {
+  const sheet = getOrCreateSheet("Học Viên Đã Học");
+  const expectedHeaders = [
+    "Họ và Tên", "Email", "Funny Nickname", "Mã VIP / Password",
+    "Số Lượt PIC Còn Lại", "Ngày Kích Hoạt", "Hạn Sử Dụng (90 Ngày)",
+    "Link VIP Trực Tiếp", "Lịch Sử Yêu Cầu PIC"
+  ];
+  if (sheet.getLastRow() === 0) {
+    sheet.appendRow(expectedHeaders);
+  } else {
+    sheet.getRange(1, 1, 1, expectedHeaders.length).setValues([expectedHeaders]);
+  }
+  try {
+    sheet.getRange(1, 1, 1, expectedHeaders.length)
+      .setFontWeight("bold")
+      .setBackground("#fef3c7")
+      .setFontColor("#92400e");
+    sheet.setFrozenRows(1);
+    sheet.autoResizeColumns(1, expectedHeaders.length);
+  } catch (e) {}
+  return sheet;
+}
+
+function initPicRequestsSheet() {
+  const sheet = getOrCreateSheet("Yêu Cầu Tìm PIC");
+  const picHeaders = [
+    "Thời Gian", "Email Học Viên", "Họ Tên", "Nickname",
+    "Doanh Nghiệp Mục Tiêu", "Bộ Phận Tiếp Cận", "Mục Tiêu / Vai Trò",
+    "Ghi Chú", "Trạng Thái Xử Lý"
+  ];
+  if (sheet.getLastRow() === 0) {
+    sheet.appendRow(picHeaders);
+  } else {
+    sheet.getRange(1, 1, 1, picHeaders.length).setValues([picHeaders]);
+  }
+  try {
+    sheet.getRange(1, 1, 1, picHeaders.length)
+      .setFontWeight("bold")
+      .setBackground("#fee2e2")
+      .setFontColor("#991b1b");
+    sheet.setFrozenRows(1);
+    sheet.autoResizeColumns(1, picHeaders.length);
+  } catch (e) {}
+  return sheet;
 }
 
 function menuAutoProcessAlumni() {
