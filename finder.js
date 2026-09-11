@@ -1013,7 +1013,7 @@ document.addEventListener('DOMContentLoaded', () => {
             parseInt(localStorage.getItem(refKeyEmail) || '0', 10)
         );
         if (refCountDisplay) refCountDisplay.textContent = refCount;
-        if (refTicketsLeft) refTicketsLeft.textContent = Math.max(0, 3 - refCount);
+        if (refTicketsLeft) refTicketsLeft.textContent = refCount;
 
         const history = JSON.parse(localStorage.getItem(`vip_history_${session.email || 'default'}`) || '[]');
         renderVipHistory(history);
@@ -1042,7 +1042,7 @@ document.addEventListener('DOMContentLoaded', () => {
         btnCopyRefMsg.addEventListener('click', () => {
             const refLinkInput = document.getElementById('vip-referral-link-input');
             const link = refLinkInput ? refLinkInput.value : 'https://www.bdbinhdanhocvu.com';
-            const sampleMsg = `Chào bạn, mình vừa nhận được 03 Vé Mời VIP độc quyền từ BD Bình Dân Học Vụ dành cho anh em làm B2B BD thực chiến. Mình gửi tặng bạn 1 suất: khi đăng ký qua link này bạn sẽ được nhận ngay 50 BD-Points và tải miễn phí Ebook thực chiến đầu tiên: ${link}`;
+            const sampleMsg = `Chào bạn, mình vừa nhận được Vé Mời VIP độc quyền từ BD Bình Dân Học Vụ dành cho anh em làm B2B BD thực chiến. Mình gửi tặng bạn 1 suất: khi đăng ký qua link này bạn sẽ được nhận ngay 50 BD-Points và tải miễn phí Ebook thực chiến đầu tiên: ${link}`;
             navigator.clipboard.writeText(sampleMsg).then(() => {
                 alert('Đã sao chép lời mời mẫu! Bạn có thể dán gửi Zalo/LinkedIn ngay cho đồng nghiệp.');
             }).catch(() => {

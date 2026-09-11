@@ -7850,6 +7850,19 @@ function checkPvPChallenge() {
                 const curCount = parseInt(localStorage.getItem(refCountKey) || '0', 10);
                 localStorage.setItem(refCountKey, (curCount + 1).toString());
 
+                // Send tracking beacon to /api/track-behavior
+                const visitorEmail = localStorage.getItem('user_email') || localStorage.getItem('streak_email') || ('guest_ref_' + Date.now() + '@bdbinhdanhocvu.com');
+                fetch('/api/track-behavior', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        email: visitorEmail,
+                        action: 'vip_referral_accepted',
+                        category: 'referral',
+                        detail: `Nhận vé mời VIP từ: ${cleanRef} (+50 BD-Points)`
+                    })
+                }).catch(() => {});
+
                 // Show Point Toast
                 setTimeout(() => {
                     if (window.showPointToast) {
