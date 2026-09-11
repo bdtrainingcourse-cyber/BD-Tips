@@ -75,16 +75,17 @@
             <div class="streak-reward-card glass-panel" id="quests-section" style="padding: 28px; border-radius: 16px; border: 1px solid var(--primary); background: rgba(243, 168, 59, 0.02); box-shadow: 0 15px 35px rgba(0, 0, 0, 0.25);">
                 <div class="streak-tabs-header" style="margin-bottom: 25px; display: flex; gap: 10px; flex-wrap: wrap;">
                     <button class="streak-tab-link active" id="tab-streak-btn" style="font-size: 1.05rem; padding: 12px 24px;">🎯 NHIỆM VỤ & CHIẾN DỊCH</button>
-                    <button class="streak-tab-link" id="tab-vip-btn" style="font-size: 1.05rem; padding: 12px 24px; border: 1.5px solid rgba(243, 168, 59, 0.45); color: #f3a83b; background: rgba(243, 168, 59, 0.08); font-weight: 800;">⭐ ĐẶC QUYỀN ALUMNI VIP</button>
+                    <!-- VIP Tab: Chỉ hiển thị cho Alumni VIP, ẩn hoàn toàn với user thường -->
+                    <button class="streak-tab-link" id="tab-vip-btn" style="display: none; font-size: 1.05rem; padding: 12px 24px; border: 1.5px solid rgba(243, 168, 59, 0.45); color: #f3a83b; background: rgba(243, 168, 59, 0.08); font-weight: 800;">⭐ ĐẶC QUYỀN ALUMNI VIP</button>
                     <button class="streak-tab-link" id="tab-rewards-btn" style="font-size: 1.05rem; padding: 12px 24px;">🎁 CỬA HÀNG ĐỔI QUÀ</button>
                 </div>
 
             <!-- Tab Content: Streak form -->
             <div id="tab-content-streak">
                 <!-- =============================================================== -->
-                <!-- KHU VỰC RIÊNG CHO USER VIP (ALUMNI VIP LOUNGE & QUESTS)          -->
+                <!-- KHU VỰC RIÊNG CHO USER VIP (ẨN HOÀN TOÀN VỚI USER THƯỜNG)       -->
                 <!-- =============================================================== -->
-                <div class="vip-quests-lounge-card" id="vip-quests-lounge-card" style="margin-bottom: 25px; border-radius: 18px; padding: 22px 24px; border: 2px solid rgba(243, 168, 59, 0.4); background: linear-gradient(135deg, rgba(162, 10, 10, 0.07) 0%, rgba(243, 168, 59, 0.06) 100%); box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12); position: relative; overflow: hidden;">
+                <div class="vip-quests-lounge-card" id="vip-quests-lounge-card" style="display: none; margin-bottom: 25px; border-radius: 18px; padding: 22px 24px; border: 2px solid rgba(243, 168, 59, 0.4); background: linear-gradient(135deg, rgba(162, 10, 10, 0.07) 0%, rgba(243, 168, 59, 0.06) 100%); box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12); position: relative; overflow: hidden;">
                     <div style="position: absolute; top: 0; left: 0; right: 0; height: 4px; background: linear-gradient(90deg, #a20a0a, #f3a83b, #a20a0a);"></div>
 
                     <!-- Header with Mascot -->
@@ -104,14 +105,14 @@
                             </div>
                         </div>
                         <div id="vip-quests-hud-status">
-                            <span style="font-size: 0.8rem; padding: 5px 12px; border-radius: 14px; background: rgba(243, 168, 59, 0.12); color: #f3a83b; font-weight: 700; border: 1px solid rgba(243, 168, 59, 0.3);">
-                                🔒 Phiên VIP Khách
+                            <span style="font-size: 0.82rem; padding: 5px 12px; border-radius: 14px; background: rgba(16, 185, 129, 0.15); color: #34d399; font-weight: 800; border: 1px solid rgba(16, 185, 129, 0.35);">
+                                ⭐ VIP ĐÃ KÍCH HOẠT
                             </span>
                         </div>
                     </div>
 
-                    <!-- VIP State A: Active Session Details & Action Center -->
-                    <div id="vip-quests-active-box" style="display: none; background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(243, 168, 59, 0.25); border-radius: 12px; padding: 16px; margin-bottom: 16px;">
+                    <!-- VIP Active Session Details & Action Center -->
+                    <div id="vip-quests-active-box" style="background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(243, 168, 59, 0.25); border-radius: 12px; padding: 16px; margin-bottom: 16px;">
                         <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
                             <div>
                                 <div style="font-size: 0.78rem; color: #f3a83b; font-weight: 800; letter-spacing: 0.5px;">🎖️ ĐÃ XÁC THỰC ALUMNI VIP</div>
@@ -133,28 +134,24 @@
                         </div>
                     </div>
 
-                    <!-- VIP State B: Locked Passcode Form (When not unlocked) -->
-                    <div id="vip-quests-lock-box" style="background: rgba(243, 168, 59, 0.04); border: 1.5px dashed rgba(243, 168, 59, 0.35); border-radius: 12px; padding: 16px; margin-bottom: 16px;">
-                        <div style="display: flex; align-items: center; justify-content: space-between; gap: 14px; flex-wrap: wrap;">
+                    <!-- VIP Vé Mời Đồng Đội Box -->
+                    <div style="background: rgba(243, 168, 59, 0.06); border: 1px dashed rgba(243, 168, 59, 0.35); border-radius: 12px; padding: 14px 18px; margin-bottom: 16px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap;">
                             <div style="flex: 1; min-width: 240px;">
-                                <div style="font-size: 0.85rem; font-weight: 800; color: #f3a83b; display: flex; align-items: center; gap: 6px;">
-                                    🔒 BẠN LÀ HỌC VIÊN CŨ CỦA KHÓA BD THỰC CHIẾN?
-                                </div>
-                                <p style="margin: 4px 0 0 0; font-size: 0.78rem; color: var(--text-light); line-height: 1.45;">
-                                    Nhập Mật khẩu VIP riêng biệt (gửi qua email của bạn, VD: <strong style="color: var(--text-main);">BD-xxxx</strong>) để tự động kích hoạt 3 lượt tìm PIC và x2 điểm thưởng:
+                                <div style="font-size: 0.84rem; font-weight: 800; color: #f3a83b;">🎟️ Vé Mời VIP Đồng Đội (3 Suất Độc Quyền)</div>
+                                <p style="margin: 2px 0 0 0; font-size: 0.76rem; color: var(--text-light); line-height: 1.4;">
+                                    Tặng vé cho đồng nghiệp: người nhận được tặng ngay <strong>50 Points</strong> + tải Ebook B2B đầu tiên!
                                 </p>
                             </div>
-                            <div style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center;">
-                                <input type="text" id="quests-vip-pass-input" placeholder="Mã VIP (BD-xxxx)..." style="width: 150px; padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border-color); background: rgba(255,255,255,0.03); color: var(--text-main); font-family: inherit; font-size: 0.85rem; font-weight: 700;">
-                                <button id="btn-unlock-vip-quests" class="btn btn-primary" style="padding: 8px 16px; font-size: 0.82rem; font-weight: 800; border-radius: 8px; background: linear-gradient(135deg, #a20a0a, #7c0808); border: 1px solid #f3a83b; color: #fff; cursor: pointer;">
-                                    Mở Khóa
+                            <div style="display: flex; gap: 8px;">
+                                <button type="button" id="btn-copy-ref-quests" class="btn btn-primary" style="padding: 6px 14px; font-size: 0.78rem; font-weight: 800; border-radius: 6px; background: linear-gradient(135deg, #f3a83b, #d97706); color: #1e293b; border: none; cursor: pointer;">
+                                    📋 Copy Link Tặng Quà
                                 </button>
-                                <button type="button" id="btn-demo-vip-quests" class="btn" style="padding: 8px 12px; font-size: 0.78rem; border-radius: 8px; border: 1px solid rgba(243, 168, 59, 0.4); background: rgba(243,168,59,0.08); color: #f3a83b; font-weight: 700; cursor: pointer;">
-                                    Pass Demo: BDTHUCCHIEN
-                                </button>
+                                <a href="finder.html" class="btn" style="padding: 6px 12px; font-size: 0.78rem; font-weight: 700; border-radius: 6px; border: 1px solid rgba(243, 168, 59, 0.3); color: #f3a83b; text-decoration: none; background: rgba(255,255,255,0.03);">
+                                    Xem 3 Mốc Thưởng &rarr;
+                                </a>
                             </div>
                         </div>
-                        <div id="vip-quests-unlock-msg" style="display: none; margin-top: 10px; font-size: 0.8rem; font-weight: 600;"></div>
                     </div>
 
                     <!-- VIP Special Missions Grid -->
@@ -388,6 +385,36 @@
                         </div>
                     </div>
 
+                    <!-- VIP Referral Loop Card inside Tab Content -->
+                    <div style="background: linear-gradient(135deg, rgba(243, 168, 59, 0.1) 0%, rgba(162, 10, 10, 0.08) 100%); border: 2px solid rgba(243, 168, 59, 0.35); border-radius: 14px; padding: 20px; margin-bottom: 22px;">
+                        <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; margin-bottom: 12px;">
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                <span style="font-size: 1.8rem;">🎟️</span>
+                                <div>
+                                    <h4 style="margin: 0; font-size: 1.1rem; font-weight: 800; color: #ffffff;">Vé Mời VIP Đồng Đội (Giver Mentality)</h4>
+                                    <p style="margin: 2px 0 0 0; font-size: 0.8rem; color: #cbd5e1;">Tặng 3 vé VIP cho đồng nghiệp: bạn nhận thưởng theo mốc, người nhận được ngay +50 Points &amp; Ebook thực chiến!</p>
+                                </div>
+                            </div>
+                            <a href="finder.html" class="btn btn-primary" style="padding: 8px 16px; font-size: 0.82rem; font-weight: 800; border-radius: 8px; text-decoration: none; background: linear-gradient(135deg, #f3a83b, #d97706); color: #1e293b;">
+                                📋 Lấy Link &amp; Quản Lý Vé &rarr;
+                            </a>
+                        </div>
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 10px;">
+                            <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(251,191,36,0.3); border-radius: 10px; padding: 12px;">
+                                <div style="font-size: 0.76rem; font-weight: 800; color: #fbbf24;">MỐC 1 (1 Bạn)</div>
+                                <div style="font-size: 0.84rem; font-weight: 700; color: #fff; margin-top: 2px;">+50 Points + Slide Mẫu Pitching B2B</div>
+                            </div>
+                            <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(243,168,59,0.4); border-radius: 10px; padding: 12px;">
+                                <div style="font-size: 0.76rem; font-weight: 800; color: #f3a83b;">MỐC 2 (3 Bạn)</div>
+                                <div style="font-size: 0.84rem; font-weight: 700; color: #fff; margin-top: 2px;">Vé Private B2B Roundtable (Zoom Kín)</div>
+                            </div>
+                            <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(16,185,129,0.4); border-radius: 10px; padding: 12px;">
+                                <div style="font-size: 0.76rem; font-weight: 800; color: #34d399;">MỐC 3 (5 Bạn)</div>
+                                <div style="font-size: 0.84rem; font-weight: 700; color: #fff; margin-top: 2px;">Quà Tri Ân Tận Nhà (Sổ tay / Áo thun Cú)</div>
+                            </div>
+                        </div>
+                    </div>
+
                     <div style="text-align: center; padding-top: 15px; border-top: 1px solid var(--border-color); display: flex; justify-content: center; gap: 14px; flex-wrap: wrap;">
                         <a href="finder.html" class="btn btn-primary" style="padding: 12px 30px; font-weight: 800; font-size: 1rem; border-radius: 25px; background: linear-gradient(135deg, #a20a0a, #7c0808); border: 1.5px solid #f3a83b; color: #fff; text-decoration: none; box-shadow: 0 4px 16px rgba(162, 10, 10, 0.35);">
                             🚀 Vào Cổng Đặc Quyền Alumni VIP (Tìm PIC) &rarr;
@@ -526,7 +553,10 @@
         const vipUnlockMsg = document.getElementById('vip-quests-unlock-msg');
 
         function renderVipLounge(session) {
+            const loungeCard = document.getElementById('vip-quests-lounge-card');
             if (session && session.isVip) {
+                if (tabVipBtn) tabVipBtn.style.display = 'inline-flex';
+                if (loungeCard) loungeCard.style.display = 'block';
                 if (vipActiveBox) vipActiveBox.style.display = 'block';
                 if (vipLockBox) vipLockBox.style.display = 'none';
                 if (vipNicknameEl) vipNicknameEl.textContent = session.nickname || 'Chiến Binh VIP';
@@ -541,16 +571,27 @@
                     `;
                 }
             } else {
+                if (tabVipBtn) tabVipBtn.style.display = 'none';
+                if (loungeCard) loungeCard.style.display = 'none';
                 if (vipActiveBox) vipActiveBox.style.display = 'none';
-                if (vipLockBox) vipLockBox.style.display = 'block';
-                if (vipHudStatus) {
-                    vipHudStatus.innerHTML = `
-                        <span style="font-size: 0.8rem; padding: 5px 12px; border-radius: 14px; background: rgba(243, 168, 59, 0.12); color: #f3a83b; font-weight: 700; border: 1px solid rgba(243, 168, 59, 0.3);">
-                            🔒 Phiên VIP Khách
-                        </span>
-                    `;
-                }
+                if (vipLockBox) vipLockBox.style.display = 'none';
+                switchQuestsTab('streak');
             }
+        }
+
+        // Copy referral link in quests lounge
+        const btnCopyRefQuests = document.getElementById('btn-copy-ref-quests');
+        if (btnCopyRefQuests) {
+            btnCopyRefQuests.addEventListener('click', () => {
+                const s = savedSession || JSON.parse(localStorage.getItem('alumni_vip_session') || '{}');
+                const cleanRefCode = (s.nickname || s.name || 'Alumni_VIP').trim().replace(/\s+/g, '_');
+                const link = `https://www.bdbinhdanhocvu.com/?ref=${encodeURIComponent(cleanRefCode)}`;
+                navigator.clipboard.writeText(link).then(() => {
+                    alert('Đã sao chép link Vé Mời VIP của bạn! Hãy gửi cho đồng nghiệp BD nhé.');
+                }).catch(() => {
+                    alert('Link Vé Mời VIP của bạn:\n' + link);
+                });
+            });
         }
 
         // Check local storage session
@@ -564,7 +605,7 @@
         const queryPass = urlParams.get('vip_pass') || urlParams.get('vip');
         const queryTab = urlParams.get('tab');
 
-        if (queryTab === 'vip') {
+        if (queryTab === 'vip' && ((savedSession && savedSession.isVip) || queryPass)) {
             switchQuestsTab('vip');
         }
 

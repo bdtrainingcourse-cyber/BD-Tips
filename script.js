@@ -7724,3 +7724,102 @@ function checkPvPChallenge() {
         }
     };
 
+    // =========================================================================
+    // VIRAL REFERRAL LOOP HANDLER (Giver Mentality: Vé Mời VIP Đồng Đội)
+    // =========================================================================
+    function initReferralWelcome() {
+        try {
+            const urlParams = new URLSearchParams(window.location.search);
+            const refCode = urlParams.get('ref');
+            if (!refCode) return;
+
+            const cleanRef = decodeURIComponent(refCode).replace(/_/g, ' ').trim();
+            const claimedKey = `b2b_ref_claimed_${cleanRef.replace(/\s+/g, '_')}`;
+            const alreadyClaimed = localStorage.getItem(claimedKey);
+
+            if (!alreadyClaimed) {
+                // Award 50 BD-Points
+                const currentPoints = parseInt(localStorage.getItem('b2b_points_balance') || '0', 10);
+                const newPoints = currentPoints + 50;
+                localStorage.setItem('b2b_points_balance', newPoints.toString());
+                localStorage.setItem(claimedKey, 'true');
+                localStorage.setItem('b2b_referred_by', cleanRef);
+
+                // Increment referrer counter locally
+                const refCountKey = `b2b_ref_count_${cleanRef.replace(/\s+/g, '_')}`;
+                const curCount = parseInt(localStorage.getItem(refCountKey) || '0', 10);
+                localStorage.setItem(refCountKey, (curCount + 1).toString());
+
+                // Show Point Toast
+                setTimeout(() => {
+                    if (window.showPointToast) {
+                        window.showPointToast(50, `Vé Mời VIP từ ${cleanRef}`);
+                    }
+                }, 800);
+
+                // Show Welcome Modal
+                setTimeout(() => {
+                    showReferralWelcomeModal(cleanRef);
+                }, 1200);
+            }
+        } catch (e) {
+            console.warn('Referral check error:', e);
+        }
+    }
+
+    function showReferralWelcomeModal(referrerName) {
+        const modalId = 'b2b-ref-welcome-modal';
+        if (document.getElementById(modalId)) return;
+
+        const overlay = document.createElement('div');
+        overlay.id = modalId;
+        overlay.style.cssText = 'position: fixed; inset: 0; z-index: 999999; background: rgba(0, 0, 0, 0.82); backdrop-filter: blur(8px); display: flex; align-items: center; justify-content: center; padding: 20px; animation: fadeIn 0.3s ease; font-family: inherit;';
+
+        overlay.innerHTML = `
+            <div style="background: linear-gradient(135deg, #1e1208 0%, #2d1808 100%); border: 2px solid #f3a83b; border-radius: 24px; padding: 32px 28px; max-width: 520px; width: 100%; text-align: center; box-shadow: 0 25px 60px rgba(0,0,0,0.6); position: relative; color: #ffffff;">
+                <button type="button" onclick="document.getElementById('${modalId}').remove()" style="position: absolute; top: 16px; right: 18px; background: transparent; border: none; font-size: 1.5rem; color: #94a3b8; cursor: pointer; line-height: 1;">&times;</button>
+                
+                <div style="font-size: 3rem; margin-bottom: 8px;">🎟️✨</div>
+                
+                <span style="display: inline-block; background: rgba(243, 168, 59, 0.2); color: #f3a83b; border: 1px solid rgba(243, 168, 59, 0.45); padding: 4px 14px; border-radius: 20px; font-size: 0.8rem; font-weight: 800; text-transform: uppercase; margin-bottom: 12px;">
+                    ĐẶC QUYỀN VÉ MỜI VIP ĐỒNG ĐỘI
+                </span>
+                
+                <h3 style="margin: 0 0 10px 0; font-size: 1.45rem; font-weight: 800; color: #ffffff;">
+                    Chào mừng bạn đến với BD Bình Dân Học Vụ!
+                </h3>
+                
+                <p style="margin: 0 0 20px 0; font-size: 0.95rem; color: #e2e8f0; line-height: 1.55;">
+                    Bạn vừa nhận được <strong>Vé Mời VIP Đồng Đội</strong> từ <span style="color: #f3a83b; font-weight: 800;">${referrerName}</span>!
+                </p>
+
+                <div style="background: rgba(0, 0, 0, 0.35); border: 1px dashed rgba(243, 168, 59, 0.4); border-radius: 14px; padding: 16px; margin-bottom: 24px; text-align: left;">
+                    <div style="font-size: 0.82rem; font-weight: 800; color: #f3a83b; margin-bottom: 8px; text-transform: uppercase;">🎁 Quà Tặng Dành Riêng Cho Bạn:</div>
+                    <ul style="margin: 0; padding-left: 20px; font-size: 0.88rem; color: #cbd5e1; line-height: 1.6;">
+                        <li>🪙 <strong>+50 BD-Points</strong> cộng thẳng vào ví điểm của bạn.</li>
+                        <li>📚 <strong>Mở khóa Tải Miễn Phí</strong> Ebook B2B Thực Chiến đầu tiên.</li>
+                        <li>🎯 Trọn quyền trải nghiệm hệ sinh thái 9 công cụ hỗ trợ nghề BD.</li>
+                    </ul>
+                </div>
+
+                <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
+                    <a href="library.html" onclick="document.getElementById('${modalId}').remove()" style="padding: 12px 24px; background: linear-gradient(135deg, #f3a83b, #d97706); color: #1e293b; font-weight: 800; font-size: 0.95rem; border-radius: 12px; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; box-shadow: 0 6px 20px rgba(243, 168, 59, 0.35);">
+                        📚 Tải Ebook &amp; Khám Phá Ngay &rarr;
+                    </a>
+                    <button type="button" onclick="document.getElementById('${modalId}').remove()" style="padding: 12px 20px; background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.2); color: #ffffff; font-weight: 700; font-size: 0.95rem; border-radius: 12px; cursor: pointer;">
+                        Đóng
+                    </button>
+                </div>
+            </div>
+        `;
+
+        document.body.appendChild(overlay);
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initReferralWelcome);
+    } else {
+        initReferralWelcome();
+    }
+
+

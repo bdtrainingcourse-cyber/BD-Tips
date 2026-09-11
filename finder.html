@@ -195,6 +195,88 @@
                     ⚠️ <strong>Lưu ý quan trọng:</strong> Thông tin PIC cung cấp có thể là <strong>Số điện thoại (SĐT)</strong>, <strong>Email</strong>, hoặc <strong>cả hai</strong> tùy theo khả năng và dữ liệu xác thực thực tế của anh Peter Võ.
                 </div>
 
+                <!-- =============================================================== -->
+                <!-- VÉ MỜI VIP ĐỒNG ĐỘI & HỆ THỐNG THƯỞNG MILESTONE (GIVER MENTALITY)-->
+                <!-- =============================================================== -->
+                <div class="vip-referral-card" style="background: linear-gradient(135deg, rgba(243, 168, 59, 0.1) 0%, rgba(162, 10, 10, 0.08) 100%); border: 2px solid rgba(243, 168, 59, 0.4); border-radius: 20px; padding: 26px; margin-top: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.25); position: relative; overflow: hidden;">
+                    <div style="position: absolute; top: 0; left: 0; right: 0; height: 4px; background: linear-gradient(90deg, #f3a83b, #ef4444, #f3a83b);"></div>
+                    
+                    <div style="display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin-bottom: 16px;">
+                        <div style="display: flex; align-items: center; gap: 14px;">
+                            <div style="font-size: 2.2rem; line-height: 1;">🎟️</div>
+                            <div>
+                                <span class="vip-badge-tag" style="background: rgba(243, 168, 59, 0.2); color: #f3a83b; border-color: rgba(243, 168, 59, 0.45); font-size: 0.78rem;">
+                                    ĐẶC QUYỀN ALUMNI &bull; GIVER MENTALITY
+                                </span>
+                                <h3 style="font-size: 1.35rem; font-weight: 800; color: #ffffff; margin: 4px 0 2px 0;">
+                                    Vé Mời VIP Đồng Đội (03 Suất Độc Quyền)
+                                </h3>
+                                <p style="color: #cbd5e1; font-size: 0.88rem; margin: 0; line-height: 1.5;">
+                                    Với tư cách Alumni, bạn có quyền <strong>tặng 3 vé VIP</strong> này cho đồng nghiệp BD thân thiết. Người nhận link sẽ được <strong>tặng ngay 50 BD-Points</strong> và <strong>tải miễn phí Ebook thực chiến đầu tiên</strong>.
+                                </p>
+                            </div>
+                        </div>
+                        <div style="background: rgba(243, 168, 59, 0.15); border: 1px solid rgba(243, 168, 59, 0.35); padding: 8px 18px; border-radius: 30px; text-align: center;">
+                            <span style="font-size: 0.75rem; color: #cbd5e1; display: block;">Vé Mời Của Bạn</span>
+                            <span style="font-size: 1.1rem; font-weight: 800; color: #f3a83b;"><span id="ref-tickets-left">3</span> / 3 Vé</span>
+                        </div>
+                    </div>
+
+                    <!-- Link Box & 1-Click Copy -->
+                    <div style="background: rgba(0, 0, 0, 0.3); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 14px; padding: 14px 18px; margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;">
+                        <div style="flex: 1; min-width: 250px;">
+                            <div style="font-size: 0.75rem; color: #94a3b8; font-weight: 600; text-transform: uppercase;">Link Tặng Quà Độc Quyền Của Bạn:</div>
+                            <input type="text" id="vip-referral-link-input" readonly value="https://www.bdbinhdanhocvu.com/?ref=VIP" style="width: 100%; background: transparent; border: none; color: #6ee7b7; font-size: 0.95rem; font-weight: 700; outline: none; padding: 4px 0; margin-top: 2px;">
+                        </div>
+                        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                            <button type="button" id="btn-copy-ref-link" class="btn btn-primary" style="padding: 8px 16px; font-size: 0.82rem; font-weight: 800; border-radius: 8px; background: linear-gradient(135deg, #f3a83b, #d97706); border: none; color: #1e293b; cursor: pointer; box-shadow: 0 4px 12px rgba(243, 168, 59, 0.3);">
+                                📋 Sao Chép Link
+                            </button>
+                            <button type="button" id="btn-copy-ref-msg" class="btn" style="padding: 8px 14px; font-size: 0.82rem; font-weight: 700; border-radius: 8px; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.2); color: #ffffff; cursor: pointer;">
+                                💬 Copy Lời Mời Mẫu
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Milestone Reward Grid -->
+                    <div>
+                        <div style="font-size: 0.82rem; font-weight: 800; color: #f3a83b; text-transform: uppercase; letter-spacing: 0.6px; margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between;">
+                            <span>🏆 HỆ THỐNG THƯỞNG MILESTONE KHI ĐỒNG ĐỘI THAM GIA</span>
+                            <span style="font-size: 0.75rem; color: #cbd5e1; font-weight: 600;">Tiến độ: <strong id="ref-count-display" style="color: #6ee7b7;">0</strong> / 5 bạn</span>
+                        </div>
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px;">
+                            <!-- Milestone 1 -->
+                            <div style="background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px; padding: 14px; position: relative;">
+                                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
+                                    <span style="font-size: 0.78rem; font-weight: 800; color: #fbbf24;">MỐC 1 (Rủ 1 Bạn)</span>
+                                    <span style="font-size: 0.72rem; padding: 2px 8px; border-radius: 10px; background: rgba(251, 191, 36, 0.15); color: #fbbf24; font-weight: 700;">+50 Points 🪙</span>
+                                </div>
+                                <div style="font-size: 0.88rem; font-weight: 700; color: #ffffff;">Mở khóa Bộ Slide Mẫu Pitching B2B</div>
+                                <p style="font-size: 0.75rem; color: #94a3b8; margin: 4px 0 0 0; line-height: 1.4;">Bộ template thuyết trình chuẩn thực chiến dành cho B2B BD.</p>
+                            </div>
+                            <!-- Milestone 2 -->
+                            <div style="background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(243, 168, 59, 0.35); border-radius: 12px; padding: 14px; position: relative;">
+                                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
+                                    <span style="font-size: 0.78rem; font-weight: 800; color: #f3a83b;">MỐC 2 (Rủ 3 Bạn)</span>
+                                    <span style="font-size: 0.72rem; padding: 2px 8px; border-radius: 10px; background: rgba(243, 168, 59, 0.2); color: #f3a83b; font-weight: 700;">⭐ HOT</span>
+                                </div>
+                                <div style="font-size: 0.88rem; font-weight: 700; color: #ffffff;">Vé Private B2B Roundtable (Zoom Kín)</div>
+                                <p style="font-size: 0.75rem; color: #94a3b8; margin: 4px 0 0 0; line-height: 1.4;">Buổi thảo luận kín hàng tháng cùng anh Peter Võ & các Giám đốc Kinh doanh đối tác.</p>
+                            </div>
+                            <!-- Milestone 3 -->
+                            <div style="background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(16, 185, 129, 0.35); border-radius: 12px; padding: 14px; position: relative;">
+                                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
+                                    <span style="font-size: 0.78rem; font-weight: 800; color: #34d399;">MỐC 3 (Rủ 5 Bạn)</span>
+                                    <span style="font-size: 0.72rem; padding: 2px 8px; border-radius: 10px; background: rgba(16, 185, 129, 0.2); color: #34d399; font-weight: 700;">🎁 Gửi Tận Nhà</span>
+                                </div>
+                                <div style="font-size: 0.88rem; font-weight: 700; color: #ffffff;">Quà Tặng Tri Ân Độc Quyền Tận Nhà</div>
+                                <p style="font-size: 0.75rem; color: #94a3b8; margin: 4px 0 0 0; line-height: 1.4;">Cuốn Sổ tay BD thực chiến cao cấp hoặc Áo thun mascot Cú BeeDee phiên bản giới hạn.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
                 <!-- Request Form (Tinh gọn - 4 trường) -->
                 <div style="background: rgba(255,255,255,0.03); border: 1.5px solid rgba(243, 168, 59, 0.25); border-radius: 20px; padding: 30px; margin-top: 25px;">
                     <h3 style="font-size: 1.35rem; font-weight: 800; color: #ffffff; margin-bottom: 8px; display: flex; align-items: center; gap: 8px;">

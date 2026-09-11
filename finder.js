@@ -997,8 +997,58 @@ document.addEventListener('DOMContentLoaded', () => {
             vipExpiryText.textContent = `Hạn dùng: ${session.expiry} (3 tháng)`;
         }
 
+        // Referral Link & Giver Mentality
+        const refLinkInput = document.getElementById('vip-referral-link-input');
+        const refTicketsLeft = document.getElementById('ref-tickets-left');
+        const refCountDisplay = document.getElementById('ref-count-display');
+        const cleanRefCode = (session.nickname || session.name || 'Alumni_VIP').trim().replace(/\s+/g, '_');
+        const generatedRefLink = `https://www.bdbinhdanhocvu.com/?ref=${encodeURIComponent(cleanRefCode)}`;
+        
+        if (refLinkInput) refLinkInput.value = generatedRefLink;
+        
+        const refKeyName = `b2b_ref_count_${cleanRefCode}`;
+        const refKeyEmail = `b2b_ref_count_${session.email || 'default'}`;
+        const refCount = Math.max(
+            parseInt(localStorage.getItem(refKeyName) || '0', 10),
+            parseInt(localStorage.getItem(refKeyEmail) || '0', 10)
+        );
+        if (refCountDisplay) refCountDisplay.textContent = refCount;
+        if (refTicketsLeft) refTicketsLeft.textContent = Math.max(0, 3 - refCount);
+
         const history = JSON.parse(localStorage.getItem(`vip_history_${session.email || 'default'}`) || '[]');
         renderVipHistory(history);
+    }
+
+    // Referral Copy Handlers
+    const btnCopyRefLink = document.getElementById('btn-copy-ref-link');
+    const btnCopyRefMsg = document.getElementById('btn-copy-ref-msg');
+
+    if (btnCopyRefLink) {
+        btnCopyRefLink.addEventListener('click', () => {
+            const refLinkInput = document.getElementById('vip-referral-link-input');
+            if (refLinkInput) {
+                navigator.clipboard.writeText(refLinkInput.value).then(() => {
+                    alert('Đã sao chép link Vé Mời VIP của bạn! Hãy gửi link này cho đồng nghiệp BD thân thiết nhé.');
+                }).catch(() => {
+                    refLinkInput.select();
+                    document.execCommand('copy');
+                    alert('Đã sao chép link Vé Mời VIP!');
+                });
+            }
+        });
+    }
+
+    if (btnCopyRefMsg) {
+        btnCopyRefMsg.addEventListener('click', () => {
+            const refLinkInput = document.getElementById('vip-referral-link-input');
+            const link = refLinkInput ? refLinkInput.value : 'https://www.bdbinhdanhocvu.com';
+            const sampleMsg = `Chào bạn, mình vừa nhận được 03 Vé Mời VIP độc quyền từ BD Bình Dân Học Vụ dành cho anh em làm B2B BD thực chiến. Mình gửi tặng bạn 1 suất: khi đăng ký qua link này bạn sẽ được nhận ngay 50 BD-Points và tải miễn phí Ebook thực chiến đầu tiên: ${link}`;
+            navigator.clipboard.writeText(sampleMsg).then(() => {
+                alert('Đã sao chép lời mời mẫu! Bạn có thể dán gửi Zalo/LinkedIn ngay cho đồng nghiệp.');
+            }).catch(() => {
+                alert('Lời mời mẫu:\n' + sampleMsg);
+            });
+        });
     }
 
     // Authenticate / Unlock
