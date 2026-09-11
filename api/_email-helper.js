@@ -55,9 +55,10 @@ function stripHtml(html) {
              .trim();
 }
 
-function renderHtmlEmailTemplate({ title, greeting, message, buttonText, buttonUrl, note, mascotUrl }) {
+function renderHtmlEmailTemplate({ title, greeting, message, buttonText, buttonUrl, note, mascotUrl, unsubscribeUrl, email }) {
   const safeFontStack = "'Plus Jakarta Sans', 'Be Vietnam Pro', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif";
   const finalMascot = mascotUrl || 'https://www.bdbinhdanhocvu.com/mascot_quests.jpg';
+  const resolvedUnsubUrl = unsubscribeUrl || (email ? `https://www.bdbinhdanhocvu.com/api/log-email?action=unsubscribe&email=${encodeURIComponent(email)}` : null);
   return `
 <!DOCTYPE html>
 <html>
@@ -101,6 +102,7 @@ function renderHtmlEmailTemplate({ title, greeting, message, buttonText, buttonU
     </div>
     <div class="email-footer" style="background-color: #f1f5f9; padding: 20px; text-align: center; font-size: 12px; color: #64748b; border-top: 1px solid #e2e8f0; font-family: ${safeFontStack}; line-height: 1.5;">
       Bạn nhận được email này vì đã đăng ký tại <a href="https://www.bdbinhdanhocvu.com" class="accent-link" style="color: #a20a0a; text-decoration: none; font-weight: 700; font-family: ${safeFontStack};">BD Bình Dân Học Vụ</a>.<br>
+      ${resolvedUnsubUrl ? `Nếu không muốn nhận email nhắc nhở mỗi sáng, bạn có thể <a href="${resolvedUnsubUrl}" style="color: #64748b; text-decoration: underline;">Hủy nhận email tại đây</a>.<br>` : ''}
       &copy; 2026 BD Bình Dân Học Vụ &bull; Stay Hungry, Stay Foolish!
     </div>
   </div>
@@ -109,17 +111,27 @@ function renderHtmlEmailTemplate({ title, greeting, message, buttonText, buttonU
   `.trim();
 }
 
-function sendResendEmail({ from, to, subject, html, text }) {
+function sendResendEmail({ from, to, subject, html, text, scheduledAt, headers }) {
   return new Promise((resolve) => {
     try {
       const cleanTo = Array.isArray(to) ? to : [to];
-      const payload = JSON.stringify({
+      const payloadObj = {
         from: from || DEFAULT_FROM,
         to: cleanTo,
         subject: subject,
         html: html,
         text: text || stripHtml(html)
-      });
+      };
+
+      if (scheduledAt) {
+        payloadObj.scheduled_at = scheduledAt;
+      }
+
+      if (headers && typeof headers === 'object') {
+        payloadObj.headers = headers;
+      }
+
+      const payload = JSON.stringify(payloadObj);
 
       const options = {
         hostname: 'api.resend.com',
@@ -197,7 +209,7 @@ async function sendEbookEmail({ email, name, ebookTitle, fileUrl }) {
   });
 }
 
-async function sendVerificationReminderEmail({ email, name }) {
+async function sendVerificationReminderEmail({ email, name, scheduledAt, headers }) {
   const verificationUrl = `https://www.bdbinhdanhocvu.com/?verify_email=${encodeURIComponent(email)}`;
   const subject = `[BD Bình Dân Học Vụ] Peter Vo gửi bạn: Quà tặng mở khóa tài liệu & Điểm tích lũy`;
   const message = `
@@ -209,14 +221,17 @@ async function sendVerificationReminderEmail({ email, name }) {
     greeting: `Chào bạn ${name || 'Học viên'}`,
     message: message,
     buttonText: 'Mở Khóa Tài Liệu & Nhận 15đ &rarr;',
-    buttonUrl: verificationUrl
+    buttonUrl: verificationUrl,
+    email: email
   });
 
   return sendResendEmail({
     to: email,
     subject: subject,
     html: html,
-    text: stripHtml(html)
+    text: stripHtml(html),
+    scheduledAt: scheduledAt,
+    headers: headers
   });
 }
 

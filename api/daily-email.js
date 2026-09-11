@@ -548,13 +548,28 @@ YÊU CẦU NỘI DUNG & PHONG CÁCH:
   // If overriding for testing via ?email=...
   if (req.query.email) {
     const isUnverified = req.query.verified === 'false';
-    const targetEmail = req.query.email;
+    const targetEmail = req.query.email.toLowerCase().trim();
     const targetName = req.query.name || 'Chiến thần B2B';
-    console.log(`[DAILY_EMAIL_CRON] Test mode. Sending email to ${targetEmail} via Resend...`);
+    const shouldSchedule = req.query.schedule === 'true';
+    const delayMinutes = req.query.delay ? parseFloat(req.query.delay) : 2;
+    const scheduledTimeIso = shouldSchedule ? new Date(Date.now() + delayMinutes * 60 * 1000).toISOString() : null;
+
+    console.log(`[DAILY_EMAIL_TEST] Dispatching test email to ${targetEmail} via Resend (Scheduled: ${scheduledTimeIso || 'IMMEDIATE'})...`);
+
+    const unsubUrl = `https://www.bdbinhdanhocvu.com/api/log-email?action=unsubscribe&email=${encodeURIComponent(targetEmail)}`;
+    const headers = {
+      'List-Unsubscribe': `<${unsubUrl}>`,
+      'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click'
+    };
 
     let resendResult = null;
     if (isUnverified) {
-      resendResult = await sendVerificationReminderEmail({ email: targetEmail, name: targetName });
+      resendResult = await sendVerificationReminderEmail({
+        email: targetEmail,
+        name: targetName,
+        scheduledAt: scheduledTimeIso,
+        headers: headers
+      });
     } else {
       const sep = template.buttonUrl.includes('?') ? '&' : '?';
       const personalizedUrl = `${template.buttonUrl}${sep}sync_email=${encodeURIComponent(targetEmail)}&sync_name=${encodeURIComponent(targetName)}&utm_source=daily_email&utm_medium=email&utm_campaign=daily_reminder`;
@@ -562,12 +577,17 @@ YÊU CẦU NỘI DUNG & PHONG CÁCH:
         greeting: `Chào bạn ${targetName}`,
         message: template.message,
         buttonText: template.buttonText,
-        buttonUrl: personalizedUrl
+        buttonUrl: personalizedUrl,
+        mascotUrl: template.mascot,
+        unsubscribeUrl: unsubUrl,
+        email: targetEmail
       });
       resendResult = await sendResendEmail({
         to: targetEmail,
         subject: subject,
-        html: emailHtml
+        html: emailHtml,
+        scheduledAt: scheduledTimeIso,
+        headers: headers
       });
     }
 
@@ -581,7 +601,7 @@ YÊU CẦU NỘI DUNG & PHONG CÁCH:
           subject: subject,
           totalRecipients: 1,
           successfulSends: isSuccess ? 1 : 0,
-          sentEmails: isSuccess ? [targetEmail] : [],
+          sentEmails: isSuccess ? [{ email: targetEmail, scheduledAt: scheduledTimeIso || new Date().toISOString() }] : [],
           timestamp: new Date().toISOString()
         });
         sheetText = await emailRes.text();
@@ -592,15 +612,17 @@ YÊU CẦU NỘI DUNG & PHONG CÁCH:
 
     return res.status(200).json({
       success: true,
+      mode: shouldSchedule ? 'scheduled' : 'immediate',
+      scheduledAt: scheduledTimeIso,
       resendResult: resendResult,
-      message: `Test email (${isUnverified ? 'unverified flow' : 'verified flow'}) sent via Resend to ${targetEmail}`,
+      message: `Test email (${isUnverified ? 'unverified flow' : 'verified flow'}) ${shouldSchedule ? 'scheduled for ' + scheduledTimeIso : 'sent immediately'} via Resend to ${targetEmail}`,
       sheetResponse: sheetText,
       context: { temp, weatherDesc, newsTitle, mascot: template.mascot }
     });
   }
 
-  // Otherwise, it's the automated daily cron run! Dispatch directly via RESEND to all registered users!
-  console.log(`[DAILY_EMAIL_CRON] Cron mode. Dispatching daily emails via Resend...`);
+  // Otherwise, it's the automated daily cron run! Dispatch directly via RESEND with staggered scheduling!
+  console.log(`[DAILY_EMAIL_CRON] Cron mode. Initiating staggered daily dispatch across 7:00 - 11:00 AM VN...`);
 
   let targetUsers = [];
   
@@ -646,7 +668,8 @@ YÊU CẦU NỘI DUNG & PHONG CÁCH:
           .map(u => ({
             email: u.email.toLowerCase().trim(),
             name: u.name || 'Chiến thần B2B',
-            verified: u.verified !== false
+            verified: u.verified !== false,
+            unsubscribed: !!u.unsubscribed
           }));
         console.log(`[DAILY_EMAIL_CRON] Loaded ${targetUsers.length} users from local user profiles.`);
       }
@@ -655,12 +678,16 @@ YÊU CẦU NỘI DUNG & PHONG CÁCH:
     }
   }
 
-  // 3. Deduplicate users by email
+  // 3. Deduplicate users by email and filter out unsubscribed users
   const seenEmails = new Set();
   const uniqueRecipients = [];
   for (const u of targetUsers) {
     const cleanE = (u.email || '').toLowerCase().trim();
     if (cleanE && cleanE.includes('@') && !seenEmails.has(cleanE)) {
+      if (u.unsubscribed === true) {
+        console.log(`[DAILY_EMAIL_CRON] User opted out, skipping: ${cleanE}`);
+        continue;
+      }
       seenEmails.add(cleanE);
       uniqueRecipients.push({
         email: cleanE,
@@ -670,13 +697,83 @@ YÊU CẦU NỘI DUNG & PHONG CÁCH:
     }
   }
 
-  // 4. Dispatch each email via Resend with rate limit protection
+  // 4. Calculate Staggered Scheduling (2-minute intervals across 7:00 AM - 11:00 AM VN)
+  const nowMs = Date.now();
+  const vnNow = new Date(nowMs + 7 * 3600 * 1000);
+  const vnYear = vnNow.getUTCFullYear();
+  const vnMonth = vnNow.getUTCMonth();
+  const vnDate = vnNow.getUTCDate();
+
+  // 4.1 Idempotency Guard: Prevent double-dispatch on the same calendar day
+  if (!req.query.force) {
+    const todayStrYMD = `${vnYear}-${String(vnMonth + 1).padStart(2, '0')}-${String(vnDate).padStart(2, '0')}`;
+    const todayStrDMY = `${String(vnDate).padStart(2, '0')}/${String(vnMonth + 1).padStart(2, '0')}/${vnYear}`;
+    const alreadyDispatchedToday = targetUsers.filter(u => {
+      const l = (u.lastDailyEmail || '');
+      return l.includes(todayStrYMD) || l.includes(todayStrDMY);
+    }).length;
+
+    if (uniqueRecipients.length > 0 && alreadyDispatchedToday >= Math.min(5, uniqueRecipients.length * 0.5)) {
+      console.log(`[DAILY_EMAIL_CRON] Already dispatched today (${alreadyDispatchedToday} recipients marked). Skipping.`);
+      return res.status(200).json({
+        success: true,
+        skipped: true,
+        message: `Daily emails already dispatched today (${alreadyDispatchedToday} recipients marked). Skipping duplicate run to protect domain reputation. Use ?force=true to override.`,
+        date: todayStrYMD
+      });
+    }
+  }
+
+  // 07:00 AM VN = 00:00 UTC today
+  const windowStartUtcMs = Date.UTC(vnYear, vnMonth, vnDate, 0, 0, 0);
+  // 11:00 AM VN = 04:00 UTC today
+  const windowEndUtcMs = Date.UTC(vnYear, vnMonth, vnDate, 4, 0, 0);
+
+  // Initial dispatch slot:
+  // Must be in future (at least 60s ahead for Resend queue ingestion)
+  let baseStartMs = Math.max(nowMs + 60 * 1000, windowStartUtcMs);
+  if (nowMs >= windowEndUtcMs) {
+    // If triggered after 11:00 AM (e.g. manual afternoon test/run), schedule starting in 60s
+    baseStartMs = nowMs + 60 * 1000;
+  }
+
+  // Desired spacing: 2 minutes (120,000 ms) as requested by user
+  let intervalMs = 120 * 1000;
+  const availableMs = Math.max(120 * 1000, windowEndUtcMs - baseStartMs);
+  const recipientCount = uniqueRecipients.length;
+
+  if (recipientCount > 1 && (recipientCount * intervalMs) > availableMs) {
+    // Scale interval down proportionally so all emails finish before 11:00 AM
+    intervalMs = Math.max(30 * 1000, Math.floor(availableMs / recipientCount));
+  }
+
+  console.log(`[DAILY_EMAIL_CRON] Dispatching to ${recipientCount} recipients. Window: 07:00 - 11:00 VN. Spacing: ${(intervalMs / 1000)}s per email.`);
+
+  // 5. Register scheduled dispatches with Resend (with natural humanized jitter)
   const dispatchResults = [];
-  for (const user of uniqueRecipients) {
+  for (let i = 0; i < recipientCount; i++) {
+    const user = uniqueRecipients[i];
     try {
+      // Natural humanized jitter: +/- 15s to avoid robotic periodic fingerprints
+      const jitterMs = Math.floor((Math.random() - 0.5) * 30 * 1000);
+      const userScheduledMs = Math.max(nowMs + 45 * 1000, baseStartMs + (i * intervalMs) + jitterMs);
+      const scheduledIso = new Date(userScheduledMs).toISOString();
+      const vnFormattedTime = new Date(userScheduledMs + 7 * 3600 * 1000).toISOString().replace('T', ' ').substring(0, 19);
+
+      const unsubUrl = `https://www.bdbinhdanhocvu.com/api/log-email?action=unsubscribe&email=${encodeURIComponent(user.email)}`;
+      const headers = {
+        'List-Unsubscribe': `<${unsubUrl}>`,
+        'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click'
+      };
+
       let resendRes = null;
       if (user.verified === false) {
-        resendRes = await sendVerificationReminderEmail({ email: user.email, name: user.name });
+        resendRes = await sendVerificationReminderEmail({
+          email: user.email,
+          name: user.name,
+          scheduledAt: scheduledIso,
+          headers: headers
+        });
       } else {
         const sep = template.buttonUrl.includes('?') ? '&' : '?';
         const personalizedUrl = `${template.buttonUrl}${sep}sync_email=${encodeURIComponent(user.email)}&sync_name=${encodeURIComponent(user.name)}&utm_source=daily_email&utm_medium=email&utm_campaign=daily_reminder`;
@@ -685,23 +782,30 @@ YÊU CẦU NỘI DUNG & PHONG CÁCH:
           message: template.message,
           buttonText: template.buttonText,
           buttonUrl: personalizedUrl,
-          mascotUrl: template.mascot
+          mascotUrl: template.mascot,
+          unsubscribeUrl: unsubUrl,
+          email: user.email
         });
         resendRes = await sendResendEmail({
           to: user.email,
           subject: subject,
-          html: emailHtml
+          html: emailHtml,
+          scheduledAt: scheduledIso,
+          headers: headers
         });
       }
 
       dispatchResults.push({
         email: user.email,
+        name: user.name,
         ok: !!(resendRes && resendRes.ok),
         id: resendRes && resendRes.data ? resendRes.data.id : null,
+        scheduledAt: scheduledIso,
+        scheduledTimeVN: vnFormattedTime,
         error: resendRes && resendRes.error ? resendRes.error : null
       });
 
-      // Stay strictly within Resend rate limit (2 req/s)
+      // Stay strictly within Resend rate limit (2 req/s) while enrolling queue
       await new Promise(resolve => setTimeout(resolve, 600));
     } catch (err) {
       console.error(`[DAILY_EMAIL_CRON] Resend error for ${user.email}:`, err.message);
@@ -709,7 +813,7 @@ YÊU CẦU NỘI DUNG & PHONG CÁCH:
     }
   }
 
-  // 5. Also sync campaign record to Google Sheets for logging
+  // 6. Also sync campaign record & per-user scheduled timeline to Google Sheets
   let sheetLogResponse = "";
   if (webhookUrl) {
     try {
@@ -718,7 +822,10 @@ YÊU CẦU NỘI DUNG & PHONG CÁCH:
         subject: subject,
         totalRecipients: uniqueRecipients.length,
         successfulSends: dispatchResults.filter(r => r.ok).length,
-        sentEmails: dispatchResults.filter(r => r.ok).map(r => r.email),
+        sentEmails: dispatchResults.filter(r => r.ok).map(r => ({
+          email: r.email,
+          scheduledAt: r.scheduledAt
+        })),
         timestamp: new Date().toISOString()
       });
       sheetLogResponse = await logRes.text();
@@ -729,9 +836,13 @@ YÊU CẦU NỘI DUNG & PHONG CÁCH:
 
   return res.status(200).json({
     success: true,
-    mode: 'resend_direct',
+    mode: 'staggered_scheduled',
+    timelineWindow: '07:00 - 11:00 (GMT+7)',
+    intervalMinutes: (intervalMs / 60000).toFixed(2),
     totalRecipients: uniqueRecipients.length,
-    successfulSends: dispatchResults.filter(r => r.ok).length,
+    successfulSchedules: dispatchResults.filter(r => r.ok).length,
+    firstScheduledAtVN: dispatchResults.length > 0 ? dispatchResults[0].scheduledTimeVN : null,
+    lastScheduledAtVN: dispatchResults.length > 0 ? dispatchResults[dispatchResults.length - 1].scheduledTimeVN : null,
     results: dispatchResults,
     sheetLog: sheetLogResponse,
     context: { temp, weatherDesc, newsTitle, mascot: template.mascot }

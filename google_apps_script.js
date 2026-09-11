@@ -296,14 +296,26 @@ function updateUsersDailyEmailTimestamp(emails, timestampStr) {
     const emailList = Array.isArray(emails) ? emails : [emails];
     if (emailList.length === 0) return;
 
-    const targetEmails = new Set(
-      emailList.map(function(e) {
-        return (e || "").toString().toLowerCase().trim();
-      }).filter(function(e) {
-        return e && e.indexOf("@") !== -1;
-      })
-    );
-    if (targetEmails.size === 0) return;
+    const emailTimeMap = {};
+    const defaultFormattedTime = formatTimestamp(timestampStr || new Date().toISOString());
+
+    for (var k = 0; k < emailList.length; k++) {
+      var item = emailList[k];
+      if (typeof item === 'string') {
+        var cleanE = item.toLowerCase().trim();
+        if (cleanE && cleanE.indexOf('@') !== -1) {
+          emailTimeMap[cleanE] = defaultFormattedTime;
+        }
+      } else if (item && typeof item === 'object' && item.email) {
+        var cleanObjE = item.email.toLowerCase().trim();
+        if (cleanObjE && cleanObjE.indexOf('@') !== -1) {
+          emailTimeMap[cleanObjE] = item.scheduledAt ? formatTimestamp(item.scheduledAt) : defaultFormattedTime;
+        }
+      }
+    }
+
+    const targetEmails = Object.keys(emailTimeMap);
+    if (targetEmails.length === 0) return;
 
     const sheet = getOrCreateSheet("Học Viên Đăng Ký");
     const data = sheet.getDataRange().getValues();
@@ -312,7 +324,6 @@ function updateUsersDailyEmailTimestamp(emails, timestampStr) {
     const headers = data[0];
     const idx = getHeaderIndices(headers);
     const emailCol = idx.email !== -1 ? idx.email : 3;
-    const formattedTime = formatTimestamp(timestampStr || new Date().toISOString());
     const numRows = data.length - 1;
 
     if (numRows > 0) {
@@ -322,8 +333,8 @@ function updateUsersDailyEmailTimestamp(emails, timestampStr) {
 
       for (let i = 0; i < numRows; i++) {
         const rowEmail = (data[i + 1][emailCol] || "").toString().toLowerCase().trim();
-        if (targetEmails.has(rowEmail)) {
-          colValues[i][0] = formattedTime;
+        if (emailTimeMap[rowEmail]) {
+          colValues[i][0] = emailTimeMap[rowEmail];
           hasChanges = true;
         }
       }

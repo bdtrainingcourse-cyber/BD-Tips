@@ -244,6 +244,7 @@ module.exports = async (req, res) => {
           experience: result.user.experience || (localUser ? localUser.experience : ''),
           industry: result.user.industry || (localUser ? localUser.industry : ''),
           skill: result.user.skill || (localUser ? localUser.skill : ''),
+          unsubscribed: (result.user.unsubscribed !== undefined) ? !!result.user.unsubscribed : (localUser ? !!localUser.unsubscribed : false),
           lastIp: clientIp,
           lastActive: timestamp
         };
@@ -432,6 +433,7 @@ module.exports = async (req, res) => {
       experience: experience || (localUser ? localUser.experience : ''),
       industry: industry || (localUser ? localUser.industry : ''),
       skill: skill || (localUser ? localUser.skill : ''),
+      unsubscribed: localUser ? !!localUser.unsubscribed : false,
       lastIp: clientIp,
       lastActive: timestamp
     };
@@ -538,6 +540,56 @@ module.exports = async (req, res) => {
       });
     }
     return res.status(200).json({ success: true, exists: false, debugWebhookUrl: webhookUrl || "NOT_SET", debugSheetsResponse: sheetsResponseText, debugError: debugError });
+  } else if (action === 'unsubscribe') {
+    if (localUser) {
+      localUser.unsubscribed = true;
+      localUser.lastActive = timestamp;
+      writeUsers(users);
+    }
+    if (webhookUrl) {
+      try {
+        await httpPost(webhookUrl, {
+          action: 'unsubscribe',
+          email: cleanEmail,
+          date: timestamp,
+          secretKey: process.env.B2B_SECRET_KEY || '2108330119Snail!!'
+        });
+      } catch (err) {
+        console.warn('[UNSUBSCRIBE_SHEETS_WARN]', err.message);
+      }
+    }
+
+    if (req.method === 'GET') {
+      res.setHeader('Content-Type', 'text/html; charset=utf-8');
+      return res.status(200).send(`
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hủy Nhận Email - BD Bình Dân Học Vụ</title>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f8f6f0; display: flex; align-items: center; justify-content: center; min-height: 100vh; margin: 0; padding: 20px; }
+    .card { background: white; border-radius: 24px; padding: 40px 32px; max-width: 440px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.06); border: 1px solid #e2e8f0; }
+    h2 { color: #1e293b; margin: 16px 0 10px 0; font-size: 22px; font-weight: 800; }
+    p { color: #64748b; font-size: 15px; line-height: 1.6; margin: 0 0 20px 0; }
+    .btn { display: inline-block; padding: 12px 28px; background: #dc2626; color: white; border-radius: 12px; text-decoration: none; font-weight: bold; font-size: 14px; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div style="font-size: 52px; margin-bottom: 8px;">🦉</div>
+    <h2>Đã Hủy Nhận Email Nhắc Nhở</h2>
+    <p>Địa chỉ <strong>${cleanEmail}</strong> sẽ không còn nhận email nhắc nhở mỗi sáng từ Cú BeeDee nữa.</p>
+    <p style="font-size: 13px; color: #94a3b8;">Bạn vẫn có thể tiếp tục sử dụng tất cả công cụ và tài liệu thực chiến trên website bình thường bất cứ lúc nào!</p>
+    <a href="https://www.bdbinhdanhocvu.com" class="btn">Về Trang Chủ BD Bình Dân Học Vụ</a>
+  </div>
+</body>
+</html>
+      `.trim());
+    }
+
+    return res.status(200).json({ success: true, message: 'Unsubscribed successfully', email: cleanEmail });
   } else if (action === 'forgotPassword') {
     if (localUser) {
       const resetToken = Math.random().toString(36).substr(2, 9).toUpperCase();
