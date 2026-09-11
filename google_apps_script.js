@@ -303,31 +303,82 @@ function sendEmailSafe(mailOptions) {
 function checkEmail(email, name) {
   try {
     if (!email) return createJsonResponse({ exists: false });
+    const cleanEmail = email.toLowerCase().trim();
     
+    // 1. Kiểm tra trong sheet "Học Viên Đăng Ký"
     const sheet = getOrCreateSheet("Học Viên Đăng Ký");
     const data = sheet.getDataRange().getValues();
-    if (data.length <= 1) return createJsonResponse({ exists: false });
-    
-    const headers = data[0];
-    const idx = getHeaderIndices(headers);
-    const rowIndex = findUserRowIndex(data, email, idx.email);
-    
-    if (rowIndex !== -1) {
-      const row = data[rowIndex];
-      const verifiedVal = idx.verified !== -1 ? row[idx.verified] : false;
-      const isVerified = (verifiedVal === true || verifiedVal.toString().toUpperCase() === "TRUE" || verifiedVal.toString().trim() === "Đã xác thực");
+    if (data.length > 1) {
+      const headers = data[0];
+      const idx = getHeaderIndices(headers);
+      const rowIndex = findUserRowIndex(data, cleanEmail, idx.email);
       
-      const userData = {
-        id: idx.id !== -1 && row[idx.id] ? row[idx.id] : "UID_LEGACY",
-        name: idx.name !== -1 && row[idx.name] ? row[idx.name] : name,
-        email: email,
-        points: idx.points !== -1 && !isNaN(parseInt(row[idx.points], 10)) ? parseInt(row[idx.points], 10) : 25,
-        avatar: "",
-        verified: isVerified
-      };
-      
-      return createJsonResponse({ exists: true, user: userData });
+      if (rowIndex !== -1) {
+        const row = data[rowIndex];
+        const verifiedVal = idx.verified !== -1 ? row[idx.verified] : false;
+        const isVerified = (verifiedVal === true || verifiedVal.toString().toUpperCase() === "TRUE" || verifiedVal.toString().trim() === "Đã xác thực");
+        
+        const userData = {
+          id: idx.id !== -1 && row[idx.id] ? row[idx.id] : "UID_LEGACY",
+          name: idx.name !== -1 && row[idx.name] ? row[idx.name] : name,
+          email: cleanEmail,
+          points: idx.points !== -1 && !isNaN(parseInt(row[idx.points], 10)) ? parseInt(row[idx.points], 10) : 25,
+          avatar: "",
+          verified: isVerified
+        };
+        
+        return createJsonResponse({ exists: true, user: userData });
+      }
     }
+    
+    // 2. Nếu chưa có trong "Học Viên Đăng Ký", kiểm tra sheet "Học Viên Đã Học" (VIP Alumni)
+    const ss = SpreadsheetApp.getActiveSpreadsheet();
+    const sheetAlumni = ss.getSheetByName("Học Viên Đã Học");
+    if (sheetAlumni) {
+      const aData = sheetAlumni.getDataRange().getValues();
+      if (aData.length > 1) {
+        for (let r = 1; r < aData.length; r++) {
+          const aRow = aData[r];
+          const aEmail = aRow[1] ? aRow[1].toString().toLowerCase().trim() : "";
+          if (aEmail === cleanEmail) {
+            const aName = aRow[0] ? aRow[0].toString().trim() : (name || "Học Viên VIP");
+            const aNick = aRow[2] ? aRow[2].toString().trim() : "";
+            const aVipPass = aRow[3] ? aRow[3].toString().trim() : ("BD-" + Math.floor(1000 + Math.random() * 9000));
+            const nowTimeStr = Utilities.formatDate(new Date(), "Asia/Ho_Chi_Minh", "yyyy-MM-dd HH:mm:ss");
+            
+            // Tự động đồng bộ tài khoản sang "Học Viên Đăng Ký"
+            try {
+              sheet.appendRow([
+                aVipPass,
+                nowTimeStr,
+                aName,
+                cleanEmail,
+                "Đã xác thực",
+                50,
+                nowTimeStr,
+                "",
+                "Desktop",
+                "VIP-Alumni"
+              ]);
+            } catch (syncErr) {
+              Logger.log("Auto sync alumni to reg sheet error: " + syncErr.message);
+            }
+            
+            const userData = {
+              id: aVipPass,
+              name: aName || aNick || "Học Viên VIP",
+              email: cleanEmail,
+              points: 50,
+              avatar: "",
+              verified: true,
+              isVip: true
+            };
+            return createJsonResponse({ exists: true, user: userData, isAlumni: true });
+          }
+        }
+      }
+    }
+    
     return createJsonResponse({ exists: false });
   } catch (err) {
     return createJsonResponse({ exists: false, error: err.message });
@@ -369,40 +420,95 @@ function ensureDailyEmailColumn() {
   }
 }
 
-function getAllUsers() {
+function getCombinedUsersList() {
+  ensureDailyEmailColumn();
+  const usersMap = {}; // Keyed by lowercase email for 100% deduplication
+  
+  // 1. Quét danh sách "Học Viên Đăng Ký"
   try {
-    ensureDailyEmailColumn();
     const sheet = getOrCreateSheet("Học Viên Đăng Ký");
     const data = sheet.getDataRange().getValues();
-    if (data.length <= 1) return createJsonResponse({ success: true, users: [], totalCount: 0 });
-    
-    const headers = data[0];
-    const idx = getHeaderIndices(headers);
-    const emailCol = idx.email !== -1 ? idx.email : 3;
-    const nameCol = idx.name !== -1 ? idx.name : 2;
-    const verifiedCol = idx.verified !== -1 ? idx.verified : 4;
-    const idCol = idx.id !== -1 ? idx.id : 0;
-    const lastDailyCol = idx.lastDailyEmail;
-    
-    const users = [];
-    
-    for (let i = 1; i < data.length; i++) {
-      const row = data[i];
-      const email = (row[emailCol]) ? row[emailCol].toString().toLowerCase().trim() : "";
-      if (!email || !email.includes("@")) continue;
+    if (data.length > 1) {
+      const headers = data[0];
+      const idx = getHeaderIndices(headers);
+      const emailCol = idx.email !== -1 ? idx.email : 3;
+      const nameCol = idx.name !== -1 ? idx.name : 2;
+      const verifiedCol = idx.verified !== -1 ? idx.verified : 4;
+      const idCol = idx.id !== -1 ? idx.id : 0;
+      const lastDailyCol = idx.lastDailyEmail;
       
-      const name = (row[nameCol]) ? row[nameCol].toString().trim() : "Học viên";
-      const verifiedVal = row[verifiedCol];
-      const isVerified = (verifiedVal === true || (verifiedVal && verifiedVal.toString().toUpperCase() === "TRUE") || (verifiedVal && verifiedVal.toString().trim() === "Đã xác thực"));
-      
-      users.push({
-        id: (row[idCol]) ? row[idCol].toString().trim() : "",
-        name: name,
-        email: email,
-        verified: isVerified,
-        lastDailyEmail: (lastDailyCol !== -1 && row[lastDailyCol]) ? row[lastDailyCol].toString().trim() : ""
-      });
+      for (let i = 1; i < data.length; i++) {
+        const row = data[i];
+        const email = (row[emailCol]) ? row[emailCol].toString().toLowerCase().trim() : "";
+        if (!email || !email.includes("@")) continue;
+        
+        const name = (row[nameCol]) ? row[nameCol].toString().trim() : "Học viên";
+        const verifiedVal = row[verifiedCol];
+        const isVerified = (verifiedVal === true || (verifiedVal && verifiedVal.toString().toUpperCase() === "TRUE") || (verifiedVal && verifiedVal.toString().trim() === "Đã xác thực"));
+        
+        usersMap[email] = {
+          id: (row[idCol]) ? row[idCol].toString().trim() : "",
+          name: name,
+          email: email,
+          verified: isVerified,
+          isVip: false,
+          lastDailyEmail: (lastDailyCol !== -1 && row[lastDailyCol]) ? row[lastDailyCol].toString().trim() : ""
+        };
+      }
     }
+  } catch (regErr) {
+    Logger.log("Error loading Học Viên Đăng Ký in getCombinedUsersList: " + regErr.message);
+  }
+  
+  // 2. Quét danh sách "Học Viên Đã Học" (VIP Alumni) - Đảm bảo VIP luôn nhận daily email!
+  try {
+    const ss = SpreadsheetApp.getActiveSpreadsheet();
+    const sheetAlumni = ss.getSheetByName("Học Viên Đã Học");
+    if (sheetAlumni) {
+      const aData = sheetAlumni.getDataRange().getValues();
+      if (aData.length > 1) {
+        for (let r = 1; r < aData.length; r++) {
+          const row = aData[r];
+          const aName = row[0] ? row[0].toString().trim() : "";
+          const aEmail = row[1] ? row[1].toString().toLowerCase().trim() : "";
+          const aNick = row[2] ? row[2].toString().trim() : "";
+          const aVipPass = row[3] ? row[3].toString().trim() : "";
+          
+          if (!aEmail || !aEmail.includes("@")) continue;
+          
+          if (usersMap[aEmail]) {
+            // Đã có trong danh sách đăng ký -> Đảm bảo trạng thái VIP & xác thực
+            usersMap[aEmail].isVip = true;
+            usersMap[aEmail].verified = true; // VIP luôn được xem là đã xác thực
+            if (aVipPass) usersMap[aEmail].vipCode = aVipPass;
+            if (aName && (!usersMap[aEmail].name || usersMap[aEmail].name === "Học viên" || usersMap[aEmail].name === "Khách")) {
+              usersMap[aEmail].name = aName;
+            }
+          } else {
+            // Học viên VIP mới dán vào sheet Alumni -> Vẫn được gửi Daily Email bình thường!
+            usersMap[aEmail] = {
+              id: aVipPass || ("UID_" + aEmail.split('@')[0].toUpperCase().replace(/[^A-Z0-9]/g, '')),
+              name: aName || aNick || "Chiến Binh BD",
+              email: aEmail,
+              verified: true,
+              isVip: true,
+              vipCode: aVipPass || "BDTHUCCHIEN",
+              lastDailyEmail: ""
+            };
+          }
+        }
+      }
+    }
+  } catch (alumniErr) {
+    Logger.log("Error loading Học Viên Đã Học in getCombinedUsersList: " + alumniErr.message);
+  }
+  
+  return Object.values(usersMap);
+}
+
+function getAllUsers() {
+  try {
+    const users = getCombinedUsersList();
     return createJsonResponse({ success: true, users: users, totalCount: users.length });
   } catch (err) {
     return createJsonResponse({ success: false, error: err.message });
@@ -448,6 +554,8 @@ function updateUsersDailyEmailTimestamp(emails, timestampStr) {
     const emailCol = idx.email !== -1 ? idx.email : 3;
     const numRows = data.length - 1;
 
+    const updatedEmails = new Set();
+
     if (numRows > 0) {
       const colRange = sheet.getRange(2, dailyCol + 1, numRows, 1);
       const colValues = colRange.getValues();
@@ -457,6 +565,7 @@ function updateUsersDailyEmailTimestamp(emails, timestampStr) {
         const rowEmail = (data[i + 1][emailCol] || "").toString().toLowerCase().trim();
         if (emailTimeMap[rowEmail]) {
           colValues[i][0] = emailTimeMap[rowEmail];
+          updatedEmails.add(rowEmail);
           hasChanges = true;
         }
       }
@@ -466,6 +575,28 @@ function updateUsersDailyEmailTimestamp(emails, timestampStr) {
         SpreadsheetApp.flush();
       }
     }
+
+    // Nếu có email VIP nào vừa được gửi mà chưa có dòng trong "Học Viên Đăng Ký", tự động thêm dòng!
+    for (let j = 0; j < targetEmails.length; j++) {
+      const sentEmail = targetEmails[j];
+      if (!updatedEmails.has(sentEmail)) {
+        const uid = "UID_" + sentEmail.split('@')[0].toUpperCase().replace(/[^A-Z0-9]/g, '');
+        const timeNow = emailTimeMap[sentEmail] || defaultFormattedTime;
+        sheet.appendRow([
+          uid,
+          timeNow,
+          "Alumni VIP",
+          sentEmail,
+          "Đã xác thực",
+          50,
+          timeNow,
+          timeNow,
+          "Desktop",
+          "VIP-Alumni-Daily"
+        ]);
+      }
+    }
+    SpreadsheetApp.flush();
   } catch (err) {
     Logger.log("Error updateUsersDailyEmailTimestamp: " + err.message);
   }
@@ -707,7 +838,7 @@ function createDailyReminderTrigger() {
 
 function dailyCronTrigger() {
   try {
-    const res = UrlFetchApp.fetch("https://www.bdbinhdanhocvu.com/api/daily-email", { 
+    const res = UrlFetchApp.fetch("https://www.bdbinhdanhocvu.com/api/daily-email?cron=true", { 
       muteHttpExceptions: true,
       followRedirects: true
     });
@@ -727,21 +858,18 @@ function sendDailyEmailsSynchronously(data) {
     
     if (!subject || !message) return createJsonResponse({ success: false, error: "Subject or message missing" });
     
-    const sheet = getOrCreateSheet("Học Viên Đăng Ký");
-    const sheetData = sheet.getDataRange().getValues();
-    const headers = sheetData[0];
-    const idx = getHeaderIndices(headers);
-    
-    if (idx.email === -1) return createJsonResponse({ success: false, error: "Email column not found." });
+    const userList = getCombinedUsersList();
+    if (userList.length === 0) return createJsonResponse({ success: true, message: "No users to send." });
     
     let sentCount = 0;
     const sentEmails = [];
-    for (let i = 1; i < sheetData.length; i++) {
-      const email = sheetData[i][idx.email].toString().toLowerCase().trim();
+    for (let i = 0; i < userList.length; i++) {
+      const u = userList[i];
+      const email = u.email;
       if (!email || !email.includes("@")) continue;
       
-      const name = idx.name !== -1 ? sheetData[i][idx.name] : "Học viên";
-      const verified = idx.verified !== -1 ? (sheetData[i][idx.verified] === true || sheetData[i][idx.verified].toString().toUpperCase() === "TRUE" || sheetData[i][idx.verified].toString().trim() === "Đã xác thực") : false;
+      const name = u.name || "Học viên";
+      const verified = !!u.verified;
       
       if (verified) {
         try {
@@ -1635,25 +1763,7 @@ function verifyAlumni(identifier, emailParam) {
   }
 }
 
-function getHeaderIndices(headers) {
-  const indices = { email: -1, lastActivity: -1 };
-  if (!headers || !Array.isArray(headers)) return indices;
-  for (let i = 0; i < headers.length; i++) {
-    const h = headers[i].toString().toLowerCase();
-    if (h.includes("email")) indices.email = i;
-    if (h.includes("hoạt động cuối") || h.includes("hoat dong cuoi") || h.includes("last")) indices.lastActivity = i;
-  }
-  return indices;
-}
 
-function findUserRowIndex(data, email, emailColIndex) {
-  if (emailColIndex === -1 || !email) return -1;
-  for (let i = 1; i < data.length; i++) {
-    const rowEmail = data[i][emailColIndex] ? data[i][emailColIndex].toString().trim().toLowerCase() : "";
-    if (rowEmail === email) return i;
-  }
-  return -1;
-}
 
 // Hàm gửi Email Launching đính kèm hình ảnh Hệ Sinh Thái 9 Vũ Khí B2B
 function sendVipLaunchingEmail(targetEmail) {
