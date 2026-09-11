@@ -1466,9 +1466,11 @@ function verifyAlumni(identifier, emailParam) {
       const matchIdAsEmail = cleanId.includes("@") && rEmail === cleanId.toLowerCase();
       
       if (matchEmail || (matchPass && (cleanEmail === "" || matchEmail)) || matchIdAsEmail) {
+        const uid = rPass || (rEmail ? ("UID_" + rEmail.split('@')[0].toUpperCase().replace(/[^A-Z0-9]/g, '')) : "UID_VIP");
         return createJsonResponse({
           success: true,
           isAlumni: true,
+          userId: uid,
           name: rName || "Học Viên VIP",
           nickname: rNick || generateFunnyNickname(rName, rEmail),
           email: rEmail,
@@ -1481,9 +1483,11 @@ function verifyAlumni(identifier, emailParam) {
     
     // Nếu nhập pass chung BDTHUCCHIEN nhưng email chưa nằm trong sheet
     if (cleanId.toUpperCase() === "BDTHUCCHIEN") {
+      const fallbackUid = cleanEmail ? ("UID_" + cleanEmail.split('@')[0].toUpperCase().replace(/[^A-Z0-9]/g, '')) : "UID_VIP";
       return createJsonResponse({
         success: true,
         isAlumni: true,
+        userId: fallbackUid,
         name: "Alumni VIP",
         nickname: cleanEmail ? generateFunnyNickname("Chiến Binh BD", cleanEmail) : "Tân Săn Deal Khủng",
         email: cleanEmail,
