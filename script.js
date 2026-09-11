@@ -5799,12 +5799,73 @@ if (document.readyState === 'loading') {
         if (!campaignBox) return;
 
         const CAMPAIGNS_CONFIG = window.CAMPAIGNS_CONFIG || {};
+        const campKeys = Object.keys(CAMPAIGNS_CONFIG);
+        if (campKeys.length === 0) return;
+
         campaignBox.innerHTML = '';
 
-        for (let campId in CAMPAIGNS_CONFIG) {
-            const campaign = CAMPAIGNS_CONFIG[campId];
-            const isCompleted = localStorage.getItem(`b2b_campaign_completed_${campId}`) === 'true';
-            const campaignProgressKey = `b2b_campaign_progress_${campId}`;
+        const CAMPAIGN_SHORT_LABELS = {
+            campaign_outreach: { label: 'Soạn Email', icon: '✉️' },
+            campaign_compliance: { label: 'Luật & Lương', icon: '⚖️' },
+            campaign_thinker: { label: 'Thư Viện', icon: '📖' },
+            campaign_arcade_master: { label: 'Arcade', icon: '⚔️' },
+            campaign_influencer: { label: 'Lan Tỏa', icon: '🔗' }
+        };
+
+        // Determine active campaign index
+        if (typeof window.activeCampaignIndex !== 'number' || window.activeCampaignIndex < 0 || window.activeCampaignIndex >= campKeys.length) {
+            let firstIncomplete = campKeys.findIndex(k => localStorage.getItem(`b2b_campaign_completed_${k}`) !== 'true');
+            window.activeCampaignIndex = firstIncomplete >= 0 ? firstIncomplete : 0;
+        }
+
+        const activeCampId = campKeys[window.activeCampaignIndex];
+        const activeCampaign = CAMPAIGNS_CONFIG[activeCampId];
+
+        // 1. Selector Pills Bar (Compact Horizontal Switcher)
+        const pillsContainer = document.createElement('div');
+        pillsContainer.className = 'campaign-pills-bar';
+        pillsContainer.style.cssText = 'display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 10px;';
+
+        campKeys.forEach((k, idx) => {
+            const isSelected = idx === window.activeCampaignIndex;
+            const isDone = localStorage.getItem(`b2b_campaign_completed_${k}`) === 'true';
+            const meta = CAMPAIGN_SHORT_LABELS[k] || { label: CAMPAIGNS_CONFIG[k]?.title?.slice(0, 12) || `CĐ ${idx+1}`, icon: '🎯' };
+
+            const pillBtn = document.createElement('button');
+            pillBtn.type = 'button';
+            pillBtn.style.cssText = `
+                padding: 4px 10px;
+                font-size: 0.72rem;
+                font-weight: 700;
+                border-radius: 20px;
+                cursor: pointer;
+                display: flex;
+                align-items: center;
+                gap: 5px;
+                transition: all 0.2s ease;
+                white-space: nowrap;
+                background: ${isSelected ? 'linear-gradient(135deg, rgba(243, 168, 59, 0.25), rgba(217, 119, 6, 0.2))' : 'var(--bg-hover, rgba(0,0,0,0.03))'};
+                border: 1.5px solid ${isSelected ? '#f3a83b' : 'var(--border-color, rgba(0,0,0,0.1))'};
+                color: ${isSelected ? '#b45309' : 'var(--text-main, #1e293b)'};
+                box-shadow: ${isSelected ? '0 2px 8px rgba(243, 168, 59, 0.25)' : 'none'};
+            `;
+            pillBtn.innerHTML = `
+                <span>${meta.icon}</span>
+                <span>${meta.label}</span>
+                <span style="font-size: 0.68rem; opacity: 0.85;">${isDone ? '✅' : '⚡'}</span>
+            `;
+            pillBtn.onclick = function() {
+                window.activeCampaignIndex = idx;
+                window.renderCampaignBoard();
+            };
+            pillsContainer.appendChild(pillBtn);
+        });
+        campaignBox.appendChild(pillsContainer);
+
+        // 2. Active Campaign Details Card (Compact Single View)
+        if (activeCampaign) {
+            const isCompleted = localStorage.getItem(`b2b_campaign_completed_${activeCampId}`) === 'true';
+            const campaignProgressKey = `b2b_campaign_progress_${activeCampId}`;
             let campProgress = {};
             try {
                 campProgress = JSON.parse(localStorage.getItem(campaignProgressKey) || '{}');
@@ -5812,8 +5873,8 @@ if (document.readyState === 'loading') {
 
             const destMap = {
                 check_in: '#personalized-welcome-banner',
-                game_complete: '#minigame-section',
-                perfect_game: '#minigame-section',
+                game_complete: 'index.html#minigame-section',
+                perfect_game: 'index.html#minigame-section',
                 pic_search: 'personality-test.html',
                 ai_email: 'email-assistant.html',
                 share_click: 'quests.html#quests-section',
@@ -5821,41 +5882,80 @@ if (document.readyState === 'loading') {
                 salary_calc: 'salary.html',
                 library_read: 'library.html',
                 forum_post: 'community.html',
-                forum_comment: 'community.html'
+                forum_comment: 'community.html',
+                arcade_level_clear: 'index.html#minigame-section'
             };
 
             let checklistHtml = '';
-            for (let key in campaign.requirements) {
+            let totalReqs = 0;
+            let doneReqs = 0;
+
+            for (let key in activeCampaign.requirements) {
+                totalReqs++;
                 const current = campProgress[key] || 0;
-                const req = campaign.requirements[key];
+                const req = activeCampaign.requirements[key];
                 const isTaskDone = current >= req;
-                const displayName = CAMPAIGN_NAMES[key] || key;
+                if (isTaskDone) doneReqs++;
+                const displayName = (typeof CAMPAIGN_NAMES !== 'undefined' && CAMPAIGN_NAMES[key]) ? CAMPAIGN_NAMES[key] : key;
                 const dest = destMap[key] || '#';
 
                 checklistHtml += `
-                    <div style="display: flex; align-items: center; justify-content: space-between; font-size: 0.72rem; color: var(--text-light); cursor: pointer; padding: 6px 10px; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); border-radius: 6px; margin-bottom: 5px; transition: all 0.2s;" class="campaign-req-item" onclick="if ('${dest}'.startsWith('#')) { const t = document.getElementById('${dest.substring(1)}'); if (t) t.scrollIntoView({behavior:'smooth'}); } else { window.location.href='${dest}'; }">
-                        <span style="${isTaskDone ? 'text-decoration: line-through; opacity: 0.6;' : 'font-weight: 500;'}">${isTaskDone ? '✅' : '⏳'} ${displayName}</span>
-                        <span style="font-weight: 800; color: ${isTaskDone ? '#34d399' : 'var(--primary)'};">${current}/${req}</span>
+                    <div style="display: flex; align-items: center; justify-content: space-between; font-size: 0.74rem; color: var(--text-main, #1e293b); cursor: pointer; padding: 6px 10px; background: var(--card-bg, #ffffff); border: 1px solid var(--border-color, rgba(0,0,0,0.08)); border-radius: 8px; margin-bottom: 5px; transition: all 0.2s;" class="campaign-req-item" onclick="if ('${dest}'.startsWith('#')) { const t = document.getElementById('${dest.substring(1)}'); if (t) t.scrollIntoView({behavior:'smooth'}); } else { window.location.href='${dest}'; }">
+                        <span style="${isTaskDone ? 'text-decoration: line-through; opacity: 0.6;' : 'font-weight: 600;'}">${isTaskDone ? '✅' : '⏳'} ${displayName}</span>
+                        <span style="font-weight: 800; color: ${isTaskDone ? '#047857' : '#b45309'};">${current}/${req}</span>
                     </div>
                 `;
             }
 
             const campaignCard = document.createElement('div');
-            campaignCard.style.cssText = 'background: linear-gradient(135deg, rgba(243, 168, 59, 0.08) 0%, rgba(243, 168, 59, 0.02) 100%); border: 1.5px solid var(--primary); border-radius: 12px; padding: 16px; display: flex; flex-direction: column; gap: 10px; margin-bottom: 12px; box-shadow: 0 4px 15px rgba(243, 168, 59, 0.08); transition: all 0.3s ease; position: relative; overflow: hidden;';
+            campaignCard.style.cssText = 'background: linear-gradient(135deg, rgba(243, 168, 59, 0.08) 0%, rgba(243, 168, 59, 0.02) 100%); border: 1.5px solid rgba(243, 168, 59, 0.35); border-radius: 12px; padding: 12px 14px; display: flex; flex-direction: column; gap: 8px; box-shadow: 0 4px 14px rgba(243, 168, 59, 0.06);';
             campaignCard.innerHTML = `
-                <div style="font-size: 0.85rem; font-weight: 800; color: var(--primary); margin-bottom: 2px;">${campaign.title}</div>
-                <div style="font-size: 0.7rem; color: var(--text-light); line-height: 1.4; margin-bottom: 6px;">${campaign.desc}</div>
-                <div style="display: flex; flex-direction: column; gap: 4px; border-top: 1px solid rgba(243, 168, 59, 0.15); padding-top: 8px; margin-bottom: 6px;">
+                <div style="display: flex; align-items: flex-start; justify-content: space-between; gap: 8px;">
+                    <div>
+                        <div style="font-size: 0.85rem; font-weight: 800; color: var(--text-main, #1e293b);">${activeCampaign.title}</div>
+                        <div style="font-size: 0.72rem; color: var(--text-light, #64748b); line-height: 1.35; margin-top: 2px;">${activeCampaign.desc}</div>
+                    </div>
+                    <span style="font-size: 0.72rem; white-space: nowrap; color: #b45309; background: rgba(243, 168, 59, 0.18); border: 1px solid rgba(243, 168, 59, 0.4); padding: 3px 8px; border-radius: 6px; font-weight: 800;">
+                        🎁 +${activeCampaign.bonus}đ BONUS
+                    </span>
+                </div>
+
+                <div style="display: flex; flex-direction: column; gap: 2px; margin: 2px 0;">
                     ${checklistHtml}
                 </div>
-                <div style="display: flex; align-items: center; justify-content: space-between; border-top: 1px dashed rgba(243, 168, 59, 0.2); padding-top: 8px;">
-                    <span style="font-size: 0.72rem; color: #34d399; font-weight: 800; text-transform: uppercase;">🎁 +${campaign.bonus}đ BONUS</span>
-                    <span style="font-size: 0.68rem; background: ${isCompleted ? '#10b981' : '#4b5563'}; color: #fff; padding: 3px 8px; border-radius: 6px; font-weight: 800;">
-                        ${isCompleted ? 'Đã xong 🏆' : 'Đang chạy ⚡'}
+
+                <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px; border-top: 1px dashed var(--border-color, rgba(0,0,0,0.1)); padding-top: 8px; margin-top: 2px;">
+                    <div style="display: flex; align-items: center; gap: 6px;">
+                        <button type="button" id="btn-prev-campaign" style="padding: 3px 8px; font-size: 0.72rem; font-weight: 700; border-radius: 6px; border: 1px solid var(--border-color); background: var(--card-bg, #fff); color: var(--text-main); cursor: pointer;" ${window.activeCampaignIndex === 0 ? 'disabled style="opacity: 0.4; cursor: not-allowed;"' : ''}>
+                            &lsaquo; Trước
+                        </button>
+                        <span style="font-size: 0.72rem; color: var(--text-light); font-weight: 600;">${window.activeCampaignIndex + 1}/${campKeys.length}</span>
+                        <button type="button" id="btn-next-campaign" style="padding: 3px 8px; font-size: 0.72rem; font-weight: 700; border-radius: 6px; border: 1px solid var(--border-color); background: var(--card-bg, #fff); color: var(--text-main); cursor: pointer;" ${window.activeCampaignIndex === campKeys.length - 1 ? 'disabled style="opacity: 0.4; cursor: not-allowed;"' : ''}>
+                            Sau &rsaquo;
+                        </button>
+                    </div>
+                    <span style="font-size: 0.7rem; background: ${isCompleted ? 'rgba(16, 185, 129, 0.15)' : 'rgba(243, 168, 59, 0.15)'}; color: ${isCompleted ? '#047857' : '#b45309'}; border: 1px solid ${isCompleted ? 'rgba(16, 185, 129, 0.3)' : 'rgba(243, 168, 59, 0.3)'}; padding: 3px 8px; border-radius: 6px; font-weight: 800;">
+                        ${isCompleted ? 'Đã xong 🏆' : `Đang chạy (${doneReqs}/${totalReqs}) ⚡`}
                     </span>
                 </div>
             `;
+
             campaignBox.appendChild(campaignCard);
+
+            const btnPrev = campaignCard.querySelector('#btn-prev-campaign');
+            if (btnPrev && window.activeCampaignIndex > 0) {
+                btnPrev.onclick = function() {
+                    window.activeCampaignIndex--;
+                    window.renderCampaignBoard();
+                };
+            }
+            const btnNext = campaignCard.querySelector('#btn-next-campaign');
+            if (btnNext && window.activeCampaignIndex < campKeys.length - 1) {
+                btnNext.onclick = function() {
+                    window.activeCampaignIndex++;
+                    window.renderCampaignBoard();
+                };
+            }
         }
     };
 
