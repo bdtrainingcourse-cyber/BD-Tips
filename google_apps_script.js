@@ -175,6 +175,8 @@ function doPost(e) {
       return sendSingleEmail(postData);
     } else if (action === "sendVerificationReminder") {
       return sendVerificationReminder(email, name);
+    } else if (action === "sendVipLaunchingEmail") {
+      return createJsonResponse(sendVipLaunchingEmail(email || postData.targetEmail || "vptanaia@gmail.com"));
     } else if (action === "getUsers") {
       return getAllUsers();
     } else if (action === "initColumn" || action === "ensureColumns") {
@@ -210,6 +212,8 @@ function doGet(e) {
       return createJsonResponse(autoProcessAlumniSheet());
     } else if (action === "checkEmail") {
       return checkEmail(email, name);
+    } else if (action === "sendVipLaunchingEmail") {
+      return createJsonResponse(sendVipLaunchingEmail(email || params.targetEmail || "vptanaia@gmail.com"));
     } else if (action === "getUsers") {
       return getAllUsers();
     } else if (action === "initColumn" || action === "ensureColumns") {
@@ -1765,72 +1769,98 @@ function verifyAlumni(identifier, emailParam) {
 
 
 
+function buildVipLaunchingEmailHtml(name, nickname, email, vipCode, magicLink) {
+  const messageHtml = [
+    "<p>Chào <strong>" + name + "</strong> (<em>" + nickname + "</em>),</p>",
+    "<p>Cảm ơn bạn vì đã luôn là một phần thân thiết trong cộng đồng <strong>BD Bình Dân Học Vụ</strong>. Peter rất trân quý tinh thần thực chiến và sự đồng hành của bạn trong suốt thời gian qua.</p>",
+    "<p>Hôm nay, Peter chính thức ra mắt <strong>Hệ Sinh Thái 9 Vũ Khí B2B Toàn Diện</strong> — trạm tiếp sức chiến đấu được thiết kế để bạn không còn phải \"đơn độc\" trên hành trình săn deal và xây dựng quan hệ B2B:</p>",
+    "<div style=\"text-align: center; margin: 24px 0;\">",
+    "  <a href=\"" + magicLink + "\" target=\"_blank\">",
+    "    <img src=\"https://www.bdbinhdanhocvu.com/b2b_ecosystem_9_weapons.png\" alt=\"Vũ Trụ 9 Vũ Khí B2B Bình Dân Học Vụ\" style=\"width: 100%; max-width: 540px; border-radius: 12px; border: 1px solid #e2e8f0; box-shadow: 0 4px 18px rgba(0,0,0,0.08); display: block; margin: 0 auto;\">",
+    "  </a>",
+    "</div>",
+    "<div style=\"background: #fef3c7; border-left: 4px solid #f59e0b; padding: 14px 18px; border-radius: 8px; margin: 20px 0; text-align: left;\">",
+    "  <strong style=\"color: #92400e; font-size: 15px; display: block; margin-bottom: 6px;\">👑 3 ĐẶC QUYỀN ALUMNI VIP DÀNH RIÊNG CHO BẠN:</strong>",
+    "  <ul style=\"margin: 0; padding-left: 18px; color: #78350f; font-size: 13.5px; line-height: 1.6;\">",
+    "    <li>🎯 <strong>3 Lượt Tìm PIC Đặc Quyền:</strong> Peter Võ trực tiếp kết nối Person-in-Charge khối HR &amp; Marketing qua 30.000+ kết nối LinkedIn (Hạn 90 ngày).</li>",
+    "    <li>🎟️ <strong>3 Vé Mời VIP Đồng Đội (Giver Mentality):</strong> Tặng bạn bè đồng nghiệp nhận +50 BD-Points và tải Ebook thực chiến đầu tiên. Bạn nhận +50đ/bạn và tự động mở khóa các Mốc Quà (<em>Slide Pitching</em>, <em>Ly Trà Sữa Size L</em>, <em>30 Phút Online 1-1 cùng Peter Võ</em>).</li>",
+    "    <li>⚡ <strong>Mở Khóa Trọn Đời 9 Công Cụ &amp; Thư Viện Ebook:</strong> Trọn quyền sử dụng toàn bộ tính năng hỗ trợ nghề BD.</li>",
+    "  </ul>",
+    "</div>",
+    "<div style=\"background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 12px 16px; font-size: 13px; color: #475569; margin-bottom: 22px; text-align: left;\">",
+    "  <strong>Thông Tin Mở Khóa Tài Khoản:</strong><br>",
+    "  • Email học viên: <code>" + email + "</code><br>",
+    "  • User ID / Mã VIP riêng: <strong style=\"color: #b45309;\">" + vipCode + "</strong><br>",
+    "  • Đăng nhập tự động: Chỉ cần bấm nút bên dưới, hệ thống sẽ tự động đăng nhập không cần gõ pass.",
+    "</div>"
+  ].join("\n");
+
+  return getHtmlEmailTemplate(
+    messageHtml,
+    "🚀 MỞ KHÓA ĐẶC QUYỀN VIP CỦA BẠN NGAY &rarr;",
+    magicLink,
+    "https://www.bdbinhdanhocvu.com/mascot_quests.jpg",
+    name
+  );
+}
+
 // Hàm gửi Email Launching đính kèm hình ảnh Hệ Sinh Thái 9 Vũ Khí B2B
 function sendVipLaunchingEmail(targetEmail) {
   try {
+    const cleanTarget = (targetEmail || "").toString().trim().toLowerCase();
     const ss = SpreadsheetApp.getActiveSpreadsheet();
     const sheet = ss.getSheetByName("Học Viên Đã Học");
-    if (!sheet) return { success: false, error: "Chưa có sheet 'Học Viên Đã Học'." };
 
-    const data = sheet.getDataRange().getValues();
-    const cleanTarget = (targetEmail || "").toString().trim().toLowerCase();
+    let sentCount = 0;
+    let lastResult = null;
 
-    for (let r = 1; r < data.length; r++) {
-      const row = data[r];
-      const name = row[0] ? row[0].toString().trim() : "Bạn";
-      const email = row[1] ? row[1].toString().trim().toLowerCase() : "";
-      const nickname = row[2] ? row[2].toString().trim() : "Chiến Binh BD";
-      const vipCode = row[3] ? row[3].toString().trim() : "BDTHUCCHIEN";
-      const magicLink = row[8] ? row[8].toString().trim() : ("https://www.bdbinhdanhocvu.com/finder.html?email=" + encodeURIComponent(email) + "&vip_pass=" + encodeURIComponent(vipCode));
+    if (sheet) {
+      const data = sheet.getDataRange().getValues();
+      for (let r = 1; r < data.length; r++) {
+        const row = data[r];
+        const name = row[0] ? row[0].toString().trim() : "Bạn";
+        const email = row[1] ? row[1].toString().trim().toLowerCase() : "";
+        const nickname = row[2] ? row[2].toString().trim() : "Chiến Binh BD";
+        const vipCode = row[3] ? row[3].toString().trim() : "BDTHUCCHIEN";
+        const magicLink = row[8] ? row[8].toString().trim() : ("https://www.bdbinhdanhocvu.com/finder.html?email=" + encodeURIComponent(email) + "&vip_pass=" + encodeURIComponent(vipCode));
 
-      if (email === cleanTarget || cleanTarget === "all") {
-        const subject = "🎉 [Đặc Quyền Alumni VIP] Ra Mắt Hệ Sinh Thái 9 Vũ Khí B2B & 3 Lượt Tìm PIC";
-        const messageHtml = [
-          "<p>Chào <strong>" + name + "</strong> (<em>" + nickname + "</em>),</p>",
-          "<p>Cảm ơn bạn vì đã luôn là một phần thân thiết trong cộng đồng <strong>BD Bình Dân Học Vụ</strong>. Peter rất trân quý tinh thần thực chiến và sự đồng hành của bạn trong suốt thời gian qua.</p>",
-          "<p>Hôm nay, Peter chính thức ra mắt <strong>Hệ Sinh Thái 9 Vũ Khí B2B Toàn Diện</strong> — trạm tiếp sức chiến đấu được thiết kế để bạn không còn phải \"đơn độc\" trên hành trình săn deal và xây dựng quan hệ B2B:</p>",
-          "<div style=\"text-align: center; margin: 24px 0;\">",
-          "  <a href=\"" + magicLink + "\" target=\"_blank\">",
-          "    <img src=\"https://www.bdbinhdanhocvu.com/b2b_ecosystem_9_weapons.png\" alt=\"Vũ Trụ 9 Vũ Khí B2B Bình Dân Học Vụ\" style=\"width: 100%; max-width: 540px; border-radius: 12px; border: 1px solid #e2e8f0; box-shadow: 0 4px 18px rgba(0,0,0,0.08); display: block; margin: 0 auto;\">",
-          "  </a>",
-          "</div>",
-          "<div style=\"background: #fef3c7; border-left: 4px solid #f59e0b; padding: 14px 18px; border-radius: 8px; margin: 20px 0; text-align: left;\">",
-          "  <strong style=\"color: #92400e; font-size: 15px; display: block; margin-bottom: 6px;\">👑 3 ĐẶC QUYỀN ALUMNI VIP DÀNH RIÊNG CHO BẠN:</strong>",
-          "  <ul style=\"margin: 0; padding-left: 18px; color: #78350f; font-size: 13.5px; line-height: 1.6;\">",
-          "    <li>🎯 <strong>3 Lượt Tìm PIC Đặc Quyền:</strong> Peter Võ trực tiếp kết nối Person-in-Charge khối HR &amp; Marketing qua 30.000+ kết nối LinkedIn (Hạn 90 ngày).</li>",
-          "    <li>🎟️ <strong>3 Vé Mời VIP Đồng Đội (Giver Mentality):</strong> Tặng bạn bè đồng nghiệp nhận +50 BD-Points và tải Ebook thực chiến đầu tiên. Bạn nhận +50đ/bạn và tự động mở khóa các Mốc Quà (<em>Slide Pitching</em>, <em>Ly Trà Sữa Size L</em>, <em>30 Phút Online 1-1 cùng Peter Võ</em>).</li>",
-          "    <li>⚡ <strong>Mở Khóa Trọn Đời 9 Công Cụ &amp; Thư Viện Ebook:</strong> Trọn quyền sử dụng toàn bộ tính năng hỗ trợ nghề BD.</li>",
-          "  </ul>",
-          "</div>",
-          "<div style=\"background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 12px 16px; font-size: 13px; color: #475569; margin-bottom: 22px; text-align: left;\">",
-          "  <strong>Thông Tin Mở Khóa Tài Khoản:</strong><br>",
-          "  • Email học viên: <code>" + email + "</code><br>",
-          "  • User ID / Mã VIP riêng: <strong style=\"color: #b45309;\">" + vipCode + "</strong><br>",
-          "  • Đăng nhập tự động: Chỉ cần bấm nút bên dưới, hệ thống sẽ tự động đăng nhập không cần gõ pass.",
-          "</div>"
-        ].join("\n");
+        if (email && (email === cleanTarget || cleanTarget === "all")) {
+          const subject = "🎉 [Đặc Quyền Alumni VIP] Ra Mắt Hệ Sinh Thái 9 Vũ Khí B2B & 3 Lượt Tìm PIC";
+          const fullHtml = buildVipLaunchingEmailHtml(name, nickname, email, vipCode, magicLink);
 
-        const fullHtml = getHtmlEmailTemplate(
-          messageHtml,
-          "🚀 MỞ KHÓA ĐẶC QUYỀN VIP CỦA BẠN NGAY &rarr;",
-          magicLink,
-          "https://www.bdbinhdanhocvu.com/mascot_quests.jpg",
-          name
-        );
+          lastResult = sendEmailSafe({
+            to: email,
+            name: "Peter Võ - BD Bình Dân Học Vụ",
+            subject: subject,
+            htmlBody: fullHtml
+          });
 
-        sendEmailSafe({
-          to: email,
-          name: "Peter Võ - BD Bình Dân Học Vụ",
-          subject: subject,
-          htmlBody: fullHtml
-        });
-
-        if (cleanTarget !== "all") {
-          return { success: true, message: "Đã gửi email tới: " + email };
+          sentCount++;
+          if (cleanTarget !== "all") {
+            return lastResult;
+          }
         }
       }
     }
-    return { success: true, message: "Hoàn tất xử lý gửi email." };
+
+    // Nếu gửi thử nghiệm 1 email cụ thể mà email đó chưa có trong sheet: Vẫn gửi bình thường với dữ liệu mẫu VIP!
+    if (sentCount === 0 && cleanTarget && cleanTarget !== "all") {
+      const testName = "Peter Võ (VIP Preview)";
+      const testNick = "Chiến Thần BD";
+      const testVipCode = "BD-TEST999";
+      const testMagicLink = "https://www.bdbinhdanhocvu.com/finder.html?email=" + encodeURIComponent(cleanTarget) + "&vip_pass=" + encodeURIComponent(testVipCode);
+      const subject = "🎉 [Đặc Quyền Alumni VIP] Ra Mắt Hệ Sinh Thái 9 Vũ Khí B2B & 3 Lượt Tìm PIC";
+      const fullHtml = buildVipLaunchingEmailHtml(testName, testNick, cleanTarget, testVipCode, testMagicLink);
+
+      return sendEmailSafe({
+        to: cleanTarget,
+        name: "Peter Võ - BD Bình Dân Học Vụ",
+        subject: subject,
+        htmlBody: fullHtml
+      });
+    }
+
+    return { success: true, sentCount: sentCount, message: "Hoàn tất xử lý gửi email. Đã gửi: " + sentCount };
   } catch (e) {
     return { success: false, error: e.message };
   }

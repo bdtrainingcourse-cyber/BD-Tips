@@ -7,7 +7,8 @@ const {
   sendEbookEmail,
   sendVerificationReminderEmail,
   sendWelcomeRegistrationEmail,
-  sendResetPasswordEmail
+  sendResetPasswordEmail,
+  sendVipLaunchingResendEmail
 } = require('./_email-helper');
 
 const disposableDomains = [
@@ -540,6 +541,32 @@ module.exports = async (req, res) => {
       });
     }
     return res.status(200).json({ success: true, exists: false, debugWebhookUrl: webhookUrl || "NOT_SET", debugSheetsResponse: sheetsResponseText, debugError: debugError });
+  } else if (action === 'sendVipLaunchingEmail') {
+    if (!cleanEmail || !cleanEmail.includes('@')) {
+      return res.status(400).json({ success: false, error: 'Email không hợp lệ.' });
+    }
+    const ALLOWED_TEST_EMAILS = [
+      'vptanaia@gmail.com',
+      'bdtrainingcourse@gmail.com',
+      'bdmastery.ai@petervo.vn',
+      'ocsen.fashion@gmail.com'
+    ];
+    if (req.query.test === 'true' && !ALLOWED_TEST_EMAILS.includes(cleanEmail)) {
+      return res.status(403).json({ success: false, error: 'Chỉ được phép gửi thử tới các email admin đã được whitelist.' });
+    }
+    const reqBody = (req.body && typeof req.body === 'object') ? req.body : {};
+    const vipRes = await sendVipLaunchingResendEmail({
+      email: cleanEmail,
+      name: name || (localUser ? localUser.name : '') || req.query.name || reqBody.name || 'Chiến Binh BD',
+      nickname: req.query.nickname || reqBody.nickname || 'Chiến Thần BD',
+      vipCode: req.query.vipCode || reqBody.vipCode || 'BDTHUCCHIEN'
+    });
+    return res.status(200).json({
+      success: !!(vipRes && vipRes.ok),
+      resendId: vipRes && vipRes.data ? vipRes.data.id : null,
+      message: `Đã gửi email VIP Launching thành công tới ${cleanEmail} qua Resend!`,
+      error: vipRes && vipRes.error ? vipRes.error : null
+    });
   } else if (action === 'unsubscribe') {
     if (localUser) {
       localUser.unsubscribed = true;
