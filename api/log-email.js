@@ -169,8 +169,10 @@ async function handleScheduleBulkAlumniLaunching(req, res) {
     candidateList = reqBody.alumniList;
   } else if (webhookUrl) {
     try {
-      const getUrl = `${webhookUrl}?action=getAlumniList&secretKey=${encodeURIComponent(process.env.B2B_SECRET_KEY || '2108330119Snail!!')}`;
-      const sheetRes = await httpGet(getUrl);
+      const sheetRes = await httpPost(ACTIVE_LEADS_WEBHOOK, {
+        action: 'getAlumniList',
+        secretKey: process.env.B2B_SECRET_KEY || '2108330119Snail!!'
+      });
       if (sheetRes.ok) {
         const sData = await sheetRes.json();
         if (sData && sData.success && Array.isArray(sData.alumni)) {
@@ -335,7 +337,6 @@ async function handleVerifyAlumni(req, res, params) {
   const cleanEmail = (params.email || req.query.email || '').toString().trim().toLowerCase();
   const cleanPass = (params.passcode || req.query.passcode || params.vip_pass || req.query.vip_pass || '').toString().trim();
   const ACTIVE_LEADS_WEBHOOK = 'https://script.google.com/macros/s/AKfycbzhevaZUCV0ITOxOeeFTx4lFG4jqknpCFV1EJ4l_L75-zkgmmY0eJlKc68jEgk_mVU/exec';
-  const webhookUrl = process.env.GOOGLE_SHEET_COURSE_WEBHOOK || ACTIVE_LEADS_WEBHOOK;
 
   // Master Admin check
   if (cleanEmail === 'bdtraining@bdbinhdanhocvu.com' || cleanPass.toLowerCase() === 'bdtraining@bdbinhdanhocvu.com') {
@@ -354,43 +355,25 @@ async function handleVerifyAlumni(req, res, params) {
     });
   }
 
-  let matchedAlumni = null;
-  if (webhookUrl) {
-    try {
-      const getUrl = `${webhookUrl}?action=getAlumniList&secretKey=${encodeURIComponent(process.env.B2B_SECRET_KEY || '2108330119Snail!!')}`;
-      const sheetRes = await httpGet(getUrl);
-      if (sheetRes.ok) {
-        const sData = await sheetRes.json();
-        if (sData && sData.success && Array.isArray(sData.alumni)) {
-          matchedAlumni = sData.alumni.find(a => {
-            const aEmail = (a.email || '').toLowerCase().trim();
-            const aPass = (a.vipCode || '').toString().trim();
-            const matchEmail = cleanEmail && aEmail === cleanEmail;
-            const matchPass = cleanPass && (aPass.toUpperCase() === cleanPass.toUpperCase() || cleanPass.toUpperCase() === 'BDTHUCCHIEN');
-            return matchEmail || matchPass;
-          });
-        }
-      }
-    } catch (err) {
-      console.warn('[VERIFY_ALUMNI_SHEET_ERR]', err.message);
-    }
-  }
-
-  if (matchedAlumni) {
-    return res.status(200).json({
-      success: true,
-      isAlumni: true,
-      userId: matchedAlumni.vipCode || 'UID_VIP',
-      name: matchedAlumni.name || 'Học Viên VIP',
-      nickname: matchedAlumni.nickname || 'Chiến Thần BD',
-      email: matchedAlumni.email || cleanEmail,
-      remainingCredits: matchedAlumni.remainingCredits !== undefined ? matchedAlumni.remainingCredits : 3,
-      expiry: matchedAlumni.expirationDate || '90 Ngày',
-      vipCode: matchedAlumni.vipCode || cleanPass || 'BDTHUCCHIEN'
+  // 1. Verify directly against Google Apps Script (handles alumni check, web status update, and activity log)
+  try {
+    const postRes = await httpPost(ACTIVE_LEADS_WEBHOOK, {
+      action: 'verifyAlumni',
+      email: cleanEmail,
+      passcode: cleanPass,
+      vipPass: cleanPass
     });
+    if (postRes.ok) {
+      const data = await postRes.json();
+      if (data && data.success && data.isAlumni) {
+        return res.status(200).json(data);
+      }
+    }
+  } catch (err) {
+    console.warn('[VERIFY_ALUMNI_SHEET_ERR]', err.message);
   }
 
-  // Fallback: master pass BDTHUCCHIEN
+  // 2. Fallback: master pass BDTHUCCHIEN
   if (cleanPass.toUpperCase() === 'BDTHUCCHIEN') {
     return res.status(200).json({
       success: true,
