@@ -503,8 +503,10 @@ function checkEmail(email, name) {
             
             const userData = {
               id: aVipPass,
-              name: aName || aNick || "Học Viên VIP",
+              name: aName || "Học Viên VIP",
               email: cleanEmail,
+              nickname: aNick,
+              vipCode: aVipPass,
               points: 50,
               avatar: "",
               verified: true,

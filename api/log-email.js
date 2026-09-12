@@ -745,14 +745,50 @@ module.exports = async (req, res) => {
     }
     const reqBody = (req.body && typeof req.body === 'object') ? req.body : {};
     
-    // Resolve clean student name from input, local user, or email handle
-    let resolvedName = name || (localUser ? localUser.name : '') || req.query.name || reqBody.name || '';
+    // Step 1: Query Google Sheets tab "Học Viên Đã Học" as the Single Source of Truth
+    let resolvedName = '';
+    let resolvedNickname = '';
+    let resolvedVipCode = '';
+
+    if (webhookUrl) {
+      try {
+        const getUrl = `${webhookUrl}?action=getAlumniList&secretKey=${encodeURIComponent(process.env.B2B_SECRET_KEY || '2108330119Snail!!')}`;
+        const sheetRes = await httpGet(getUrl);
+        if (sheetRes.ok) {
+          const sData = await sheetRes.json();
+          if (sData && sData.success && Array.isArray(sData.alumni)) {
+            const matchedAlumni = sData.alumni.find(a => (a.email || '').toLowerCase().trim() === cleanEmail);
+            if (matchedAlumni) {
+              if (matchedAlumni.name) resolvedName = matchedAlumni.name.trim();
+              if (matchedAlumni.nickname) resolvedNickname = matchedAlumni.nickname.trim();
+              if (matchedAlumni.vipCode) resolvedVipCode = matchedAlumni.vipCode.trim();
+            }
+          }
+        }
+      } catch (sheetErr) {
+        console.warn('[ALUMNI_SHEET_LOOKUP_ERR]', sheetErr.message);
+      }
+    }
+
+    // Step 2: Fallback to input params or localUser if not found in Alumni sheet
+    if (!resolvedName) {
+      resolvedName = (reqBody.name || req.query.name || name || (localUser ? localUser.name : '') || '').trim();
+    }
     if (!resolvedName && cleanEmail) {
       const handle = cleanEmail.split('@')[0].replace(/[._-]/g, ' ');
       resolvedName = handle.charAt(0).toUpperCase() + handle.slice(1);
     }
-    const resolvedNickname = req.query.nickname || reqBody.nickname || (localUser ? localUser.nickname : '') || 'Chiến Thần BD';
-    const resolvedVipCode = req.query.vipCode || reqBody.vipCode || (localUser ? localUser.vipCode : '') || 'BDTHUCCHIEN';
+
+    if (!resolvedNickname) {
+      resolvedNickname = (reqBody.nickname || req.query.nickname || (localUser ? localUser.nickname : '') || '').trim();
+    }
+    if (!resolvedNickname) {
+      resolvedNickname = 'Chiến Thần BD';
+    }
+
+    if (!resolvedVipCode) {
+      resolvedVipCode = (reqBody.vipCode || req.query.vipCode || (localUser ? localUser.vipCode : '') || 'BDTHUCCHIEN').trim();
+    }
 
     const vipRes = await sendVipLaunchingResendEmail({
       email: cleanEmail,
@@ -766,6 +802,7 @@ module.exports = async (req, res) => {
       recipient: cleanEmail,
       name: resolvedName,
       nickname: resolvedNickname,
+      vipCode: resolvedVipCode,
       message: `Đã gửi email VIP Launching thành công tới ${cleanEmail} qua Resend!`,
       error: vipRes && vipRes.error ? vipRes.error : null
     });
