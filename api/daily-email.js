@@ -68,7 +68,8 @@ const ALLOWED_TEST_EMAILS = [
   'vptanaia@gmail.com',
   'bdtrainingcourse@gmail.com',
   'bdmastery.ai@petervo.vn',
-  'ocsen.fashion@gmail.com'
+  'ocsen.fashion@gmail.com',
+  'bdtraining@bdbinhdanhocvu.com'
 ];
 
 // Native fetch POST helper with automatic secretKey injection

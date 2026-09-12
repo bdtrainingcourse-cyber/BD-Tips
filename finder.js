@@ -878,29 +878,23 @@ document.addEventListener('DOMContentLoaded', () => {
     const labelDeptHr = document.getElementById('label-dept-hr');
     const labelDeptMkt = document.getElementById('label-dept-mkt');
 
-    // Deterministic Funny BD Titles for instant client-side fallback
+    // Deterministic Funny BD Titles (Concise 2-3 Words)
     const CLIENT_BD_TITLES = [
-        "Săn Deal Khủng", "Bách Phát Bách Trúng", "Chốt Đơn Xuyên Màn Đêm",
-        "Chiến Thần Cold Call", "Sát Thủ Doanh Số", "Vua Hẹn Gặp",
-        "Đàm Phán Bất Bại", "Cãi Sếp Giành Hoa Hồng", "Chúa Tể Networking",
-        "Bóp Còi Chốt Deal", "Thần Giao Kèo", "Kẻ Hủy Diệt Từ Chối",
-        "Đào Mỏ Pitching", "Trùm Chuyển Đổi", "Thợ Săn Cá Mập",
-        "Thần Gió Pipeline", "Tín Đồ Hợp Đồng", "Bậc Thầy Upsell",
-        "Cá Mập Chốt Sales", "Chuyên Gia Đòi Nợ Xong Deal"
+        "Chiến Thần BD", "Sát Thủ Săn Deal", "Vua Chốt Sale", "Trùm Đàm Phán",
+        "Thợ Săn Pipeline", "Bậc Thầy B2B", "Cá Mập Chốt Deal", "Bách Phát Bách Trúng",
+        "Vua Hẹn Gặp", "Thợ Rèn Cơ Hội", "Trùm Đọc Vị", "Chiến Hạm B2B",
+        "Thần Tốc Cold Call", "Chúa Tể Network", "Phù Thủy Pitching", "Chuyên Gia Lead",
+        "Thần Giao Kèo", "Thánh Bào Deal", "Thủ Lĩnh B2B", "Bậc Thầy Upsell"
     ];
 
     function getFunnyNickname(name, email) {
-        if (!name) name = "Chiến Binh BD";
-        const parts = name.trim().split(/\s+/);
-        const firstName = parts[parts.length - 1];
-        const seed = ((email || name) + "BD_VIP_SALT").toLowerCase();
+        const seed = ((email || name || 'BD_ALUMNI') + "BD_VIP_SALT").toLowerCase();
         let hash = 0;
         for (let i = 0; i < seed.length; i++) {
             hash = ((hash << 5) - hash) + seed.charCodeAt(i);
             hash |= 0;
         }
-        const title = CLIENT_BD_TITLES[Math.abs(hash) % CLIENT_BD_TITLES.length];
-        return firstName + " " + title;
+        return CLIENT_BD_TITLES[Math.abs(hash) % CLIENT_BD_TITLES.length];
     }
 
     // Tab Switching
@@ -1001,21 +995,38 @@ document.addEventListener('DOMContentLoaded', () => {
         if (vipGateCard) vipGateCard.style.display = 'none';
         if (vipDashboardCard) vipDashboardCard.style.display = 'block';
 
-        if (vipDisplayNickname) vipDisplayNickname.textContent = session.nickname || 'Chiến Binh BD';
+        const isMaster = (session.email || '').toLowerCase().trim() === 'bdtraining@bdbinhdanhocvu.com';
+        if (isMaster) {
+            session.remainingCredits = 999;
+            session.isAdmin = true;
+            session.isMasterAdmin = true;
+        }
+
+        if (vipDisplayNickname) {
+            if (isMaster) {
+                vipDisplayNickname.innerHTML = `${session.nickname || 'Peter Võ'} <span style="background: linear-gradient(135deg, #a20a0a, #dc2626); color: #fff; font-size: 0.72rem; padding: 2px 8px; border-radius: 10px; margin-left: 6px; font-weight: 800; display: inline-block;">👑 Master Admin</span>`;
+            } else {
+                vipDisplayNickname.textContent = session.nickname || 'Chiến Binh BD';
+            }
+        }
         if (vipDisplayEmail) vipDisplayEmail.textContent = session.email || 'Alumni VIP Member';
         
-        const credits = session.remainingCredits !== undefined ? session.remainingCredits : 3;
-        if (vipCreditsVal) vipCreditsVal.textContent = credits;
+        const credits = isMaster ? 999 : (session.remainingCredits !== undefined ? session.remainingCredits : 3);
+        if (vipCreditsVal) vipCreditsVal.textContent = isMaster ? '999 (Vô Hạn)' : credits;
         if (vipProgressFill) {
-            const pct = Math.max(0, Math.min(100, (credits / 3) * 100));
+            const pct = isMaster ? 100 : Math.max(0, Math.min(100, (credits / 3) * 100));
             vipProgressFill.style.width = pct + '%';
             if (pct <= 33) vipProgressFill.style.background = '#ef4444';
             else if (pct <= 66) vipProgressFill.style.background = '#f59e0b';
             else vipProgressFill.style.background = 'linear-gradient(90deg, #f3a83b, #10b981)';
         }
 
-        if (vipExpiryText && session.expiry) {
-            vipExpiryText.textContent = `Hạn dùng: ${session.expiry} (3 tháng)`;
+        if (vipExpiryText) {
+            if (isMaster) {
+                vipExpiryText.textContent = 'Hạn dùng: Vĩnh Viễn (Master Admin Trọn Đời)';
+            } else if (session.expiry) {
+                vipExpiryText.textContent = `Hạn dùng: ${session.expiry} (3 tháng)`;
+            }
         }
 
         // Referral Link & Giver Mentality (Unique User ID Based)
@@ -1323,6 +1334,44 @@ document.addEventListener('DOMContentLoaded', () => {
             renderVipSession(null);
         }
     })();
+
+    // VIP Nickname Self-Renaming Event Listener
+    const btnEditVipNickname = document.getElementById('btn-edit-vip-nickname');
+    if (btnEditVipNickname) {
+        btnEditVipNickname.addEventListener('click', async () => {
+            const savedSession = localStorage.getItem('alumni_vip_session');
+            if (!savedSession) return;
+            let session = null;
+            try { session = JSON.parse(savedSession); } catch (e) { return; }
+            if (!session) return;
+
+            const currentNick = session.nickname || 'Chiến Thần BD';
+            const newNick = window.prompt("Nhập Tên hoặc Funny Nickname bạn muốn hiển thị:", currentNick);
+            if (!newNick || !newNick.trim() || newNick.trim() === currentNick) return;
+            const cleanNick = newNick.trim();
+            
+            session.nickname = cleanNick;
+            localStorage.setItem('alumni_vip_session', JSON.stringify(session));
+            localStorage.setItem('streak_name', cleanNick);
+            
+            renderVipSession(session);
+
+            // Đồng bộ ngầm lên server và Google Sheet
+            try {
+                fetch('/api/log-email', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        action: 'updateAlumniNickname',
+                        email: session.email,
+                        nickname: cleanNick
+                    })
+                }).catch(() => {});
+            } catch (e) {}
+
+            alert("✅ Đã cập nhật Tên / Funny Nickname thành công!");
+        });
+    }
 
     // Expose for testing
     window.renderResultsTable = renderResultsTable;

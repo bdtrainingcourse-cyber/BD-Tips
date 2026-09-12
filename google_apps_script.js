@@ -30,7 +30,10 @@ function onOpen() {
       .addItem("➕ Khởi Tạo Tab 'Học Viên Đã Học' & 'Yêu Cầu Tìm PIC'", "menuInitAlumniSheets")
       .addItem("⚡ Xử Lý Nickname & Mã VIP Tự Động Cho Toàn Bộ Học Viên", "menuAutoProcessAlumni")
       .addSeparator()
-      .addItem("🧪 Gửi Thử Email Launching VIP (Đến vptanaia@gmail.com)", "menuTestSendVipLaunchingEmail")
+      .addItem("🧪 Gửi Thử VIP (Nhập Email Bất Kỳ)", "menuTestSendVipLaunchingEmail")
+      .addItem("🧪 Gửi Thử VIP Đến: ocsen.fashion@gmail.com", "menuTestSendVipToOcsen")
+      .addItem("🧪 Gửi Thử VIP Đến: vptanaia@gmail.com", "menuTestSendVipToTan")
+      .addSeparator()
       .addItem("🚀 Gửi Toàn Bộ VIP (Giãn cách 2 phút/thư chống spam)", "menuSendBulkAlumniWithPacing")
       .addToUi();
   } catch (e) {
@@ -75,11 +78,46 @@ function initAlumniSheet() {
 }
 
 function menuTestSendVipLaunchingEmail() {
-  const res = sendVipLaunchingEmail("vptanaia@gmail.com");
+  const ui = SpreadsheetApp.getUi();
+  const prompt = ui.prompt(
+    "🧪 Gửi Thử Email Launching VIP",
+    "Nhập email học viên để gửi thử (mặc định: ocsen.fashion@gmail.com):",
+    ui.ButtonSet.OK_CANCEL
+  );
+  if (prompt.getSelectedButton() !== ui.Button.OK) return;
+  const targetEmail = prompt.getResponseText().trim() || "ocsen.fashion@gmail.com";
+  if (!targetEmail.includes("@")) {
+    ui.alert("Email không hợp lệ. Vui lòng thử lại.");
+    return;
+  }
+  executeVipTestSendAlert(targetEmail);
+}
+
+function menuTestSendVipToOcsen() {
+  executeVipTestSendAlert("ocsen.fashion@gmail.com");
+}
+
+function menuTestSendVipToTan() {
+  executeVipTestSendAlert("vptanaia@gmail.com");
+}
+
+function executeVipTestSendAlert(targetEmail) {
+  const res = sendVipLaunchingEmail(targetEmail);
   if (res && res.success) {
-    SpreadsheetApp.getUi().alert("Thành Công!", "Đã gửi thử email Launching VIP kèm hình ảnh 9 Vũ Khí B2B tới hộp thư vptanaia@gmail.com. Hãy kiểm tra hộp thư nhé!", SpreadsheetApp.getUi().ButtonSet.OK);
+    SpreadsheetApp.getUi().alert(
+      "Gửi Thử Nghiệm Thành Công!",
+      "🎉 Đã gửi email Launching VIP kèm hình ảnh 9 Vũ Khí B2B tới: " + targetEmail + "\n\n" +
+      "• Họ tên trong thư: " + (res.recipientName || "Chuẩn theo Sheet") + "\n" +
+      "• Funny Nickname: " + (res.recipientNickname || "Chuẩn theo Sheet") + "\n\n" +
+      "👉 Bạn hãy kiểm tra hộp thư (cả Inbox và Promotions/Spam) nhé!",
+      SpreadsheetApp.getUi().ButtonSet.OK
+    );
   } else {
-    SpreadsheetApp.getUi().alert("Thông Báo", (res && res.error) ? res.error : "Không thể gửi email. Vui lòng kiểm tra lại quyền truy cập Gmail.", SpreadsheetApp.getUi().ButtonSet.OK);
+    SpreadsheetApp.getUi().alert(
+      "Thông Báo Gửi Thử",
+      (res && res.error) ? res.error : "Không thể gửi email. Vui lòng kiểm tra lại quyền truy cập Gmail hoặc mạng internet.",
+      SpreadsheetApp.getUi().ButtonSet.OK
+    );
   }
 }
 
@@ -271,6 +309,8 @@ function doPost(e) {
       return logDailyCampaign(postData);
     } else if (action === "updateProfile") {
       return updateProfile(email, postData.field, postData.value, postData.points);
+    } else if (action === "updateAlumniNickname" || action === "updateNickname") {
+      return updateAlumniNickname(email, postData.nickname);
     } else if (postData.tool === "course-registration") {
       return handleCourseRegistration(postData);
     } else {
@@ -1557,53 +1597,38 @@ function getOrCreateSheet(sheetName) {
 // 12. ALUMNI VIP & PIC REQUEST AUTOMATION ENGINE (HỌC VIÊN ĐÃ HỌC)
 // ------------------------------------------------------------------
 const BD_FUNNY_TITLES = [
-  "Săn Deal Khủng",
+  "Chiến Thần BD",
+  "Sát Thủ Săn Deal",
+  "Vua Chốt Sale",
+  "Trùm Đàm Phán",
+  "Thợ Săn Pipeline",
+  "Bậc Thầy B2B",
+  "Cá Mập Chốt Deal",
   "Bách Phát Bách Trúng",
-  "Chốt Đơn Xuyên Màn Đêm",
-  "Chiến Thần Cold Call",
-  "Sát Thủ Doanh Số",
   "Vua Hẹn Gặp",
-  "Đàm Phán Bất Bại",
-  "Cãi Sếp Giành Hoa Hồng",
-  "Chúa Tể Networking",
-  "Bóp Còi Chốt Deal",
-  "Thần Giao Kèo",
-  "Kẻ Hủy Diệt Từ Chối",
-  "Đào Mỏ Pitching",
-  "Trùm Chuyển Đổi",
-  "Thợ Săn Cá Mập",
-  "Thần Gió Pipeline",
-  "Tín Đồ Hợp Đồng",
-  "Bậc Thầy Upsell",
-  "Cá Mập Chốt Sales",
-  "Chuyên Gia Đòi Nợ Xong Deal",
-  "Bậc Thầy Nịnh Khách",
-  "Thánh Bào Ngân Sách",
-  "Trùm Đọc Vị Đối Tác",
   "Thợ Rèn Cơ Hội",
+  "Trùm Đọc Vị",
   "Chiến Hạm B2B",
-  "Bậc Thầy Follow Up",
-  "Chúa Tể Thuyết Phục",
-  "Vua Đóng Thầu",
-  "Phù Thủy Hợp Tác",
-  "Thợ Săn Doanh Nghiệp"
+  "Thần Tốc Cold Call",
+  "Chúa Tể Network",
+  "Phù Thủy Pitching",
+  "Chuyên Gia Lead",
+  "Thần Giao Kèo",
+  "Thánh Bào Deal",
+  "Thủ Lĩnh B2B",
+  "Bậc Thầy Upsell"
 ];
 
 function generateFunnyNickname(fullName, email) {
-  if (!fullName) fullName = "Chiến Binh BD";
-  const parts = fullName.trim().split(/\s+/);
-  const firstName = parts[parts.length - 1]; // Lấy từ cuối cùng (Tên gọi)
-  
   // Tính hash nhất quán từ email hoặc họ tên để nickname cố định
-  const seed = ((email || fullName) + "BD_VIP_SALT").toLowerCase();
+  const seed = ((email || fullName || "BD_ALUMNI") + "BD_VIP_SALT").toLowerCase();
   let hash = 0;
   for (let i = 0; i < seed.length; i++) {
     hash = ((hash << 5) - hash) + seed.charCodeAt(i);
     hash |= 0;
   }
   const index = Math.abs(hash) % BD_FUNNY_TITLES.length;
-  const title = BD_FUNNY_TITLES[index];
-  return firstName + " " + title;
+  return BD_FUNNY_TITLES[index];
 }
 
 function autoProcessAlumniSheet() {
@@ -1717,6 +1742,23 @@ function verifyAlumni(identifier, emailParam) {
     const cleanId = (identifier || "").toString().trim();
     const cleanEmail = (emailParam || "").toString().trim().toLowerCase();
     
+    // Master Admin đặc quyền cao nhất
+    if (cleanEmail === "bdtraining@bdbinhdanhocvu.com" || cleanId.toLowerCase() === "bdtraining@bdbinhdanhocvu.com") {
+      return createJsonResponse({
+        success: true,
+        isAlumni: true,
+        isAdmin: true,
+        isMasterAdmin: true,
+        userId: "UID_MASTER_ADMIN",
+        name: "Peter Võ (Master Admin)",
+        nickname: "Master Admin",
+        email: "bdtraining@bdbinhdanhocvu.com",
+        remainingCredits: 999,
+        expiry: "Trọn Đời (Vô Hạn)",
+        vipCode: "BD-MASTER-ADMIN"
+      });
+    }
+
     const ss = SpreadsheetApp.getActiveSpreadsheet();
     let sheet = ss.getSheetByName("Học Viên Đã Học");
     
@@ -1911,22 +1953,54 @@ function sendVipLaunchingEmail(targetEmail) {
       const data = sheet.getDataRange().getValues();
       for (let r = 1; r < data.length; r++) {
         const row = data[r];
-        const name = row[0] ? row[0].toString().trim() : "Bạn";
         const email = row[1] ? row[1].toString().trim().toLowerCase() : "";
-        const nickname = row[2] ? row[2].toString().trim() : "Chiến Binh BD";
-        const vipCode = row[3] ? row[3].toString().trim() : "BDTHUCCHIEN";
-        const magicLink = row[8] ? row[8].toString().trim() : ("https://www.bdbinhdanhocvu.com/finder.html?email=" + encodeURIComponent(email) + "&vip_pass=" + encodeURIComponent(vipCode));
 
         if (email && (email === cleanTarget || cleanTarget === "all")) {
+          const name = row[0] ? row[0].toString().trim() : "Bạn";
+          let nickname = row[2] ? row[2].toString().trim() : "";
+          if (!nickname) nickname = generateFunnyNickname(name, email);
+          const vipCode = row[3] ? row[3].toString().trim() : "BDTHUCCHIEN";
+          const magicLink = row[8] ? row[8].toString().trim() : ("https://www.bdbinhdanhocvu.com/finder.html?email=" + encodeURIComponent(email) + "&vip_pass=" + encodeURIComponent(vipCode));
+
           const subject = "🎉 [Đặc Quyền Alumni VIP] Ra Mắt Hệ Sinh Thái 9 Vũ Khí B2B & 3 Lượt Tìm PIC";
           const fullHtml = buildVipLaunchingEmailHtml(name, nickname, email, vipCode, magicLink);
 
-          lastResult = sendEmailSafe({
-            to: email,
-            name: "Peter Võ - BD Bình Dân Học Vụ",
-            subject: subject,
-            htmlBody: fullHtml
-          });
+          // Thử gửi qua Resend Endpoint trước (đảm bảo SPF/DKIM chuẩn tên miền)
+          let sentViaApi = false;
+          try {
+            const apiRes = UrlFetchApp.fetch("https://www.bdbinhdanhocvu.com/api/log-email?action=sendVipLaunchingEmail", {
+              method: "POST",
+              contentType: "application/json",
+              payload: JSON.stringify({
+                email: email,
+                name: name,
+                nickname: nickname,
+                vipCode: vipCode,
+                secretKey: B2B_SECRET_KEY
+              }),
+              muteHttpExceptions: true
+            });
+            const apiJson = JSON.parse(apiRes.getContentText());
+            if (apiJson && apiJson.success) {
+              sentViaApi = true;
+              lastResult = { success: true, method: "Resend", resendId: apiJson.resendId, recipientName: name, recipientNickname: nickname };
+            }
+          } catch (apiErr) {
+            Logger.log("Send via API fallback: " + apiErr.message);
+          }
+
+          if (!sentViaApi) {
+            lastResult = sendEmailSafe({
+              to: email,
+              name: "Peter Võ - BD Bình Dân Học Vụ",
+              subject: subject,
+              htmlBody: fullHtml
+            });
+            if (lastResult) {
+              lastResult.recipientName = name;
+              lastResult.recipientNickname = nickname;
+            }
+          }
 
           sentCount++;
           if (cleanTarget !== "all") {
@@ -1936,21 +2010,68 @@ function sendVipLaunchingEmail(targetEmail) {
       }
     }
 
-    // Nếu gửi thử nghiệm 1 email cụ thể mà email đó chưa có trong sheet: Vẫn gửi bình thường với dữ liệu mẫu VIP!
+    // Nếu gửi thử nghiệm 1 email cụ thể mà email đó chưa có trong sheet: Tra cứu thông tin thực tế!
     if (sentCount === 0 && cleanTarget && cleanTarget !== "all") {
-      const testName = "Peter Võ (VIP Preview)";
-      const testNick = "Chiến Thần BD";
-      const testVipCode = "BD-TEST999";
+      let testName = "";
+      let testVipCode = "BDTHUCCHIEN";
+
+      // 1. Kiểm tra trong sheet "Học Viên Đăng Ký"
+      const regSheet = ss.getSheetByName("Học Viên Đăng Ký");
+      if (regSheet) {
+        const regData = regSheet.getDataRange().getValues();
+        const regIdx = getHeaderIndices(regData[0]);
+        for (let i = 1; i < regData.length; i++) {
+          if ((regData[i][regIdx.email] || "").toString().toLowerCase().trim() === cleanTarget) {
+            testName = (regData[i][regIdx.name] || "").toString().trim();
+            testVipCode = (regData[i][regIdx.id] || "BDTHUCCHIEN").toString().trim();
+            break;
+          }
+        }
+      }
+
+      // 2. Nếu chưa có tên, format từ email prefix (VD: ocsen.fashion -> Ocsen Fashion)
+      if (!testName) {
+        const handle = cleanTarget.split('@')[0].replace(/[._-]/g, ' ');
+        testName = handle.split(' ').map(function(word) {
+          return word.charAt(0).toUpperCase() + word.slice(1);
+        }).join(' ');
+      }
+      const testNick = generateFunnyNickname(testName, cleanTarget);
       const testMagicLink = "https://www.bdbinhdanhocvu.com/finder.html?email=" + encodeURIComponent(cleanTarget) + "&vip_pass=" + encodeURIComponent(testVipCode);
       const subject = "🎉 [Đặc Quyền Alumni VIP] Ra Mắt Hệ Sinh Thái 9 Vũ Khí B2B & 3 Lượt Tìm PIC";
       const fullHtml = buildVipLaunchingEmailHtml(testName, testNick, cleanTarget, testVipCode, testMagicLink);
 
-      return sendEmailSafe({
+      // Thử gửi qua Resend Endpoint trước
+      try {
+        const apiRes = UrlFetchApp.fetch("https://www.bdbinhdanhocvu.com/api/log-email?action=sendVipLaunchingEmail", {
+          method: "POST",
+          contentType: "application/json",
+          payload: JSON.stringify({
+            email: cleanTarget,
+            name: testName,
+            nickname: testNick,
+            vipCode: testVipCode,
+            secretKey: B2B_SECRET_KEY
+          }),
+          muteHttpExceptions: true
+        });
+        const apiJson = JSON.parse(apiRes.getContentText());
+        if (apiJson && apiJson.success) {
+          return { success: true, method: "Resend", resendId: apiJson.resendId, recipientName: testName, recipientNickname: testNick };
+        }
+      } catch (err) {}
+
+      const safeRes = sendEmailSafe({
         to: cleanTarget,
         name: "Peter Võ - BD Bình Dân Học Vụ",
         subject: subject,
         htmlBody: fullHtml
       });
+      if (safeRes) {
+        safeRes.recipientName = testName;
+        safeRes.recipientNickname = testNick;
+      }
+      return safeRes;
     }
 
     return { success: true, sentCount: sentCount, message: "Hoàn tất xử lý gửi email. Đã gửi: " + sentCount };
@@ -2109,6 +2230,32 @@ function updateAlumniEmailStatus(updates) {
     return createJsonResponse({ success: true, updatedCount: updatedCount });
   } catch (err) {
     Logger.log("updateAlumniEmailStatus error: " + err.message);
+    return createJsonResponse({ success: false, error: err.message });
+  }
+}
+
+function updateAlumniNickname(email, newNickname) {
+  try {
+    const cleanEmail = (email || "").toString().trim().toLowerCase();
+    const cleanNick = (newNickname || "").toString().trim();
+    if (!cleanEmail || !cleanNick) {
+      return createJsonResponse({ success: false, error: "Missing email or nickname" });
+    }
+    const ss = SpreadsheetApp.getActiveSpreadsheet();
+    let updatedInAlumni = false;
+    const sheetAlumni = ss.getSheetByName("Học Viên Đã Học");
+    if (sheetAlumni) {
+      const data = sheetAlumni.getDataRange().getValues();
+      for (let r = 1; r < data.length; r++) {
+        if ((data[r][1] || "").toString().trim().toLowerCase() === cleanEmail) {
+          sheetAlumni.getRange(r + 1, 3).setValue(cleanNick);
+          updatedInAlumni = true;
+          break;
+        }
+      }
+    }
+    return createJsonResponse({ success: true, email: cleanEmail, nickname: cleanNick, updatedInAlumni: updatedInAlumni });
+  } catch (err) {
     return createJsonResponse({ success: false, error: err.message });
   }
 }

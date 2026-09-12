@@ -319,7 +319,7 @@ async function sendVipLaunchingResendEmail({ email, name, nickname, vipCode, sch
   };
 
   const html = renderHtmlEmailTemplate({
-    greeting: `Chào bạn ${name || 'Học viên'}`,
+    greeting: null, // Avoid duplicate greeting, contentHtml already contains rich personalized greeting
     message: contentHtml,
     buttonText: '🚀 MỞ KHÓA ĐẶC QUYỀN VIP CỦA BẠN NGAY &rarr;',
     buttonUrl: magicLink,

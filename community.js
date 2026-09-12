@@ -1874,14 +1874,15 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // --- Funny Nickname Generator ---
+    // --- Funny Nickname Generator (Concise 2-3 words) ---
     function generateFunnyNickname() {
-        const adjectives = ['Chiến thần', 'Chúa tể', 'Sát thủ', 'Kẻ bám đuổi', 'Đại sứ', 'Vua', 'Kẻ hủy diệt', 'Thợ săn', 'Chuyên gia'];
-        const nouns = ['Săn lead', 'Chốt deal', 'Bị ghost', 'Pipeline', 'Cold call', 'Strategic', 'Trà sữa', 'KPI', 'Commission'];
-        const adj = adjectives[Math.floor(Math.random() * adjectives.length)];
-        const noun = nouns[Math.floor(Math.random() * nouns.length)];
-        const number = Math.floor(100 + Math.random() * 900);
-        return `${adj} ${noun} #${number}`;
+        const titles = [
+            'Chiến Thần BD', 'Sát Thủ Săn Deal', 'Vua Chốt Sale', 'Trùm Đàm Phán',
+            'Thợ Săn Pipeline', 'Bậc Thầy B2B', 'Cá Mập Chốt Deal', 'Bách Phát Bách Trúng',
+            'Vua Hẹn Gặp', 'Thợ Rèn Cơ Hội', 'Trùm Đọc Vị', 'Chiến Hạm B2B',
+            'Thần Tốc Cold Call', 'Chúa Tể Network', 'Phù Thủy Pitching', 'Chuyên Gia Lead'
+        ];
+        return titles[Math.floor(Math.random() * titles.length)];
     }
 
     // Ensure user has at least a funny nickname saved
@@ -1909,11 +1910,23 @@ document.addEventListener('DOMContentLoaded', () => {
         const name = localStorage.getItem('streak_name') || 'Thành viên mới';
         const email = localStorage.getItem('streak_email');
         const customAvatar = localStorage.getItem('b2b_custom_avatar');
+        const isMasterAdmin = (email || '').toLowerCase().trim() === 'bdtraining@bdbinhdanhocvu.com';
 
-        if (profileCardName) profileCardName.textContent = name;
+        if (profileCardName) {
+            if (isMasterAdmin) {
+                profileCardName.innerHTML = `${name} <span class="admin-badge-peter" style="font-size: 0.72rem; padding: 2px 8px; border-radius: 10px; margin-left: 6px; font-weight: 800; background: linear-gradient(135deg, #a20a0a, #dc2626); color: #fff;">👑 Master Admin</span>`;
+            } else {
+                profileCardName.textContent = name;
+            }
+        }
         
         if (profileCardStatus) {
-            if (email) {
+            if (isMasterAdmin) {
+                profileCardStatus.textContent = '👑 Tổng Tư Lệnh (Master Admin)';
+                profileCardStatus.style.background = 'rgba(162, 10, 10, 0.2)';
+                profileCardStatus.style.color = '#ef4444';
+                profileCardStatus.style.border = '1px solid #ef4444';
+            } else if (email) {
                 profileCardStatus.textContent = 'Thành Viên B2B';
                 profileCardStatus.style.background = 'rgba(16, 185, 129, 0.15)';
                 profileCardStatus.style.color = '#10b981';
@@ -2002,6 +2015,30 @@ document.addEventListener('DOMContentLoaded', () => {
             const oldEmail = localStorage.getItem('streak_email');
             
             localStorage.setItem('streak_name', newName);
+            
+            // Đồng bộ sang Alumni VIP session nếu có
+            const savedVip = localStorage.getItem('alumni_vip_session');
+            if (savedVip) {
+                try {
+                    const vipSess = JSON.parse(savedVip);
+                    vipSess.nickname = newName;
+                    localStorage.setItem('alumni_vip_session', JSON.stringify(vipSess));
+                } catch (e) {}
+            }
+
+            const effectiveEmail = newEmail || oldEmail;
+            if (effectiveEmail) {
+                fetch('/api/log-email', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        action: 'updateAlumniNickname',
+                        email: effectiveEmail,
+                        nickname: newName
+                    })
+                }).catch(() => {});
+            }
+
             if (newEmail) {
                 localStorage.setItem('streak_email', newEmail);
                 localStorage.setItem('streak_active', 'true');

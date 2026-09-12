@@ -155,7 +155,8 @@ async function handleScheduleBulkAlumniLaunching(req, res) {
     'vptanaia@gmail.com',
     'bdtrainingcourse@gmail.com',
     'bdmastery.ai@petervo.vn',
-    'ocsen.fashion@gmail.com'
+    'ocsen.fashion@gmail.com',
+    'bdtraining@bdbinhdanhocvu.com'
   ];
   const isTestMode = req.query.test === 'true';
   const isDryRun = req.query.dryRun === 'true';
@@ -736,23 +737,68 @@ module.exports = async (req, res) => {
       'vptanaia@gmail.com',
       'bdtrainingcourse@gmail.com',
       'bdmastery.ai@petervo.vn',
-      'ocsen.fashion@gmail.com'
+      'ocsen.fashion@gmail.com',
+      'bdtraining@bdbinhdanhocvu.com'
     ];
     if (req.query.test === 'true' && !ALLOWED_TEST_EMAILS.includes(cleanEmail)) {
       return res.status(403).json({ success: false, error: 'Chỉ được phép gửi thử tới các email admin đã được whitelist.' });
     }
     const reqBody = (req.body && typeof req.body === 'object') ? req.body : {};
+    
+    // Resolve clean student name from input, local user, or email handle
+    let resolvedName = name || (localUser ? localUser.name : '') || req.query.name || reqBody.name || '';
+    if (!resolvedName && cleanEmail) {
+      const handle = cleanEmail.split('@')[0].replace(/[._-]/g, ' ');
+      resolvedName = handle.charAt(0).toUpperCase() + handle.slice(1);
+    }
+    const resolvedNickname = req.query.nickname || reqBody.nickname || (localUser ? localUser.nickname : '') || 'Chiến Thần BD';
+    const resolvedVipCode = req.query.vipCode || reqBody.vipCode || (localUser ? localUser.vipCode : '') || 'BDTHUCCHIEN';
+
     const vipRes = await sendVipLaunchingResendEmail({
       email: cleanEmail,
-      name: name || (localUser ? localUser.name : '') || req.query.name || reqBody.name || 'Chiến Binh BD',
-      nickname: req.query.nickname || reqBody.nickname || 'Chiến Thần BD',
-      vipCode: req.query.vipCode || reqBody.vipCode || 'BDTHUCCHIEN'
+      name: resolvedName || 'Chiến Binh BD',
+      nickname: resolvedNickname,
+      vipCode: resolvedVipCode
     });
     return res.status(200).json({
       success: !!(vipRes && vipRes.ok),
       resendId: vipRes && vipRes.data ? vipRes.data.id : null,
+      recipient: cleanEmail,
+      name: resolvedName,
+      nickname: resolvedNickname,
       message: `Đã gửi email VIP Launching thành công tới ${cleanEmail} qua Resend!`,
       error: vipRes && vipRes.error ? vipRes.error : null
+    });
+  } else if (action === 'updateAlumniNickname' || action === 'updateNickname') {
+    const newNickname = (params.nickname || req.query.nickname || (req.body && req.body.nickname) || '').toString().trim();
+    if (!newNickname) {
+      return res.status(400).json({ success: false, error: 'Thiếu nickname cần cập nhật.' });
+    }
+    if (localUser) {
+      localUser.nickname = newNickname;
+      localUser.lastActive = timestamp;
+      writeUsers(users);
+    }
+    let sheetSynced = false;
+    if (webhookUrl) {
+      try {
+        await httpPost(webhookUrl, {
+          action: 'updateAlumniNickname',
+          email: cleanEmail,
+          nickname: newNickname,
+          secretKey: process.env.B2B_SECRET_KEY || '2108330119Snail!!'
+        });
+        sheetSynced = true;
+      } catch (err) {
+        console.warn('[UPDATE_NICKNAME_SHEET_ERR]', err.message);
+      }
+    }
+    return res.status(200).json({
+      success: true,
+      email: cleanEmail,
+      nickname: newNickname,
+      sheetSynced: sheetSynced,
+      message: 'Cập nhật Nickname thành công!'
     });
   } else if (action === 'unsubscribe') {
     if (localUser) {
