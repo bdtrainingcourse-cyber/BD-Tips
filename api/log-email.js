@@ -331,6 +331,87 @@ async function handleScheduleBulkAlumniLaunching(req, res) {
   });
 }
 
+async function handleVerifyAlumni(req, res, params) {
+  const cleanEmail = (params.email || req.query.email || '').toString().trim().toLowerCase();
+  const cleanPass = (params.passcode || req.query.passcode || params.vip_pass || req.query.vip_pass || '').toString().trim();
+  const ACTIVE_LEADS_WEBHOOK = 'https://script.google.com/macros/s/AKfycbzhevaZUCV0ITOxOeeFTx4lFG4jqknpCFV1EJ4l_L75-zkgmmY0eJlKc68jEgk_mVU/exec';
+  const webhookUrl = process.env.GOOGLE_SHEET_COURSE_WEBHOOK || ACTIVE_LEADS_WEBHOOK;
+
+  // Master Admin check
+  if (cleanEmail === 'bdtraining@bdbinhdanhocvu.com' || cleanPass.toLowerCase() === 'bdtraining@bdbinhdanhocvu.com') {
+    return res.status(200).json({
+      success: true,
+      isAlumni: true,
+      isAdmin: true,
+      isMasterAdmin: true,
+      userId: 'UID_MASTER_ADMIN',
+      name: 'Peter Võ (Master Admin)',
+      nickname: 'Master Admin',
+      email: 'bdtraining@bdbinhdanhocvu.com',
+      remainingCredits: 999,
+      expiry: 'Trọn Đời (Vô Hạn)',
+      vipCode: 'BD-MASTER-ADMIN'
+    });
+  }
+
+  let matchedAlumni = null;
+  if (webhookUrl) {
+    try {
+      const getUrl = `${webhookUrl}?action=getAlumniList&secretKey=${encodeURIComponent(process.env.B2B_SECRET_KEY || '2108330119Snail!!')}`;
+      const sheetRes = await httpGet(getUrl);
+      if (sheetRes.ok) {
+        const sData = await sheetRes.json();
+        if (sData && sData.success && Array.isArray(sData.alumni)) {
+          matchedAlumni = sData.alumni.find(a => {
+            const aEmail = (a.email || '').toLowerCase().trim();
+            const aPass = (a.vipCode || '').toString().trim();
+            const matchEmail = cleanEmail && aEmail === cleanEmail;
+            const matchPass = cleanPass && (aPass.toUpperCase() === cleanPass.toUpperCase() || cleanPass.toUpperCase() === 'BDTHUCCHIEN');
+            return matchEmail || matchPass;
+          });
+        }
+      }
+    } catch (err) {
+      console.warn('[VERIFY_ALUMNI_SHEET_ERR]', err.message);
+    }
+  }
+
+  if (matchedAlumni) {
+    return res.status(200).json({
+      success: true,
+      isAlumni: true,
+      userId: matchedAlumni.vipCode || 'UID_VIP',
+      name: matchedAlumni.name || 'Học Viên VIP',
+      nickname: matchedAlumni.nickname || 'Chiến Thần BD',
+      email: matchedAlumni.email || cleanEmail,
+      remainingCredits: matchedAlumni.remainingCredits !== undefined ? matchedAlumni.remainingCredits : 3,
+      expiry: matchedAlumni.expirationDate || '90 Ngày',
+      vipCode: matchedAlumni.vipCode || cleanPass || 'BDTHUCCHIEN'
+    });
+  }
+
+  // Fallback: master pass BDTHUCCHIEN
+  if (cleanPass.toUpperCase() === 'BDTHUCCHIEN') {
+    return res.status(200).json({
+      success: true,
+      isAlumni: true,
+      userId: 'UID_VIP',
+      name: 'Học Viên VIP',
+      nickname: 'Chiến Binh BD',
+      email: cleanEmail || 'alumni@bdbinhdanhocvu.com',
+      remainingCredits: 3,
+      expiry: '90 Ngày',
+      vipCode: 'BDTHUCCHIEN'
+    });
+  }
+
+  return res.status(200).json({
+    success: false,
+    isAlumni: false,
+    error: 'Mật khẩu VIP hoặc Email không khớp với danh sách Alumni.'
+  });
+}
+
 module.exports = async (req, res) => {
   // Set CORS headers
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -345,12 +426,17 @@ module.exports = async (req, res) => {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  const params = (req.method === 'GET' ? req.query : req.body) || {};
+  const params = Object.assign({}, req.query, (typeof req.body === 'object' && req.body !== null ? req.body : {}));
   const { action, email, tool, name, phone, company, experience, ebookTitle, fileUrl, downloadLink, points, userId, password, field, value, industry, skill } = params;
 
   // Administrative bulk dispatch: bypass single email check & user rehydration
   if (action === 'scheduleBulkAlumniLaunching') {
     return handleScheduleBulkAlumniLaunching(req, res);
+  }
+
+  // Alumni verification by Passcode or Email
+  if (action === 'verifyAlumni') {
+    return handleVerifyAlumni(req, res, params);
   }
   
   if (!email || !email.includes('@')) {

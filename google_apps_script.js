@@ -1974,6 +1974,7 @@ function sendVipLaunchingEmail(targetEmail) {
               method: "POST",
               contentType: "application/json",
               payload: JSON.stringify({
+                action: "sendVipLaunchingEmail",
                 email: email,
                 name: name,
                 nickname: nickname,
@@ -2049,6 +2050,7 @@ function sendVipLaunchingEmail(targetEmail) {
           method: "POST",
           contentType: "application/json",
           payload: JSON.stringify({
+            action: "sendVipLaunchingEmail",
             email: cleanTarget,
             name: testName,
             nickname: testNick,

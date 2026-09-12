@@ -1105,7 +1105,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const isMasterPass = cleanPass.toUpperCase() === 'BDTHUCCHIEN';
         const isVipFormat = cleanPass.toUpperCase().startsWith('BD-') || cleanPass.toUpperCase().startsWith('VIP-') || cleanPass.length >= 4;
 
-        if (!cleanPass) {
+        if (!cleanPass && !cleanEmail) {
             if (vipErrorMsg) {
                 vipErrorMsg.textContent = 'Vui lòng nhập Mật khẩu VIP riêng biệt gửi qua email của bạn.';
                 vipErrorMsg.style.display = 'block';
@@ -1113,15 +1113,12 @@ document.addEventListener('DOMContentLoaded', () => {
             return false;
         }
 
-        // 2. Thử xác thực với Google Apps Script Webhook nếu có mạng
+        // 2a. Thử xác thực với Production API /api/log-email?action=verifyAlumni (cùng domain, <200ms, không bị chặn CORS trên mobile)
         let session = null;
         try {
-            const resp = await fetch(`${GAS_WEBHOOK_URL}?action=verifyAlumni&passcode=${encodeURIComponent(cleanPass)}&email=${encodeURIComponent(cleanEmail)}`, {
-                method: 'GET',
-                mode: 'cors'
-            });
-            if (resp.ok) {
-                const data = await resp.json();
+            const apiResp = await fetch(`/api/log-email?action=verifyAlumni&email=${encodeURIComponent(cleanEmail)}&passcode=${encodeURIComponent(cleanPass)}`);
+            if (apiResp.ok) {
+                const data = await apiResp.json();
                 if (data.success && data.isAlumni) {
                     session = {
                         isVip: true,
@@ -1135,8 +1132,35 @@ document.addEventListener('DOMContentLoaded', () => {
                     };
                 }
             }
-        } catch (netErr) {
-            console.warn('Network call to GAS verifyAlumni failed, using client-side validation:', netErr);
+        } catch (apiErr) {
+            console.warn('API verifyAlumni fallback to GAS:', apiErr);
+        }
+
+        // 2b. Nếu API backend không phản hồi, thử GAS Webhook fallback
+        if (!session) {
+            try {
+                const resp = await fetch(`${GAS_WEBHOOK_URL}?action=verifyAlumni&passcode=${encodeURIComponent(cleanPass)}&email=${encodeURIComponent(cleanEmail)}`, {
+                    method: 'GET',
+                    mode: 'cors'
+                });
+                if (resp.ok) {
+                    const data = await resp.json();
+                    if (data.success && data.isAlumni) {
+                        session = {
+                            isVip: true,
+                            name: data.name,
+                            nickname: data.nickname,
+                            email: data.email || cleanEmail || 'alumni@bdbinhdanhocvu.com',
+                            remainingCredits: data.remainingCredits !== undefined ? data.remainingCredits : 3,
+                            expiry: data.expiry || '3 Tháng',
+                            vipCode: data.vipCode || cleanPass,
+                            userId: data.userId || null
+                        };
+                    }
+                }
+            } catch (netErr) {
+                console.warn('Network call to GAS verifyAlumni failed, using client-side validation:', netErr);
+            }
         }
 
         // 3. Fallback client-side validation nếu pass hợp lệ
@@ -1314,10 +1338,11 @@ document.addEventListener('DOMContentLoaded', () => {
             vipEmailInput.value = emailParam;
         }
 
-        // Tự động mở khóa nếu có query param vip_pass=BDTHUCCHIEN
-        if (vipPassParam) {
-            if (vipPasscodeInput) vipPasscodeInput.value = vipPassParam;
-            unlockVip(vipPassParam, emailParam || '');
+        // Tự động mở khóa nếu có query param vip_pass hoặc email
+        if (vipPassParam || emailParam) {
+            if (vipPassParam && vipPasscodeInput) vipPasscodeInput.value = vipPassParam;
+            if (emailParam && vipEmailInput) vipEmailInput.value = emailParam;
+            unlockVip(vipPassParam || '', emailParam || '');
             return;
         }
 
@@ -1334,6 +1359,20 @@ document.addEventListener('DOMContentLoaded', () => {
             renderVipSession(null);
         }
     })();
+
+    // Milestone Accordion Toggle on Mobile
+    const btnToggleMilestones = document.getElementById('btn-toggle-milestones');
+    const vipMilestonesContent = document.getElementById('vip-milestones-content');
+    if (btnToggleMilestones && vipMilestonesContent) {
+        btnToggleMilestones.addEventListener('click', () => {
+            const isCollapsed = vipMilestonesContent.classList.toggle('collapsed-on-mobile');
+            btnToggleMilestones.setAttribute('aria-expanded', !isCollapsed);
+            const icon = btnToggleMilestones.querySelector('.toggle-icon');
+            if (icon) icon.textContent = isCollapsed ? '▾' : '▴';
+            const text = btnToggleMilestones.querySelector('.toggle-text');
+            if (text) text.textContent = isCollapsed ? 'Chi tiết quà tặng' : 'Thu gọn';
+        });
+    }
 
     // VIP Nickname Self-Renaming Event Listener
     const btnEditVipNickname = document.getElementById('btn-edit-vip-nickname');

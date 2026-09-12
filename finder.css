@@ -1138,15 +1138,98 @@ body.dark-theme .results-table tbody tr:hover {
     border: 1px solid rgba(16, 185, 129, 0.3);
 }
 
+/* Milestone Accordion Toggle Styles */
+.btn-toggle-milestones {
+    width: 100%;
+    background: rgba(243, 168, 59, 0.08);
+    border: 1px dashed rgba(243, 168, 59, 0.35);
+    border-radius: 12px;
+    padding: 10px 14px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    transition: all 0.2s ease;
+    text-align: left;
+    outline: none;
+}
+.btn-toggle-milestones:hover {
+    background: rgba(243, 168, 59, 0.15);
+    border-color: #f3a83b;
+}
+
 @media (max-width: 768px) {
     .vip-dashboard-card {
-        padding: 25px 20px;
+        padding: 18px 14px !important;
     }
+    .vip-header-bar {
+        margin-bottom: 16px !important;
+    }
+    /* Compact 3-in-a-row quota layout on mobile */
     .vip-quota-grid {
-        grid-template-columns: 1fr;
+        grid-template-columns: repeat(3, 1fr) !important;
+        gap: 8px !important;
+        margin-bottom: 14px !important;
     }
+    .vip-quota-box {
+        padding: 10px 6px !important;
+        text-align: center !important;
+        border-radius: 12px !important;
+    }
+    .vip-quota-label {
+        font-size: 0.68rem !important;
+        margin-bottom: 2px !important;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    .vip-quota-value {
+        font-size: 1.15rem !important;
+        line-height: 1.2 !important;
+    }
+    .vip-quota-sub {
+        display: none !important;
+    }
+    .vip-progress-bar {
+        margin-top: 6px !important;
+        height: 4px !important;
+    }
+    .vip-disclaimer-box {
+        font-size: 0.78rem !important;
+        padding: 8px 12px !important;
+        margin-top: 10px !important;
+        margin-bottom: 14px !important;
+        line-height: 1.4 !important;
+    }
+
+    /* Referral Card compact styles on mobile */
+    .vip-referral-card {
+        padding: 16px 14px !important;
+        margin-top: 14px !important;
+        border-radius: 16px !important;
+    }
+    .vip-referral-card h3 {
+        font-size: 1.1rem !important;
+    }
+    .vip-milestones-content.collapsed-on-mobile {
+        display: none !important;
+    }
+
+    /* Department Pills 2x2 grid on mobile */
     .dept-pill-grid {
-        grid-template-columns: 1fr;
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 8px !important;
+    }
+    .dept-pill-label {
+        padding: 10px 8px !important;
+        border-radius: 10px !important;
+    }
+    .dept-pill-title {
+        font-size: 0.85rem !important;
+        line-height: 1.3 !important;
+    }
+    .dept-pill-desc {
+        display: none !important;
     }
 }
 
