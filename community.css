@@ -681,4 +681,72 @@ body.dark-theme .reaction-btn.active {
     transform: scale(1.25) !important;
 }
 
+/* ==========================================================================
+   Admin Personas & Authentic Interaction Styling
+   ========================================================================== */
+.admin-comment-card {
+    border-radius: 12px;
+    padding: 14px 16px;
+    transition: all 0.2s ease;
+    margin-bottom: 12px;
+}
+
+.admin-comment-peter {
+    background: rgba(245, 158, 11, 0.05) !important;
+    border-left: 4px solid #f59e0b !important;
+    border: 1px solid rgba(245, 158, 11, 0.25) !important;
+}
+
+body.dark-theme .admin-comment-peter {
+    background: rgba(245, 158, 11, 0.08) !important;
+    border: 1px solid rgba(245, 158, 11, 0.35) !important;
+}
+
+.admin-comment-beedee {
+    background: rgba(16, 185, 129, 0.05) !important;
+    border-left: 4px solid #10b981 !important;
+    border: 1px solid rgba(16, 185, 129, 0.25) !important;
+}
+
+body.dark-theme .admin-comment-beedee {
+    background: rgba(16, 185, 129, 0.08) !important;
+    border: 1px solid rgba(16, 185, 129, 0.35) !important;
+}
+
+.admin-badge-peter {
+    background: linear-gradient(135deg, rgba(245, 158, 11, 0.2) 0%, rgba(162, 10, 10, 0.2) 100%) !important;
+    color: #b45309 !important;
+    border: 1px solid #f59e0b !important;
+    font-weight: 800 !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 4px !important;
+    padding: 2px 8px !important;
+    border-radius: 12px !important;
+    font-size: 0.75rem !important;
+}
+
+body.dark-theme .admin-badge-peter {
+    color: #fde68a !important;
+    border-color: #f59e0b !important;
+}
+
+.admin-badge-beedee {
+    background: rgba(16, 185, 129, 0.15) !important;
+    color: #059669 !important;
+    border: 1px solid #10b981 !important;
+    font-weight: 800 !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 4px !important;
+    padding: 2px 8px !important;
+    border-radius: 12px !important;
+    font-size: 0.75rem !important;
+}
+
+body.dark-theme .admin-badge-beedee {
+    color: #6ee7b7 !important;
+    border-color: #10b981 !important;
+}
+
 

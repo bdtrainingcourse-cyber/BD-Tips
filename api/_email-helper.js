@@ -281,7 +281,7 @@ async function sendResetPasswordEmail({ email, name, resetToken }) {
   });
 }
 
-async function sendVipLaunchingResendEmail({ email, name, nickname, vipCode }) {
+async function sendVipLaunchingResendEmail({ email, name, nickname, vipCode, scheduledAt, headers = {} }) {
   const code = vipCode || 'BDTHUCCHIEN';
   const magicLink = `https://www.bdbinhdanhocvu.com/finder.html?email=${encodeURIComponent(email)}&vip_pass=${encodeURIComponent(code)}`;
   const subject = "🎉 [Đặc Quyền Alumni VIP] Ra Mắt Hệ Sinh Thái 9 Vũ Khí B2B & 3 Lượt Tìm PIC";
@@ -311,12 +311,20 @@ async function sendVipLaunchingResendEmail({ email, name, nickname, vipCode }) {
     </div>
   `;
 
+  const unsubUrl = `https://www.bdbinhdanhocvu.com/api/log-email?action=unsubscribe&email=${encodeURIComponent(email)}`;
+  const defaultHeaders = {
+    'List-Unsubscribe': `<${unsubUrl}>`,
+    'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click',
+    ...headers
+  };
+
   const html = renderHtmlEmailTemplate({
     greeting: `Chào bạn ${name || 'Học viên'}`,
     message: contentHtml,
     buttonText: '🚀 MỞ KHÓA ĐẶC QUYỀN VIP CỦA BẠN NGAY &rarr;',
     buttonUrl: magicLink,
     mascotUrl: 'https://www.bdbinhdanhocvu.com/mascot_quests.jpg',
+    unsubscribeUrl: unsubUrl,
     email: email
   });
 
@@ -324,7 +332,9 @@ async function sendVipLaunchingResendEmail({ email, name, nickname, vipCode }) {
     to: email,
     subject: subject,
     html: html,
-    text: stripHtml(html)
+    text: stripHtml(html),
+    scheduledAt: scheduledAt || null,
+    headers: defaultHeaders
   });
 }
 

@@ -31,6 +31,7 @@ function onOpen() {
       .addItem("⚡ Xử Lý Nickname & Mã VIP Tự Động Cho Toàn Bộ Học Viên", "menuAutoProcessAlumni")
       .addSeparator()
       .addItem("🧪 Gửi Thử Email Launching VIP (Đến vptanaia@gmail.com)", "menuTestSendVipLaunchingEmail")
+      .addItem("🚀 Gửi Toàn Bộ VIP (Giãn cách 2 phút/thư chống spam)", "menuSendBulkAlumniWithPacing")
       .addToUi();
   } catch (e) {
     Logger.log("onOpen error: " + e.message);
@@ -43,7 +44,7 @@ function menuInitAlumniSheets() {
   SpreadsheetApp.getUi().alert(
     "Khởi Tạo Bảng Thành Công!",
     "✅ Đã tạo/chuẩn hóa 2 tab trên Google Sheet:\n\n" +
-    "1. Tab 'Học Viên Đã Học': Chuẩn 10 cột định dạng đẹp mắt (Màu vàng). Có sẵn cột 'User ID (Mã VIP)' và cột 'Trạng Thái Vào Web' để theo dõi ai đã click CTA.\n" +
+    "1. Tab 'Học Viên Đã Học': Chuẩn 11 cột chuyên nghiệp (Màu vàng). Có sẵn cột 'User ID (Mã VIP)', 'Trạng Thái Vào Web' và 'Trạng Thái Gửi Email' (Pacing).\n" +
     "2. Tab 'Yêu Cầu Tìm PIC': Chuẩn 9 cột tiếp nhận yêu cầu (Màu đỏ).\n\n" +
     "👉 Bạn có thể dán danh sách học viên cũ vào ngay bây giờ!",
     SpreadsheetApp.getUi().ButtonSet.OK
@@ -55,7 +56,7 @@ function initAlumniSheet() {
   const expectedHeaders = [
     "Họ và Tên", "Email", "Funny Nickname", "User ID (Mã VIP)",
     "Số Lượt PIC Còn Lại", "Trạng Thái Vào Web", "Ngày Kích Hoạt", "Hạn Sử Dụng (90 Ngày)",
-    "Link VIP Trực Tiếp", "Lịch Sử Yêu Cầu PIC"
+    "Link VIP Trực Tiếp", "Lịch Sử Yêu Cầu PIC", "Trạng Thái Gửi Email"
   ];
   if (sheet.getLastRow() === 0) {
     sheet.appendRow(expectedHeaders);
@@ -75,10 +76,90 @@ function initAlumniSheet() {
 
 function menuTestSendVipLaunchingEmail() {
   const res = sendVipLaunchingEmail("vptanaia@gmail.com");
-  if (res.success) {
+  if (res && res.success) {
     SpreadsheetApp.getUi().alert("Thành Công!", "Đã gửi thử email Launching VIP kèm hình ảnh 9 Vũ Khí B2B tới hộp thư vptanaia@gmail.com. Hãy kiểm tra hộp thư nhé!", SpreadsheetApp.getUi().ButtonSet.OK);
   } else {
-    SpreadsheetApp.getUi().alert("Thông Báo", res.error || "Không thể gửi email. Vui lòng kiểm tra lại.", SpreadsheetApp.getUi().ButtonSet.OK);
+    SpreadsheetApp.getUi().alert("Thông Báo", (res && res.error) ? res.error : "Không thể gửi email. Vui lòng kiểm tra lại quyền truy cập Gmail.", SpreadsheetApp.getUi().ButtonSet.OK);
+  }
+}
+
+function menuSendBulkAlumniWithPacing() {
+  const ui = SpreadsheetApp.getUi();
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const sheet = ss.getSheetByName("Học Viên Đã Học");
+  if (!sheet) {
+    ui.alert("Chưa có sheet 'Học Viên Đã Học'. Vui lòng khởi tạo tab trước.");
+    return;
+  }
+  
+  const data = sheet.getDataRange().getValues();
+  if (data.length <= 1) {
+    ui.alert("Bảng 'Học Viên Đã Học' chưa có dữ liệu học viên.");
+    return;
+  }
+
+  // Đếm số học viên chưa gửi
+  let pendingList = [];
+  for (let r = 1; r < data.length; r++) {
+    const row = data[r];
+    const email = (row[1] || "").toString().trim().toLowerCase();
+    const status = (row[10] || "").toString().trim();
+    if (email && email.includes("@")) {
+      if (!status.includes("Đã gửi") && !status.includes("Đã lên lịch")) {
+        pendingList.push({
+          email: email,
+          name: (row[0] || "").toString().trim(),
+          nickname: (row[2] || "").toString().trim(),
+          vipCode: (row[3] || "").toString().trim(),
+          magicLink: (row[8] || "").toString().trim()
+        });
+      }
+    }
+  }
+
+  if (pendingList.length === 0) {
+    ui.alert("Tất Cả Đã Được Gửi!", "Toàn bộ học viên VIP trong danh sách đều đã được gửi hoặc lên lịch trước đó.\nNếu muốn gửi lại, bạn hãy xóa nội dung ở Cột 11 (Trạng Thái Gửi Email).", ui.ButtonSet.OK);
+    return;
+  }
+
+  const estMinutes = pendingList.length * 2;
+  const promptText = "Phát hiện " + pendingList.length + " học viên VIP chưa được gửi email.\n\n" +
+    "🛡️ ĐỂ CHỐNG SPAM VÀ BẢO VỆ TÊN MIỀN:\n" +
+    "Hệ thống sẽ gửi qua Resend Enterprise API, giãn cách tự nhiên 2 phút/thư (ước tính khoảng " + estMinutes + " phút hoàn tất).\n\n" +
+    "Bạn có muốn phát lệnh lên lịch gửi ngay bây giờ?";
+  
+  const response = ui.alert("Xác Nhận Gửi VIP Pacing", promptText, ui.ButtonSet.YES_NO);
+  if (response !== ui.Button.YES) return;
+
+  try {
+    const payload = {
+      action: "scheduleBulkAlumniLaunching",
+      secretKey: B2B_SECRET_KEY,
+      alumniList: pendingList
+    };
+
+    const res = UrlFetchApp.fetch("https://www.bdbinhdanhocvu.com/api/log-email", {
+      method: "POST",
+      contentType: "application/json",
+      payload: JSON.stringify(payload),
+      muteHttpExceptions: true
+    });
+
+    const resJson = JSON.parse(res.getContentText());
+    if (resJson && resJson.success) {
+      ui.alert(
+        "Lên Lịch Thành Công!",
+        "🎉 " + (resJson.message || "Đã lên lịch gửi an toàn.") + "\n\n" +
+        "• Bắt đầu gửi: " + (resJson.firstScheduledAtVN || "Ngay sau 1 phút") + "\n" +
+        "• Dự kiến kết thúc: " + (resJson.lastScheduledAtVN || "---") + "\n\n" +
+        "Cột 11 (Trạng Thái Gửi Email) trên sheet đã được tự động cập nhật thời gian gửi của từng bạn.",
+        ui.ButtonSet.OK
+      );
+    } else {
+      ui.alert("Lỗi Lên Lịch", (resJson && resJson.error) ? resJson.error : res.getContentText(), ui.ButtonSet.OK);
+    }
+  } catch (err) {
+    ui.alert("Lỗi Kết Nối", "Không thể kết nối máy chủ: " + err.message, ui.ButtonSet.OK);
   }
 }
 
@@ -177,6 +258,10 @@ function doPost(e) {
       return sendVerificationReminder(email, name);
     } else if (action === "sendVipLaunchingEmail") {
       return createJsonResponse(sendVipLaunchingEmail(email || postData.targetEmail || "vptanaia@gmail.com"));
+    } else if (action === "getAlumniList") {
+      return getAlumniList();
+    } else if (action === "updateAlumniEmailStatus") {
+      return updateAlumniEmailStatus(postData.updates || []);
     } else if (action === "getUsers") {
       return getAllUsers();
     } else if (action === "initColumn" || action === "ensureColumns") {
@@ -214,6 +299,14 @@ function doGet(e) {
       return checkEmail(email, name);
     } else if (action === "sendVipLaunchingEmail") {
       return createJsonResponse(sendVipLaunchingEmail(email || params.targetEmail || "vptanaia@gmail.com"));
+    } else if (action === "getAlumniList") {
+      return getAlumniList();
+    } else if (action === "updateAlumniEmailStatus") {
+      let updates = [];
+      try {
+        updates = params.updates ? JSON.parse(params.updates) : [];
+      } catch(e) {}
+      return updateAlumniEmailStatus(updates);
     } else if (action === "getUsers") {
       return getAllUsers();
     } else if (action === "initColumn" || action === "ensureColumns") {
@@ -1941,6 +2034,81 @@ function handlePICRequest(postData) {
     });
   } catch (err) {
     Logger.log("handlePICRequest error: " + err.message);
+    return createJsonResponse({ success: false, error: err.message });
+  }
+}
+
+function getAlumniList() {
+  try {
+    const ss = SpreadsheetApp.getActiveSpreadsheet();
+    const sheet = ss.getSheetByName("Học Viên Đã Học");
+    if (!sheet) {
+      return createJsonResponse({ success: true, alumni: [], total: 0 });
+    }
+    const data = sheet.getDataRange().getValues();
+    if (data.length <= 1) {
+      return createJsonResponse({ success: true, alumni: [], total: 0 });
+    }
+    const alumni = [];
+    for (let r = 1; r < data.length; r++) {
+      const row = data[r];
+      const email = (row[1] || "").toString().trim().toLowerCase();
+      if (email && email.includes("@")) {
+        alumni.push({
+          name: (row[0] || "").toString().trim(),
+          email: email,
+          nickname: (row[2] || "").toString().trim(),
+          vipCode: (row[3] || "").toString().trim(),
+          remainingCredits: !isNaN(parseInt(row[4], 10)) ? parseInt(row[4], 10) : 3,
+          webStatus: (row[5] || "").toString().trim(),
+          activationDate: (row[6] || "").toString().trim(),
+          expirationDate: (row[7] || "").toString().trim(),
+          magicLink: (row[8] || "").toString().trim(),
+          picHistory: (row[9] || "").toString().trim(),
+          emailStatus: (row[10] || "").toString().trim()
+        });
+      }
+    }
+    return createJsonResponse({ success: true, alumni: alumni, total: alumni.length });
+  } catch (err) {
+    Logger.log("getAlumniList error: " + err.message);
+    return createJsonResponse({ success: false, error: err.message });
+  }
+}
+
+function updateAlumniEmailStatus(updates) {
+  try {
+    if (!Array.isArray(updates) || updates.length === 0) {
+      return createJsonResponse({ success: true, updatedCount: 0 });
+    }
+    const ss = SpreadsheetApp.getActiveSpreadsheet();
+    const sheet = ss.getSheetByName("Học Viên Đã Học");
+    if (!sheet) {
+      return createJsonResponse({ success: false, error: "Sheet 'Học Viên Đã Học' không tồn tại." });
+    }
+    const data = sheet.getDataRange().getValues();
+    let updatedCount = 0;
+    
+    // Map email -> status
+    const updateMap = {};
+    for (let i = 0; i < updates.length; i++) {
+      const u = updates[i];
+      if (u && u.email) {
+        updateMap[u.email.toLowerCase().trim()] = u.status;
+      }
+    }
+
+    for (let r = 1; r < data.length; r++) {
+      const email = (data[r][1] || "").toString().trim().toLowerCase();
+      if (email && updateMap[email] !== undefined) {
+        sheet.getRange(r + 1, 11).setValue(updateMap[email]);
+        updatedCount++;
+      }
+    }
+    
+    return createJsonResponse({ success: true, updatedCount: updatedCount });
+  } catch (err) {
+    Logger.log("updateAlumniEmailStatus error: " + err.message);
     return createJsonResponse({ success: false, error: err.message });
   }
 }

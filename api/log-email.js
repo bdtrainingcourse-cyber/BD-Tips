@@ -567,6 +567,173 @@ module.exports = async (req, res) => {
       message: `Đã gửi email VIP Launching thành công tới ${cleanEmail} qua Resend!`,
       error: vipRes && vipRes.error ? vipRes.error : null
     });
+  } else if (action === 'scheduleBulkAlumniLaunching') {
+    const ALLOWED_TEST_EMAILS = [
+      'vptanaia@gmail.com',
+      'bdtrainingcourse@gmail.com',
+      'bdmastery.ai@petervo.vn',
+      'ocsen.fashion@gmail.com'
+    ];
+    const isTestMode = req.query.test === 'true';
+    const isDryRun = req.query.dryRun === 'true';
+    const isForce = req.query.force === 'true';
+    const reqBody = (req.body && typeof req.body === 'object') ? req.body : {};
+    
+    // 1. Load candidate alumni list: from payload or from Google Sheets
+    let candidateList = [];
+    if (Array.isArray(reqBody.alumniList) && reqBody.alumniList.length > 0) {
+      candidateList = reqBody.alumniList;
+    } else if (webhookUrl) {
+      try {
+        const getUrl = `${webhookUrl}?action=getAlumniList&secretKey=${encodeURIComponent(process.env.B2B_SECRET_KEY || '2108330119Snail!!')}`;
+        const sheetRes = await httpGet(getUrl);
+        if (sheetRes.ok) {
+          const sData = await sheetRes.json();
+          if (sData && sData.success && Array.isArray(sData.alumni)) {
+            candidateList = sData.alumni;
+          }
+        }
+      } catch (err) {
+        console.warn('[ALUMNI_BULK_FETCH_ERR]', err.message);
+      }
+    }
+
+    if (!candidateList || candidateList.length === 0) {
+      return res.status(200).json({
+        success: true,
+        message: 'Không tìm thấy học viên VIP nào cần gửi.',
+        totalCandidates: 0,
+        scheduledCount: 0
+      });
+    }
+
+    // 2. Filter & Safety guard
+    if (isTestMode) {
+      candidateList = candidateList.filter(u => ALLOWED_TEST_EMAILS.includes((u.email || '').toLowerCase().trim()));
+    }
+
+    const eligibleList = [];
+    const skippedList = [];
+    const seenEmails = new Set();
+
+    for (const item of candidateList) {
+      const e = (item.email || '').toLowerCase().trim();
+      if (!e || !e.includes('@') || seenEmails.has(e)) continue;
+      seenEmails.add(e);
+
+      const status = (item.emailStatus || item.status || '').toString();
+      if (!isForce && (status.includes('Đã gửi') || status.includes('Đã lên lịch'))) {
+        skippedList.push({ email: e, reason: 'Already scheduled/sent: ' + status });
+        continue;
+      }
+
+      eligibleList.push({
+        email: e,
+        name: item.name || 'Chiến Binh BD',
+        nickname: item.nickname || 'Chiến Thần BD',
+        vipCode: item.vipCode || item.vipPass || 'BDTHUCCHIEN',
+        magicLink: item.magicLink || ''
+      });
+    }
+
+    // 3. Dry-Run simulation & Pacing timeline calculation (120s interval + jitter)
+    const nowMs = Date.now();
+    const intervalMs = 120 * 1000;
+    const previewSchedule = eligibleList.map((u, i) => {
+      const jitterMs = Math.floor((Math.random() - 0.5) * 30 * 1000);
+      const userScheduledMs = nowMs + 60 * 1000 + (i * intervalMs) + jitterMs;
+      const vnTime = new Date(userScheduledMs + 7 * 3600 * 1000).toISOString().replace('T', ' ').substring(0, 19);
+      return {
+        email: u.email,
+        name: u.name,
+        scheduledAt: new Date(userScheduledMs).toISOString(),
+        scheduledAtVN: vnTime
+      };
+    });
+
+    if (isDryRun) {
+      return res.status(200).json({
+        success: true,
+        dryRun: true,
+        message: `[DRY RUN] Mô phỏng giãn cách 2 phút/thư thành công cho ${eligibleList.length} học viên VIP.`,
+        eligibleCount: eligibleList.length,
+        skippedCount: skippedList.length,
+        intervalMinutes: 2,
+        estimatedDurationMinutes: Math.round((eligibleList.length * 2)),
+        previewSchedule: previewSchedule.slice(0, 5)
+      });
+    }
+
+    if (eligibleList.length === 0) {
+      return res.status(200).json({
+        success: true,
+        message: 'Tất cả học viên VIP đều đã được gửi hoặc lên lịch trước đó. Sử dụng ?force=true nếu muốn ép gửi lại.',
+        skippedCount: skippedList.length,
+        eligibleCount: 0
+      });
+    }
+
+    // 4. Dispatch scheduled items via Resend
+    const dispatchResults = [];
+    for (let i = 0; i < eligibleList.length; i++) {
+      const u = eligibleList[i];
+      const sched = previewSchedule[i];
+      try {
+        const resendRes = await sendVipLaunchingResendEmail({
+          email: u.email,
+          name: u.name,
+          nickname: u.nickname,
+          vipCode: u.vipCode,
+          scheduledAt: sched.scheduledAt
+        });
+
+        dispatchResults.push({
+          email: u.email,
+          ok: !!(resendRes && resendRes.ok),
+          id: resendRes && resendRes.data ? resendRes.data.id : null,
+          scheduledAt: sched.scheduledAt,
+          scheduledAtVN: sched.scheduledAtVN,
+          error: resendRes && resendRes.error ? resendRes.error : null
+        });
+
+        await new Promise(resolve => setTimeout(resolve, 600));
+      } catch (err) {
+        console.error(`[ALUMNI_RESEND_ERR] Failed for ${u.email}:`, err.message);
+        dispatchResults.push({ email: u.email, ok: false, error: err.message });
+      }
+    }
+
+    // 5. Update status back to Google Sheets ("Học Viên Đã Học")
+    if (webhookUrl) {
+      try {
+        const updatePayload = dispatchResults
+          .filter(r => r.ok)
+          .map(r => ({
+            email: r.email,
+            status: `🕒 Đã lên lịch [${r.scheduledAtVN}]`
+          }));
+
+        if (updatePayload.length > 0) {
+          await httpPost(webhookUrl, {
+            action: 'updateAlumniEmailStatus',
+            updates: updatePayload,
+            secretKey: process.env.B2B_SECRET_KEY || '2108330119Snail!!'
+          });
+        }
+      } catch (err) {
+        console.warn('[ALUMNI_SHEET_UPDATE_ERR]', err.message);
+      }
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: `Đã lên lịch thành công cho ${dispatchResults.filter(r => r.ok).length}/${eligibleList.length} học viên VIP. Giãn cách an toàn 2 phút/thư.`,
+      scheduledCount: dispatchResults.filter(r => r.ok).length,
+      skippedCount: skippedList.length,
+      firstScheduledAtVN: previewSchedule[0] ? previewSchedule[0].scheduledAtVN : null,
+      lastScheduledAtVN: previewSchedule[previewSchedule.length - 1] ? previewSchedule[previewSchedule.length - 1].scheduledAtVN : null,
+      details: dispatchResults
+    });
   } else if (action === 'unsubscribe') {
     if (localUser) {
       localUser.unsubscribed = true;
