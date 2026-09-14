@@ -338,22 +338,26 @@ function handlePicCheckboxSend(sheet, rowNum) {
       Logger.log("sendPicResult via API error: " + apiErr.message);
     }
 
-    // 2. Fallback gửi qua MailApp (không emoji)
+    // 2. Fallback gửi qua MailApp (tiếng Việt có dấu chuẩn, không emoji)
     if (!sent) {
-      const subject = "[Ket Qua Tim PIC] Thong tin ket noi PIC tai " + targetCompany + " danh cho ban";
+      const companyDisplay = targetCompany || "Doanh nghiệp mục tiêu";
+      const subject = "[Kết Quả Tìm PIC] Thông tin kết nối PIC tại " + companyDisplay + " dành cho bạn";
+      let cleanAdvice = (picAdvice || "").trim();
+      cleanAdvice = cleanAdvice.replace(/^(gợi ý tiếp cận từ peter võ|gợi ý tiếp cận|lời khuyên tiếp cận|goi y tiep can tu peter vo|goi y tiep can)[:\s-]*/i, "").trim();
+
       const bodyHtml = "<div style='font-family: Arial, sans-serif; font-size: 14px; line-height: 1.6; color: #1e293b;'>"
-        + "<p>Chào <strong>" + studentName + "</strong> (<em>" + nickname + "</em>),</p>"
-        + "<p>Anh Peter Võ đã hoàn tất rà soát mạng lưới quan hệ và thông tin nhân sự tại <strong>" + targetCompany + "</strong> theo yêu cầu tìm PIC của bạn.</p>"
+        + "<p>Chào <strong>" + (studentName || "Bạn") + "</strong> (<em>" + (nickname || "Alumni VIP") + "</em>),</p>"
+        + "<p>Anh Peter Võ đã hoàn tất rà soát mạng lưới quan hệ và thông tin nhân sự tại <strong>" + companyDisplay + "</strong> theo yêu cầu tìm PIC của bạn.</p>"
         + "<div style='background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; padding: 14px 18px; margin: 16px 0;'>"
         + "<p style='margin: 0 0 8px 0; font-weight: bold; color: #0f172a;'>THÔNG TIN PIC PHỤ TRÁCH:</p>"
-        + "<p style='margin: 4px 0;'>• Họ và tên: <strong>" + picName + "</strong></p>"
-        + "<p style='margin: 4px 0;'>• Chức danh: " + picRole + "</p>"
-        + "<p style='margin: 4px 0;'>• Đơn vị: " + department + " - " + targetCompany + "</p>"
-        + (picLinkedin ? ("<p style='margin: 4px 0;'>• LinkedIn: <a href='" + picLinkedin + "' target='_blank' style='color: #a20a0a; font-weight: bold;'>Xem Profile -></a></p>") : "")
+        + "<p style='margin: 4px 0;'>• Họ và tên: <strong>" + (picName || "Đang cập nhật") + "</strong></p>"
+        + "<p style='margin: 4px 0;'>• Chức danh: " + (picRole || targetRole || "Phụ trách") + "</p>"
+        + "<p style='margin: 4px 0;'>• Đơn vị: " + (department || "Bộ phận mục tiêu") + " - " + companyDisplay + "</p>"
+        + (picLinkedin ? ("<p style='margin: 4px 0;'>• LinkedIn: <a href='" + picLinkedin + "' target='_blank' style='color: #a20a0a; font-weight: bold;'>Xem Profile &rarr;</a></p>") : "")
         + (picContact ? ("<p style='margin: 4px 0;'>• Liên hệ: " + picContact + "</p>") : "")
         + "</div>"
-        + (picAdvice ? ("<div style='background: #fffbeb; border-left: 4px solid #f59e0b; padding: 12px 16px; margin: 16px 0;'><p style='margin: 0; font-weight: bold; color: #92400e;'>Gợi ý tiếp cận từ Peter Võ:</p><p style='margin: 6px 0 0 0; color: #78350f;'>" + picAdvice + "</p></div>") : "")
-        + "<p>Chúc bạn kết nối thành công deal này!<br><br>Thân ái,<br><strong>Peter Võ</strong><br>BD Bình Dân Học Vụ</p>"
+        + (cleanAdvice ? ("<div style='background: #fffbeb; border-left: 4px solid #f59e0b; padding: 12px 16px; margin: 16px 0;'><p style='margin: 0; font-weight: bold; color: #92400e;'>Gợi ý tiếp cận từ Peter Võ:</p><p style='margin: 6px 0 0 0; color: #78350f;'>" + cleanAdvice + "</p></div>") : "")
+        + "<p style='margin-top: 20px; font-size: 14px; color: #475569; line-height: 1.6;'>Chúc bạn kết nối thành công và phát triển deal thuận lợi. Nếu cần hỗ trợ thêm về chiến lược tiếp cận hay gỡ rối sales pipeline, bạn có thể phản hồi trực tiếp email này nhé.<br><br>Thân ái,<br><strong>Peter Võ</strong><br>BD Bình Dân Học Vụ</p>"
         + "</div>";
 
       const mailRes = sendEmailSafe({
