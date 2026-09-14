@@ -40,6 +40,7 @@ function onOpen() {
       .addItem("Gửi Toàn Bộ VIP (Giãn cách 2 phút/thư chống spam)", "menuSendBulkAlumniWithPacing")
       .addSeparator()
       .addItem("🧹 Dọn Dẹp Dữ Liệu 3 Email Test (bdtrainingcourse, bdmastery, ocsen)", "menuCleanTestingEmails")
+      .addItem("🔧 Sửa Lỗi Record Line 17 & 18 (Chuẩn Hóa Học Viên Đăng Ký)", "menuFixRegistrationTemplateMismatch")
       .addToUi();
   } catch (e) {
     Logger.log("onOpen error: " + e.message);
@@ -534,6 +535,8 @@ function doPost(e) {
       return updateAlumniNickname(email, postData.nickname);
     } else if (action === "cleanTestingEmails") {
       return createJsonResponse(cleanAllTestingRecords(postData.keepEmail || "vptanaia@gmail.com"));
+    } else if (action === "fixRegistrationTemplateMismatch") {
+      return createJsonResponse(fixRegistrationTemplateMismatch());
     } else if (postData.tool === "course-registration") {
       return handleCourseRegistration(postData);
     } else {
@@ -579,6 +582,11 @@ function doGet(e) {
         return createJsonResponse({ success: false, error: "Unauthorized: Invalid secretKey." });
       }
       return createJsonResponse(cleanAllTestingRecords(params.keepEmail || "vptanaia@gmail.com"));
+    } else if (action === "fixRegistrationTemplateMismatch") {
+      if (params.secretKey !== B2B_SECRET_KEY) {
+        return createJsonResponse({ success: false, error: "Unauthorized: Invalid secretKey." });
+      }
+      return createJsonResponse(fixRegistrationTemplateMismatch());
     } else if (action === "verifyUser") {
       const points = params.points ? parseInt(params.points, 10) : 15;
       return verifyUser(email, points);
@@ -710,20 +718,28 @@ function checkEmail(email, name) {
             const aVipPass = aRow[3] ? aRow[3].toString().trim() : ("BD-" + Math.floor(1000 + Math.random() * 9000));
             const nowTimeStr = Utilities.formatDate(new Date(), "Asia/Ho_Chi_Minh", "yyyy-MM-dd HH:mm:ss");
             
-            // Tự động đồng bộ tài khoản sang "Học Viên Đăng Ký"
+            // Tự động đồng bộ tài khoản sang "Học Viên Đăng Ký" (nếu chưa có)
             try {
-              sheet.appendRow([
-                aVipPass,
-                nowTimeStr,
-                aName,
-                cleanEmail,
-                "Đã xác thực",
-                50,
-                nowTimeStr,
-                "",
-                "Desktop",
-                "VIP-Alumni"
-              ]);
+              const mHeaders = sheet.getDataRange().getValues()[0];
+              const mIdx = getHeaderIndices(mHeaders);
+              const existingRow = findUserRowIndex(sheet.getDataRange().getValues(), cleanEmail, mIdx.email);
+              if (existingRow === -1) {
+                const newRow = new Array(mHeaders.length).fill("");
+                const standardUid = (cleanEmail === "vptanaia@gmail.com") 
+                  ? "UID_43NNTFBGK" 
+                  : ("UID_" + cleanEmail.split('@')[0].toUpperCase().replace(/[^A-Z0-9]/g, ''));
+                
+                if (mIdx.id !== -1) newRow[mIdx.id] = standardUid;
+                if (mIdx.date !== -1) newRow[mIdx.date] = nowTimeStr;
+                if (mIdx.name !== -1) newRow[mIdx.name] = aName;
+                if (mIdx.email !== -1) newRow[mIdx.email] = cleanEmail;
+                if (mIdx.verified !== -1) newRow[mIdx.verified] = "Đã xác thực";
+                if (mIdx.points !== -1) newRow[mIdx.points] = 50;
+                if (mIdx.lastActivity !== -1) newRow[mIdx.lastActivity] = nowTimeStr;
+                if (mIdx.device !== -1) newRow[mIdx.device] = "Desktop";
+                if (mIdx.tool !== -1) newRow[mIdx.tool] = "VIP-Alumni";
+                sheet.appendRow(newRow);
+              }
             } catch (syncErr) {
               Logger.log("Auto sync alumni to reg sheet error: " + syncErr.message);
             }
@@ -943,23 +959,28 @@ function updateUsersDailyEmailTimestamp(emails, timestampStr) {
     }
 
     // Nếu có email VIP nào vừa được gửi mà chưa có dòng trong "Học Viên Đăng Ký", tự động thêm dòng!
+    const regHeaders = sheet.getDataRange().getValues()[0];
+    const regIdx = getHeaderIndices(regHeaders);
     for (let j = 0; j < targetEmails.length; j++) {
       const sentEmail = targetEmails[j];
       if (!updatedEmails.has(sentEmail)) {
-        const uid = "UID_" + sentEmail.split('@')[0].toUpperCase().replace(/[^A-Z0-9]/g, '');
+        const standardUid = (sentEmail.toLowerCase().trim() === "vptanaia@gmail.com")
+          ? "UID_43NNTFBGK"
+          : ("UID_" + sentEmail.split('@')[0].toUpperCase().replace(/[^A-Z0-9]/g, ''));
         const timeNow = emailTimeMap[sentEmail] || defaultFormattedTime;
-        sheet.appendRow([
-          uid,
-          timeNow,
-          "Alumni VIP",
-          sentEmail,
-          "Đã xác thực",
-          50,
-          timeNow,
-          timeNow,
-          "Desktop",
-          "VIP-Alumni-Daily"
-        ]);
+        
+        const newRow = new Array(regHeaders.length).fill("");
+        if (regIdx.id !== -1) newRow[regIdx.id] = standardUid;
+        if (regIdx.date !== -1) newRow[regIdx.date] = timeNow;
+        if (regIdx.name !== -1) newRow[regIdx.name] = "Alumni VIP";
+        if (regIdx.email !== -1) newRow[regIdx.email] = sentEmail;
+        if (regIdx.verified !== -1) newRow[regIdx.verified] = "Đã xác thực";
+        if (regIdx.points !== -1) newRow[regIdx.points] = 50;
+        if (regIdx.lastActivity !== -1) newRow[regIdx.lastActivity] = timeNow;
+        if (regIdx.lastDailyEmail !== -1) newRow[regIdx.lastDailyEmail] = timeNow;
+        if (regIdx.device !== -1) newRow[regIdx.device] = "Desktop";
+        if (regIdx.tool !== -1) newRow[regIdx.tool] = "VIP-Alumni-Daily";
+        sheet.appendRow(newRow);
       }
     }
     SpreadsheetApp.flush();
@@ -1641,6 +1662,7 @@ function getHeaderIndices(headers) {
     email: -1,
     verified: -1,
     points: -1,
+    pointHistory: -1,
     lastActivity: -1,
     lastDailyEmail: -1,
     device: -1,
@@ -1658,7 +1680,9 @@ function getHeaderIndices(headers) {
     const raw = (headers[i] || "").toString().toLowerCase().trim();
     const h = raw.normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/đ/g, "d");
 
-    if (h.includes("ebook") || h.includes("tai lieu") || h.includes("sach")) {
+    if (h.includes("lich su") || h.includes("history")) {
+      result.pointHistory = i;
+    } else if (h.includes("ebook") || h.includes("tai lieu") || h.includes("sach")) {
       result.ebook = i;
     } else if (h.includes("daily") || ((h.includes("email") || h.includes("thu")) && (h.includes("gan nhat") || h.includes("cuoi") || h.includes("last")))) {
       result.lastDailyEmail = i;
@@ -2048,24 +2072,30 @@ function verifyAlumni(identifier, emailParam) {
         try {
           const sheetMain = getOrCreateSheet("Học Viên Đăng Ký");
           const mData = sheetMain.getDataRange().getValues();
-          const mIdx = getHeaderIndices(mData[0]);
+          const mHeaders = mData[0];
+          const mIdx = getHeaderIndices(mHeaders);
           const userRow = findUserRowIndex(mData, rEmail, mIdx.email);
+          const fullTimeStr = Utilities.formatDate(new Date(), "Asia/Ho_Chi_Minh", "yyyy-MM-dd HH:mm:ss");
+          const standardUid = (rEmail.toLowerCase().trim() === "vptanaia@gmail.com")
+            ? "UID_43NNTFBGK"
+            : (uid && uid.startsWith("UID_") ? uid : ("UID_" + rEmail.split('@')[0].toUpperCase().replace(/[^A-Z0-9]/g, '')));
+
           if (userRow === -1) {
-            sheetMain.appendRow([
-              uid,                                                                          // Col A: User ID
-              Utilities.formatDate(new Date(), "Asia/Ho_Chi_Minh", "yyyy-MM-dd HH:mm:ss"), // Col B: Thời gian đăng ký
-              rName || "Học Viên VIP",                                                     // Col C: Họ Tên
-              rEmail,                                                                       // Col D: Email
-              "Đã Xác Thực [" + nowTimeStr + "]",                                           // Col E: Trạng thái xác thực
-              50,                                                                           // Col F: Điểm tích lũy khởi đầu (+50đ)
-              nowTimeStr,                                                                   // Col G: Hoạt động cuối
-              "",                                                                           // Col H: Email daily gần nhất
-              "Desktop",                                                                    // Col I: Thiết bị
-              "VIP-Alumni-Lounge"                                                           // Col J: Công cụ đăng ký
-            ]);
+            const newRow = new Array(mHeaders.length).fill("");
+            if (mIdx.id !== -1) newRow[mIdx.id] = standardUid;
+            if (mIdx.date !== -1) newRow[mIdx.date] = fullTimeStr;
+            if (mIdx.name !== -1) newRow[mIdx.name] = rName || "Học Viên VIP";
+            if (mIdx.email !== -1) newRow[mIdx.email] = rEmail;
+            if (mIdx.verified !== -1) newRow[mIdx.verified] = "Đã xác thực";
+            if (mIdx.points !== -1) newRow[mIdx.points] = 50;
+            if (mIdx.lastActivity !== -1) newRow[mIdx.lastActivity] = fullTimeStr;
+            if (mIdx.lastDailyEmail !== -1) newRow[mIdx.lastDailyEmail] = "";
+            if (mIdx.device !== -1) newRow[mIdx.device] = "Desktop";
+            if (mIdx.tool !== -1) newRow[mIdx.tool] = "VIP-Alumni-Lounge";
+            sheetMain.appendRow(newRow);
           } else {
             if (mIdx.lastActivity !== -1) {
-              sheetMain.getRange(userRow + 1, mIdx.lastActivity + 1).setValue(nowTimeStr);
+              sheetMain.getRange(userRow + 1, mIdx.lastActivity + 1).setValue(fullTimeStr);
             }
           }
         } catch (syncErr) {
@@ -2635,5 +2665,129 @@ function menuCleanTestingEmails() {
       "Tổng số dòng của 3 email test đã xóa: " + res.totalDeleted + " dòng.\n\nChi tiết:\n" + detailMsg + "\nToàn bộ học viên khác và email " + res.preservedEmail + " được bảo lưu an toàn 100%.",
       ui.ButtonSet.OK
     );
+  }
+}
+
+/**
+ * ==================================================================
+ * SỬA LỖI RECORD LINE 17 & 18 - CHUẨN HÓA TEMPLATE HỌC VIÊN ĐĂNG KÝ
+ * 1. Xóa dòng trùng lặp (Line 18) của vptanaia@gmail.com
+ * 2. Chuẩn hóa User ID thành chuẩn 'UID_43NNTFBGK' thay vì 'BD-1272'
+ * 3. Chuyển 'Desktop' bị điền sai ở cột 'Lịch sử điểm' sang đúng cột 'Thiết Bị'
+ * 4. Đồng bộ Trạng thái xác thực thành 'Đã xác thực' và cập nhật điểm 50
+ * ==================================================================
+ */
+function fixRegistrationTemplateMismatch() {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const sheet = ss.getSheetByName("Học Viên Đăng Ký");
+  if (!sheet) return { success: false, error: "Không tìm thấy sheet 'Học Viên Đăng Ký'" };
+
+  const data = sheet.getDataRange().getValues();
+  if (data.length <= 1) return { success: false, message: "Sheet rỗng hoặc chỉ có dòng tiêu đề." };
+
+  const headers = data[0];
+  const idx = getHeaderIndices(headers);
+
+  const targetEmail = "vptanaia@gmail.com";
+  const rowsFound = [];
+
+  for (let r = 1; r < data.length; r++) {
+    const rowEmail = (idx.email !== -1 && data[r][idx.email]) 
+      ? data[r][idx.email].toString().toLowerCase().trim() 
+      : (data[r][3] ? data[r][3].toString().toLowerCase().trim() : "");
+    
+    if (rowEmail === targetEmail) {
+      rowsFound.push(r + 1); // 1-indexed row number
+    }
+  }
+
+  let deletedDuplicateCount = 0;
+  // Nếu có từ 2 dòng trở lên: Xóa các dòng trùng lặp phía sau (xóa từ dưới lên)
+  if (rowsFound.length > 1) {
+    for (let i = rowsFound.length - 1; i >= 1; i--) {
+      sheet.deleteRow(rowsFound[i]);
+      deletedDuplicateCount++;
+    }
+  }
+
+  // Chuẩn hóa dòng duy nhất còn lại
+  if (rowsFound.length >= 1) {
+    const primaryRow = rowsFound[0];
+    const rowVals = sheet.getRange(primaryRow, 1, 1, headers.length).getValues()[0];
+
+    // 1. Cột User ID (Cột A): Sửa BD-1272 thành UID_43NNTFBGK
+    const targetUid = "UID_43NNTFBGK";
+    if (idx.id !== -1) {
+      sheet.getRange(primaryRow, idx.id + 1).setValue(targetUid);
+    } else {
+      sheet.getRange(primaryRow, 1).setValue(targetUid);
+    }
+
+    // 2. Cột Họ và tên (Cột C): Đảm bảo là Võ Phước Tân hoặc Vo Tan
+    if (idx.name !== -1 && (!rowVals[idx.name] || rowVals[idx.name] === "Học viên")) {
+      sheet.getRange(primaryRow, idx.name + 1).setValue("Võ Phước Tân");
+    }
+
+    // 3. Cột Trạng thái xác thực (Cột E): Chuẩn hóa thành "Đã xác thực"
+    if (idx.verified !== -1) {
+      sheet.getRange(primaryRow, idx.verified + 1).setValue("Đã xác thực");
+    }
+
+    // 4. Cột Điểm BD-Points (Cột F): 50
+    if (idx.points !== -1) {
+      sheet.getRange(primaryRow, idx.points + 1).setValue(50);
+    }
+
+    // 5. Cột Hoạt động cuối (Cột G): Chuẩn hóa ngày giờ format
+    const nowTimeStr = Utilities.formatDate(new Date(), "Asia/Ho_Chi_Minh", "yyyy-MM-dd HH:mm:ss");
+    if (idx.lastActivity !== -1) {
+      const currentAct = String(rowVals[idx.lastActivity] || "").trim();
+      if (!currentAct || currentAct.length < 15) {
+        sheet.getRange(primaryRow, idx.lastActivity + 1).setValue(nowTimeStr);
+      }
+    }
+
+    // 6. Xử lý cột 'Lịch sử điểm' và 'Thiết Bị'
+    for (let c = 0; c < headers.length; c++) {
+      const hRaw = String(headers[c] || "").toLowerCase().trim();
+      const hName = hRaw.normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/đ/g, "d");
+      const val = String(rowVals[c] || "").trim();
+
+      // Cột Lịch sử điểm (thường là Cột 9 / Cột I): Nếu đang chứa chữ "Desktop", làm sạch nó!
+      if ((hName.includes("lich su") || c === 8) && val === "Desktop") {
+        sheet.getRange(primaryRow, c + 1).setValue("+50đ (Kích hoạt VIP)");
+      }
+
+      // Cột Thiết Bị: Điền "Desktop"
+      if (hName.includes("thiet bi") || hName.includes("device")) {
+        sheet.getRange(primaryRow, c + 1).setValue("Desktop");
+      }
+    }
+  }
+
+  SpreadsheetApp.flush();
+  return {
+    success: true,
+    deletedDuplicates: deletedDuplicateCount,
+    message: "Đã chuẩn hóa thành công! Đã xóa " + deletedDuplicateCount + " dòng trùng lặp, chuyển User ID thành UID_43NNTFBGK, sửa lỗi cột 'Lịch sử điểm' và đồng bộ chuẩn xác với template."
+  };
+}
+
+function menuFixRegistrationTemplateMismatch() {
+  const ui = SpreadsheetApp.getUi();
+  const resp = ui.alert(
+    "Xác Nhận Sửa Lỗi Record Line 17 & 18",
+    "Thao tác này sẽ tự động chuẩn hóa bảng 'Học Viên Đăng Ký':\n" +
+    "1. Xóa dòng trùng lặp (Line 18)\n" +
+    "2. Sửa User ID từ 'BD-1272' thành chuẩn 'UID_43NNTFBGK'\n" +
+    "3. Xóa giá trị 'Desktop' bị nhảy nhầm ở cột 'Lịch sử điểm' và chuyển về đúng cột 'Thiết Bị'\n" +
+    "4. Đồng bộ Trạng thái xác thực thành 'Đã xác thực'\n\n" +
+    "Bạn có muốn thực hiện ngay?",
+    ui.ButtonSet.YES_NO
+  );
+
+  if (resp === ui.Button.YES) {
+    const res = fixRegistrationTemplateMismatch();
+    ui.alert("Hoàn Tất Chuẩn Hóa!", res.message, ui.ButtonSet.OK);
   }
 }
