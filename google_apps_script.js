@@ -42,6 +42,25 @@ function onOpen() {
   } catch (e) {
     Logger.log("onOpen error: " + e.message);
   }
+
+  try {
+    ensurePicSheetReady();
+  } catch (e) {}
+}
+
+function ensurePicSheetReady() {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const allSheets = ss.getSheets();
+  for (let i = 0; i < allSheets.length; i++) {
+    const s = allSheets[i];
+    const clean = s.getName().toLowerCase().replace(/[^a-z0-9]/g, '');
+    if (clean.includes("yeucautimpic") || clean.includes("picrequest") || clean.includes("timpic")) {
+      if (s.getMaxColumns() < 16) {
+        initPicRequestsSheet();
+      }
+      break;
+    }
+  }
 }
 
 function menuInitAlumniSheets() {
@@ -64,6 +83,10 @@ function initAlumniSheet() {
     "Số Lượt PIC Còn Lại", "Trạng Thái Vào Web", "Trạng Thái & Ngày Kích Hoạt", "Hạn Sử Dụng (90 Ngày)",
     "Link VIP Trực Tiếp", "Lịch Sử Yêu Cầu PIC", "Trạng Thái Gửi Email"
   ];
+  const currentCols = sheet.getMaxColumns();
+  if (currentCols < expectedHeaders.length) {
+    sheet.insertColumnsAfter(currentCols, expectedHeaders.length - currentCols);
+  }
   if (sheet.getLastRow() === 0) {
     sheet.appendRow(expectedHeaders);
   } else {
@@ -218,6 +241,14 @@ function initPicRequestsSheet() {
     "Tên PIC", "Chức Vụ PIC", "Link LinkedIn PIC", "Email / SĐT PIC",
     "Lời Khuyên Tiếp Cận (Peter Võ)", "Gửi Email (Tích Chọn)", "Thời Gian & Trạng Thái Gửi Email"
   ];
+  const currentCols = sheet.getMaxColumns();
+  if (currentCols < picHeaders.length) {
+    sheet.insertColumnsAfter(currentCols, picHeaders.length - currentCols);
+  }
+  const currentRows = sheet.getMaxRows();
+  if (currentRows < 50) {
+    sheet.insertRowsAfter(currentRows, 50 - currentRows);
+  }
   if (sheet.getLastRow() === 0) {
     sheet.appendRow(picHeaders);
   } else {
@@ -245,6 +276,8 @@ function menuAutoProcessAlumni() {
 }
 
 function setupPicEditTrigger() {
+  initAlumniSheet();
+  initPicRequestsSheet();
   const functionName = "installedOnEdit";
   deleteTriggerByName(functionName);
   ScriptApp.newTrigger(functionName)
@@ -252,8 +285,8 @@ function setupPicEditTrigger() {
     .onEdit()
     .create();
   SpreadsheetApp.getUi().alert(
-    "Cài Đặt Thành Công!",
-    "Đã kích hoạt quyền tự động gửi email khi bạn tích vào ô Checkbox (Cột 15) trên tab 'Yêu Cầu Tìm PIC'.\n\nTừ bây giờ, bạn chỉ cần điền thông tin PIC và tích chọn [v] là email sẽ tự động gửi đi ngay lập tức.",
+    "Cài Đặt & Khởi Tạo Thành Công!",
+    "Đã chuẩn hóa đủ 16 cột (kèm Checkbox ở Cột 15) và kích hoạt quyền tự động gửi email khi bạn tích chọn [v] trên tab 'Yêu Cầu Tìm PIC'.\n\nTừ bây giờ, bạn chỉ cần điền thông tin PIC và tích chọn [v] là email sẽ tự động gửi đi ngay lập tức.",
     SpreadsheetApp.getUi().ButtonSet.OK
   );
 }
@@ -1732,24 +1765,36 @@ function getOrCreateSheet(sheetName) {
 
   sheet = ss.insertSheet(sheetName);
   if (sheetName === "Học Viên Đã Học" || cleanTarget.includes("dahoc") || cleanTarget.includes("alumni")) {
-    sheet.appendRow([
-      "Họ và Tên", "Email", "Funny Nickname", "Mã VIP / Password",
-      "Số Lượt PIC Còn Lại", "Ngày Kích Hoạt", "Hạn Sử Dụng (90 Ngày)",
-      "Link VIP Trực Tiếp", "Lịch Sử Yêu Cầu PIC"
-    ]);
+    const alumniHeaders = [
+      "Họ và Tên", "Email", "Funny Nickname", "User ID (Mã VIP)",
+      "Số Lượt PIC Còn Lại", "Trạng Thái Vào Web", "Trạng Thái & Ngày Kích Hoạt", "Hạn Sử Dụng (90 Ngày)",
+      "Link VIP Trực Tiếp", "Lịch Sử Yêu Cầu PIC", "Trạng Thái Gửi Email"
+    ];
+    if (sheet.getMaxColumns() < alumniHeaders.length) {
+      sheet.insertColumnsAfter(sheet.getMaxColumns(), alumniHeaders.length - sheet.getMaxColumns());
+    }
+    sheet.appendRow(alumniHeaders);
     try {
-      sheet.getRange(1, 1, 1, 9).setFontWeight("bold").setBackground("#fef3c7");
+      sheet.getRange(1, 1, 1, alumniHeaders.length).setFontWeight("bold").setBackground("#fef3c7").setFontColor("#92400e");
       sheet.setFrozenRows(1);
     } catch (e) {}
-  } else if (sheetName === "Yêu Cầu Tìm PIC" || cleanTarget.includes("yeucautimpic") || cleanTarget.includes("picrequest")) {
-    sheet.appendRow([
-      "Thời Gian Gửi", "Email Học Viên", "Họ và Tên", "Funny Nickname",
-      "Công Ty Mục Tiêu", "Bộ Phận (HR / Marketing)", "Chức Danh & Mục Tiêu Tiếp Cận",
-      "Ghi Chú / Link Bổ Sung", "Trạng Thái Xử Lý"
-    ]);
+  } else if (sheetName === "Yêu Cầu Tìm PIC" || cleanTarget.includes("yeucautimpic") || cleanTarget.includes("picrequest") || cleanTarget.includes("timpic")) {
+    const picHeaders = [
+      "Thời Gian Gửi", "Email Học Viên", "Họ Tên", "Nickname",
+      "Doanh Nghiệp Mục Tiêu", "Bộ Phận Tiếp Cận", "Mục Tiêu / Vai Trò",
+      "Ghi Chú Học Viên", "Trạng Thái Xử Lý",
+      "Tên PIC", "Chức Vụ PIC", "Link LinkedIn PIC", "Email / SĐT PIC",
+      "Lời Khuyên Tiếp Cận (Peter Võ)", "Gửi Email (Tích Chọn)", "Thời Gian & Trạng Thái Gửi Email"
+    ];
+    if (sheet.getMaxColumns() < picHeaders.length) {
+      sheet.insertColumnsAfter(sheet.getMaxColumns(), picHeaders.length - sheet.getMaxColumns());
+    }
+    sheet.appendRow(picHeaders);
     try {
-      sheet.getRange(1, 1, 1, 9).setFontWeight("bold").setBackground("#dbeafe");
+      sheet.getRange(1, 1, 1, picHeaders.length).setFontWeight("bold").setBackground("#fee2e2").setFontColor("#991b1b");
       sheet.setFrozenRows(1);
+      const cbRule = SpreadsheetApp.newDataValidation().requireCheckbox().build();
+      sheet.getRange(2, 15, Math.max(sheet.getMaxRows() - 1, 50), 1).setDataValidation(cbRule);
     } catch (e) {}
   } else if (sheetName.includes("Học Viên") || sheetName === "Học Viên Đăng Ký") {
     sheet.appendRow([
