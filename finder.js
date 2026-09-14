@@ -857,7 +857,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const vipPasscodeInput = document.getElementById('vip-passcode-input');
     const vipEmailInput = document.getElementById('vip-email-input');
     const vipErrorMsg = document.getElementById('vip-error-msg');
-    const btnQuickFillPass = document.getElementById('btn-quick-fill-pass');
     const btnLockVip = document.getElementById('btn-lock-vip');
 
     const vipDisplayNickname = document.getElementById('vip-display-nickname');
@@ -1163,47 +1162,17 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
 
-        // 3. Fallback client-side validation nếu pass hợp lệ
-        if (!session && (isMasterPass || isVipFormat)) {
-            const existingRaw = localStorage.getItem('alumni_vip_session');
-            const existing = existingRaw ? JSON.parse(existingRaw) : null;
-            const currentCredits = (existing && existing.remainingCredits !== undefined) ? existing.remainingCredits : 3;
-
-            session = {
-                isVip: true,
-                name: (existing && existing.name) || (cleanEmail ? cleanEmail.split('@')[0] : 'Alumni VIP'),
-                nickname: getFunnyNickname(cleanEmail ? cleanEmail.split('@')[0] : 'Tân Võ Phước', cleanEmail),
-                email: cleanEmail || (existing && existing.email) || 'alumni@bdbinhdanhocvu.com',
-                remainingCredits: currentCredits,
-                expiry: '90 Ngày',
-                vipCode: cleanPass,
-                userId: (existing && existing.userId) || null
-            };
-        }
-
         if (session) {
             localStorage.setItem('alumni_vip_session', JSON.stringify(session));
             renderVipSession(session);
             return true;
         } else {
             if (vipErrorMsg) {
-                vipErrorMsg.textContent = 'Mật khẩu VIP không hợp lệ. Vui lòng kiểm tra lại.';
+                vipErrorMsg.textContent = 'Mật khẩu VIP hoặc Email không có trong danh sách Học Viên Đã Học. Vui lòng liên hệ Peter Võ để được kích hoạt!';
                 vipErrorMsg.style.display = 'block';
             }
             return false;
         }
-    }
-
-    // Event: Quick Fill Pass
-    if (btnQuickFillPass) {
-        btnQuickFillPass.addEventListener('click', () => {
-            if (vipPasscodeInput) vipPasscodeInput.value = 'BDTHUCCHIEN';
-            if (vipEmailInput && !vipEmailInput.value) {
-                const savedEmail = localStorage.getItem('user_email') || localStorage.getItem('user_gated_email') || '';
-                if (savedEmail) vipEmailInput.value = savedEmail;
-            }
-            unlockVip('BDTHUCCHIEN', vipEmailInput ? vipEmailInput.value : '');
-        });
     }
 
     // Event: Submit Unlock Form
@@ -1238,7 +1207,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const session = JSON.parse(sessionRaw);
 
             if (session.remainingCredits <= 0) {
-                alert('Bạn đã sử dụng hết 3/3 lượt tìm PIC đặc quyền. Vui lòng liên hệ trực tiếp Peter Võ qua Zalo: 0931.100.569.');
+                alert('Bạn đã sử dụng hết 3 lượt tìm PIC của tháng này (hạn mức 3 contacts/tháng trong 3 tháng đầu tiên). Vui lòng liên hệ trực tiếp Peter Võ qua Zalo: 0931.100.569 nếu cần hỗ trợ thêm nhé!');
                 return;
             }
 
@@ -1305,7 +1274,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 picSubmitFeedback.innerHTML = `
                     🎉 <strong>Yêu cầu tìm PIC đã được gửi thành công!</strong><br>
                     Anh Peter Võ sẽ trực tiếp rà soát mạng lưới 30,000+ LinkedIn connections và phản hồi thông tin PIC cho bạn qua Zalo/Email trong 24h - 48h tới.<br>
-                    <span style="font-size: 0.85rem; color: #f3a83b; margin-top: 4px; display: inline-block;">Số lượt còn lại của bạn: ${session.remainingCredits} / 3 lượt.</span>
+                    <span style="font-size: 0.85rem; color: #f3a83b; margin-top: 4px; display: inline-block;">Số lượt còn lại của bạn trong tháng này: ${session.remainingCredits} / 3 contacts (hạn mức 3 contacts/tháng trong 3 tháng đầu).</span>
                 `;
             }
 

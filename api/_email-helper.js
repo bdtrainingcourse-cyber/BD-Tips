@@ -284,7 +284,7 @@ async function sendResetPasswordEmail({ email, name, resetToken }) {
 async function sendVipLaunchingResendEmail({ email, name, nickname, vipCode, scheduledAt, headers = {} }) {
   const code = vipCode || 'BDTHUCCHIEN';
   const magicLink = `https://www.bdbinhdanhocvu.com/finder.html?email=${encodeURIComponent(email)}&vip_pass=${encodeURIComponent(code)}`;
-  const subject = "🎉 [Đặc Quyền Alumni VIP] Ra Mắt Hệ Sinh Thái 9 Vũ Khí B2B & 3 Lượt Tìm PIC";
+  const subject = "🎉 [Đặc Quyền Alumni VIP] Ra Mắt Hệ Sinh Thái 9 Vũ Khí B2B & 3 Contacts/Tháng Tìm PIC";
   
   const contentHtml = `
     <p>Chào <strong>${name || 'Bạn'}</strong> (<em>${nickname || 'Chiến Binh BD'}</em>),</p>
@@ -298,8 +298,8 @@ async function sendVipLaunchingResendEmail({ email, name, nickname, vipCode, sch
     <div style="background: #fef3c7; border-left: 4px solid #f59e0b; padding: 14px 18px; border-radius: 8px; margin: 20px 0; text-align: left;">
       <strong style="color: #92400e; font-size: 15px; display: block; margin-bottom: 6px;">👑 3 ĐẶC QUYỀN ALUMNI VIP DÀNH RIÊNG CHO BẠN:</strong>
       <ul style="margin: 0; padding-left: 18px; color: #78350f; font-size: 13.5px; line-height: 1.6;">
-        <li>🎯 <strong>3 Lượt Tìm PIC Đặc Quyền:</strong> Peter Võ trực tiếp kết nối Person-in-Charge khối HR &amp; Marketing qua 30.000+ kết nối LinkedIn (Hạn 90 ngày).</li>
-        <li>🎟️ <strong>3 Vé Mời VIP Đồng Đội (Giver Mentality):</strong> Tặng bạn bè đồng nghiệp nhận +50 BD-Points và tải Ebook thực chiến đầu tiên. Bạn nhận +50đ/bạn và tự động mở khóa các Mốc Quà (<em>Slide Pitching</em>, <em>Ly Trà Sữa Size L</em>, <em>30 Phút Online 1-1 cùng Peter Võ</em>).</li>
+        <li>🎯 <strong>Hạn Mức Tìm PIC Đặc Quyền (3 Contacts / Tháng):</strong> Peter Võ trực tiếp kết nối Person-in-Charge khối HR &amp; Marketing qua 30.000+ kết nối LinkedIn, áp dụng liên tục trong 3 tháng đầu tiên (tổng 9 contacts).</li>
+        <li>🎟️ <strong>Vé Mời VIP Đồng Đội (Giver Mentality):</strong> Tặng bạn bè đồng nghiệp nhận +50 BD-Points và tải Ebook thực chiến đầu tiên. Bạn nhận +50đ/bạn và tự động mở khóa các Mốc Quà (<em>Mốc 5 bạn: 1 Ly Trà Sữa Size L</em>, <em>Mốc 10 bạn: 30 Phút Online 1-1</em>, <em>Mốc 15 bạn: Buổi Lunch trực tiếp cùng Peter Võ</em>).</li>
         <li>⚡ <strong>Mở Khóa Trọn Đời 9 Công Cụ &amp; Thư Viện Ebook:</strong> Trọn quyền sử dụng toàn bộ tính năng hỗ trợ nghề BD.</li>
       </ul>
     </div>

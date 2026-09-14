@@ -140,34 +140,28 @@
                 <div class="vip-badge-tag">⭐ ĐẶC QUYỀN ALUMNI VIP - KHÓA BD THỰC CHIẾN</div>
                 <h2 class="vip-gate-title">Khu Vực Alumni VIP</h2>
                 <p class="vip-gate-desc" style="color: #f8fafc; font-size: 1.05rem; font-weight: 500; line-height: 1.65;">
-                    Chương trình <strong style="color: #f3a83b;">"Hỗ Trợ Tìm PIC"</strong> (3 contacts / 3 tháng) chuyên khối <strong style="color: #60a5fa;">C-Level, HR, Marketing & IT</strong> qua mạng lưới 30,000+ kết nối LinkedIn của anh <strong style="color: #ffffff;">Peter Võ</strong> là đặc quyền chỉ dành riêng cho cựu học viên Khóa BD Thực Chiến.
+                    Chương trình <strong style="color: #f3a83b;">"Hỗ Trợ Tìm PIC"</strong> (3 contacts / tháng trong 3 tháng đầu tiên, tối đa 9 contacts) chuyên khối <strong style="color: #60a5fa;">C-Level, HR, Marketing & IT</strong> qua mạng lưới 30,000+ kết nối LinkedIn của anh <strong style="color: #ffffff;">Peter Võ</strong> là đặc quyền chỉ dành riêng cho cựu học viên Khóa BD Thực Chiến.
                 </p>
 
                 <form id="vip-auth-form" class="vip-gate-form">
                     <div class="form-group">
                         <label for="vip-passcode-input" style="color: #ffffff; font-weight: 700; font-size: 0.95rem;">Mật Khẩu VIP Cá Nhân <span style="color: #f3a83b;">*</span></label>
-                        <input type="password" id="vip-passcode-input" class="vip-input" placeholder="Nhập Mật khẩu VIP riêng của bạn (VD: BD-xxxx hoặc BDTHUCCHIEN)..." required autocomplete="current-password">
+                        <input type="password" id="vip-passcode-input" class="vip-input" placeholder="Nhập Mật khẩu VIP riêng trong email của bạn (VD: BD-xxxx)..." required autocomplete="current-password">
                     </div>
 
                     <div class="form-group">
-                        <label for="vip-email-input" style="color: #ffffff; font-weight: 700; font-size: 0.95rem;">Email Học Viên <span style="color: #cbd5e1; font-weight: 500; font-size: 0.85rem;">(để hiển thị đúng Funny Nickname của bạn)</span></label>
+                        <label for="vip-email-input" style="color: #ffffff; font-weight: 700; font-size: 0.95rem;">Email Học Viên <span style="color: #cbd5e1; font-weight: 500; font-size: 0.85rem;">(để đối soát đúng danh sách Học Viên Đã Học)</span></label>
                         <input type="email" id="vip-email-input" class="vip-input" placeholder="Ví dụ: name@company.com" autocomplete="email">
                     </div>
 
-                    <div id="vip-error-msg" class="vip-error-msg">Mật khẩu VIP chưa chính xác. Vui lòng kiểm tra lại.</div>
+                    <div id="vip-error-msg" class="vip-error-msg">Mật khẩu VIP chưa chính xác hoặc email không có trong danh sách Alumni. Vui lòng kiểm tra lại.</div>
 
                     <button type="submit" id="btn-unlock-vip" class="btn btn-primary" style="padding: 14px; font-weight: 800; font-size: 1.05rem; margin-top: 10px; width: 100%; box-shadow: 0 4px 18px rgba(243, 168, 59, 0.35);">
                         🚀 Mở Khóa Đặc Quyền Alumni VIP
                     </button>
 
-                    <div style="text-align: center; margin-top: 12px;">
-                        <button type="button" id="btn-quick-fill-pass" class="vip-demo-pill" title="Click để thử nhanh mật khẩu VIP demo">
-                            🔑 Thử Nhanh Pass Demo: <strong>BDTHUCCHIEN</strong>
-                        </button>
-                    </div>
-
                     <p class="vip-security-note">
-                        🔒 <strong>Cơ chế bảo mật:</strong> Mỗi học viên được cấp một Mật khẩu VIP riêng biệt gửi qua email. Mật khẩu gắn liền với 3 lượt tìm PIC của bạn, vui lòng <strong>không chia sẻ cho người lạ</strong> để tránh bị dùng mất lượt nhé!
+                        🔒 <strong>Cơ chế bảo mật:</strong> Mỗi học viên được cấp một Mật khẩu VIP riêng biệt gửi qua email. Mật khẩu gắn liền với hạn mức 3 contacts/tháng của bạn, vui lòng <strong>không chia sẻ cho người lạ</strong> để tránh bị dùng mất lượt nhé!
                     </p>
                 </form>
             </div>
@@ -199,18 +193,18 @@
                 <!-- 3 Quota / Benefit Cards -->
                 <div class="vip-quota-grid">
                     <div class="vip-quota-box primary-box">
-                        <div class="vip-quota-label">Lượt Tìm PIC Còn Lại</div>
-                        <div class="vip-quota-value"><span id="vip-credits-val">3</span> / 3 <span style="font-size: 1.1rem; font-weight: 700; color: #f3a83b;">Lượt</span></div>
+                        <div class="vip-quota-label">Hạn Mức Tìm PIC</div>
+                        <div class="vip-quota-value"><span id="vip-credits-val">3</span> / 3 <span style="font-size: 1.1rem; font-weight: 700; color: #f3a83b;">Lượt / Tháng</span></div>
                         <div class="vip-progress-bar">
                             <div class="vip-progress-fill" id="vip-progress-fill" style="width: 100%;"></div>
                         </div>
-                        <div class="vip-quota-sub" style="color: #fbbf24; margin-top: 8px;">Đặc quyền độc quyền của bạn</div>
+                        <div class="vip-quota-sub" style="color: #fbbf24; margin-top: 8px;">3 contacts/tháng (3 tháng đầu, tối đa 9 contacts)</div>
                     </div>
 
                     <div class="vip-quota-box">
-                        <div class="vip-quota-label">Thời Hạn Sử Dụng</div>
-                        <div class="vip-quota-value" style="font-size: 1.6rem; color: #ffffff;">90 Ngày</div>
-                        <div class="vip-quota-sub" id="vip-expiry-text">Hạn dùng trong vòng 3 tháng kể từ ngày kích hoạt</div>
+                        <div class="vip-quota-label">Thời Hạn Áp Dụng</div>
+                        <div class="vip-quota-value" style="font-size: 1.6rem; color: #ffffff;">3 Tháng Đầu</div>
+                        <div class="vip-quota-sub" id="vip-expiry-text">Tự động làm mới 3 contacts mỗi tháng</div>
                     </div>
 
                     <div class="vip-quota-box">
@@ -248,7 +242,7 @@
                         </div>
                         <div style="background: rgba(243, 168, 59, 0.15); border: 1px solid rgba(243, 168, 59, 0.35); padding: 8px 18px; border-radius: 30px; text-align: center;">
                             <span style="font-size: 0.75rem; color: var(--text-light, #64748b); display: block; font-weight: 600;">Đã Mời Tham Gia</span>
-                            <span style="font-size: 1.1rem; font-weight: 800; color: #b45309;"><span id="ref-tickets-left">0</span> / 10 Bạn</span>
+                            <span style="font-size: 1.1rem; font-weight: 800; color: #b45309;"><span id="ref-tickets-left">0</span> / 15 Bạn</span>
                         </div>
                     </div>
 
@@ -257,7 +251,7 @@
                         <strong style="color: #b45309;">💡 Cơ chế tính điểm &amp; nhận thưởng minh bạch:</strong>
                         <div style="display: flex; gap: 16px; flex-wrap: wrap; margin-top: 4px;">
                             <span>🎁 <strong>Đồng nghiệp nhận:</strong> +50 BD-Points ví tài khoản + Tải trọn đời Ebook B2B đầu tiên.</span>
-                            <span>👑 <strong>Bạn (Alumni VIP) nhận:</strong> +50 BD-Points cho mỗi đồng nghiệp (tối đa +500đ) + Tự động mở khóa quà tặng khi chạm các Mốc 1, 5, 10 bạn.</span>
+                            <span>👑 <strong>Bạn (Alumni VIP) nhận:</strong> +50 BD-Points cho mỗi đồng nghiệp (tối đa +750đ) + Tự động mở khóa quà tặng khi chạm các Mốc 5, 10, 15 bạn.</span>
                         </div>
                     </div>
 
@@ -288,7 +282,7 @@
                                     🏆 3 MỐC THƯỞNG VIP ĐỒNG ĐỘI
                                 </span>
                                 <span style="font-size: 0.75rem; color: var(--text-light, #64748b);">
-                                    (Tiến độ: <strong id="ref-count-display" style="color: #047857;">0</strong>/10 bạn)
+                                    (Tiến độ: <strong id="ref-count-display" style="color: #047857;">0</strong>/15 bạn)
                                 </span>
                             </div>
                             <div style="display: flex; align-items: center; gap: 6px; font-size: 0.78rem; font-weight: 700; color: #b45309;">
@@ -300,31 +294,31 @@
                         <div id="vip-milestones-content" class="vip-milestones-content collapsed-on-mobile">
                             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin-top: 12px;">
                                 <!-- Milestone 1 -->
-                                <div class="vip-milestone-box" style="border-color: rgba(245, 158, 11, 0.4);">
-                                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
-                                        <span style="font-size: 0.78rem; font-weight: 800; color: #b45309;">MỐC 1 (Rủ 1 Bạn)</span>
-                                        <span style="font-size: 0.72rem; padding: 2px 8px; border-radius: 10px; background: rgba(251, 191, 36, 0.2); color: #b45309; font-weight: 700;">+50 Points 🪙</span>
-                                    </div>
-                                    <div style="font-size: 0.88rem; font-weight: 700; color: var(--text-main, #1e293b);">Mở khóa Bộ Slide Mẫu Pitching B2B</div>
-                                    <p style="font-size: 0.75rem; color: var(--text-light, #64748b); margin: 4px 0 0 0; line-height: 1.4;">Bộ template thuyết trình chuẩn thực chiến dành cho B2B BD (tặng kèm +50 BD-Points).</p>
-                                </div>
-                                <!-- Milestone 2 -->
                                 <div class="vip-milestone-box" style="border-color: rgba(239, 68, 68, 0.4);">
                                     <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
-                                        <span style="font-size: 0.78rem; font-weight: 800; color: #be123c;">MỐC 2 (Rủ 5 Bạn)</span>
-                                        <span style="font-size: 0.72rem; padding: 2px 8px; border-radius: 10px; background: rgba(239, 68, 68, 0.12); color: #be123c; font-weight: 700;">🥤 QUÀ HOT</span>
+                                        <span style="font-size: 0.78rem; font-weight: 800; color: #be123c;">MỐC 1 (Rủ 5 Bạn)</span>
+                                        <span style="font-size: 0.72rem; padding: 2px 8px; border-radius: 10px; background: rgba(239, 68, 68, 0.12); color: #be123c; font-weight: 700;">🥤 QUÀ GIẢI NHIỆT</span>
                                     </div>
                                     <div style="font-size: 0.88rem; font-weight: 700; color: var(--text-main, #1e293b);">Tặng 01 Ly Trà Sữa Size L Mát Lạnh</div>
-                                    <p style="font-size: 0.75rem; color: var(--text-light, #64748b); margin: 4px 0 0 0; line-height: 1.4;">Ly Trà Sữa Size L hoặc Voucher thương hiệu giải nhiệt gửi tặng bạn khi rủ đủ 5 đồng nghiệp BD.</p>
+                                    <p style="font-size: 0.75rem; color: var(--text-light, #64748b); margin: 4px 0 0 0; line-height: 1.4;">Ly Trà Sữa Size L hoặc Voucher thương hiệu giải nhiệt gửi tặng bạn khi rủ đủ 5 đồng nghiệp BD (kèm +250 BD-Points).</p>
+                                </div>
+                                <!-- Milestone 2 -->
+                                <div class="vip-milestone-box" style="border-color: rgba(245, 158, 11, 0.4);">
+                                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
+                                        <span style="font-size: 0.78rem; font-weight: 800; color: #b45309;">MỐC 2 (Rủ 10 Bạn)</span>
+                                        <span style="font-size: 0.72rem; padding: 2px 8px; border-radius: 10px; background: rgba(251, 191, 36, 0.2); color: #b45309; font-weight: 700;">💻 1-1 ONLINE</span>
+                                    </div>
+                                    <div style="font-size: 0.88rem; font-weight: 700; color: var(--text-main, #1e293b);">30 Phút Online 1-1 Với Anh Peter Võ</div>
+                                    <p style="font-size: 0.75rem; color: var(--text-light, #64748b); margin: 4px 0 0 0; line-height: 1.4;">Tư vấn chiến lược cá nhân 1-1: Thiết kế sales pipeline &amp; gỡ rối deal B2B khó trực tiếp cùng anh Peter (kèm +500 BD-Points).</p>
                                 </div>
                                 <!-- Milestone 3 -->
                                 <div class="vip-milestone-box" style="border-color: rgba(16, 185, 129, 0.4);">
                                     <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
-                                        <span style="font-size: 0.78rem; font-weight: 800; color: #047857;">MỐC 3 (Rủ 10 Bạn)</span>
-                                        <span style="font-size: 0.72rem; padding: 2px 8px; border-radius: 10px; background: rgba(16, 185, 129, 0.15); color: #047857; font-weight: 700;">💻 1-1 ĐẶC BIỆT</span>
+                                        <span style="font-size: 0.78rem; font-weight: 800; color: #047857;">MỐC 3 (Rủ 15 Bạn)</span>
+                                        <span style="font-size: 0.72rem; padding: 2px 8px; border-radius: 10px; background: rgba(16, 185, 129, 0.15); color: #047857; font-weight: 700;">🍽️ LUNCH ĐẶC BIỆT</span>
                                     </div>
-                                    <div style="font-size: 0.88rem; font-weight: 700; color: var(--text-main, #1e293b);">30 Phút Online 1-1 Với Anh Peter Võ</div>
-                                    <p style="font-size: 0.75rem; color: var(--text-light, #64748b); margin: 4px 0 0 0; line-height: 1.4;">Tư vấn chiến lược cá nhân 1-1: Thiết kế sales pipeline &amp; gỡ rối deal B2B khó trực tiếp cùng anh Peter.</p>
+                                    <div style="font-size: 0.88rem; font-weight: 700; color: var(--text-main, #1e293b);">Buổi Lunch 1-1 Cùng Anh Peter Võ</div>
+                                    <p style="font-size: 0.75rem; color: var(--text-light, #64748b); margin: 4px 0 0 0; line-height: 1.4;">Buổi ăn trưa thân mật 1-1: Cố vấn định hướng sự nghiệp BD, mở rộng quan hệ cấp cao trực tiếp cùng anh Peter.</p>
                                 </div>
                             </div>
                         </div>

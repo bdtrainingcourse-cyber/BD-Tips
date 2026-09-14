@@ -373,25 +373,10 @@ async function handleVerifyAlumni(req, res, params) {
     console.warn('[VERIFY_ALUMNI_SHEET_ERR]', err.message);
   }
 
-  // 2. Fallback: master pass BDTHUCCHIEN
-  if (cleanPass.toUpperCase() === 'BDTHUCCHIEN') {
-    return res.status(200).json({
-      success: true,
-      isAlumni: true,
-      userId: 'UID_VIP',
-      name: 'Học Viên VIP',
-      nickname: 'Chiến Binh BD',
-      email: cleanEmail || 'alumni@bdbinhdanhocvu.com',
-      remainingCredits: 3,
-      expiry: '90 Ngày',
-      vipCode: 'BDTHUCCHIEN'
-    });
-  }
-
   return res.status(200).json({
     success: false,
     isAlumni: false,
-    error: 'Mật khẩu VIP hoặc Email không khớp với danh sách Alumni.'
+    error: 'Mật khẩu VIP hoặc Email không có trong danh sách Học Viên Đã Học. Vui lòng liên hệ Peter Võ để được kích hoạt!'
   });
 }
 

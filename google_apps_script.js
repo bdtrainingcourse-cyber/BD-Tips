@@ -1764,42 +1764,13 @@ function verifyAlumni(identifier, emailParam) {
     const ss = SpreadsheetApp.getActiveSpreadsheet();
     let sheet = ss.getSheetByName("Học Viên Đã Học");
     
-    // Nếu sheet chưa có hoặc chưa có dữ liệu, hỗ trợ master pass BDTHUCCHIEN
     if (!sheet) {
-      if (cleanId.toUpperCase() === "BDTHUCCHIEN") {
-        const fallbackUid = cleanEmail ? ("UID_" + cleanEmail.split('@')[0].toUpperCase().replace(/[^A-Z0-9]/g, '')) : "UID_VIP";
-        return createJsonResponse({
-          success: true,
-          isAlumni: true,
-          userId: fallbackUid,
-          name: "Học Viên VIP",
-          nickname: cleanEmail ? generateFunnyNickname("Chiến Binh BD", cleanEmail) : "Tân Săn Deal Khủng",
-          email: cleanEmail,
-          remainingCredits: 3,
-          expiry: "3 Tháng",
-          vipCode: "BDTHUCCHIEN"
-        });
-      }
-      return createJsonResponse({ success: false, isAlumni: false, error: "Mật khẩu VIP không chính xác." });
+      return createJsonResponse({ success: false, isAlumni: false, error: "Bảng 'Học Viên Đã Học' chưa được khởi tạo." });
     }
     
     const data = sheet.getDataRange().getValues();
     if (data.length <= 1) {
-      if (cleanId.toUpperCase() === "BDTHUCCHIEN") {
-        const fallbackUid = cleanEmail ? ("UID_" + cleanEmail.split('@')[0].toUpperCase().replace(/[^A-Z0-9]/g, '')) : "UID_VIP";
-        return createJsonResponse({
-          success: true,
-          isAlumni: true,
-          userId: fallbackUid,
-          name: "Học Viên VIP",
-          nickname: cleanEmail ? generateFunnyNickname("Chiến Binh BD", cleanEmail) : "Tân Săn Deal Khủng",
-          email: cleanEmail,
-          remainingCredits: 3,
-          expiry: "3 Tháng",
-          vipCode: "BDTHUCCHIEN"
-        });
-      }
-      return createJsonResponse({ success: false, isAlumni: false, error: "Chưa có thông tin học viên." });
+      return createJsonResponse({ success: false, isAlumni: false, error: "Chưa có thông tin học viên trong danh sách." });
     }
     
     // Quét tìm học viên theo Email, VIP Code, hoặc Master Pass
@@ -1882,23 +1853,11 @@ function verifyAlumni(identifier, emailParam) {
       }
     }
     
-    // Nếu nhập pass chung BDTHUCCHIEN nhưng email chưa nằm trong sheet
-    if (cleanId.toUpperCase() === "BDTHUCCHIEN") {
-      const fallbackUid = cleanEmail ? ("UID_" + cleanEmail.split('@')[0].toUpperCase().replace(/[^A-Z0-9]/g, '')) : "UID_VIP";
-      return createJsonResponse({
-        success: true,
-        isAlumni: true,
-        userId: fallbackUid,
-        name: "Alumni VIP",
-        nickname: cleanEmail ? generateFunnyNickname("Chiến Binh BD", cleanEmail) : "Tân Săn Deal Khủng",
-        email: cleanEmail,
-        remainingCredits: 3,
-        expiry: "3 Tháng",
-        vipCode: "BDTHUCCHIEN"
-      });
-    }
-    
-    return createJsonResponse({ success: false, isAlumni: false, error: "Mật khẩu VIP hoặc Email không khớp với danh sách Alumni." });
+    return createJsonResponse({
+      success: false,
+      isAlumni: false,
+      error: "Email hoặc Mật khẩu VIP không có trong danh sách Học Viên Đã Học. Vui lòng liên hệ Peter Võ để được kích hoạt!"
+    });
   } catch (err) {
     return createJsonResponse({ success: false, error: err.message });
   }
@@ -1919,8 +1878,8 @@ function buildVipLaunchingEmailHtml(name, nickname, email, vipCode, magicLink) {
     "<div style=\"background: #fef3c7; border-left: 4px solid #f59e0b; padding: 14px 18px; border-radius: 8px; margin: 20px 0; text-align: left;\">",
     "  <strong style=\"color: #92400e; font-size: 15px; display: block; margin-bottom: 6px;\">👑 3 ĐẶC QUYỀN ALUMNI VIP DÀNH RIÊNG CHO BẠN:</strong>",
     "  <ul style=\"margin: 0; padding-left: 18px; color: #78350f; font-size: 13.5px; line-height: 1.6;\">",
-    "    <li>🎯 <strong>3 Lượt Tìm PIC Đặc Quyền:</strong> Peter Võ trực tiếp kết nối Person-in-Charge khối HR &amp; Marketing qua 30.000+ kết nối LinkedIn (Hạn 90 ngày).</li>",
-    "    <li>🎟️ <strong>3 Vé Mời VIP Đồng Đội (Giver Mentality):</strong> Tặng bạn bè đồng nghiệp nhận +50 BD-Points và tải Ebook thực chiến đầu tiên. Bạn nhận +50đ/bạn và tự động mở khóa các Mốc Quà (<em>Slide Pitching</em>, <em>Ly Trà Sữa Size L</em>, <em>30 Phút Online 1-1 cùng Peter Võ</em>).</li>",
+    "    <li>🎯 <strong>Hạn Mức Tìm PIC Đặc Quyền (3 Contacts / Tháng):</strong> Peter Võ trực tiếp kết nối Person-in-Charge khối HR &amp; Marketing qua 30.000+ kết nối LinkedIn, áp dụng liên tục trong 3 tháng đầu tiên (tổng 9 contacts).</li>",
+    "    <li>🎟️ <strong>Vé Mời VIP Đồng Đội (Giver Mentality):</strong> Tặng bạn bè đồng nghiệp nhận +50 BD-Points và tải Ebook thực chiến đầu tiên. Bạn nhận +50đ/bạn và tự động mở khóa các Mốc Quà (<em>Mốc 5 bạn: 1 Ly Trà Sữa Size L</em>, <em>Mốc 10 bạn: 30 Phút Online 1-1</em>, <em>Mốc 15 bạn: Buổi Lunch trực tiếp cùng Peter Võ</em>).</li>",
     "    <li>⚡ <strong>Mở Khóa Trọn Đời 9 Công Cụ &amp; Thư Viện Ebook:</strong> Trọn quyền sử dụng toàn bộ tính năng hỗ trợ nghề BD.</li>",
     "  </ul>",
     "</div>",
@@ -1964,7 +1923,7 @@ function sendVipLaunchingEmail(targetEmail) {
           const vipCode = row[3] ? row[3].toString().trim() : "BDTHUCCHIEN";
           const magicLink = row[8] ? row[8].toString().trim() : ("https://www.bdbinhdanhocvu.com/finder.html?email=" + encodeURIComponent(email) + "&vip_pass=" + encodeURIComponent(vipCode));
 
-          const subject = "🎉 [Đặc Quyền Alumni VIP] Ra Mắt Hệ Sinh Thái 9 Vũ Khí B2B & 3 Lượt Tìm PIC";
+          const subject = "🎉 [Đặc Quyền Alumni VIP] Ra Mắt Hệ Sinh Thái 9 Vũ Khí B2B & 3 Contacts/Tháng Tìm PIC";
           const fullHtml = buildVipLaunchingEmailHtml(name, nickname, email, vipCode, magicLink);
 
           // Thử gửi qua Resend Endpoint trước (đảm bảo SPF/DKIM chuẩn tên miền)
@@ -2041,7 +2000,7 @@ function sendVipLaunchingEmail(targetEmail) {
       }
       const testNick = generateFunnyNickname(testName, cleanTarget);
       const testMagicLink = "https://www.bdbinhdanhocvu.com/finder.html?email=" + encodeURIComponent(cleanTarget) + "&vip_pass=" + encodeURIComponent(testVipCode);
-      const subject = "🎉 [Đặc Quyền Alumni VIP] Ra Mắt Hệ Sinh Thái 9 Vũ Khí B2B & 3 Lượt Tìm PIC";
+      const subject = "🎉 [Đặc Quyền Alumni VIP] Ra Mắt Hệ Sinh Thái 9 Vũ Khí B2B & 3 Contacts/Tháng Tìm PIC";
       const fullHtml = buildVipLaunchingEmailHtml(testName, testNick, cleanTarget, testVipCode, testMagicLink);
 
       // Thử gửi qua Resend Endpoint trước
@@ -2114,7 +2073,7 @@ function handlePICRequest(postData) {
           foundRow = r + 1;
           const currentRem = !isNaN(parseInt(row[4], 10)) ? parseInt(row[4], 10) : 3;
           if (currentRem <= 0) {
-            return createJsonResponse({ success: false, error: "Bạn đã dùng hết 3/3 lượt tìm PIC đặc quyền. Vui lòng liên hệ trực tiếp Peter Võ nếu có nhu cầu phát sinh." });
+            return createJsonResponse({ success: false, error: "Bạn đã dùng hết 3 lượt tìm PIC của tháng này (hạn mức 3 contacts/tháng trong 3 tháng đầu). Vui lòng liên hệ trực tiếp Peter Võ nếu có nhu cầu phát sinh." });
           }
           remaining = currentRem - 1;
           sheetAlumni.getRange(foundRow, 5).setValue(remaining);
