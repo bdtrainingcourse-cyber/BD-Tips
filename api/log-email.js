@@ -8,7 +8,8 @@ const {
   sendVerificationReminderEmail,
   sendWelcomeRegistrationEmail,
   sendResetPasswordEmail,
-  sendVipLaunchingResendEmail
+  sendVipLaunchingResendEmail,
+  sendPicResultEmail
 } = require('./_email-helper');
 
 const disposableDomains = [
@@ -307,7 +308,7 @@ async function handleScheduleBulkAlumniLaunching(req, res) {
         .filter(r => r.ok)
         .map(r => ({
           email: r.email,
-          status: `🕒 Đã lên lịch [${r.scheduledAtVN}]`
+          status: `Đã lên lịch [${r.scheduledAtVN}]`
         }));
 
       if (updatePayload.length > 0) {
@@ -338,8 +339,8 @@ async function handleVerifyAlumni(req, res, params) {
   const cleanPass = (params.passcode || req.query.passcode || params.vip_pass || req.query.vip_pass || '').toString().trim();
   const ACTIVE_LEADS_WEBHOOK = 'https://script.google.com/macros/s/AKfycbzhevaZUCV0ITOxOeeFTx4lFG4jqknpCFV1EJ4l_L75-zkgmmY0eJlKc68jEgk_mVU/exec';
 
-  // Master Admin check
-  if (cleanEmail === 'bdtraining@bdbinhdanhocvu.com' || cleanPass.toLowerCase() === 'bdtraining@bdbinhdanhocvu.com') {
+  // Master Admin đặc quyền
+  if (cleanEmail === 'bdtraining@bdbinhdanhocvu.com' || cleanPass === 'BD-MASTER-ADMIN') {
     return res.status(200).json({
       success: true,
       isAlumni: true,
@@ -413,6 +414,37 @@ module.exports = async (req, res) => {
   // Alumni verification by Passcode or Email
   if (action === 'verifyAlumni') {
     return handleVerifyAlumni(req, res, params);
+  }
+
+  // Send PIC Result to VIP Student
+  if (action === 'sendPicResult') {
+    const studentEmail = (email || params.studentEmail || '').toString().trim().toLowerCase();
+    if (!studentEmail || !studentEmail.includes('@')) {
+      return res.status(400).json({ success: false, error: 'Email học viên không hợp lệ!' });
+    }
+    try {
+      const result = await sendPicResultEmail({
+        email: studentEmail,
+        name: name || params.studentName || 'Chiến Binh BD',
+        nickname: params.nickname || 'Alumni VIP',
+        targetCompany: company || params.targetCompany || '',
+        targetRole: params.targetRole || params.role || '',
+        department: params.department || '',
+        picName: params.picName || '',
+        picRole: params.picRole || '',
+        picLinkedin: params.picLinkedin || params.linkedin || '',
+        picContact: params.picContact || params.contact || '',
+        picAdvice: params.picAdvice || params.advice || ''
+      });
+      return res.status(200).json({
+        success: !!(result && result.ok),
+        messageId: result && result.data ? result.data.id : null,
+        error: result && result.error ? result.error : null
+      });
+    } catch (err) {
+      console.error('[SEND_PIC_RESULT_ERR]', err.message);
+      return res.status(500).json({ success: false, error: err.message });
+    }
   }
   
   if (!email || !email.includes('@')) {
@@ -937,7 +969,7 @@ module.exports = async (req, res) => {
 </head>
 <body>
   <div class="card">
-    <div style="font-size: 52px; margin-bottom: 8px;">🦉</div>
+    <img src="https://www.bdbinhdanhocvu.com/mascot_quests.jpg" alt="Cu BeeDee" style="width: 64px; height: 64px; border-radius: 50%; margin-bottom: 8px; border: 2px solid #e2e8f0;">
     <h2>Đã Hủy Nhận Email Nhắc Nhở</h2>
     <p>Địa chỉ <strong>${cleanEmail}</strong> sẽ không còn nhận email nhắc nhở mỗi sáng từ Cú BeeDee nữa.</p>
     <p style="font-size: 13px; color: #94a3b8;">Bạn vẫn có thể tiếp tục sử dụng tất cả công cụ và tài liệu thực chiến trên website bình thường bất cứ lúc nào!</p>

@@ -26,15 +26,18 @@ const B2B_SECRET_KEY = "2108330119Snail!!";
 function onOpen() {
   try {
     SpreadsheetApp.getUi()
-      .createMenu("🎓 Quản Lý Học Viên BD")
-      .addItem("➕ Khởi Tạo Tab 'Học Viên Đã Học' & 'Yêu Cầu Tìm PIC'", "menuInitAlumniSheets")
-      .addItem("⚡ Xử Lý Nickname & Mã VIP Tự Động Cho Toàn Bộ Học Viên", "menuAutoProcessAlumni")
+      .createMenu("Quản Lý Học Viên BD")
+      .addItem("Khởi Tạo Tab 'Học Viên Đã Học' & 'Yêu Cầu Tìm PIC'", "menuInitAlumniSheets")
+      .addItem("Xử Lý Nickname & Mã VIP Tự Động Cho Toàn Bộ Học Viên", "menuAutoProcessAlumni")
       .addSeparator()
-      .addItem("🧪 Gửi Thử VIP (Nhập Email Bất Kỳ)", "menuTestSendVipLaunchingEmail")
-      .addItem("🧪 Gửi Thử VIP Đến: ocsen.fashion@gmail.com", "menuTestSendVipToOcsen")
-      .addItem("🧪 Gửi Thử VIP Đến: vptanaia@gmail.com", "menuTestSendVipToTan")
+      .addItem("Cài Đặt Tự Động Gửi Email Khi Tích Checkbox (1 Lần)", "setupPicEditTrigger")
+      .addItem("Gửi Thông Tin PIC Cho Dòng Đang Chọn (Tab Yêu Cầu Tìm PIC)", "menuSendPicSelectedRow")
       .addSeparator()
-      .addItem("🚀 Gửi Toàn Bộ VIP (Giãn cách 2 phút/thư chống spam)", "menuSendBulkAlumniWithPacing")
+      .addItem("Gửi Thử VIP Đến: vptanaia@gmail.com", "menuTestSendVipToTan")
+      .addItem("Gửi Thử VIP Đến: ocsen.fashion@gmail.com", "menuTestSendVipToOcsen")
+      .addItem("Gửi Thử VIP (Nhập Email Bất Kỳ)", "menuTestSendVipLaunchingEmail")
+      .addSeparator()
+      .addItem("Gửi Toàn Bộ VIP (Giãn cách 2 phút/thư chống spam)", "menuSendBulkAlumniWithPacing")
       .addToUi();
   } catch (e) {
     Logger.log("onOpen error: " + e.message);
@@ -46,10 +49,10 @@ function menuInitAlumniSheets() {
   initPicRequestsSheet();
   SpreadsheetApp.getUi().alert(
     "Khởi Tạo Bảng Thành Công!",
-    "✅ Đã tạo/chuẩn hóa 2 tab trên Google Sheet:\n\n" +
-    "1. Tab 'Học Viên Đã Học': Chuẩn 11 cột chuyên nghiệp (Màu vàng). Có sẵn cột 'User ID (Mã VIP)', 'Trạng Thái Vào Web' và 'Trạng Thái Gửi Email' (Pacing).\n" +
-    "2. Tab 'Yêu Cầu Tìm PIC': Chuẩn 9 cột tiếp nhận yêu cầu (Màu đỏ).\n\n" +
-    "👉 Bạn có thể dán danh sách học viên cũ vào ngay bây giờ!",
+    "Đã tạo/chuẩn hóa 2 tab trên Google Sheet:\n\n" +
+    "1. Tab 'Học Viên Đã Học': Chuẩn 11 cột chuyên nghiệp (Màu vàng). Cột 7 theo dõi 'Trạng Thái & Ngày Kích Hoạt', Cột 11 theo dõi 'Trạng Thái Gửi Email'.\n" +
+    "2. Tab 'Yêu Cầu Tìm PIC': Chuẩn 16 cột (Màu đỏ). Cột 10-14 điền thông tin PIC, Cột 15 là Checkbox tự động gửi email cho học viên.\n\n" +
+    "Bạn có thể dán danh sách học viên cũ và bắt đầu sử dụng!",
     SpreadsheetApp.getUi().ButtonSet.OK
   );
 }
@@ -58,7 +61,7 @@ function initAlumniSheet() {
   const sheet = getOrCreateSheet("Học Viên Đã Học");
   const expectedHeaders = [
     "Họ và Tên", "Email", "Funny Nickname", "User ID (Mã VIP)",
-    "Số Lượt PIC Còn Lại", "Trạng Thái Vào Web", "Ngày Kích Hoạt", "Hạn Sử Dụng (90 Ngày)",
+    "Số Lượt PIC Còn Lại", "Trạng Thái Vào Web", "Trạng Thái & Ngày Kích Hoạt", "Hạn Sử Dụng (90 Ngày)",
     "Link VIP Trực Tiếp", "Lịch Sử Yêu Cầu PIC", "Trạng Thái Gửi Email"
   ];
   if (sheet.getLastRow() === 0) {
@@ -80,7 +83,7 @@ function initAlumniSheet() {
 function menuTestSendVipLaunchingEmail() {
   const ui = SpreadsheetApp.getUi();
   const prompt = ui.prompt(
-    "🧪 Gửi Thử Email Launching VIP",
+    "Gửi Thử Email Launching VIP",
     "Nhập email học viên để gửi thử (mặc định: ocsen.fashion@gmail.com):",
     ui.ButtonSet.OK_CANCEL
   );
@@ -106,10 +109,10 @@ function executeVipTestSendAlert(targetEmail) {
   if (res && res.success) {
     SpreadsheetApp.getUi().alert(
       "Gửi Thử Nghiệm Thành Công!",
-      "🎉 Đã gửi email Launching VIP kèm hình ảnh 9 Vũ Khí B2B tới: " + targetEmail + "\n\n" +
+      "Đã gửi email Launching VIP kèm hình ảnh 9 Vũ Khí B2B tới: " + targetEmail + "\n\n" +
       "• Họ tên trong thư: " + (res.recipientName || "Chuẩn theo Sheet") + "\n" +
       "• Funny Nickname: " + (res.recipientNickname || "Chuẩn theo Sheet") + "\n\n" +
-      "👉 Bạn hãy kiểm tra hộp thư (cả Inbox và Promotions/Spam) nhé!",
+      "Bạn hãy kiểm tra hộp thư (cả Inbox và Promotions/Spam) nhé!",
       SpreadsheetApp.getUi().ButtonSet.OK
     );
   } else {
@@ -136,14 +139,19 @@ function menuSendBulkAlumniWithPacing() {
     return;
   }
 
-  // Đếm số học viên chưa gửi
+  // Đếm số học viên chưa gửi hoặc yêu cầu gửi lại
   let pendingList = [];
   for (let r = 1; r < data.length; r++) {
     const row = data[r];
     const email = (row[1] || "").toString().trim().toLowerCase();
-    const status = (row[10] || "").toString().trim();
+    const actStatus = (row[6] || "").toString().trim();
+    const emailStatus = (row[10] || "").toString().trim();
     if (email && email.includes("@")) {
-      if (!status.includes("Đã gửi") && !status.includes("Đã lên lịch")) {
+      const isAlreadySent = (actStatus.includes("Đã gửi") || actStatus.includes("Đã lên lịch") || actStatus.includes("Đã Kích Hoạt"))
+                         && (emailStatus.includes("Đã gửi") || emailStatus.includes("Đã lên lịch"));
+      const isForceResend = actStatus.toLowerCase().includes("gửi lại") || emailStatus.toLowerCase().includes("gửi lại");
+      
+      if (!isAlreadySent || isForceResend) {
         pendingList.push({
           email: email,
           name: (row[0] || "").toString().trim(),
@@ -156,13 +164,13 @@ function menuSendBulkAlumniWithPacing() {
   }
 
   if (pendingList.length === 0) {
-    ui.alert("Tất Cả Đã Được Gửi!", "Toàn bộ học viên VIP trong danh sách đều đã được gửi hoặc lên lịch trước đó.\nNếu muốn gửi lại, bạn hãy xóa nội dung ở Cột 11 (Trạng Thái Gửi Email).", ui.ButtonSet.OK);
+    ui.alert("Tất Cả Đã Được Gửi!", "Toàn bộ học viên VIP trong danh sách đều đã được gửi hoặc lên lịch trước đó.\nNếu muốn gửi lại, bạn hãy gõ 'Gửi Lại' hoặc xóa nội dung ở Cột 7 / Cột 11.", ui.ButtonSet.OK);
     return;
   }
 
   const estMinutes = pendingList.length * 2;
-  const promptText = "Phát hiện " + pendingList.length + " học viên VIP chưa được gửi email.\n\n" +
-    "🛡️ ĐỂ CHỐNG SPAM VÀ BẢO VỆ TÊN MIỀN:\n" +
+  const promptText = "Phát hiện " + pendingList.length + " học viên VIP cần gửi email.\n\n" +
+    "CHỐNG SPAM VÀ BẢO VỆ TÊN MIỀN:\n" +
     "Hệ thống sẽ gửi qua Resend Enterprise API, giãn cách tự nhiên 2 phút/thư (ước tính khoảng " + estMinutes + " phút hoàn tất).\n\n" +
     "Bạn có muốn phát lệnh lên lịch gửi ngay bây giờ?";
   
@@ -187,10 +195,10 @@ function menuSendBulkAlumniWithPacing() {
     if (resJson && resJson.success) {
       ui.alert(
         "Lên Lịch Thành Công!",
-        "🎉 " + (resJson.message || "Đã lên lịch gửi an toàn.") + "\n\n" +
+        (resJson.message || "Đã lên lịch gửi an toàn.") + "\n\n" +
         "• Bắt đầu gửi: " + (resJson.firstScheduledAtVN || "Ngay sau 1 phút") + "\n" +
         "• Dự kiến kết thúc: " + (resJson.lastScheduledAtVN || "---") + "\n\n" +
-        "Cột 11 (Trạng Thái Gửi Email) trên sheet đã được tự động cập nhật thời gian gửi của từng bạn.",
+        "Cột 7 (Trạng Thái & Ngày Kích Hoạt) và Cột 11 trên sheet đã được tự động cập nhật thời gian gửi của từng bạn.",
         ui.ButtonSet.OK
       );
     } else {
@@ -204,9 +212,11 @@ function menuSendBulkAlumniWithPacing() {
 function initPicRequestsSheet() {
   const sheet = getOrCreateSheet("Yêu Cầu Tìm PIC");
   const picHeaders = [
-    "Thời Gian", "Email Học Viên", "Họ Tên", "Nickname",
+    "Thời Gian Gửi", "Email Học Viên", "Họ Tên", "Nickname",
     "Doanh Nghiệp Mục Tiêu", "Bộ Phận Tiếp Cận", "Mục Tiêu / Vai Trò",
-    "Ghi Chú", "Trạng Thái Xử Lý"
+    "Ghi Chú Học Viên", "Trạng Thái Xử Lý",
+    "Tên PIC", "Chức Vụ PIC", "Link LinkedIn PIC", "Email / SĐT PIC",
+    "Lời Khuyên Tiếp Cận (Peter Võ)", "Gửi Email (Tích Chọn)", "Thời Gian & Trạng Thái Gửi Email"
   ];
   if (sheet.getLastRow() === 0) {
     sheet.appendRow(picHeaders);
@@ -220,6 +230,11 @@ function initPicRequestsSheet() {
       .setFontColor("#991b1b");
     sheet.setFrozenRows(1);
     sheet.autoResizeColumns(1, picHeaders.length);
+    
+    // Áp dụng định dạng Checkbox cho Cột 15 (Gửi Email)
+    const maxRows = Math.max(sheet.getMaxRows(), 50);
+    const cbRule = SpreadsheetApp.newDataValidation().requireCheckbox().build();
+    sheet.getRange(2, 15, maxRows - 1, 1).setDataValidation(cbRule);
   } catch (e) {}
   return sheet;
 }
@@ -229,24 +244,178 @@ function menuAutoProcessAlumni() {
   SpreadsheetApp.getUi().alert("Thông Báo Tự Động Hóa", res.message || "Đã hoàn tất xử lý danh sách học viên.", SpreadsheetApp.getUi().ButtonSet.OK);
 }
 
+function setupPicEditTrigger() {
+  const functionName = "installedOnEdit";
+  deleteTriggerByName(functionName);
+  ScriptApp.newTrigger(functionName)
+    .forSpreadsheet(SpreadsheetApp.getActiveSpreadsheet())
+    .onEdit()
+    .create();
+  SpreadsheetApp.getUi().alert(
+    "Cài Đặt Thành Công!",
+    "Đã kích hoạt quyền tự động gửi email khi bạn tích vào ô Checkbox (Cột 15) trên tab 'Yêu Cầu Tìm PIC'.\n\nTừ bây giờ, bạn chỉ cần điền thông tin PIC và tích chọn [v] là email sẽ tự động gửi đi ngay lập tức.",
+    SpreadsheetApp.getUi().ButtonSet.OK
+  );
+}
+
+function menuSendPicSelectedRow() {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const sheet = ss.getActiveSheet();
+  if (sheet.getName() !== "Yêu Cầu Tìm PIC") {
+    SpreadsheetApp.getUi().alert("Vui lòng mở tab 'Yêu Cầu Tìm PIC' và chọn dòng cần gửi.");
+    return;
+  }
+  const row = sheet.getActiveCell().getRow();
+  if (row <= 1) {
+    SpreadsheetApp.getUi().alert("Vui lòng chọn dòng có dữ liệu học viên (từ dòng 2 trở đi).");
+    return;
+  }
+  handlePicCheckboxSend(sheet, row);
+}
+
+function handlePicCheckboxSend(sheet, rowNum) {
+  try {
+    const rowVals = sheet.getRange(rowNum, 1, 1, 16).getValues()[0];
+    const studentEmail = (rowVals[1] || "").toString().trim().toLowerCase();
+    const studentName = (rowVals[2] || "").toString().trim();
+    const nickname = (rowVals[3] || "").toString().trim();
+    const targetCompany = (rowVals[4] || "").toString().trim();
+    const department = (rowVals[5] || "").toString().trim();
+    const targetRole = (rowVals[6] || "").toString().trim();
+    const picName = (rowVals[9] || "").toString().trim();
+    const picRole = (rowVals[10] || "").toString().trim();
+    const picLinkedin = (rowVals[11] || "").toString().trim();
+    const picContact = (rowVals[12] || "").toString().trim();
+    const picAdvice = (rowVals[13] || "").toString().trim();
+
+    if (!studentEmail || !studentEmail.includes("@")) {
+      sheet.getRange(rowNum, 15).setValue(false);
+      sheet.getRange(rowNum, 9).setValue("Lỗi: Email học viên không hợp lệ");
+      return;
+    }
+
+    if (!picName && !picLinkedin) {
+      sheet.getRange(rowNum, 15).setValue(false);
+      sheet.getRange(rowNum, 9).setValue("Lỗi: Vui lòng điền Tên PIC hoặc LinkedIn");
+      try {
+        SpreadsheetApp.getActiveSpreadsheet().toast("Vui lòng điền Tên PIC hoặc Link LinkedIn trước khi gửi email!", "Thiếu thông tin", 5);
+      } catch (e) {}
+      return;
+    }
+
+    const nowStr = Utilities.formatDate(new Date(), "Asia/Ho_Chi_Minh", "dd/MM/yyyy HH:mm:ss");
+
+    // 1. Thử gửi qua Vercel API Resend
+    let sent = false;
+    try {
+      const res = UrlFetchApp.fetch("https://www.bdbinhdanhocvu.com/api/log-email", {
+        method: "POST",
+        contentType: "application/json",
+        payload: JSON.stringify({
+          action: "sendPicResult",
+          studentEmail: studentEmail,
+          email: studentEmail,
+          name: studentName,
+          nickname: nickname,
+          company: targetCompany,
+          targetCompany: targetCompany,
+          targetRole: targetRole,
+          department: department,
+          picName: picName,
+          picRole: picRole,
+          picLinkedin: picLinkedin,
+          picContact: picContact,
+          picAdvice: picAdvice,
+          secretKey: B2B_SECRET_KEY
+        }),
+        muteHttpExceptions: true
+      });
+      const json = JSON.parse(res.getContentText());
+      if (json && json.success) {
+        sent = true;
+      }
+    } catch (apiErr) {
+      Logger.log("sendPicResult via API error: " + apiErr.message);
+    }
+
+    // 2. Fallback gửi qua MailApp (không emoji)
+    if (!sent) {
+      const subject = "[Ket Qua Tim PIC] Thong tin ket noi PIC tai " + targetCompany + " danh cho ban";
+      const bodyHtml = "<div style='font-family: Arial, sans-serif; font-size: 14px; line-height: 1.6; color: #1e293b;'>"
+        + "<p>Chào <strong>" + studentName + "</strong> (<em>" + nickname + "</em>),</p>"
+        + "<p>Anh Peter Võ đã hoàn tất rà soát mạng lưới quan hệ và thông tin nhân sự tại <strong>" + targetCompany + "</strong> theo yêu cầu tìm PIC của bạn.</p>"
+        + "<div style='background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; padding: 14px 18px; margin: 16px 0;'>"
+        + "<p style='margin: 0 0 8px 0; font-weight: bold; color: #0f172a;'>THÔNG TIN PIC PHỤ TRÁCH:</p>"
+        + "<p style='margin: 4px 0;'>• Họ và tên: <strong>" + picName + "</strong></p>"
+        + "<p style='margin: 4px 0;'>• Chức danh: " + picRole + "</p>"
+        + "<p style='margin: 4px 0;'>• Đơn vị: " + department + " - " + targetCompany + "</p>"
+        + (picLinkedin ? ("<p style='margin: 4px 0;'>• LinkedIn: <a href='" + picLinkedin + "' target='_blank' style='color: #a20a0a; font-weight: bold;'>Xem Profile -></a></p>") : "")
+        + (picContact ? ("<p style='margin: 4px 0;'>• Liên hệ: " + picContact + "</p>") : "")
+        + "</div>"
+        + (picAdvice ? ("<div style='background: #fffbeb; border-left: 4px solid #f59e0b; padding: 12px 16px; margin: 16px 0;'><p style='margin: 0; font-weight: bold; color: #92400e;'>Gợi ý tiếp cận từ Peter Võ:</p><p style='margin: 6px 0 0 0; color: #78350f;'>" + picAdvice + "</p></div>") : "")
+        + "<p>Chúc bạn kết nối thành công deal này!<br><br>Thân ái,<br><strong>Peter Võ</strong><br>BD Bình Dân Học Vụ</p>"
+        + "</div>";
+
+      const mailRes = sendEmailSafe({
+        to: studentEmail,
+        name: "Peter Võ - BD Bình Dân Học Vụ",
+        subject: subject,
+        htmlBody: bodyHtml
+      });
+      if (mailRes && mailRes.success) {
+        sent = true;
+      }
+    }
+
+    if (sent) {
+      sheet.getRange(rowNum, 9).setValue("Đã Gửi PIC [" + Utilities.formatDate(new Date(), "Asia/Ho_Chi_Minh", "dd/MM HH:mm") + "]");
+      sheet.getRange(rowNum, 16).setValue("Đã Gửi Email [" + nowStr + "]");
+      sheet.getRange(rowNum, 15).setValue(false); // Uncheck để chống gửi lặp (idempotency)
+      SpreadsheetApp.flush();
+      try {
+        SpreadsheetApp.getActiveSpreadsheet().toast("Đã gửi email thông tin PIC thành công tới " + studentEmail, "Hoàn Tất", 5);
+      } catch (e) {}
+    } else {
+      sheet.getRange(rowNum, 15).setValue(false);
+      sheet.getRange(rowNum, 9).setValue("Lỗi gửi email: Không thể kết nối dịch vụ mail");
+    }
+  } catch (err) {
+    Logger.log("handlePicCheckboxSend error: " + err.message);
+    try {
+      sheet.getRange(rowNum, 15).setValue(false);
+      sheet.getRange(rowNum, 9).setValue("Lỗi gửi email: " + err.message);
+    } catch (e) {}
+  }
+}
+
 function onEdit(e) {
   try {
     if (!e || !e.range) return;
     const sheet = e.range.getSheet();
     const sheetName = sheet.getName();
-    if (sheetName !== "Học Viên Đã Học") return;
-    
     const row = e.range.getRow();
-    if (row <= 1) return; // Bỏ qua tiêu đề
-    
     const col = e.range.getColumn();
-    // Nếu dán hoặc gõ vào cột A (Họ Tên) hoặc cột B (Email)
-    if (col === 1 || col === 2) {
+    
+    // 1. Sheet "Học Viên Đã Học": Tự động xử lý khi paste email/tên
+    if (sheetName === "Học Viên Đã Học" && row > 1 && (col === 1 || col === 2)) {
       processSingleAlumniRow(sheet, row);
+      return;
+    }
+
+    // 2. Sheet "Yêu Cầu Tìm PIC": Xử lý khi tích Checkbox Gửi Email (Cột 15: O)
+    if (sheetName === "Yêu Cầu Tìm PIC" && row > 1 && col === 15) {
+      const val = e.value;
+      if (val === "TRUE" || val === true) {
+        handlePicCheckboxSend(sheet, row);
+      }
     }
   } catch (err) {
     Logger.log("onEdit Error: " + err.message);
   }
+}
+
+function installedOnEdit(e) {
+  onEdit(e);
 }
 
 // ------------------------------------------------------------------
@@ -362,7 +531,7 @@ function doGet(e) {
         testResult = sendEmailSafe({
           to: email,
           name: "BD Bình Dân Học Vụ - Cú BeeDee",
-          subject: "🧪 [Kiểm Tra Hộp Thư] Thư thử nghiệm chẩn đoán",
+          subject: "[Kiểm Tra Hộp Thư] Thư thử nghiệm chẩn đoán",
           htmlBody: "<p>Thư kiểm tra hệ thống gửi từ GmailApp / MailApp.</p>"
         });
       }
@@ -1124,7 +1293,7 @@ function sendVerificationEmail(email, name) {
 function sendForgotPasswordEmail(email, name, resetToken) {
   try {
     const resetUrl = "https://www.bdbinhdanhocvu.com/quests.html?reset_token=" + encodeURIComponent(resetToken) + "&email=" + encodeURIComponent(email);
-    const subject = "🔑 Khôi phục mật khẩu tài khoản Cú BeeDee";
+    const subject = "[BD Bình Dân Học Vụ] Khôi phục mật khẩu tài khoản học tập";
     const message = "Chúng tôi nhận được yêu cầu khôi phục mật khẩu cho tài khoản <b>" + email + "</b> của bạn.<br><br>Vui lòng click vào nút bên dưới để thiết lập mật khẩu mới (liên kết có giá trị trong vòng 1 giờ).";
     
     const bodyHtml = getHtmlEmailTemplate(message, "Đặt lại mật khẩu", resetUrl, "https://www.bdbinhdanhocvu.com/mascot_law.jpg", name);
@@ -1641,9 +1810,9 @@ function autoProcessAlumniSheet() {
   }
   
   const expectedHeaders = [
-    "Họ và Tên", "Email", "Funny Nickname", "Mã VIP / Password",
-    "Số Lượt PIC Còn Lại", "Ngày Kích Hoạt", "Hạn Sử Dụng (90 Ngày)",
-    "Link VIP Trực Tiếp", "Lịch Sử Yêu Cầu PIC"
+    "Họ và Tên", "Email", "Funny Nickname", "User ID (Mã VIP)",
+    "Số Lượt PIC Còn Lại", "Trạng Thái Vào Web", "Trạng Thái & Ngày Kích Hoạt", "Hạn Sử Dụng (90 Ngày)",
+    "Link VIP Trực Tiếp", "Lịch Sử Yêu Cầu PIC", "Trạng Thái Gửi Email"
   ];
   
   const range = sheet.getDataRange();
@@ -1667,7 +1836,7 @@ function autoProcessAlumniSheet() {
 }
 
 function processSingleAlumniRow(sheet, rowNum) {
-  const rowVals = sheet.getRange(rowNum, 1, 1, 10).getValues()[0];
+  const rowVals = sheet.getRange(rowNum, 1, 1, 11).getValues()[0];
   const fullName = rowVals[0] ? rowVals[0].toString().trim() : "";
   const email = rowVals[1] ? rowVals[1].toString().trim().toLowerCase() : "";
   
@@ -1678,9 +1847,10 @@ function processSingleAlumniRow(sheet, rowNum) {
   let vipPass = rowVals[3] ? rowVals[3].toString().trim() : "";
   let remaining = rowVals[4];
   let webStatus = rowVals[5] ? rowVals[5].toString().trim() : "";
-  let activated = rowVals[6];
+  let activated = rowVals[6] ? rowVals[6].toString().trim() : "";
   let expiry = rowVals[7];
   let link = rowVals[8] ? rowVals[8].toString().trim() : "";
+  let emailStatus = rowVals[10] ? rowVals[10].toString().trim() : "";
   
   // 1. Sinh Funny Nickname
   if (!nickname) {
@@ -1709,21 +1879,21 @@ function processSingleAlumniRow(sheet, rowNum) {
     changed = true;
   }
 
-  // 4. Trạng Thái Vào Web (mặc định: ⏳ Chưa mở link)
+  // 4. Trạng Thái Vào Web (mặc định: Chưa Mở Link)
   if (!webStatus) {
-    sheet.getRange(rowNum, 6).setValue("⏳ Chưa mở link");
+    sheet.getRange(rowNum, 6).setValue("Chưa Mở Link");
     changed = true;
   }
   
-  // 5. Ngày Kích Hoạt
-  const now = new Date();
+  // 5. Trạng Thái & Ngày Kích Hoạt (mặc định: Chưa Gửi Email)
   if (!activated) {
-    sheet.getRange(rowNum, 7).setValue(Utilities.formatDate(now, "Asia/Ho_Chi_Minh", "dd/MM/yyyy"));
+    sheet.getRange(rowNum, 7).setValue("Chưa Gửi Email");
     changed = true;
   }
   
   // 6. Hạn Sử Dụng (90 ngày)
   if (!expiry) {
+    const now = new Date();
     const expDate = new Date(now.getTime() + 90 * 24 * 60 * 60 * 1000);
     sheet.getRange(rowNum, 8).setValue(Utilities.formatDate(expDate, "Asia/Ho_Chi_Minh", "dd/MM/yyyy"));
     changed = true;
@@ -1733,6 +1903,12 @@ function processSingleAlumniRow(sheet, rowNum) {
   if (!link && email) {
     const magicUrl = "https://www.bdbinhdanhocvu.com/finder.html?email=" + encodeURIComponent(email) + "&vip_pass=" + encodeURIComponent(vipPass || "BDTHUCCHIEN");
     sheet.getRange(rowNum, 9).setValue(magicUrl);
+    changed = true;
+  }
+
+  // 8. Trạng Thái Gửi Email (mặc định: Chưa Gửi Email)
+  if (!emailStatus) {
+    sheet.getRange(rowNum, 11).setValue("Chưa Gửi Email");
     changed = true;
   }
   
@@ -1791,9 +1967,11 @@ function verifyAlumni(identifier, emailParam) {
         const uid = rPass || (rEmail ? ("UID_" + rEmail.split('@')[0].toUpperCase().replace(/[^A-Z0-9]/g, '')) : "UID_VIP");
         const nowTimeStr = Utilities.formatDate(new Date(), "Asia/Ho_Chi_Minh", "dd/MM HH:mm");
 
-        // 1. Cập nhật Trạng Thái Vào Web trong sheet Học Viên Đã Học
+        // 1. Cập nhật Trạng Thái Vào Web và Trạng Thái Kích Hoạt trong sheet Học Viên Đã Học
         try {
-          sheet.getRange(r + 1, 6).setValue("✅ Đã vào web [" + nowTimeStr + "]");
+          sheet.getRange(r + 1, 6).setValue("Đã Vào Web [" + nowTimeStr + "]");
+          sheet.getRange(r + 1, 7).setValue("Đã Kích Hoạt [" + nowTimeStr + "]");
+          sheet.getRange(r + 1, 11).setValue("Đã Kích Hoạt [" + nowTimeStr + "]");
         } catch (e) {}
 
         // 2. Tự động đồng bộ tài khoản sang sheet Học Viên Đăng Ký (nếu chưa có)
@@ -1808,7 +1986,7 @@ function verifyAlumni(identifier, emailParam) {
               Utilities.formatDate(new Date(), "Asia/Ho_Chi_Minh", "yyyy-MM-dd HH:mm:ss"), // Col B: Thời gian đăng ký
               rName || "Học Viên VIP",                                                     // Col C: Họ Tên
               rEmail,                                                                       // Col D: Email
-              "Đã xác thực",                                                                // Col E: Trạng thái xác thực
+              "Đã Xác Thực [" + nowTimeStr + "]",                                           // Col E: Trạng thái xác thực
               50,                                                                           // Col F: Điểm tích lũy khởi đầu (+50đ)
               nowTimeStr,                                                                   // Col G: Hoạt động cuối
               "",                                                                           // Col H: Email daily gần nhất
@@ -1876,11 +2054,11 @@ function buildVipLaunchingEmailHtml(name, nickname, email, vipCode, magicLink) {
     "  </a>",
     "</div>",
     "<div style=\"background: #fef3c7; border-left: 4px solid #f59e0b; padding: 14px 18px; border-radius: 8px; margin: 20px 0; text-align: left;\">",
-    "  <strong style=\"color: #92400e; font-size: 15px; display: block; margin-bottom: 6px;\">👑 3 ĐẶC QUYỀN ALUMNI VIP DÀNH RIÊNG CHO BẠN:</strong>",
+    "  <strong style=\"color: #92400e; font-size: 15px; display: block; margin-bottom: 6px;\">3 ĐẶC QUYỀN ALUMNI VIP DÀNH RIÊNG CHO BẠN:</strong>",
     "  <ul style=\"margin: 0; padding-left: 18px; color: #78350f; font-size: 13.5px; line-height: 1.6;\">",
-    "    <li>🎯 <strong>Hạn Mức Tìm PIC Đặc Quyền (3 Contacts / Tháng):</strong> Peter Võ trực tiếp kết nối Person-in-Charge khối HR &amp; Marketing qua 30.000+ kết nối LinkedIn, áp dụng liên tục trong 3 tháng đầu tiên (tổng 9 contacts).</li>",
-    "    <li>🎟️ <strong>Vé Mời VIP Đồng Đội (Giver Mentality):</strong> Tặng bạn bè đồng nghiệp nhận +50 BD-Points và tải Ebook thực chiến đầu tiên. Bạn nhận +50đ/bạn và tự động mở khóa các Mốc Quà (<em>Mốc 5 bạn: 1 Ly Trà Sữa Size L</em>, <em>Mốc 10 bạn: 30 Phút Online 1-1</em>, <em>Mốc 15 bạn: Buổi Lunch trực tiếp cùng Peter Võ</em>).</li>",
-    "    <li>⚡ <strong>Mở Khóa Trọn Đời 9 Công Cụ &amp; Thư Viện Ebook:</strong> Trọn quyền sử dụng toàn bộ tính năng hỗ trợ nghề BD.</li>",
+    "    <li><strong>1. Hạn Mức Tìm PIC Đặc Quyền (3 Contacts / Tháng):</strong> Peter Võ trực tiếp kết nối Person-in-Charge khối HR &amp; Marketing qua 30.000+ kết nối LinkedIn, áp dụng liên tục trong 3 tháng đầu tiên (tổng 9 contacts).</li>",
+    "    <li><strong>2. Vé Mời VIP Đồng Đội (Giver Mentality):</strong> Tặng bạn bè đồng nghiệp nhận +50 BD-Points và tải Ebook thực chiến đầu tiên. Bạn nhận +50đ/bạn và tự động mở khóa các Mốc Quà (<em>Mốc 5 bạn: 1 Ly Trà Sữa Size L</em>, <em>Mốc 10 bạn: 30 Phút Online 1-1</em>, <em>Mốc 15 bạn: Buổi Lunch trực tiếp cùng Peter Võ</em>).</li>",
+    "    <li><strong>3. Mở Khóa Trọn Đời 9 Công Cụ &amp; Thư Viện Ebook:</strong> Trọn quyền sử dụng toàn bộ tính năng hỗ trợ nghề BD.</li>",
     "  </ul>",
     "</div>",
     "<div style=\"background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 12px 16px; font-size: 13px; color: #475569; margin-bottom: 22px; text-align: left;\">",
@@ -1893,7 +2071,7 @@ function buildVipLaunchingEmailHtml(name, nickname, email, vipCode, magicLink) {
 
   return getHtmlEmailTemplate(
     messageHtml,
-    "🚀 MỞ KHÓA ĐẶC QUYỀN VIP CỦA BẠN NGAY &rarr;",
+    "Mở Khóa Đặc Quyền VIP Của Bạn Ngay &rarr;",
     magicLink,
     "https://www.bdbinhdanhocvu.com/mascot_quests.jpg",
     name
@@ -1923,7 +2101,7 @@ function sendVipLaunchingEmail(targetEmail) {
           const vipCode = row[3] ? row[3].toString().trim() : "BDTHUCCHIEN";
           const magicLink = row[8] ? row[8].toString().trim() : ("https://www.bdbinhdanhocvu.com/finder.html?email=" + encodeURIComponent(email) + "&vip_pass=" + encodeURIComponent(vipCode));
 
-          const subject = "🎉 [Đặc Quyền Alumni VIP] Ra Mắt Hệ Sinh Thái 9 Vũ Khí B2B & 3 Contacts/Tháng Tìm PIC";
+          const subject = "[Đặc Quyền Alumni VIP] Ra Mắt Hệ Sinh Thái 9 Vũ Khí B2B & 3 Contacts/Tháng Tìm PIC";
           const fullHtml = buildVipLaunchingEmailHtml(name, nickname, email, vipCode, magicLink);
 
           // Thử gửi qua Resend Endpoint trước (đảm bảo SPF/DKIM chuẩn tên miền)
@@ -2000,7 +2178,7 @@ function sendVipLaunchingEmail(targetEmail) {
       }
       const testNick = generateFunnyNickname(testName, cleanTarget);
       const testMagicLink = "https://www.bdbinhdanhocvu.com/finder.html?email=" + encodeURIComponent(cleanTarget) + "&vip_pass=" + encodeURIComponent(testVipCode);
-      const subject = "🎉 [Đặc Quyền Alumni VIP] Ra Mắt Hệ Sinh Thái 9 Vũ Khí B2B & 3 Contacts/Tháng Tìm PIC";
+      const subject = "[Đặc Quyền Alumni VIP] Ra Mắt Hệ Sinh Thái 9 Vũ Khí B2B & 3 Contacts/Tháng Tìm PIC";
       const fullHtml = buildVipLaunchingEmailHtml(testName, testNick, cleanTarget, testVipCode, testMagicLink);
 
       // Thử gửi qua Resend Endpoint trước
@@ -2087,18 +2265,24 @@ function handlePICRequest(postData) {
       }
     }
     
-    // 2. Ghi nhận vào sheet "Yêu Cầu Tìm PIC"
+    // 2. Ghi nhận vào sheet "Yêu Cầu Tìm PIC" (Cột 1 đến 9, Cột 15 tạo Checkbox)
     let sheetRequests = getOrCreateSheet("Yêu Cầu Tìm PIC");
     const nowStr = Utilities.formatDate(new Date(), "Asia/Ho_Chi_Minh", "yyyy-MM-dd HH:mm:ss");
     sheetRequests.appendRow([
-      nowStr, email, name, nickname, targetCompany, department, targetRole, notes, "⏳ Đang Xử Lý"
+      nowStr, email, name, nickname, targetCompany, department, targetRole, notes, "Đang Xử Lý"
     ]);
+    const lastR = sheetRequests.getLastRow();
+    try {
+      const cbRule = SpreadsheetApp.newDataValidation().requireCheckbox().build();
+      sheetRequests.getRange(lastR, 15).setDataValidation(cbRule);
+      sheetRequests.getRange(lastR, 15).setValue(false);
+    } catch (cbErr) {}
     
     // 3. Gửi email thông báo cho Peter Võ (bdtraining@bdbinhdanhocvu.com)
     sendEmailSafe({
       to: "bdtraining@bdbinhdanhocvu.com",
       name: "Cú BeeDee - Hệ Thống VIP",
-      subject: "🎯 [Yêu Cầu Tìm PIC] " + (nickname || name) + " cần tìm PIC tại " + targetCompany,
+      subject: "[Yêu Cầu Tìm PIC] " + (nickname || name) + " cần tìm PIC tại " + targetCompany,
       htmlBody: "<div style='font-family: Arial, sans-serif; font-size: 14px; line-height: 1.6;'>"
         + "<h2 style='color: #a20a0a;'>Yêu Cầu Tìm PIC Mới Từ Alumni VIP</h2>"
         + "<p><strong>Học viên:</strong> " + name + " (<em>" + nickname + "</em>)</p>"
@@ -2185,7 +2369,21 @@ function updateAlumniEmailStatus(updates) {
     for (let r = 1; r < data.length; r++) {
       const email = (data[r][1] || "").toString().trim().toLowerCase();
       if (email && updateMap[email] !== undefined) {
-        sheet.getRange(r + 1, 11).setValue(updateMap[email]);
+        const newStatus = updateMap[email];
+        // Cột 11: Trạng Thái Gửi Email
+        sheet.getRange(r + 1, 11).setValue(newStatus);
+        
+        // Cột 7: Trạng Thái & Ngày Kích Hoạt (nếu chưa kích hoạt thì đồng bộ theo email status)
+        const currentAct = (data[r][6] || "").toString();
+        if (!currentAct.includes("Đã Kích Hoạt")) {
+          if (newStatus.includes("Đã lên lịch")) {
+            sheet.getRange(r + 1, 7).setValue(newStatus);
+          } else if (newStatus.includes("Đã gửi")) {
+            sheet.getRange(r + 1, 7).setValue(newStatus + " - Chờ Mở Link");
+          } else {
+            sheet.getRange(r + 1, 7).setValue(newStatus);
+          }
+        }
         updatedCount++;
       }
     }
