@@ -38,6 +38,8 @@ function onOpen() {
       .addItem("Gửi Thử VIP (Nhập Email Bất Kỳ)", "menuTestSendVipLaunchingEmail")
       .addSeparator()
       .addItem("Gửi Toàn Bộ VIP (Giãn cách 2 phút/thư chống spam)", "menuSendBulkAlumniWithPacing")
+      .addSeparator()
+      .addItem("🧹 Dọn Dẹp Dữ Liệu Test (Chỉ Giữ Lại vptanaia@gmail.com)", "menuCleanTestingEmails")
       .addToUi();
   } catch (e) {
     Logger.log("onOpen error: " + e.message);
@@ -530,6 +532,8 @@ function doPost(e) {
       return updateProfile(email, postData.field, postData.value, postData.points);
     } else if (action === "updateAlumniNickname" || action === "updateNickname") {
       return updateAlumniNickname(email, postData.nickname);
+    } else if (action === "cleanTestingEmails") {
+      return createJsonResponse(cleanAllTestingRecords(postData.keepEmail || "vptanaia@gmail.com"));
     } else if (postData.tool === "course-registration") {
       return handleCourseRegistration(postData);
     } else {
@@ -570,7 +574,11 @@ function doGet(e) {
       return getAllUsers();
     } else if (action === "initColumn" || action === "ensureColumns") {
       const col = ensureDailyEmailColumn();
-      return createJsonResponse({ success: true, message: "Daily email column initialized", columnIndex: col });
+    } else if (action === "cleanTestingEmails") {
+      if (params.secretKey !== B2B_SECRET_KEY) {
+        return createJsonResponse({ success: false, error: "Unauthorized: Invalid secretKey." });
+      }
+      return createJsonResponse(cleanAllTestingRecords(params.keepEmail || "vptanaia@gmail.com"));
     } else if (action === "verifyUser") {
       const points = params.points ? parseInt(params.points, 10) : 15;
       return verifyUser(email, points);
@@ -2547,4 +2555,89 @@ function getHtmlEmailTemplate(message, buttonText, buttonUrl, mascotUrl, name) {
     "</html>"
   ];
   return lines.join("\n");
+}
+
+/**
+ * ==================================================================
+ * DỌN DẸP TOÀN BỘ DỮ LIỆU EMAIL THỬ NGHIỆM TRÊN CÁC TAB GOOGLE SHEETS
+ * Xóa sạch các email test, chỉ bảo lưu duy nhất vptanaia@gmail.com và người dùng thật.
+ * ==================================================================
+ */
+function cleanAllTestingRecords(keepEmail) {
+  const protectedEmail = (keepEmail || "vptanaia@gmail.com").toLowerCase().trim();
+  const testEmailsToDelete = [
+    "bdtrainingcourse@gmail.com",
+    "bdmastery.ai@petervo.vn",
+    "ocsen.fashion@gmail.com",
+    "erm@spacex.com",
+    "testlead99@gmail.com",
+    "test_e2e_sync@stripe.com",
+    "top.deal@stripe.com",
+    "guest@b2bbd.com",
+    "john.doe@gmail.com"
+  ];
+
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const results = {
+    success: true,
+    deletedBySheet: {},
+    totalDeleted: 0,
+    preservedEmail: protectedEmail
+  };
+
+  const sheetsToClean = [
+    { name: "Học Viên Đăng Ký", emailCol: 4 }, // Cột D: Email
+    { name: "Nhật Ký Tương Tác", emailCol: 2 }, // Cột B: Email
+    { name: "Yêu Cầu Tìm PIC", emailCol: 4 },   // Cột D: Email
+    { name: "Học Viên Đã Học", emailCol: 2 }    // Cột B: Email
+  ];
+
+  sheetsToClean.forEach(function(target) {
+    const sheet = ss.getSheetByName(target.name);
+    if (!sheet) return;
+
+    const lastRow = sheet.getLastRow();
+    if (lastRow <= 1) return;
+
+    let deletedInThisSheet = 0;
+    const values = sheet.getRange(1, target.emailCol, lastRow, 1).getValues();
+
+    // Lặp ngược từ dưới lên trên để không bị lệch chỉ số dòng khi xóa
+    for (let r = lastRow; r >= 2; r--) {
+      const rowEmail = String(values[r - 1][0] || "").toLowerCase().trim();
+      if (!rowEmail) continue;
+
+      if (testEmailsToDelete.indexOf(rowEmail) !== -1 && rowEmail !== protectedEmail) {
+        sheet.deleteRow(r);
+        deletedInThisSheet++;
+      }
+    }
+
+    results.deletedBySheet[target.name] = deletedInThisSheet;
+    results.totalDeleted += deletedInThisSheet;
+  });
+
+  return results;
+}
+
+function menuCleanTestingEmails() {
+  const ui = SpreadsheetApp.getUi();
+  const resp = ui.alert(
+    "Xác Nhận Dọn Dẹp Dữ Liệu Email Thử Nghiệm",
+    "Thao tác này sẽ tự động quét qua 4 tab:\n- Học Viên Đăng Ký\n- Nhật Ký Tương Tác\n- Yêu Cầu Tìm PIC\n- Học Viên Đã Học\n\nvà xóa sạch toàn bộ các dòng thuộc về các email test (bdtrainingcourse@gmail.com, bdmastery.ai@petervo.vn, ocsen.fashion@gmail.com, erm@spacex.com,...).\n\nTài khoản " + "vptanaia@gmail.com" + " và tất cả học viên thật sẽ được BẢO LƯU NGUYÊN VẸN 100%.\n\nBạn có muốn tiếp tục?",
+    ui.ButtonSet.YES_NO
+  );
+
+  if (resp === ui.Button.YES) {
+    const res = cleanAllTestingRecords("vptanaia@gmail.com");
+    let detailMsg = "";
+    for (let sheetName in res.deletedBySheet) {
+      detailMsg += "- Tab '" + sheetName + "': " + res.deletedBySheet[sheetName] + " dòng\n";
+    }
+    ui.alert(
+      "Dọn Dẹp Hoàn Tất!",
+      "Tổng số dòng thử nghiệm đã xóa: " + res.totalDeleted + " dòng.\n\nChi tiết:\n" + detailMsg + "\nEmail " + res.preservedEmail + " và các học viên thật được bảo lưu an toàn.",
+      ui.ButtonSet.OK
+    );
+  }
 }

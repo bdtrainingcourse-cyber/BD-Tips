@@ -72,56 +72,86 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- 3. Offline Fallback Responses Database (Smart Router Rules) ---
     const offlineDatabase = [
         {
-            keywords: [/lương/, /salary/, /net/, /gross/, /tính tiền/i],
-            reply: "Bạn có thể sử dụng **Trình Quy Đổi Lương Gross - Net** của chúng tôi. Công cụ hỗ trợ tính toán lương thực nhận, bảo hiểm đóng bắt buộc và thuế TNCN lũy tiến từng phần mới nhất.\n\n*Gợi ý thêm:* Bạn có muốn tôi hướng dẫn cách tính lương OT làm thêm giờ ngày chủ nhật không?",
+            keywords: [/lương/, /luong/, /salary/, /net/, /gross/, /tính tiền/, /thuế tncn/, /thue tncn/, /bảo hiểm xã hội/, /bhxh/i],
+            reply: "Bạn có thể sử dụng **Trình Quy Đổi Lương Gross - Net** chuẩn xác nhất 2026. Công cụ hỗ trợ tính toán lương thực nhận, bảo hiểm đóng bắt buộc và thuế TNCN lũy tiến từng phần, kèm bảng hoa hồng OTE thực tế cho BD.\n\n*Gợi ý thêm:* Bạn có muốn tôi hướng dẫn cách tính lương làm thêm giờ (OT) hoặc giảm trừ gia cảnh không?",
             navTarget: "salary",
             navLabel: "⚡ Quy Đổi Lương Ngay"
         },
         {
-            keywords: [/thuật ngữ/, /glossary/, /arr/, /mrr/, /cac/, /ltv/, /formula/, /công thức/, /kpi/i],
-            reply: "Thư viện BD cung cấp hơn **142+ Thuật ngữ B2B BD** được phân loại bài bản (Nội bộ Team BD, Làm việc với Khách hàng, Tiếng lóng BD & Chỉ số Tài chính), đi kèm **Công thức tính (Formula)** và **Ví dụ tính toán số liệu cụ thể** thực tế.\n\n*Ví dụ:* ARR = MRR × 12 | LTV/CAC Ratio = LTV / CAC.",
+            keywords: [/tính cách/, /tinh cach/, /trắc nghiệm/, /trac nghiem/, /phong cách bd/, /phong cach/, /cú thông thái/, /sư tử/, /đại bàng/, /cáo thợ săn/, /personality/i],
+            reply: "Hãy thử ngay bài **Trắc Nghiệm 4 Phong Cách BD Thực Chiến**! Bạn sẽ khám phá mình thuộc mẫu chiến binh nào: Cú Thông Thái (Chiến lược), Sư Tử Chỉ Huy (Quyết đoán), Đại Bàng Săn Deal (Thống lĩnh) hay Cáo Linh Hoạt (Mềm dẻo), kèm lộ trình thăng tiến và quà tặng điểm thưởng.",
+            navTarget: "personality-test",
+            navLabel: "📊 Làm Test Tính Cách BD Ngay"
+        },
+        {
+            keywords: [/email/, /soạn mail/, /soan mail/, /viết mail/, /viet mail/, /cold email/, /đánh giá email/, /danh gia email/, /outreach/i],
+            reply: "Công cụ **AI Email Assistant** của chúng tôi giúp bạn đánh giá thang điểm sức mạnh của email B2B, tối ưu tỷ lệ mở (Open Rate) và viết lại email tiếp cận khách hàng doanh nghiệp tự động chuẩn 5 pha ngôn từ chuyên nghiệp.",
+            navTarget: "email-assistant",
+            navLabel: "✍️ Mở Trợ Lý Viết Email AI"
+        },
+        {
+            keywords: [/kpi/, /phễu/, /pheu/, /doanh số/, /doanh so/, /conversion rate/, /tỷ lệ chuyển đổi/, /ty le chuyen doi/, /inbound/, /outbound/, /lead/i],
+            reply: "Công cụ **Ma Trận Phễu KPI & Ước Tính Doanh Số B2B** giúp bạn thiết lập phễu ngược Inbound - Outbound, quy đổi chính xác số lượng lead, lịch hẹn meeting và tỷ lệ chốt hợp đồng cần đạt để hoàn thành doanh thu mục tiêu.",
+            navTarget: "kpi-estimation",
+            navLabel: "📈 Ước Tính Ma Trận KPI Ngay"
+        },
+        {
+            keywords: [/nhiệm vụ/, /nhiem vu/, /quest/, /đổi quà/, /doi qua/, /trà sữa/, /tra sua/, /voucher/, /mốc 1/, /mốc 2/, /mốc 3/, /streak/, /điểm danh/, /quà tặng/i],
+            reply: "Hệ thống **Nhiệm Vụ & Quà Tặng Tích Lũy BD** cho phép bạn duy trì chuỗi ngày học tập (Streak) và rủ đồng nghiệp tham gia để nhận ngay các mốc quà hấp dẫn: \n- **Mốc 1 (5 bạn):** 🥤 01 Ly Trà Sữa Size L mát lạnh\n- **Mốc 2 (10 bạn):** 💻 30 Phút Online 1-1 gỡ deal khó cùng anh Peter Võ\n- **Mốc 3 (15 bạn):** 🍽️ Buổi Lunch VIP 1-1 thân mật cố vấn sự nghiệp cùng anh Peter Võ.",
+            navTarget: "quests",
+            navLabel: "🎯 Xem Nhiệm Vụ & Đổi Quà"
+        },
+        {
+            keywords: [/tìm pic/, /tim pic/, /pic finder/, /alumni vip/, /passcode/, /person in charge/, /mã vip/, /ma vip/, /học viên vip/i],
+            reply: "Cổng **Alumni VIP (Tìm PIC Doanh Nghiệp)** là đặc quyền cao cấp dành riêng cho học viên Khóa BD Thực Chiến của anh Peter Võ. Bạn chỉ cần nhập Mã Passcode VIP (ví dụ: `BD-1272`) để mở khóa cổng tra cứu và gửi yêu cầu tìm thông tin quyết định viên của các doanh nghiệp mục tiêu.",
+            navTarget: "finder",
+            navLabel: "🔒 Vào Cổng Đặc Quyền Alumni VIP"
+        },
+        {
+            keywords: [/cộng đồng/, /cong dong/, /community/, /diễn đàn/, /dien dan/, /thảo luận/, /thao luan/, /hỏi đáp/i],
+            reply: "Hãy ghé thăm **Diễn Đàn Cộng Đồng BD Thực Chiến** để giao lưu, học hỏi kinh nghiệm thực tế, thảo luận các deal B2B hóc búa và kết nối mạng lưới cùng hàng nghìn anh em làm nghề Business Development trên toàn quốc.",
+            navTarget: "community",
+            navLabel: "💬 Tham Gia Diễn Đàn Cộng Đồng"
+        },
+        {
+            keywords: [/thuật ngữ/, /glossary/, /arr/, /mrr/, /cac/, /ltv/, /formula/, /công thức/i],
+            reply: "Thư viện BD cung cấp hơn **142+ Thuật ngữ B2B BD** được phân loại bài bản (Nội bộ Team BD, Khách hàng, Tiếng lóng BD & Chỉ số Tài chính), đi kèm **Công thức tính (Formula)** và ví dụ số liệu thực tế.\n\n*Ví dụ:* ARR = MRR × 12 | LTV/CAC Ratio = LTV / CAC.",
             navTarget: "library",
             navLabel: "📖 Tra Cứu Từ Điển Thuật Ngữ BD"
         },
         {
-            keywords: [/thử việc/i],
-            reply: "Theo Điều 25 & 26 Bộ luật Lao động 2019, thời gian thử việc tối đa là **60 ngày** đối với vị trí chuyên môn (như BD/Sales) và mức lương thử việc phải đạt **ít nhất 85%** mức lương chính thức. Nếu công ty im lặng sau thử việc, bạn mặc nhiên trở thành nhân sự chính thức.\n\n*Gợi ý thêm:* Hãy tra cứu Tình huống 1 và Tình huống 9 trong Cổng Luật Lao Động để biết thêm quyền lợi thử việc nhé!",
+            keywords: [/thử việc/, /thu viec/i],
+            reply: "Theo Điều 25 & 26 Bộ luật Lao động 2019, thời gian thử việc tối đa là **60 ngày** đối với vị trí chuyên môn (như BD/Sales) và mức lương thử việc phải đạt **ít nhất 85%** mức lương chính thức. Nếu công ty im lặng sau thử việc, bạn mặc nhiên trở thành nhân sự chính thức.\n\n*Gợi ý thêm:* Hãy tra cứu Tình huống 1 và Tình huống 9 trong Cổng Luật Lao Động để nắm rõ quyền lợi nhé!",
             navTarget: "labor-law",
             navLabel: "⚖️ Xem Chi Tiết Luật Thử Việc"
         },
         {
-            keywords: [/nghỉ việc/, /thôi việc/, /báo trước/, /đơn phương chấm dứt/i],
-            reply: "Theo quy định Điều 35 Bộ luật Lao động, thời hạn báo trước bắt buộc khi người lao động nghỉ việc là:\n- Ít nhất **45 ngày** (Hợp đồng không xác định thời hạn).\n- Ít nhất **30 ngày** (Hợp đồng xác định thời hạn 12-36 tháng).\nTự ý nghỉ đột ngột không báo trước sẽ không được hưởng trợ cấp thôi việc và phải bồi thường.\n\n*Gợi ý thêm:* Bạn có muốn tra cứu trường hợp được đơn phương nghỉ việc ngay lập tức không cần báo trước (như khi bị nợ lương) không?",
+            keywords: [/nghỉ việc/, /nghi viec/, /thôi việc/, /thoi viec/, /báo trước/, /bao truoc/, /đơn phương chấm dứt/i],
+            reply: "Theo quy định Điều 35 Bộ luật Lao động, thời hạn báo trước bắt buộc khi người lao động nghỉ việc là:\n- Ít nhất **45 ngày** (Hợp đồng không xác định thời hạn).\n- Ít nhất **30 ngày** (Hợp đồng xác định thời hạn 12-36 tháng).\nTự ý nghỉ đột ngột không báo trước sẽ không được hưởng trợ cấp thôi việc và phải bồi thường.",
             navTarget: "labor-law",
             navLabel: "📋 Xem Luật Nghỉ Việc & Đền Bù"
         },
         {
-            keywords: [/luật/, /bảo hiểm/, /sa thải/, /bồi thường/i],
-            reply: "Cổng tra cứu **Luật Lao Động** của chúng tôi cung cấp đầy đủ các quy định về thử việc, thời giờ nghỉ ngơi, báo trước thôi việc và bảo hiểm xã hội, đi kèm **15 Case Study** tình huống tranh chấp lao động thực tế có dẫn link nguồn Thư Viện Pháp Luật uy tín để bạn đối chiếu.",
+            keywords: [/luật/, /luat/, /sa thải/, /sa thai/, /bồi thường/, /tranh chấp/i],
+            reply: "Cổng tra cứu **Luật Lao Động** của chúng tôi cung cấp đầy đủ các quy định về thử việc, hợp đồng, báo trước thôi việc và bảo hiểm xã hội, đi kèm **15 Case Study** tình huống tranh chấp lao động thực tế có dẫn nguồn luật chính thống.",
             navTarget: "labor-law",
             navLabel: "⚖️ Mở Cổng Luật Lao Động"
         },
         {
-            keywords: [/pitching/, /thuyết trình/, /pitch/, /slide/, /kịch bản/, /finder/i],
-            reply: "Công cụ **Thuyết Trình & Pitching AI** giúp bạn tự động thiết kế dàn ý slide và kịch bản pitching thuyết phục dựa trên tệp khách hàng mục tiêu và giá trị cốt lõi của bạn.\n\n*Gợi ý thêm:* Bạn có muốn tôi hướng dẫn cách soạn kịch bản Pitching 1 phút (Elevator Pitch) không?",
-            navTarget: "pitching",
-            navLabel: "🎤 Thử Pitching AI Ngay"
-        },
-        {
-            keywords: [/ebook/, /thư viện/, /bài viết/, /sách/i],
-            reply: "Trang **Thư Viện** của chúng tôi cung cấp các Ebook chia sẻ thực chiến và Social Selling trên LinkedIn viết bởi Peter Vo, cùng hàng loạt bài viết chia sẻ thực tế.",
+            keywords: [/ebook/, /thư viện/, /thu vien/, /bài viết/, /bai viet/, /sách/, /sach/i],
+            reply: "Trang **Thư Viện** của chúng tôi cung cấp trọn bộ **9+ Ebook thực chiến B2B** độc quyền viết bởi Peter Võ (Mindset BD thép, Social Selling LinkedIn 2026, 9 Nguyên tắc chốt deal, Ngôn từ B2B...) để bạn tải hoàn toàn miễn phí.",
             navTarget: "library",
-            navLabel: "📰 Đọc Bài Viết BD"
+            navLabel: "📰 Tải Ebook & Bài Viết Thực Chiến"
         },
         {
-            keywords: [/peter vo/, /tân võ phước/, /liên hệ/, /zalo/, /sđt/, /tư vấn/, /founder/i],
-            reply: "Bạn muốn kết nối & tư vấn trực tiếp cùng **Founder Peter Vo (Tân Võ Phước)** – Chuyên gia BD B2B & Partnership Strategy?\n\n- 📞 SĐT / Zalo: **0931.100.569**\n- ✉️ Email: **bdtraining@bdbinhdanhocvu.com**\n- 💼 LinkedIn: [LinkedIn Peter Vo](https://www.linkedin.com/in/vp-tan/)",
+            keywords: [/peter vo/, /tân võ phước/, /tan vo phuoc/, /liên hệ/, /lien he/, /zalo/, /sđt/, /sdt/, /tư vấn/, /founder/i],
+            reply: "Bạn muốn kết nối & tư vấn trực tiếp cùng **Founder Peter Võ (Võ Phước Tân)** – Chuyên gia BD B2B & Partnership Strategy?\n\n- 📞 SĐT / Zalo: **0931.100.569**\n- ✉️ Email: **bdtraining@bdbinhdanhocvu.com**\n- 💼 LinkedIn: [LinkedIn Peter Võ](https://www.linkedin.com/in/vp-tan/)",
             navTarget: null,
             navLabel: "💬 Chat Zalo Trực Tiếp (0931100569)"
         },
         {
-            keywords: [/chào/, /hello/, /hi/, /xin chào/i],
-            reply: "Xin chào! Rất vui được hỗ trợ bạn. Tôi là chú cú BeeDee thông thái của BD Bình Dân Học Vụ. Bạn đang quan tâm đến tính năng hay câu hỏi nào về B2B BD?",
+            keywords: [/chào/, /hello/, /hi/, /xin chào/, /chao ban/i],
+            reply: "Xin chào! Rất vui được đồng hành cùng bạn. Tôi là chú cú BeeDee thông thái của BD Bình Dân Học Vụ. Bạn đang quan tâm đến công cụ hay thắc mắc nào về nghề BD hôm nay?",
             navTarget: null,
             navLabel: null
         },
@@ -262,21 +292,28 @@ document.addEventListener('DOMContentLoaded', () => {
         let aiNavTarget = navTarget;
         let aiNavLabel = navLabel;
 
-        const navMatch = cleanedText.match(/\[NAV:(salary|labor-law|pitching|library)\]/);
+        const navMatch = cleanedText.match(/\[NAV:(salary|labor-law|library|personality-test|email-assistant|kpi-estimation|quests|finder|community)\]/);
         if (navMatch) {
             aiNavTarget = navMatch[1];
             cleanedText = cleanedText.replace(navMatch[0], '').trim();
             
-            // Map label based on target
-            if (aiNavTarget === 'salary') aiNavLabel = '⚡ Tính Lương Ngay';
-            else if (aiNavTarget === 'labor-law') aiNavLabel = '⚖️ Xem Luật Lao Động';
-            else if (aiNavTarget === 'pitching') aiNavLabel = '🎤 Thử Pitching AI Ngay';
-            else if (aiNavTarget === 'library') aiNavLabel = '📰 Đọc Bài Viết BD';
+            const labelMap = {
+                'salary': '⚡ Quy Đổi Lương Ngay',
+                'labor-law': '⚖️ Tra Cứu Luật Lao Động',
+                'library': '📖 Mở Thư Viện Ebook & Thuật Ngữ',
+                'personality-test': '📊 Làm Test Tính Cách BD',
+                'email-assistant': '✍️ Dùng AI Viết & Đánh Giá Email',
+                'kpi-estimation': '📈 Ước Tính Ma Trận KPI',
+                'quests': '🎯 Làm Nhiệm Vụ & Đổi Quà',
+                'finder': '🔒 Cổng Alumni VIP (Tìm PIC)',
+                'community': '💬 Tham Gia Cộng Đồng BD'
+            };
+            if (labelMap[aiNavTarget]) aiNavLabel = labelMap[aiNavTarget];
         }
 
         let bubbleHtml = '';
         if (sender === 'bot') {
-            bubbleHtml += `<img src="bd_mascot.png?v=1.0.4" class="chat-bot-avatar" alt="BeeDee">`;
+            bubbleHtml += `<img src="bd_mascot.png?v=2.4.8" class="chat-bot-avatar" alt="BeeDee">`;
         }
         
         bubbleHtml += `<div class="chat-bubble-content">`;
@@ -287,10 +324,15 @@ document.addEventListener('DOMContentLoaded', () => {
             const linkMap = {
                 'salary': 'salary.html',
                 'labor-law': 'labor-law.html',
-                'pitching': 'pitching.html',
-                'library': 'library.html'
+                'library': 'library.html',
+                'personality-test': 'personality-test.html',
+                'email-assistant': 'email-assistant.html',
+                'kpi-estimation': 'kpi-estimation.html',
+                'quests': 'quests.html',
+                'finder': 'finder.html',
+                'community': 'community.html'
             };
-            bubbleHtml += `<a href="${linkMap[aiNavTarget]}" class="chat-router-btn" ${aiNavTarget === 'library' ? '' : ''}>${aiNavLabel} &rarr;</a>`;
+            bubbleHtml += `<a href="${linkMap[aiNavTarget]}" class="chat-router-btn">${aiNavLabel} &rarr;</a>`;
         }
         bubbleHtml += `</div>`;
 
