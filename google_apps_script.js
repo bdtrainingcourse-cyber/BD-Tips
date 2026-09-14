@@ -39,7 +39,7 @@ function onOpen() {
       .addSeparator()
       .addItem("Gửi Toàn Bộ VIP (Giãn cách 2 phút/thư chống spam)", "menuSendBulkAlumniWithPacing")
       .addSeparator()
-      .addItem("🧹 Dọn Dẹp Dữ Liệu Test (Chỉ Giữ Lại vptanaia@gmail.com)", "menuCleanTestingEmails")
+      .addItem("🧹 Dọn Dẹp Dữ Liệu 3 Email Test (bdtrainingcourse, bdmastery, ocsen)", "menuCleanTestingEmails")
       .addToUi();
   } catch (e) {
     Logger.log("onOpen error: " + e.message);
@@ -2565,16 +2565,11 @@ function getHtmlEmailTemplate(message, buttonText, buttonUrl, mascotUrl, name) {
  */
 function cleanAllTestingRecords(keepEmail) {
   const protectedEmail = (keepEmail || "vptanaia@gmail.com").toLowerCase().trim();
+  // CHỈ XÓA ĐÚNG 3 EMAIL TESTING ĐƯỢC CHỈ ĐỊNH:
   const testEmailsToDelete = [
     "bdtrainingcourse@gmail.com",
     "bdmastery.ai@petervo.vn",
-    "ocsen.fashion@gmail.com",
-    "erm@spacex.com",
-    "testlead99@gmail.com",
-    "test_e2e_sync@stripe.com",
-    "top.deal@stripe.com",
-    "guest@b2bbd.com",
-    "john.doe@gmail.com"
+    "ocsen.fashion@gmail.com"
   ];
 
   const ss = SpreadsheetApp.getActiveSpreadsheet();
@@ -2582,6 +2577,7 @@ function cleanAllTestingRecords(keepEmail) {
     success: true,
     deletedBySheet: {},
     totalDeleted: 0,
+    deletedEmails: testEmailsToDelete,
     preservedEmail: protectedEmail
   };
 
@@ -2623,8 +2619,8 @@ function cleanAllTestingRecords(keepEmail) {
 function menuCleanTestingEmails() {
   const ui = SpreadsheetApp.getUi();
   const resp = ui.alert(
-    "Xác Nhận Dọn Dẹp Dữ Liệu Email Thử Nghiệm",
-    "Thao tác này sẽ tự động quét qua 4 tab:\n- Học Viên Đăng Ký\n- Nhật Ký Tương Tác\n- Yêu Cầu Tìm PIC\n- Học Viên Đã Học\n\nvà xóa sạch toàn bộ các dòng thuộc về các email test (bdtrainingcourse@gmail.com, bdmastery.ai@petervo.vn, ocsen.fashion@gmail.com, erm@spacex.com,...).\n\nTài khoản " + "vptanaia@gmail.com" + " và tất cả học viên thật sẽ được BẢO LƯU NGUYÊN VẸN 100%.\n\nBạn có muốn tiếp tục?",
+    "Xác Nhận Dọn Dẹp Dữ Liệu 3 Email Test",
+    "Thao tác này sẽ tự động quét qua 4 tab:\n- Học Viên Đăng Ký\n- Nhật Ký Tương Tác\n- Yêu Cầu Tìm PIC\n- Học Viên Đã Học\n\nvà xóa sạch toàn bộ các dòng thuộc về ĐÚNG 3 email testing:\n1. bdtrainingcourse@gmail.com\n2. bdmastery.ai@petervo.vn\n3. ocsen.fashion@gmail.com\n\nTài khoản vptanaia@gmail.com và tất cả học viên/người dùng khác sẽ được BẢO LƯU NGUYÊN VẸN 100%.\n\nBạn có muốn tiếp tục?",
     ui.ButtonSet.YES_NO
   );
 
@@ -2636,7 +2632,7 @@ function menuCleanTestingEmails() {
     }
     ui.alert(
       "Dọn Dẹp Hoàn Tất!",
-      "Tổng số dòng thử nghiệm đã xóa: " + res.totalDeleted + " dòng.\n\nChi tiết:\n" + detailMsg + "\nEmail " + res.preservedEmail + " và các học viên thật được bảo lưu an toàn.",
+      "Tổng số dòng của 3 email test đã xóa: " + res.totalDeleted + " dòng.\n\nChi tiết:\n" + detailMsg + "\nToàn bộ học viên khác và email " + res.preservedEmail + " được bảo lưu an toàn 100%.",
       ui.ButtonSet.OK
     );
   }
