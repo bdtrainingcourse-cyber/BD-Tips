@@ -66,11 +66,53 @@
             background: #fffcf7;
             border: 1.5px solid rgba(243, 168, 59, 0.35);
             border-radius: 12px;
-            padding: 14px;
+            padding: 12px 14px;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            box-sizing: border-box;
+            height: 100%;
         }
         body.dark-theme .vip-milestone-box {
             background: rgba(255, 255, 255, 0.04);
             border: 1.5px solid rgba(243, 168, 59, 0.35);
+        }
+        .vip-milestone-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 6px;
+            margin-bottom: 6px;
+        }
+        .vip-milestone-tag {
+            white-space: nowrap !important;
+            font-size: 0.74rem !important;
+            font-weight: 800 !important;
+            letter-spacing: -0.2px;
+        }
+        .vip-milestone-badge {
+            white-space: nowrap !important;
+            flex-shrink: 0;
+            font-size: 0.68rem !important;
+            font-weight: 700 !important;
+            padding: 2px 7px !important;
+            border-radius: 8px !important;
+        }
+        .vip-milestone-title {
+            font-size: 0.85rem;
+            font-weight: 800;
+            color: var(--text-main, #1e293b);
+            min-height: 2.4em;
+            line-height: 1.3;
+            display: flex;
+            align-items: center;
+            margin-bottom: 4px;
+        }
+        .vip-milestone-desc {
+            font-size: 0.74rem;
+            color: var(--text-light, #64748b);
+            margin: 0;
+            line-height: 1.4;
         }
         body.dark-theme .status-badge.undeliverable {
             color: #f87171 !important;
@@ -295,30 +337,30 @@
                             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin-top: 12px;">
                                 <!-- Milestone 1 -->
                                 <div class="vip-milestone-box" style="border-color: rgba(239, 68, 68, 0.4);">
-                                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
-                                        <span style="font-size: 0.78rem; font-weight: 800; color: #be123c;">MỐC 1 (Rủ 5 Bạn)</span>
-                                        <span style="font-size: 0.72rem; padding: 2px 8px; border-radius: 10px; background: rgba(239, 68, 68, 0.12); color: #be123c; font-weight: 700;">🥤 QUÀ GIẢI NHIỆT</span>
+                                    <div class="vip-milestone-header">
+                                        <span class="vip-milestone-tag" style="color: #be123c;">MỐC 1 (5 BẠN)</span>
+                                        <span class="vip-milestone-badge" style="background: rgba(239, 68, 68, 0.12); color: #be123c;">🥤 GIẢI NHIỆT</span>
                                     </div>
-                                    <div style="font-size: 0.88rem; font-weight: 700; color: var(--text-main, #1e293b);">Tặng 01 Ly Trà Sữa Size L Mát Lạnh</div>
-                                    <p style="font-size: 0.75rem; color: var(--text-light, #64748b); margin: 4px 0 0 0; line-height: 1.4;">Ly Trà Sữa Size L hoặc Voucher thương hiệu giải nhiệt gửi tặng bạn khi rủ đủ 5 đồng nghiệp BD (kèm +250 BD-Points).</p>
+                                    <div class="vip-milestone-title">Tặng 01 Ly Trà Sữa Size L Mát Lạnh</div>
+                                    <p class="vip-milestone-desc">Ly Trà Sữa Size L hoặc voucher thương hiệu gửi tặng bạn khi rủ đủ 5 đồng nghiệp BD (kèm +250đ).</p>
                                 </div>
                                 <!-- Milestone 2 -->
                                 <div class="vip-milestone-box" style="border-color: rgba(245, 158, 11, 0.4);">
-                                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
-                                        <span style="font-size: 0.78rem; font-weight: 800; color: #b45309;">MỐC 2 (Rủ 10 Bạn)</span>
-                                        <span style="font-size: 0.72rem; padding: 2px 8px; border-radius: 10px; background: rgba(251, 191, 36, 0.2); color: #b45309; font-weight: 700;">💻 1-1 ONLINE</span>
+                                    <div class="vip-milestone-header">
+                                        <span class="vip-milestone-tag" style="color: #b45309;">MỐC 2 (10 BẠN)</span>
+                                        <span class="vip-milestone-badge" style="background: rgba(251, 191, 36, 0.2); color: #b45309;">💻 1-1 ONLINE</span>
                                     </div>
-                                    <div style="font-size: 0.88rem; font-weight: 700; color: var(--text-main, #1e293b);">30 Phút Online 1-1 Với Anh Peter Võ</div>
-                                    <p style="font-size: 0.75rem; color: var(--text-light, #64748b); margin: 4px 0 0 0; line-height: 1.4;">Tư vấn chiến lược cá nhân 1-1: Thiết kế sales pipeline &amp; gỡ rối deal B2B khó trực tiếp cùng anh Peter (kèm +500 BD-Points).</p>
+                                    <div class="vip-milestone-title">30 Phút Online 1-1 Với Anh Peter Võ</div>
+                                    <p class="vip-milestone-desc">Tư vấn chiến lược 1-1: Thiết kế sales pipeline &amp; gỡ rối deal B2B khó chốt cùng anh Peter (kèm +500đ).</p>
                                 </div>
                                 <!-- Milestone 3 -->
                                 <div class="vip-milestone-box" style="border-color: rgba(16, 185, 129, 0.4);">
-                                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
-                                        <span style="font-size: 0.78rem; font-weight: 800; color: #047857;">MỐC 3 (Rủ 15 Bạn)</span>
-                                        <span style="font-size: 0.72rem; padding: 2px 8px; border-radius: 10px; background: rgba(16, 185, 129, 0.15); color: #047857; font-weight: 700;">🍽️ LUNCH ĐẶC BIỆT</span>
+                                    <div class="vip-milestone-header">
+                                        <span class="vip-milestone-tag" style="color: #047857;">MỐC 3 (15 BẠN)</span>
+                                        <span class="vip-milestone-badge" style="background: rgba(16, 185, 129, 0.15); color: #047857;">🍽️ LUNCH VIP</span>
                                     </div>
-                                    <div style="font-size: 0.88rem; font-weight: 700; color: var(--text-main, #1e293b);">Buổi Lunch 1-1 Cùng Anh Peter Võ</div>
-                                    <p style="font-size: 0.75rem; color: var(--text-light, #64748b); margin: 4px 0 0 0; line-height: 1.4;">Buổi ăn trưa thân mật 1-1: Cố vấn định hướng sự nghiệp BD, mở rộng quan hệ cấp cao trực tiếp cùng anh Peter.</p>
+                                    <div class="vip-milestone-title">Buổi Lunch 1-1 Cùng Anh Peter Võ</div>
+                                    <p class="vip-milestone-desc">Buổi ăn trưa thân mật 1-1: Cố vấn sự nghiệp BD, mở rộng quan hệ cấp cao cùng anh Peter.</p>
                                 </div>
                             </div>
                         </div>
