@@ -30,22 +30,26 @@ body.dark-theme .app-nav {
 }
 
 .nav-container {
-    max-width: 1200px;
+    max-width: 1380px;
+    width: 100%;
     margin: 0 auto;
-    padding: 12px 20px;
+    padding: 10px 20px;
     display: flex;
     justify-content: space-between;
     align-items: center;
+    box-sizing: border-box;
+    gap: 16px;
 }
 
 .nav-logo {
     display: flex;
     flex-direction: column;
-    align-items: center;
+    align-items: flex-start;
     text-decoration: none;
     line-height: 1.15;
     white-space: nowrap;
-    margin-right: 40px;
+    margin-right: 18px;
+    flex-shrink: 0;
 }
 
 .nav-logo .logo-main {
@@ -204,17 +208,18 @@ body.dark-theme .nav-logo .logo-sub {
 
 .nav-links {
     display: flex;
-    gap: 16px;
+    gap: 12px;
     align-items: center;
+    flex-shrink: 1;
 }
 
 .nav-links a {
     color: var(--text-light);
     text-decoration: none;
     font-weight: 600;
-    font-size: 0.925rem;
+    font-size: 0.9rem;
     transition: color 0.3s;
-    padding: 6px 4px;
+    padding: 5px 6px;
     position: relative;
     white-space: nowrap;
 }
@@ -420,6 +425,9 @@ body.dark-theme .mobile-menu-toggle {
     margin-left: auto;
     flex-shrink: 0;
 }
+.nav-header-actions .theme-toggle-btn {
+    margin-left: 0 !important;
+}
 .nav-user-hud {
     display: flex;
     align-items: center;
@@ -463,6 +471,87 @@ body.dark-theme .nav-register-btn {
     background: rgba(255, 255, 255, 0.08) !important;
     border-color: rgba(255, 255, 255, 0.15) !important;
     color: #cbd5e1 !important;
+}
+
+/* Laptop & Tablet Responsive Navbar Tuning (993px to 1366px) */
+@media (max-width: 1366px) {
+    .nav-container {
+        padding: 8px 14px;
+        gap: 10px;
+    }
+    .nav-logo {
+        margin-right: 12px;
+    }
+    .nav-logo .logo-main {
+        font-size: 1.15rem;
+    }
+    .nav-logo .logo-sub {
+        font-size: 0.65rem;
+        padding: 1px 8px;
+    }
+    .nav-links {
+        gap: 8px;
+    }
+    .nav-links a, .nav-dropdown-toggle {
+        font-size: 0.84rem;
+        padding: 4px 4px;
+    }
+    .nav-badge {
+        font-size: 0.58rem;
+        padding: 1px 4px;
+        margin-left: 2px;
+    }
+    .live-counter {
+        margin-left: 0 !important;
+        padding: 3px 8px !important;
+        font-size: 0.75rem !important;
+        gap: 4px !important;
+    }
+    .live-counter-text {
+        display: none !important;
+    }
+    .nav-user-hud {
+        gap: 5px;
+    }
+    .nav-login-btn, .nav-register-btn {
+        padding: 5px 10px;
+        font-size: 0.78rem;
+    }
+    .theme-toggle-btn {
+        width: 32px;
+        height: 32px;
+        font-size: 0.95rem;
+    }
+}
+
+@media (max-width: 1180px) {
+    .nav-container {
+        padding: 6px 10px;
+        gap: 6px;
+    }
+    .nav-logo {
+        margin-right: 8px;
+    }
+    .nav-logo .logo-main {
+        font-size: 1.05rem;
+    }
+    .nav-logo .logo-sub {
+        display: none;
+    }
+    .nav-links {
+        gap: 5px;
+    }
+    .nav-links a, .nav-dropdown-toggle {
+        font-size: 0.8rem;
+        padding: 3px 3px;
+    }
+    .nav-header-actions {
+        gap: 5px;
+    }
+    .nav-login-btn, .nav-register-btn {
+        padding: 5px 8px;
+        font-size: 0.74rem;
+    }
 }
 
 @media (max-width: 992px) {
@@ -3986,8 +4075,9 @@ body.dark-theme .beedee-micro-bar {
 /* --- Subtle Onboarding Hint Capsule (v2.5.1) --- */
 .beedee-tutorial-hint-capsule {
     position: fixed;
-    bottom: 85px;
-    right: 20px;
+    bottom: 25px;
+    left: 25px;
+    right: auto;
     background: rgba(255, 255, 255, 0.96);
     backdrop-filter: blur(14px);
     -webkit-backdrop-filter: blur(14px);
