@@ -366,6 +366,14 @@ async function handleVerifyAlumni(req, res, params) {
     if (postRes.ok) {
       const data = await postRes.json();
       if (data && data.success && data.isAlumni) {
+        // Strict protection: If GAS returned the non-member fallback ("Alumni VIP" + "BDTHUCCHIEN"), reject!
+        if (data.name === 'Alumni VIP' || (data.userId && data.userId.startsWith('UID_') && data.vipCode === 'BDTHUCCHIEN')) {
+          return res.status(200).json({
+            success: false,
+            isAlumni: false,
+            error: 'Email hoặc Mật khẩu VIP không có trong danh sách Học Viên Đã Học. Vui lòng liên hệ Peter Võ để được kích hoạt!'
+          });
+        }
         return res.status(200).json(data);
       }
     }
