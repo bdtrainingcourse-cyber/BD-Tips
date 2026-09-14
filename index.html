@@ -171,10 +171,12 @@
                 const customAvatar = localStorage.getItem('b2b_custom_avatar');
                 const avatarHtml = customAvatar ? `<img src="${customAvatar}" style="width: 28px; height: 28px; border-radius: 50%; object-fit: cover; border: 1.5px solid var(--primary); display: inline-block; vertical-align: middle; margin-right: 6px;">` : '';
 
+                const isEn = (window.BDI18n && window.BDI18n.getLang() === 'en') || (localStorage.getItem('bd_lang') === 'en');
+
                 if (isRegistered && userName && userName !== 'Khách' && userName !== 'Học viên') {
-                    greetingTitle.innerHTML = avatarHtml + 'Xin chào bạn <strong>' + userName + '</strong>!';
+                    greetingTitle.innerHTML = avatarHtml + (isEn ? 'Hello ' : 'Xin chào bạn ') + '<strong>' + userName + '</strong>!';
                 } else {
-                    greetingTitle.innerHTML = avatarHtml + 'Xin chào bạn!';
+                    greetingTitle.innerHTML = avatarHtml + (isEn ? 'Hello there!' : 'Xin chào bạn!');
                 }
                 
                 if (greetingText) {
@@ -203,7 +205,10 @@
                             msg = 'Cuối tuần thong thả, hãy cùng chú cú BeeDee thông thái trau dồi thêm kỹ năng và mở rộng mạng lưới quan hệ nhé!';
                         }
                     } else if (isRegistered && !isVerified) {
-                        greetingText.innerHTML = 'Bạn tích được <strong>' + balance + ' BD-Points</strong> rồi đó, nhưng chưa cài mật khẩu. Cài ngay kẻo ví điểm bay màu nha!';
+                        msg = isEn 
+                            ? 'You have earned <strong>' + balance + ' BD-Points</strong>, but have not set a passcode yet. Set it now to protect your points balance!'
+                            : 'Bạn tích được <strong>' + balance + ' BD-Points</strong> rồi đó, nhưng chưa cài mật khẩu. Cài ngay kẻo ví điểm bay màu nha!';
+                        greetingText.innerHTML = msg;
                         return;
                     } else {
                         if (day === 1) {
@@ -223,14 +228,19 @@
                             msg = 'Thứ sáu cuối tuần rồi bạn ơi! Gác lại áp lực, hãy cùng khách hàng xây dựng chemistry thật tốt rồi tận hưởng ngày nghỉ cuối tuần nhé!';
                         } else {
                             mascotSrc = 'mascot_farmer.jpg';
-                            msg = 'Bạn đang có <strong>' + balance + ' BD-Points</strong> trong ví. Hãy trau dồi thêm kỹ năng BD cùng chú cú BeeDee thông thái nha!';
+                            msg = isEn
+                                ? 'You currently have <strong>' + balance + ' BD-Points</strong> in your wallet. Keep honing BD skills with wise BeeDee!'
+                                : 'Bạn đang có <strong>' + balance + ' BD-Points</strong> trong ví. Hãy trau dồi thêm kỹ năng BD cùng chú cú BeeDee thông thái nha!';
                         }
                     }
                     if (mascotImg && mascotSrc) mascotImg.src = mascotSrc;
-                    greetingText.innerHTML = msg;
+                    greetingText.innerHTML = (isEn && window.BDI18n) ? window.BDI18n.t(msg) : msg;
                 }
             }
             
+            window.updateHomepageGreeting = updateHomepageGreeting;
+            window.addEventListener('bdLanguageChanged', updateHomepageGreeting);
+
             // Execute in stages to ensure elements are ready
             updateHomepageGreeting();
             setTimeout(updateHomepageGreeting, 50);

@@ -1202,8 +1202,9 @@ const initB2BApp = () => {
         if (nextBtn) nextBtn.style.display = 'flex';
         
         const completedCount = levelGames.filter(g => completedGames.includes(g.id)).length;
+        const isEnLevel = (window.BDI18n && window.BDI18n.getLang() === 'en') || (localStorage.getItem('bd_lang') === 'en');
         if (indicator) {
-            indicator.textContent = `Đã hoàn thành: ${completedCount} / ${levelGames.length}`;
+            indicator.textContent = isEnLevel ? `Completed: ${completedCount} / ${levelGames.length}` : `Đã hoàn thành: ${completedCount} / ${levelGames.length}`;
         }
         
         track.innerHTML = levelGames.map(game => {
@@ -1211,9 +1212,19 @@ const initB2BApp = () => {
             const isCompleted = completedGames.includes(game.id);
             const icon = game.icon || "🧠";
             
+            const badgeText = isCompleted 
+                ? (isEnLevel ? '✓ Completed' : '✓ Đã Hoàn Thành')
+                : (isEnLevel ? 'Not Played' : 'Chưa Chơi');
+            const btnText = isCompleted
+                ? (isEnLevel ? 'Play Again' : 'Chơi Lại')
+                : (isEnLevel ? 'Play Now' : 'Chơi Ngay');
+            
             const badgeHtml = isCompleted 
-                ? `<span style="font-size: 0.72rem; font-weight: bold; background: rgba(16, 185, 129, 0.15); color: #10b981; border: 1.5px solid #10b981; padding: 2px 8px; border-radius: 20px;">✓ Đã Hoàn Thành</span>`
-                : `<span style="font-size: 0.72rem; font-weight: bold; background: rgba(243, 168, 59, 0.15); color: #f3a83b; border: 1.5px solid #f3a83b; padding: 2px 8px; border-radius: 20px;">Chưa Chơi</span>`;
+                ? `<span style="font-size: 0.72rem; font-weight: bold; background: rgba(16, 185, 129, 0.15); color: #10b981; border: 1.5px solid #10b981; padding: 2px 8px; border-radius: 20px;">${badgeText}</span>`
+                : `<span style="font-size: 0.72rem; font-weight: bold; background: rgba(243, 168, 59, 0.15); color: #f3a83b; border: 1.5px solid #f3a83b; padding: 2px 8px; border-radius: 20px;">${badgeText}</span>`;
+
+            const displayTitle = (isEnLevel && window.BDI18n) ? window.BDI18n.t(game.title) : game.title;
+            const displayDesc = (isEnLevel && window.BDI18n) ? window.BDI18n.t(game.description) : game.description;
 
             return `
                 <div class="game-card glass-panel" style="padding: 20px; display: flex; flex-direction: column; gap: 10px; cursor: pointer; border: 1px solid var(--border-color); border-radius: 12px; background: rgba(255, 255, 255, 0.6); position: relative; width: 230px;" data-game-index="${globalIndex}">
@@ -1221,10 +1232,10 @@ const initB2BApp = () => {
                         <span style="font-size: 1.8rem;">${icon}</span>
                         ${badgeHtml}
                     </div>
-                    <h4 style="font-size: 1.1rem; font-weight: 700; margin: 0; color: var(--text-main);">${game.title}</h4>
-                    <p style="font-size: 0.85rem; color: var(--text-light); flex: 1; margin: 5px 0 0 0; line-height: 1.35;">${game.description}</p>
+                    <h4 style="font-size: 1.1rem; font-weight: 700; margin: 0; color: var(--text-main);">${displayTitle}</h4>
+                    <p style="font-size: 0.85rem; color: var(--text-light); flex: 1; margin: 5px 0 0 0; line-height: 1.35;">${displayDesc}</p>
                     <button class="btn ${isCompleted ? 'btn-secondary' : 'btn-primary'}" style="padding: 8px 12px; font-size: 0.85rem; margin-top: 15px; width: 100%;">
-                        ${isCompleted ? 'Chơi Lại' : 'Chơi Ngay'}
+                        ${btnText}
                     </button>
                 </div>
             `;
@@ -2971,16 +2982,19 @@ const initB2BApp = () => {
             else if (index === 2) rankClass = 'bronze';
 
             let funnyTitle = entry.title || "Tân Binh BD";
+            const isEnBoard = (window.BDI18n && window.BDI18n.getLang() === 'en') || (localStorage.getItem('bd_lang') === 'en');
+            const displayName = (isEnBoard && window.BDI18n) ? window.BDI18n.t(entry.name) : entry.name;
+            const displayTitle = (isEnBoard && window.BDI18n) ? window.BDI18n.t(funnyTitle) : funnyTitle;
             const verifiedBadgeHtml = entry.email ? `<span class="verified-badge" style="font-size: 0.65rem; padding: 1px 4px; background: rgba(243, 168, 59, 0.15); color: #e59a18; border-radius: 12px; font-weight: bold; margin-left: 5px;">✔ Verified</span>` : '';
 
             item.innerHTML = `
                 <div class="rank-badge ${rankClass}">${index + 1}</div>
                 <div class="user-info">
                     <div class="user-name">
-                        <span>${entry.name}</span>
+                        <span>${displayName}</span>
                         ${verifiedBadgeHtml}
                     </div>
-                    <div class="user-title">${funnyTitle}</div>
+                    <div class="user-title">${displayTitle}</div>
                 </div>
                 <div class="score-badge">${entry.score}/5</div>
             `;
@@ -3252,10 +3266,13 @@ const initB2BApp = () => {
             return matchesSearch && matchesSector && matchesFormat && matchesMonth;
         });
 
+        const isEnEvents = (window.BDI18n && window.BDI18n.getLang() === 'en') || (localStorage.getItem('bd_lang') === 'en');
+        const tEvt = (s) => (isEnEvents && window.BDI18n ? window.BDI18n.t(s) : s);
+
         if (filtered.length === 0) {
             eventsGrid.innerHTML = `
                 <div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: var(--text-muted);">
-                    📭 Không tìm thấy sự kiện B2B nào phù hợp với bộ lọc của bạn.
+                    📭 ${isEnEvents ? 'No B2B events found matching your current filter.' : 'Không tìm thấy sự kiện B2B nào phù hợp với bộ lọc của bạn.'}
                 </div>
             `;
             return;
@@ -3267,19 +3284,19 @@ const initB2BApp = () => {
                     <!-- Calendar Date Block -->
                     <div style="display: flex; align-items: center; gap: 8px; background: rgba(255,255,255,0.08); padding: 4px 10px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1);">
                         <span style="font-size: 1.1rem; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));">📅</span>
-                        <span style="font-size: 0.8rem; font-weight: 800; color: var(--primary-light);">T.${evt.monthNum}/${evt.day}</span>
+                        <span style="font-size: 0.8rem; font-weight: 800; color: var(--primary-light);">${isEnEvents ? 'M.' : 'T.'}${evt.monthNum}/${evt.day}</span>
                     </div>
-                    <span class="event-badge ${evt.badgeClass}" style="margin: 0;">${evt.sectorLabel}</span>
+                    <span class="event-badge ${evt.badgeClass}" style="margin: 0;">${tEvt(evt.sectorLabel)}</span>
                     <span class="format-badge ${evt.format}" style="font-size: 0.7rem; font-weight: 800; padding: 4px 8px; border-radius: 6px; text-transform: uppercase; background: rgba(255,255,255,0.05); border: 1px solid ${evt.format === 'online' ? 'rgba(162,10,10,0.3)' : evt.format === 'hybrid' ? 'rgba(245,158,11,0.3)' : 'rgba(59,130,246,0.3)'}; color: ${evt.format === 'online' ? '#a20a0a' : evt.format === 'hybrid' ? '#f59e0b' : '#3b82f6'};">
-                        ${evt.formatLabel}
+                        ${tEvt(evt.formatLabel)}
                     </span>
                     <span class="event-status ${evt.online > 0 ? 'live' : ''}" style="margin-left: auto;">
-                        ${evt.online > 0 ? '<span class="live-dot" style="display:inline-block; width:6px; height:6px; background:#ef4444; border-radius:50%; box-shadow:0 0 6px #ef4444; animation:pulse 1.5s infinite;"></span> ' + evt.online + ' Online' : 'Đăng ký mở'}
+                        ${evt.online > 0 ? '<span class="live-dot" style="display:inline-block; width:6px; height:6px; background:#ef4444; border-radius:50%; box-shadow:0 0 6px #ef4444; animation:pulse 1.5s infinite;"></span> ' + evt.online + ' Online' : (isEnEvents ? 'Registration Open' : 'Đăng ký mở')}
                     </span>
                 </div>
                 <h3 class="event-title" style="margin-top: 5px;">
                     <a href="${evt.link}" target="_blank" rel="noopener noreferrer" style="color: inherit; text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='inherit'">
-                        ${evt.title}
+                        ${tEvt(evt.title)}
                     </a>
                 </h3>
                 <div class="event-meta">
@@ -3289,7 +3306,7 @@ const initB2BApp = () => {
                     </div>
                     <div class="meta-item">
                         <span>📍</span>
-                        <span>${evt.location}</span>
+                        <span>${tEvt(evt.location)}</span>
                     </div>
                     <div class="meta-item" style="font-size: 0.8rem; color: var(--accent-glow);">
                         <span>🏢 Host:</span>
@@ -3298,14 +3315,14 @@ const initB2BApp = () => {
                 </div>
                 <div class="event-live-stats" style="display: flex; justify-content: space-between; align-items: center; width: 100%; gap: 10px; flex-wrap: wrap;">
                     <div class="attendees-count" id="count-${evt.id}">
-                        👥 <strong>${evt.registered}</strong> Đã đăng ký
+                        👥 <strong>${evt.registered}</strong> ${isEnEvents ? 'Registered' : 'Đã đăng ký'}
                     </div>
                     <div style="display: flex; align-items: center; gap: 12px;">
                         <a href="${evt.realtimeLink}" target="_blank" rel="noopener noreferrer" class="event-realtime-link" style="font-size: 0.85rem; color: #11998e; text-decoration: none; border-bottom: 1px dashed #11998e; transition: all 0.3s; font-weight: 600;">
-                            Chi tiết realtime ↗
+                            ${isEnEvents ? 'Realtime Details ↗' : 'Chi tiết realtime ↗'}
                         </a>
                         <a href="${evt.link}" target="_blank" rel="noopener noreferrer" class="event-register-btn">
-                            Đăng Ký &rarr;
+                            ${isEnEvents ? 'Register &rarr;' : 'Đăng Ký &rarr;'}
                         </a>
                     </div>
                 </div>
@@ -3385,7 +3402,8 @@ const initB2BApp = () => {
                     }
                 });
             }
-            liveUpdateTimer.textContent = `Tự động cập nhật: ${timerCountdown}s`;
+            const isEnTimer = (window.BDI18n && window.BDI18n.getLang() === 'en') || (localStorage.getItem('bd_lang') === 'en');
+            liveUpdateTimer.textContent = `${isEnTimer ? 'Auto-updates:' : 'Tự động cập nhật:'} ${timerCountdown}s`;
         }, 1000);
     }
 
@@ -5746,12 +5764,16 @@ if (document.readyState === 'loading') {
             questEl.style.cursor = 'pointer';
             questEl.style.transition = 'all 0.2s ease';
 
+            const isEnQuest = (window.BDI18n && window.BDI18n.getLang() === 'en') || (localStorage.getItem('bd_lang') === 'en');
+            const questDisplayName = (isEnQuest && window.BDI18n) ? window.BDI18n.t(quest.name) : quest.name;
+            const progressLabel = isEnQuest ? 'Progress:' : 'Tiến trình:';
+
             questEl.innerHTML = `
                 <div style="display: flex; align-items: center; gap: 8px;">
                     <span style="font-size: 0.95rem; line-height: 1;">${isCompleted ? '✅' : '⬜'}</span>
                     <div>
-                        <div style="font-size: 0.75rem; font-weight: bold; color: ${isCompleted ? 'var(--text-light)' : 'var(--text-main)'}; ${isCompleted ? 'text-decoration: line-through;' : ''}">${quest.name}</div>
-                        <div style="font-size: 0.65rem; color: var(--text-light); margin-top: 1px;">Tiến trình: ${current}/${quest.limit}</div>
+                        <div style="font-size: 0.75rem; font-weight: bold; color: ${isCompleted ? 'var(--text-light)' : 'var(--text-main)'}; ${isCompleted ? 'text-decoration: line-through;' : ''}">${questDisplayName}</div>
+                        <div style="font-size: 0.65rem; color: var(--text-light); margin-top: 1px;">${progressLabel} ${current}/${quest.limit}</div>
                     </div>
                 </div>
                 <span style="font-size: 0.72rem; font-weight: bold; color: var(--primary);">+${quest.points}đ</span>
@@ -6125,9 +6147,10 @@ if (document.readyState === 'loading') {
         const name = localStorage.getItem('streak_name');
 
         if (banner && streakActive && name) {
+            const isEnBanner = (window.BDI18n && window.BDI18n.getLang() === 'en') || (localStorage.getItem('bd_lang') === 'en');
             banner.classList.remove('hidden');
-            bannerTitle.textContent = `Chào mừng trở lại, ${name}! 🦉`;
-            bannerStreak.textContent = `Số dư: ${points} BD-Points 🪙`;
+            bannerTitle.textContent = isEnBanner ? `Welcome back, ${name}! 🦉` : `Chào mừng trở lại, ${name}! 🦉`;
+            bannerStreak.textContent = isEnBanner ? `Balance: ${points} BD-Points 🪙` : `Số dư: ${points} BD-Points 🪙`;
         } else if (banner) {
             banner.classList.add('hidden');
         }
@@ -6568,12 +6591,18 @@ if (document.readyState === 'loading') {
             const isBeatenAtLeastOnce = oppLevel > 1 || 
                                         localStorage.getItem(`online_pvp_beaten_${usr.id}`) === 'true';
             
+            const isEnPvp = (window.BDI18n && window.BDI18n.getLang() === 'en') || (localStorage.getItem('bd_lang') === 'en');
+            const challengeBtnText = isEnPvp ? 'CHALLENGE' : 'Khiêu Chiến';
+            const duelLevelText = isEnPvp ? `⚔️ Duel Level ${oppLevel}` : `⚔️ Đấu Cấp ${oppLevel}`;
+            const levelBadgeText = isEnPvp ? `Level ${oppLevel} ${config.stars}` : `Cấp ${oppLevel} ${config.stars}`;
+            const statusDisplay = (isEnPvp && window.BDI18n) ? window.BDI18n.t(usr.status) : usr.status;
+            
             const actionBtn = isBeatenAtLeastOnce
                 ? `<button onclick="challengeOnlineUser('${usr.id}')" style="font-size: 0.72rem; color: ${config.badgeColor}; font-weight: 800; background: rgba(239,68,68,0.04); padding: 8px 12px; border-radius: 8px; border: 1px solid ${config.badgeColor}; cursor: pointer; display: flex; align-items: center; gap: 4px; white-space: nowrap; box-shadow: 0 2px 6px rgba(0,0,0,0.03);">
-                    <span>⚔️ Đấu Cấp ${oppLevel}</span>
+                    <span>${duelLevelText}</span>
                     <span style="font-size: 0.62rem; background: ${config.badgeColor}; color: white; padding: 1px 5px; border-radius: 6px; font-weight: 900;">+${config.rewardPoints}đ</span>
                   </button>`
-                : `<button onclick="challengeOnlineUser('${usr.id}')" class="pvp-btn-challenge">Khiêu Chiến</button>`;
+                : `<button onclick="challengeOnlineUser('${usr.id}')" class="pvp-btn-challenge">${challengeBtnText}</button>`;
             
             const mascotLower = usr.mascot.toLowerCase();
             const statusClass = (usr.status.includes('online') || usr.status.includes('B2B')) ? '' : 'idle';
@@ -6589,9 +6618,9 @@ if (document.readyState === 'loading') {
                             <div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap; margin-bottom: 2px;">
                                 <strong style="font-size: 0.88rem; font-weight: 800; color: var(--text-main); white-space: nowrap;">${usr.name}</strong>
                                 <span class="pvp-badge-mascot ${mascotLower}">${usr.mascot}</span>
-                                <span style="font-size: 0.68rem; color: ${config.badgeColor}; font-weight: bold; background: rgba(239,68,68,0.05); padding: 1px 6px; border-radius: 6px; border: 1px solid ${config.badgeColor}30; white-space: nowrap;">Cấp ${oppLevel} ${config.stars}</span>
+                                <span style="font-size: 0.68rem; color: ${config.badgeColor}; font-weight: bold; background: rgba(239,68,68,0.05); padding: 1px 6px; border-radius: 6px; border: 1px solid ${config.badgeColor}30; white-space: nowrap;">${levelBadgeText}</span>
                             </div>
-                            <div style="font-size: 0.72rem; color: #10b981; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${usr.status}</div>
+                            <div style="font-size: 0.72rem; color: #10b981; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${statusDisplay}</div>
                         </div>
                     </div>
                     <div style="flex-shrink: 0;">
@@ -7957,5 +7986,43 @@ function checkPvPChallenge() {
     } else {
         initReferralWelcome();
     }
+
+    // Global Event Listener for Real-Time Language Switching
+    window.addEventListener('bdLanguageChanged', function(e) {
+        // 1. Re-render events if eventsGrid exists
+        if (typeof renderEvents === 'function') {
+            try { renderEvents(); } catch(err) {}
+        }
+        // 2. Re-render leaderboard
+        if (typeof renderLeaderboard === 'function') {
+            try { renderLeaderboard(); } catch(err) {}
+        }
+        // 3. Re-render online PVP users
+        if (typeof renderOnlineUsersList === 'function') {
+            try { renderOnlineUsersList(); } catch(err) {}
+        }
+        // 4. Re-render Quests & Campaigns
+        if (typeof window.renderQuestBoard === 'function') {
+            try { window.renderQuestBoard(); } catch(err) {}
+        }
+        if (typeof window.renderCampaignBoard === 'function') {
+            try { window.renderCampaignBoard(); } catch(err) {}
+        }
+        // 5. Re-render Level Games
+        const activeLevelBtn = document.querySelector('.level-btn.active');
+        if (activeLevelBtn && typeof renderGamesForLevel === 'function') {
+            const lvl = activeLevelBtn.getAttribute('data-level') || '1';
+            try { renderGamesForLevel(lvl); } catch(err) {}
+        }
+        // 6. Update Welcome Banner
+        const balance = parseInt(localStorage.getItem('b2b_points_balance') || '0', 10);
+        if (typeof updateWelcomeBanner === 'function') {
+            try { updateWelcomeBanner(balance); } catch(err) {}
+        }
+        // 7. Walk DOM to translate any newly rendered elements
+        if (window.BDI18n && typeof window.BDI18n.walk === 'function') {
+            window.BDI18n.walk(document.body);
+        }
+    });
 
 

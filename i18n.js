@@ -16,23 +16,23 @@
     let currentLang = storage.getItem('bd_lang') || 'vi';
     let isTranslating = false;
 
-    // 1. Comprehensive Exact Translation Map (880+ Phrases)
+    // 1. Comprehensive Exact Translation Map (1103 Entries)
     const EXACT_MAP = {
-        "Lead &rarr; Approaching (Tiếp cận)": "Lead → Approaching",
-        "Approaching &rarr; Qualified (Quan tâm)": "Approaching → Qualified",
-        "Qualified &rarr; Proposal (Báo giá)": "Qualified → Proposal",
-        "Proposal &rarr; Convert (Đàm phán)": "Proposal → Negotiation",
-        "Convert &rarr; Close Win (Hợp đồng)": "Negotiation → Close Win",
-        "SQL &rarr; Close Win (Hợp đồng)": "SQL → Close Win",
-        "&copy; 2026 B2B BD Portal. Đào tạo Business Development thực chiến hàng đầu.": "© 2026 B2B BD Portal. Premier Battle-Tested Business Development Training.",
-        "© 2026 B2B BD Portal. Đào tạo Business Development thực chiến hàng đầu.": "© 2026 B2B BD Portal. Premier Battle-Tested Business Development Training.",
-        "Nhận Template Ngay &rarr;": "Get Template Now →",
-        "&larr; Quay lại danh sách thảo luận": "← Back to discussions",
-        "• Đăng bài": "• Post",
-        "kèm treo thưởng tối thiểu từ": "with a minimum bounty of",
-        "để được cộng đồng hỗ trợ nhanh nhất.": "for the fastest community support.",
-        "• Nhấp vào tên thành viên có icon": "• Click on member names with an icon",
-        "để chat trực tiếp bảo mật!": "to chat directly & securely!",
+    "Lead &rarr; Approaching (Tiếp cận)": "Lead → Approaching",
+    "Approaching &rarr; Qualified (Quan tâm)": "Approaching → Qualified",
+    "Qualified &rarr; Proposal (Báo giá)": "Qualified → Proposal",
+    "Proposal &rarr; Convert (Đàm phán)": "Proposal → Negotiation",
+    "Convert &rarr; Close Win (Hợp đồng)": "Negotiation → Close Win",
+    "SQL &rarr; Close Win (Hợp đồng)": "SQL → Close Win",
+    "&copy; 2026 B2B BD Portal. Đào tạo Business Development thực chiến hàng đầu.": "© 2026 B2B BD Portal. Premier Battle-Tested Business Development Training.",
+    "© 2026 B2B BD Portal. Đào tạo Business Development thực chiến hàng đầu.": "© 2026 B2B BD Portal. Premier Battle-Tested Business Development Training.",
+    "Nhận Template Ngay &rarr;": "Get Template Now →",
+    "&larr; Quay lại danh sách thảo luận": "← Back to discussions",
+    "• Đăng bài": "• Post",
+    "kèm treo thưởng tối thiểu từ": "with a minimum bounty of",
+    "để được cộng đồng hỗ trợ nhanh nhất.": "for the fastest community support.",
+    "• Nhấp vào tên thành viên có icon": "• Click on member names with an icon",
+    "để chat trực tiếp bảo mật!": "to chat directly & securely!",
     "Bình Dân Học Vụ": "BD Binh Dan Hoc Vu",
     "BD Bình Dân Học Vụ": "BD Binh Dan Hoc Vu",
     "Để bạn không đơn độc trên hành trình BD": "Never walk alone on your BD journey",
@@ -338,7 +338,6 @@
     "\"Trong lao động, sự hiểu biết về luật pháp là tấm khiên bảo vệ vững chắc nhất cho sự nghiệp của bạn.\"": "\"In the workplace, legal knowledge is the strongest shield protecting your career.\"",
     "Tìm kiếm điều luật, chủ đề (thử việc, nghỉ phép, thôi việc...)...": "Search labor law articles, topics (probation, leave, termination...)...",
     "Phân tích pháp lý lý thuyết...": "Theoretical legal breakdown...",
-    "© 2026 B2B BD Portal. Đào tạo Business Development thực chiến hàng đầu.": "© 2026 B2B BD Portal. Premier Battle-Tested Business Development Training.",
     "Tải File Kế Hoạch & KPI Tracking": "Download KPI Tracking & Plan Template",
     "Nhập email của bạn để nhận trực tiếp liên kết tải xuống file Excel KPI & Lộ trình tự động tính toán.": "Enter your work email to receive the direct download link for the automated Excel KPI Model & Roadmap.",
     "Email B2B của bạn *": "Your Work Email *",
@@ -625,7 +624,7 @@
     "Tôi thích tự ý điều chỉnh cấu trúc hợp đồng và thỏa thuận giá ngay trong cuộc họp tùy theo phản ứng của khách hàng, hơn là chờ đợi quy trình phê duyệt giá cứng nhắc.": "I prefer dynamically tailoring contract terms and concessions live in meetings based on client cues rather than awaiting bureaucratic approval cycles.",
     "Tôi thấy thoải mái nhất khi làm việc với các mục tiêu chỉ số (KPI) được định lượng cụ thể rõ ràng theo tuần, hơn là các định hướng hành động tự do tự quản.": "I thrive when working toward unambiguous, weekly quantified KPIs rather than ambiguous, self-directed high-level guidance.",
     "BD Bình Dân Học Vụ | Nơi Chiến Binh BD Bắt Đầu": "BD Binh Dan Hoc Vu | Where BD Warriors Begin",
-    "Đang chuẩn bị lời chào hóm hỉnh...": "Preparing witty greeting...",
+    "Đang chuẩn bị lời chào hóm hỉnh...": "Preparing a witty greeting...",
     "🧭 Khám phá nhanh (30s)": "🧭 Quick Discovery (30s)",
     "BD B2B không đơn thuần là bán sản phẩm.": "B2B BD is not merely selling a product.",
     "SỰ TIN TƯỞNG": "TRUST",
@@ -771,14 +770,14 @@
     "Công nghệ & Khởi nghiệp": "Tech & Startups",
     "Sản xuất & Công nghiệp nặng": "Manufacturing & Heavy Industry",
     "F&B, Nhà hàng & Khách sạn": "F&B, Hospitality",
-    "Xây dựng, Thiết kế & Nội thất": "Construction & Interior Design",
+    "Xây dựng, Thiết kế & Nội thất": "Construction, Design & Interior",
     "Y tế, Dược phẩm & Làm đẹp": "Healthcare & Pharma",
-    "Thương mại, Logistics & Xúc tiến": "Trade & Logistics",
+    "Thương mại, Logistics & Xúc tiến": "Trade, Logistics & Promotion",
     "Tất cả hình thức": "All Formats",
-    "Offline / Trực tiếp": "Offline / In-person",
+    "Offline / Trực tiếp": "Offline / In-Person",
     "Online / Trực tuyến": "Online / Virtual",
-    "Hybrid (Cả hai)": "Hybrid",
-    "Tự động cập nhật: 15s": "Auto-updated: 15s",
+    "Hybrid (Cả hai)": "Hybrid (Both)",
+    "Tự động cập nhật: 15s": "Auto-updates: 15s",
     "Tháng 7/2026": "July 2026",
     "Tháng 8/2026": "August 2026",
     "Tháng 9/2026": "September 2026",
@@ -929,136 +928,206 @@
     "Xem Đặc Quyền & Vé Mời VIP →": "View Privileges & VIP Passes →",
     "Xem Đặc Quyền &amp; Vé Mời VIP &rarr;": "View Privileges & VIP Passes →",
     "ĐẤU TRƯỜNG PVP ONLINE": "ONLINE PVP ARENA",
-    "Phân bổ deal ( hoặc ) thỏa mãn điều kiện logic phân phối của doanh nghiệp.": "Allocate deals ( or ) meeting enterprise distribution logic."
+    "Phân bổ deal ( hoặc ) thỏa mãn điều kiện logic phân phối của doanh nghiệp.": "Allocate deals ( or ) meeting enterprise distribution logic.",
+    "☕ Cú Đêm Dậy Sớm Làm BD": "☕ Early Bird & Night Owl BD",
+    "🦉 Cú Đêm Dậy Sớm Làm BD": "🦉 Early Bird & Night Owl BD",
+    "Cú Đêm Dậy Sớm Làm BD": "Early Bird & Night Owl BD",
+    "🎮 Cãi Khách Hàng Để Chốt Deal": "🎮 Debate Client to Close Deal",
+    "Cãi Khách Hàng Để Chốt Deal": "Debate Client to Close Deal",
+    "⭐ Chốt Deal Xuất Sắc (Game 5/5)": "⭐ Perfect Deal Closing (Game 5/5)",
+    "Chốt Deal Xuất Sắc (Game 5/5)": "Perfect Deal Closing (Game 5/5)",
+    "🧠 Khám Phá Nhóm Test Tính Cách B2B": "🧠 Discover B2B Personality Test",
+    "Khám Phá Nhóm Test Tính Cách B2B": "Discover B2B Personality Test",
+    "✍️ Viết Thư Tình Cho Doanh Nghiệp": "✍️ Write Love Letters to Businesses",
+    "Viết Thư Tình Cho Doanh Nghiệp": "Write Love Letters to Businesses",
+    "📢 Rủ Đồng Bọn Cùng Xuống Hố": "📢 Invite Teammates to Join",
+    "Rủ Đồng Bọn Cùng Xuống Hố": "Invite Teammates to Join",
+    "⚔️ Vượt Ải B2B Arcade Cấp 6+": "⚔️ Clear B2B Arcade Level 6+",
+    "Vượt Ải B2B Arcade Cấp 6+": "Clear B2B Arcade Level 6+",
+    "⚖️ Đọc Luật Tránh Bị Bóc Lột": "⚖️ Read Legal Cases to Avoid Exploitation",
+    "Đọc Luật Tránh Bị Bóc Lột": "Read Legal Cases to Avoid Exploitation",
+    "💸 Định Giá Bản Thân - Đòi Hoa Hồng": "💸 Price Yourself - Claim Commission",
+    "Định Giá Bản Thân - Đòi Hoa Hồng": "Price Yourself - Claim Commission",
+    "📖 Mọt Sách Thực Chiến Quyết Chí Giàu Sang": "📖 Tactical Bookworm Destined for Wealth",
+    "Mọt Sách Thực Chiến Quyết Chí Giàu Sang": "Tactical Bookworm Destined for Wealth",
+    "💬 Đóng Góp Bí Kíp Tán Khách Hàng": "💬 Contribute Client Wooing Secrets",
+    "Đóng Góp Bí Kíp Tán Khách Hàng": "Contribute Client Wooing Secrets",
+    "💬 Chém Gió Có Khoa Học": "💬 Debate with Science",
+    "Chém Gió Có Khoa Học": "Debate with Science",
+    "👑 Phá Đảo Cấp 12 B2B Arcade": "👑 Conquer Level 12 B2B Arcade",
+    "Phá Đảo Cấp 12 B2B Arcade": "Conquer Level 12 B2B Arcade",
+    "Thấu Hiểu Tính Cách & Soạn Email B2B Sắc Bén ✉️": "Understand Personality & Craft Sharp B2B Emails ✉️",
+    "Làm trắc nghiệm tính cách B2B để hiểu đối tác, soạn Cold Email chuyên nghiệp và rủ bạn bè cùng luyện tập.": "Take the B2B personality test to understand partners, write professional Cold Emails, and invite friends to practice.",
+    "Thợ Săn Tiền Thưởng Quyết Không Để Quỵt Hoa Hồng ⚖️": "Bounty Hunter Protecting Commission Rights ⚖️",
+    "Nghiên cứu kỹ luật lao động và định giá commission của bản thân.": "Deep dive into labor laws and calculate your true commission value.",
+    "Trùm Lý Thuyết Thực Chiến Học Làm Sếp 📖": "Tactical Theory Boss Learning to Lead 📖",
+    "Hấp thụ kiến thức Thư viện và đóng góp case-study chất lượng cho diễn đàn.": "Absorb Library insights and contribute quality case studies to the community.",
+    "Tiến trình:": "Progress:",
+    "Tiến trình": "Progress",
+    "Hôm nay bạn đã rèn luyện chưa?": "Have you trained today?",
+    "Cú BeeDee vẫn luôn ở đây đồng hành cùng bạn trên con đường nâng tầm ngôn từ B2B. Hôm nay bạn còn": "BeeDee Owl is always here with you to elevate your B2B sales language. Today you still have",
+    "nhiệm vụ hàng ngày": "daily quests",
+    "chưa hoàn thành đấy nhé:": "incomplete:",
+    "⚡ Bắt Đầu Thực Chiến Ngay!": "⚡ Start Battle Now!",
+    "Xin chào bạn": "Hello",
+    "Đầu tuần năng lượng lên bạn ơi! Mục tiêu tuần này của bạn là săn thêm bao nhiêu Deal đây? Mau vô mở kho tàng B2B thực chiến cùng chú cú BeeDee thông thái nào!": "High energy for the start of the week! How many deals are you hunting this week? Jump into the tactical B2B vault with wise BeeDee!",
+    "Đầu tuần năng lượng lên bạn ơi! Mục tiêu tuần này của bạn là săn thêm bao nhiêu Deal đây? Mau vô mở kho tàng B2B thực chiến cùng tui nào!": "High energy for the start of the week! How many deals are you hunting this week? Jump into the tactical B2B vault with me!",
+    "Thứ ba là ngày thiết lập hệ thống! Hãy để chú cú BeeDee thông thái giúp bạn lên kịch bản email tiếp cận lead tự động chuẩn chỉnh nhé!": "Tuesday is systems day! Let wise BeeDee help you craft high-converting automated lead outreach scripts!",
+    "Giữa tuần rồi bạn ơi, KPI tuần này đã chạy được nửa chặng đường chưa? Mau vô ước tính KPI hoặc làm vài nhiệm vụ lấy điểm tích lũy cùng chú cú BeeDee thông thái thôi!": "Midweek check-in! Halfway through your weekly KPI yet? Hop in to estimate KPIs or complete quests with wise BeeDee!",
+    "Giữa tuần rồi bạn ơi, KPI tuần này đã chạy được nửa chặng đường chưa? Mau vô ước tính KPI hoặc làm vài nhiệm vụ lấy điểm tích lũy thôi!": "Midweek check-in! Halfway through your weekly KPI yet? Hop in to estimate KPIs or complete quests!",
+    "Thứ năm rồi, cuối tuần cận kề rồi! Deal nào còn dang dở thì chốt nhanh để cuối tháng lượm hoa hồng ngập ví nha bạn!": "It's Thursday, the weekend is near! Close pending deals fast to pocket hefty month-end commissions!",
+    "Thứ sáu cuối tuần rồi bạn ơi! Gác lại áp lực, hãy cùng khách hàng xây dựng chemistry thật tốt rồi tận hưởng ngày nghỉ cuối tuần nhé!": "TGIF! Put aside the pressure, build great client chemistry, and enjoy your upcoming weekend!",
+    "Cuối tuần thong thả, hãy cùng chú cú BeeDee thông thái trau dồi thêm kỹ năng và mở rộng mạng lưới quan hệ nhé!": "Relaxing weekend! Join wise BeeDee to sharpen skills and expand your professional network!",
+    "Bạn tích được": "You've earned",
+    "rồi đó, nhưng chưa cài mật khẩu. Cài ngay kẻo ví điểm bay màu nha!": "already, but haven't set a passcode yet. Set it now to protect your points balance!",
+    "Bạn đang có": "You currently have",
+    "trong ví. Hãy trau dồi thêm kỹ năng BD cùng chú cú BeeDee thông thái nha!": "in your wallet. Keep honing BD skills with wise BeeDee!",
+    "Chào mừng trở lại,": "Welcome back,",
+    "Chào mừng trở lại": "Welcome back",
+    "Số dư:": "Balance:",
+    "Số dư": "Balance",
+    "🎯 Xem Nhiệm Vụ →": "🎯 View Quests →",
+    "🎯 Xem Nhiệm Vụ &rarr;": "🎯 View Quests →",
+    "🎯 Xem Nhiệm Vụ": "🎯 View Quests",
+    "📊 Test Tính Cách BD": "📊 BD Personality Test",
+    "KHIÊU CHIẾN": "CHALLENGE",
+    "Khiêu Chiến": "Challenge",
+    "khiêu chiến": "challenge",
+    "Cấp 1 ⭐": "Level 1 ⭐",
+    "Cấp 2 ⭐⭐": "Level 2 ⭐⭐",
+    "Cấp 3 ⭐⭐⭐": "Level 3 ⭐⭐⭐",
+    "Cấp 1": "Level 1",
+    "Cấp 2": "Level 2",
+    "Cấp 3": "Level 3",
+    "🟢 Đang ở B2B Zip": "🟢 In B2B Zip",
+    "🟢 Đang ở B2B Wend": "🟢 In B2B Wend",
+    "🟢 Đang ở B2B Tango": "🟢 In B2B Tango",
+    "🟢 Đang ở B2B Queens": "🟢 In B2B Queens",
+    "🟢 Vừa thắng B2B Tango": "🟢 Just won B2B Tango",
+    "🟢 Vừa thắng B2B Wend": "🟢 Just won B2B Wend",
+    "🟢 Vừa thắng B2B Zip": "🟢 Just won B2B Zip",
+    "🟢 Vừa thắng B2B Queens": "🟢 Just won B2B Queens",
+    "🟡 Đang đọc Library BD": "🟡 Reading BD Library",
+    "Đang ở": "In",
+    "Vừa thắng": "Just won",
+    "Đang đọc": "Reading",
+    "⚔️ Đấu Cấp": "⚔️ Duel Level",
+    "Tập Sự Săn Deal ⭐": "Apprentice Deal Hunter ⭐",
+    "Tập Sự Săn Deal": "Apprentice Deal Hunter",
+    "Chuyên Gia Thực Chiến ⭐⭐": "Tactical Specialist ⭐⭐",
+    "Chuyên Gia Thực Chiến": "Tactical Specialist",
+    "Đại Sư Đàm Phán ⭐⭐⭐": "Negotiation Grandmaster ⭐⭐⭐",
+    "Đại Sư Đàm Phán": "Negotiation Grandmaster",
+    "Huyền Thoại Vô Song": "Unrivaled Legend",
+    "📅 Sự Kiện B2B Các Ngành": "📅 B2B Industry Events",
+    "Sự Kiện B2B Các Ngành": "B2B Industry Events",
+    "🔍 Tìm tên sự kiện, địa điểm, đơn vị tổ chức...": "🔍 Search event name, location, organizer...",
+    "Tìm tên sự kiện, địa điểm, đơn vị tổ chức...": "Search event name, location, organizer...",
+    "Tự động cập nhật: 7s": "Auto-updates: 7s",
+    "Tự động cập nhật:": "Auto-updates:",
+    "Tất cả": "All",
+    "Sản xuất & Công nghiệp": "Manufacturing & Industry",
+    "SẢN XUẤT & CÔNG NGHIỆP": "MANUFACTURING & INDUSTRY",
+    "Xây dựng & Nội thất": "Construction & Interior",
+    "Thương mại & Xúc tiến": "Trade & Promotion",
+    "Hybrid (Online & Offline)": "Hybrid (Online & Offline)",
+    "Đăng ký mở": "Registration Open",
+    "Đã đăng ký": "Registered",
+    "Chi tiết realtime ↗": "Realtime Details ↗",
+    "Đăng Ký &rarr;": "Register →",
+    "Đăng Ký →": "Register →",
+    "Triển lãm Quốc tế lần thứ 18 về Máy công cụ, Cơ khí chính xác và Gia công kim loại (MTA Vietnam 2026)": "The 18th International Exhibition on Machine Tools, Precision Engineering & Metalworking (MTA Vietnam 2026)",
+    "Triển lãm Quốc tế về Công nghệ Chế biến, Đóng gói và Bảo quản Nông sản Thực phẩm (Vietnam PFA 2026)": "International Exhibition on Processing, Packaging & Preserving Agro-Food Products (Vietnam PFA 2026)",
+    "Triển lãm Quốc tế về Sản phẩm, Công nghệ & Dịch vụ Làm đẹp (Beautycare Expo 2026)": "International Exhibition on Beauty Products, Technologies & Services (Beautycare Expo 2026)",
+    "Diễn đàn Đổi mới Sáng tạo và Xúc tiến Thương mại Doanh nghiệp (InnoEx 2026)": "Enterprise Innovation and Trade Promotion Forum (InnoEx 2026)",
+    "Hội thảo Trực tuyến về Hợp tác Đầu tư và Xúc tiến B2B Châu Âu (EuroCham B2B Webinar 2026)": "European B2B Investment & Trade Promotion Webinar (EuroCham B2B Webinar 2026)",
+    "Triển lãm Quốc tế Xây dựng, Vật liệu Xây dựng & Trang trí Nội ngoại thất (Vietbuild HCMC 2026)": "International Exhibition on Construction, Building Materials & Interiors (Vietbuild HCMC 2026)",
+    "Chuỗi Sự kiện Kết nối Chuỗi Cung ứng Hàng hóa Quốc tế (Vietnam International Sourcing 2026)": "International Goods Supply Chain Sourcing Event (Vietnam International Sourcing 2026)",
+    "Hội nghị Giao thương B2B Công nghiệp và Chế tạo ASEAN (FBC ASEAN 2026)": "ASEAN Manufacturing & Industrial B2B Business Matching Conference (FBC ASEAN 2026)",
+    "Triển lãm Quốc tế lần thứ 24 về Ngành Nhựa và Thiết bị Cao su (VietnamPlas 2026)": "The 24th International Exhibition on Plastics and Rubber Technologies (VietnamPlas 2026)",
+    "Triển lãm Quốc tế lần thứ 24 về Thiết bị & Ngành Công nghiệp Dệt may (Vietnam VTG 2026)": "The 24th Textile & Garment Industry Exhibition (Vietnam VTG 2026)",
+    "Triển lãm Quốc tế về Công nghệ Lọc nước, Cấp thoát nước & Môi trường (Vietwater 2026)": "International Water Supply, Sanitation & Environmental Exhibition (Vietwater 2026)",
+    "Hội chợ Thương mại Quốc tế Việt Nam lần thứ 24 tại TP.HCM (Vietnam Expo HCMC 2026)": "The 24th Vietnam International Trade Fair in HCMC (Vietnam Expo HCMC 2026)",
+    "SECC, Quận 7, TP.HCM": "SECC, District 7, HCMC",
+    "Riverside Palace, Quận 4, TP.HCM": "Riverside Palace, District 4, HCMC",
+    "Zoom Meetings / Trực tuyến": "Zoom Meetings / Online",
+    "I.C.E. Exhibition Center, Hà Nội": "I.C.E. Exhibition Center, Hanoi",
+    "Chưa Chơi": "Not Played",
+    "Chơi Ngay": "Play Now",
+    "✓ Đã Hoàn Thành": "✓ Completed",
+    "Đã Hoàn Thành": "Completed",
+    "Đã hoàn thành:": "Completed:",
+    "Đã hoàn thành": "Completed",
+    "Thử Thách: B2B Zip (Sales Path)": "Challenge: B2B Zip (Sales Path)",
+    "Kết nối đường ống bán hàng từ Leads đến Closed Won theo đúng thứ tự logic.": "Connect the sales pipeline from Leads to Closed Won in logical sequence.",
+    "Thử Thách 1.1: Nhảy qua làm BD có dễ ko ta?": "Challenge 1.1: Is Transitioning to BD Easy?",
+    "Đánh giá mức độ phù hợp về tố chất bản thân (chịu áp lực, khả năng research, chủ động) với nghề BD.": "Assess your personal aptitude (grit, research ability, initiative) for a BD career.",
+    "Thử Thách 1.2: Vượt Ải Gatekeeper": "Challenge 1.2: Gatekeeper Bypass",
+    "Kỹ thuật giao tiếp khôn khéo để vượt qua bộ lọc lễ tân/thư ký và kết nối sếp lớn.": "Tactful communication tactics to bypass receptionist/assistant filters and reach C-levels.",
+    "Thử Thách 1.3: Nghệ Thuật Viết Cold Email": "Challenge 1.3: The Art of Cold Emailing",
+    "Tối ưu tỷ lệ mở và phản hồi email tiếp cận đối tác với các cấu trúc chuẩn chuyên gia.": "Optimize open and reply rates with battle-tested executive cold email frameworks.",
+    "Thử Thách 1.4: Tìm Kiếm & Lọc Lead B2B": "Challenge 1.4: Prospecting & Lead Filtering",
+    "Thực hành phương pháp định vị và phân loại khách hàng mục tiêu để tối ưu phễu.": "Practice target client positioning and categorization to optimize your sales funnel.",
+    "Thử Thách 1.5: Phone & Zalo Outreach": "Challenge 1.5: Phone & Zalo Outreach",
+    "Thực hành bẻ lái phản xạ giao tiếp ban đầu qua điện thoại và nhắn tin tiếp cận đối tác.": "Practice steering initial communication reflexes via phone and partner outreach messaging.",
+    "Thử Thách 1.6: Kỹ Năng Giao Tiếp Networking": "Challenge 1.6: Networking & Social Selling",
+    "Thực hành giới thiệu Elevator Pitch và kết nối hiệu quả với các đối tác tiềm năng tại hội thảo B2B.": "Practice delivering your Elevator Pitch and networking effectively with potential partners at B2B events.",
+    "Thử Thách 1.7: Sử Dụng LinkedIn Tìm Lead": "Challenge 1.7: Leveraging LinkedIn for Leads",
+    "Thực hành kỹ năng tối ưu profile cá nhân và sử dụng bộ lọc tìm kiếm để định vị đúng Person-in-Charge.": "Practice optimizing your profile and utilizing search filters to identify the right Person-in-Charge.",
+    "Thử Thách: B2B Wend (Word Search)": "Challenge: B2B Wend (Word Search)",
+    "Tìm kiếm các từ khóa B2B cốt lõi ẩn giấu trong mê cung ký tự.": "Discover core B2B keywords hidden within the character maze.",
+    "Thử Thách: B2B Tango (Reasoning Grid)": "Challenge: B2B Tango (Reasoning Grid)",
+    "Điền các trạng thái 🤝 (Closed) và ❌ (Lost) vào lưới thỏa mãn các quy tắc logic B2B.": "Fill 🤝 (Closed) and ❌ (Lost) statuses into the grid satisfying B2B logic rules.",
+    "Thử Thách 2.1: Bạn là Tân Binh hay Chuyên Gia?": "Challenge 2.1: Rookie or Battle-Tested Expert?",
+    "Cùng đánh giá phản xạ giao tiếp và xử lý tình huống thực tế của BD khi đàm phán thương lượng.": "Evaluate real-world communication reflexes and scenario handling during commercial negotiations.",
+    "Thử Thách 2.2: Xử Lý Từ Chối Kinh Điển": "Challenge 2.2: Classic Objection Handling",
+    "Học cách bẻ lái các câu từ chối phổ biến nhất của khách hàng B2B sang cơ hội trình bày.": "Learn how to pivot the most common B2B client objections into presentation opportunities.",
+    "Thử Thách 2.3: Đàm Phán Hợp Đồng B2B": "Challenge 2.3: B2B Contract Negotiation",
+    "Thương lượng điều khoản hợp đồng hiệu quả để đạt thỏa thuận win-win tối ưu rủi ro.": "Negotiate contract terms effectively to achieve a win-win agreement with minimized risk.",
+    "Thử Thách 2.4: EQ trong B2B Sales": "Challenge 2.4: EQ in B2B Sales",
+    "Khảo sát chỉ số EQ - khả năng chịu áp lực, thấu cảm và kiên trì của chiến binh BD.": "Assess your EQ index – resilience under pressure, empathy, and persistent grit.",
+    "Thử Thách 2.5: Đọc Vị Pain Point Khách Hàng": "Challenge 2.5: Uncovering Client Pain Points",
+    "Thực hành các câu hỏi đào sâu nỗi đau vận hành và chi phí ẩn của doanh nghiệp.": "Practice high-impact discovery questions targeting operational pain and hidden costs.",
+    "Thử Thách 2.6: Case Study The ParentInc": "Challenge 2.6: The ParentInc Case Study",
+    "Thực hành giải bài toán quảng cáo và tối ưu ROI dựa trên năng lực của Webtretho & Bé Yêu.": "Solve digital advertising and ROI optimization cases based on Webtretho & Be Yeu platforms.",
+    "Thử Thách 2.7: Thiết Kế Đề Xuất Proposal": "Challenge 2.7: Crafting Winning Proposals",
+    "Thực hành cấu trúc slide Proposal và trình bày khung chi phí linh hoạt thuyết phục đối tác.": "Structure presentation slides and present flexible pricing models that win client sign-off.",
+    "Thử Thách: B2B Queens (Team Alignment)": "Challenge: B2B Queens (Team Alignment)",
+    "Xếp 4 BD Star (👑) vào lưới sao cho họ không cạnh tranh, không chồng chéo địa bàn.": "Place 4 BD Stars (👑) on the grid with zero territory overlap and zero conflict.",
+    "Thử Thách 3.2: Pitching & Slide Thuyết Phục": "Challenge 3.2: High-Stakes Pitching & Decks",
+    "Lập luận sắc bén thuyết phục Ban giám đốc/C-level gật đầu đồng ý thử nghiệm.": "Deliver compelling business logic to earn executive buy-in and trial approval from C-levels.",
+    "Thử Thách 3.3: Upsell & Giữ Chân Khách": "Challenge 3.3: Upselling & Client Retention",
+    "Chăm sóc khách hàng cũ hiệu quả để tối ưu hóa giá trị trọn đời (LTV) và thúc đẩy gia hạn hợp đồng.": "Nurture existing clients to maximize Lifetime Value (LTV) and drive contract renewals.",
+    "Thử Thách 3.4: Phát Triển Đối Tác Chiến Lược": "Challenge 3.4: Strategic Partnership Growth",
+    "Thực hành thiết lập liên minh đối tác và xây dựng chương trình Co-Marketing/Reseller hiệu quả.": "Establish partner alliances and launch high-performing Co-Marketing/Reseller initiatives.",
+    "Thử Thách 3.5: Thiết Kế KPIs & Phễu Ngược": "Challenge 3.5: Reverse KPI & Funnel Design",
+    "Thực hành quy đổi mục tiêu doanh thu thành chỉ số hành động cụ thể cho đội ngũ BD.": "Convert top-line revenue quotas into tactical, actionable daily KPIs for the BD squad.",
+    "Thử Thách 3.6: Quản Trị Deal Enterprise": "Challenge 3.6: Enterprise Deal Governance",
+    "Thực hành vẽ bản đồ thế lực và vượt qua rào cản đánh giá kỹ thuật tại khách hàng doanh nghiệp lớn.": "Map political stakeholder power dynamics and pass rigorous technical evaluations at enterprise accounts.",
+    "Thử Thách 3.7: Kênh Đại Lý Reseller": "Challenge 3.7: Reseller Channel Enablement",
+    "Thực hành kích hoạt đại lý bán lại (Sales Enablement) và xử lý xung đột kênh.": "Activate reseller partners via Sales Enablement and resolve channel conflict smoothly.",
+    "Chúa Tể Chốt Deal": "Master Deal Closer",
+    "Chuyên Gia Chốt Deal": "Deal Closing Specialist",
+    "Kẻ Hủy Diệt Từ Chối": "Objection Destroyer",
+    "Sát Thủ Cold Email": "Cold Email Assassin",
+    "Chiến Binh Pipeline": "Pipeline Warrior",
+    "BD Chạy Bằng Cơm": "Human-Powered BD",
+    "Chiến Thần CRM": "CRM War God",
+    "Thực Tập Sinh Cold Call": "Cold Call Intern",
+    "Giáo Chủ Doanh Số": "Sales Cult Leader",
+    "Đại Hiệp Pipeline": "Pipeline Knight",
+    "Thần Thoại Roleplay": "Roleplay Myth",
+    "Anh Hùng Đàm Phán": "Negotiation Hero",
+    "Vua Khảo Sát": "Survey King",
+    "Bậc Thầy Gatekeeper": "Gatekeeper Master",
+    "Khắc Tinh Churn Rate": "Churn Rate Nemesis"
 };
 
-    // 2. Phrase Substring Replacements (Sorted by Length Descending)
-    const PHRASE_PAIRS = [
-    [
-        "Bảo hiểm xã hội",
-        "Social Insurance"
-    ],
-    [
-        "Bảo hiểm y tế",
-        "Health Insurance"
-    ],
-    [
-        "Bảo hiểm thất nghiệp",
-        "Unemployment Insurance"
-    ],
-    [
-        "Thuế thu nhập cá nhân",
-        "Personal Income Tax"
-    ],
-    [
-        "Người lao động",
-        "Employee"
-    ],
-    [
-        "Người sử dụng lao động",
-        "Employer"
-    ],
-    [
-        "Thử việc",
-        "Probation"
-    ],
-    [
-        "Nghỉ việc",
-        "Resignation"
-    ],
-    [
-        "Thôi việc",
-        "Severance"
-    ],
-    [
-        "Hợp đồng lao động",
-        "Labor Contract"
-    ],
-    [
-        "Giảm trừ gia cảnh",
-        "Family Deductions"
-    ],
-    [
-        "Thu nhập trước thuế",
-        "Income Before Tax"
-    ],
-    [
-        "Thu nhập tính thuế",
-        "Assessable Income"
-    ],
-    [
-        "Lương Gross",
-        "Gross Salary"
-    ],
-    [
-        "Lương Net",
-        "Net Salary"
-    ],
-    [
-        "Thực nhận",
-        "Take-Home Pay"
-    ],
-    [
-        "Đồng bộ",
-        "Synchronize"
-    ],
-    [
-        "Quy đổi",
-        "Convert"
-    ],
-    [
-        "Tra cứu",
-        "Lookup"
-    ],
-    [
-        "Tải Ebook",
-        "Download Ebook"
-    ],
-    [
-        "Chi tiết",
-        "Details"
-    ],
-    [
-        "Mô tả",
-        "Description"
-    ],
-    [
-        "Bắt đầu",
-        "Start"
-    ],
-    [
-        "Kết thúc",
-        "Finish"
-    ],
-    [
-        "Xác nhận",
-        "Confirm"
-    ],
-    [
-        "Học viên",
-        "Student"
-    ],
-    [
-        "Đặc quyền",
-        "Exclusive Privilege"
-    ],
-    [
-        "Cộng đồng",
-        "Community"
-    ],
-    [
-        "Thư viện",
-        "Library"
-    ],
-    [
-        "Nhiệm vụ",
-        "Quests"
-    ],
-    [
-        "Thử thách",
-        "Challenge"
-    ]
-];
+    // 2. Dynamic Substring Phrase Pairs (Sorted by Length Descending for Maximum Precision)
+    const PHRASE_PAIRS = Object.keys(EXACT_MAP)
+        .filter(k => k.length >= 3 && !k.startsWith('&') && !k.endsWith(';') && !k.startsWith('http'))
+        .sort((a, b) => b.length - a.length)
+        .map(k => [k, EXACT_MAP[k]]);
 
     function translateText(text) {
         if (!text || typeof text !== 'string') return text;
@@ -1243,7 +1312,7 @@
         // Update toggle buttons
         updateSwitcherButtons(lang);
 
-        // Dispatch Custom Event for Reactive Components (AI Chat, Dynamic Tools)
+        // Dispatch Custom Event for Reactive Components
         window.dispatchEvent(new CustomEvent('bdLanguageChanged', { detail: { lang } }));
     }
 
@@ -1255,6 +1324,19 @@
             if (isTranslating || currentLang !== 'en') return;
 
             mutations.forEach(mutation => {
+                if (mutation.type === 'characterData') {
+                    const node = mutation.target;
+                    if (node && node.nodeValue && node.nodeValue.trim().length > 0) {
+                        if (node._origViText === undefined) node._origViText = node.nodeValue;
+                        const translated = translateText(node._origViText);
+                        if (translated !== node.nodeValue) {
+                            isTranslating = true;
+                            node.nodeValue = translated;
+                            isTranslating = false;
+                        }
+                    }
+                    return;
+                }
                 mutation.addedNodes.forEach(node => {
                     if (node.nodeType === Node.ELEMENT_NODE) {
                         walkAndTranslate(node, 'en');
@@ -1275,7 +1357,8 @@
 
         observer.observe(document.body, {
             childList: true,
-            subtree: true
+            subtree: true,
+            characterData: true
         });
     }
 
