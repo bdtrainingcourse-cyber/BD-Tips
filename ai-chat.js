@@ -2,13 +2,16 @@
  * B2B Portal Floating AI Chat Widget with Smart Navigation Router
  */
 document.addEventListener('DOMContentLoaded', () => {
+    const currentLang = localStorage.getItem('bd_lang') || 'vi';
+    const isEn = (currentLang === 'en');
+
     // --- 1. Dynamic HTML Injection ---
     const chatContainer = document.createElement('div');
     chatContainer.id = 'b2b-ai-chat-root';
     chatContainer.innerHTML = `
         <!-- Floating Launcher -->
-        <div class="ai-chat-launcher" id="ai-chat-launcher" title="Hỏi Chú Cú BeeDee Thông Thái">
-            <img src="bd_mascot.png?v=1.0.4" alt="BeeDee Mascot" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
+        <div class="ai-chat-launcher" id="ai-chat-launcher" title="${isEn ? 'Ask BeeDee AI' : 'Hỏi Chú Cú BeeDee Thông Thái'}">
+            <img src="bd_mascot.png?v=2.4.8" alt="BeeDee Mascot" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
             <span class="launcher-online-dot"></span>
         </div>
  
@@ -17,10 +20,10 @@ document.addEventListener('DOMContentLoaded', () => {
             <!-- Header -->
             <div class="chat-header">
                 <div style="display: flex; align-items: center; gap: 10px;">
-                    <img src="bd_mascot.png?v=1.0.4" alt="BeeDee" style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover; border: 1.5px solid var(--chat-primary);">
+                    <img src="bd_mascot.png?v=2.4.8" alt="BeeDee" style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover; border: 1.5px solid var(--chat-primary);">
                     <div class="chat-header-info">
                         <h3 style="margin: 0; display: flex; align-items: center; gap: 6px;">BeeDee AI</h3>
-                        <span style="font-size: 0.72rem; color: var(--chat-text-muted);">Chú Cú BeeDee Thông Thái</span>
+                        <span id="chat-header-subtitle" style="font-size: 0.72rem; color: var(--chat-text-muted);">${isEn ? 'Your Wise B2B AI Companion' : 'Chú Cú BeeDee Thông Thái'}</span>
                     </div>
                 </div>
                 <button class="chat-close-btn" id="chat-close-btn">&times;</button>
@@ -28,28 +31,38 @@ document.addEventListener('DOMContentLoaded', () => {
  
             <!-- Messages Area -->
             <div class="chat-messages" id="chat-messages">
-                <div class="chat-bubble-container bot">
-                    <img src="bd_mascot.png?v=1.0.4" class="chat-bot-avatar" alt="BeeDee">
+                <div class="chat-bubble-container bot" id="chat-initial-bubble">
+                    <img src="bd_mascot.png?v=2.4.8" class="chat-bot-avatar" alt="BeeDee">
                     <div class="chat-bubble-content">
-                        <div class="chat-bubble">
-                            Xin chào! Tôi là <strong>chú cú BeeDee thông thái</strong>. Tôi có thể giúp bạn giải đáp các kỹ năng BD B2B, tra cứu nhanh Luật Lao động (với 15 tình huống thực tế) hoặc hướng dẫn sử dụng các công cụ trên Portal. Hôm nay tôi có thể hỗ trợ gì cho bạn?
+                        <div class="chat-bubble" id="chat-welcome-text">
+                            ${isEn 
+                                ? 'Hello! I am <strong>BeeDee, your wise AI companion</strong>. I can assist you with battle-tested B2B Business Development strategies, Vietnam labor regulations (with 15 dispute case studies), salary conversions, or guiding you through our 9 tactical tools. How can I help you succeed today?' 
+                                : 'Xin chào! Tôi là <strong>chú cú BeeDee thông thái</strong>. Tôi có thể giúp bạn giải đáp các kỹ năng BD B2B, tra cứu nhanh Luật Lao động (với 15 tình huống thực tế) hoặc hướng dẫn sử dụng các công cụ trên Portal. Hôm nay tôi có thể hỗ trợ gì cho bạn?'}
                         </div>
                     </div>
                 </div>
                 
                 <!-- Quick Suggestion Chips -->
                 <div class="chat-suggestions" id="chat-suggestions">
-                    <div class="suggestion-chip" data-question="Cách tính lương Net từ Gross?">Cách tính lương Net từ Gross?</div>
-                    <div class="suggestion-chip" data-question="Tra cứu Công thức ARR, MRR, CAC, LTV?">Công thức ARR, MRR, CAC, LTV?</div>
-                    <div class="suggestion-chip" data-question="Hết thử việc công ty im lặng thì sao?">Hết thử việc im lặng?</div>
-                    <div class="suggestion-chip" data-question="Làm thế nào để Pitching dự án hiệu quả bằng AI?">Pitching dự án hiệu quả?</div>
-                    <div class="suggestion-chip" data-question="Liên hệ trực tiếp Founder Peter Vo?">Liên hệ Founder Peter Vo?</div>
+                    ${isEn ? `
+                        <div class="suggestion-chip" data-question="How to calculate Net from Gross salary?">How to calculate Net from Gross?</div>
+                        <div class="suggestion-chip" data-question="ARR, MRR, CAC, LTV SaaS formulas?">ARR, MRR, CAC, LTV formulas?</div>
+                        <div class="suggestion-chip" data-question="Vietnam probation law regulations?">Probation law rules?</div>
+                        <div class="suggestion-chip" data-question="How to take the BD Personality Test?">Take Personality Test?</div>
+                        <div class="suggestion-chip" data-question="How to find enterprise PIC contacts?">Find Enterprise PIC?</div>
+                    ` : `
+                        <div class="suggestion-chip" data-question="Cách tính lương Net từ Gross?">Cách tính lương Net từ Gross?</div>
+                        <div class="suggestion-chip" data-question="Tra cứu Công thức ARR, MRR, CAC, LTV?">Công thức ARR, MRR, CAC, LTV?</div>
+                        <div class="suggestion-chip" data-question="Hết thử việc công ty im lặng thì sao?">Hết thử việc im lặng?</div>
+                        <div class="suggestion-chip" data-question="Tôi muốn làm bài test tính cách BD">Làm Test Tính Cách BD?</div>
+                        <div class="suggestion-chip" data-question="Liên hệ trực tiếp Founder Peter Vo?">Liên hệ Founder Peter Vo?</div>
+                    `}
                 </div>
             </div>
 
             <!-- Input Area -->
             <div class="chat-input-area">
-                <input type="text" id="chat-input" placeholder="Nhập câu hỏi của bạn..." autocomplete="off">
+                <input type="text" id="chat-input" placeholder="${isEn ? 'Ask BeeDee anything...' : 'Nhập câu hỏi của bạn...'}" autocomplete="off">
                 <button class="chat-send-btn" id="chat-send-btn">
                     <svg viewBox="0 0 24 24">
                         <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
@@ -211,10 +224,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
         try {
             // Attempt to hit Vercel API Endpoint
+            const activeLang = localStorage.getItem('bd_lang') || 'vi';
             const response = await fetch('/api/chat', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ message: text })
+                body: JSON.stringify({ message: text, lang: activeLang })
             });
 
             removeTypingIndicator(typingId);
@@ -255,7 +269,10 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         if (!matched) {
-            const fallbackReply = "Tôi chưa tìm thấy từ khóa khớp trực tiếp với câu hỏi của bạn. Hãy thử hỏi các chủ đề cụ thể như: *lương net, thời gian thử việc, cách tìm email PIC, hoặc các bài viết đàm phán B2B* để tôi có thể hỗ trợ và điều hướng bạn tốt nhất.";
+            const isEn = (localStorage.getItem('bd_lang') === 'en');
+            const fallbackReply = isEn 
+                ? "I didn't find direct keyword matches for your query. Try asking about: *take-home salary, Vietnam probation rules, finding enterprise PIC emails, or B2B sales negotiation tips* so I can guide you best!"
+                : "Tôi chưa tìm thấy từ khóa khớp trực tiếp với câu hỏi của bạn. Hãy thử hỏi các chủ đề cụ thể như: *lương net, thời gian thử việc, cách tìm email PIC, hoặc các bài viết đàm phán B2B* để tôi có thể hỗ trợ và điều hướng bạn tốt nhất.";
             appendMessage('bot', fallbackReply);
         }
     }
@@ -291,13 +308,14 @@ document.addEventListener('DOMContentLoaded', () => {
         let cleanedText = text;
         let aiNavTarget = navTarget;
         let aiNavLabel = navLabel;
+        const isEn = (localStorage.getItem('bd_lang') === 'en');
 
         const navMatch = cleanedText.match(/\[NAV:(salary|labor-law|library|personality-test|email-assistant|kpi-estimation|quests|finder|community)\]/);
         if (navMatch) {
             aiNavTarget = navMatch[1];
             cleanedText = cleanedText.replace(navMatch[0], '').trim();
             
-            const labelMap = {
+            const labelMapVi = {
                 'salary': '⚡ Quy Đổi Lương Ngay',
                 'labor-law': '⚖️ Tra Cứu Luật Lao Động',
                 'library': '📖 Mở Thư Viện Ebook & Thuật Ngữ',
@@ -308,6 +326,18 @@ document.addEventListener('DOMContentLoaded', () => {
                 'finder': '🔒 Cổng Alumni VIP (Tìm PIC)',
                 'community': '💬 Tham Gia Cộng Đồng BD'
             };
+            const labelMapEn = {
+                'salary': '⚡ Open Salary Calculator',
+                'labor-law': '⚖️ Open Labor Law Portal',
+                'library': '📖 Open Ebook Library & Glossary',
+                'personality-test': '📊 Take BD Personality Test',
+                'email-assistant': '✍️ Open AI Email Assistant',
+                'kpi-estimation': '📈 Build KPI Revenue Funnel',
+                'quests': '🎯 View Quests & Rewards',
+                'finder': '🔒 Alumni VIP (Find PIC)',
+                'community': '💬 Join B2B Community'
+            };
+            const labelMap = isEn ? labelMapEn : labelMapVi;
             if (labelMap[aiNavTarget]) aiNavLabel = labelMap[aiNavTarget];
         }
 
@@ -371,4 +401,46 @@ document.addEventListener('DOMContentLoaded', () => {
             indicator.remove();
         }
     }
+
+    // Listen to global language change
+    window.addEventListener('bdLanguageChanged', (e) => {
+        const newLang = (e.detail && e.detail.lang) || localStorage.getItem('bd_lang') || 'vi';
+        const isEn = (newLang === 'en');
+
+        // Update header subtitle
+        const subtitle = document.getElementById('chat-header-subtitle');
+        if (subtitle) subtitle.textContent = isEn ? 'Your Wise B2B AI Companion' : 'Chú Cú BeeDee Thông Thái';
+
+        // Update launcher title
+        if (launcher) launcher.setAttribute('title', isEn ? 'Ask BeeDee AI' : 'Hỏi Chú Cú BeeDee Thông Thái');
+
+        // Update chat input placeholder
+        if (chatInput) chatInput.setAttribute('placeholder', isEn ? 'Ask BeeDee anything...' : 'Nhập câu hỏi của bạn...');
+
+        // Update welcome message if user hasn't started conversing
+        const welcomeText = document.getElementById('chat-welcome-text');
+        if (welcomeText && messagesContainer.querySelectorAll('.chat-bubble-container.user').length === 0) {
+            welcomeText.innerHTML = isEn 
+                ? 'Hello! I am <strong>BeeDee, your wise AI companion</strong>. I can assist you with battle-tested B2B Business Development strategies, Vietnam labor regulations (with 15 dispute case studies), salary conversions, or guiding you through our 9 tactical tools. How can I help you succeed today?' 
+                : 'Xin chào! Tôi là <strong>chú cú BeeDee thông thái</strong>. Tôi có thể giúp bạn giải đáp các kỹ năng BD B2B, tra cứu nhanh Luật Lao động (với 15 tình huống thực tế) hoặc hướng dẫn sử dụng các công cụ trên Portal. Hôm nay tôi có thể hỗ trợ gì cho bạn?';
+        }
+
+        // Update suggestion chips
+        if (suggestionsContainer && !suggestionsContainer.classList.contains('hidden')) {
+            suggestionsContainer.innerHTML = isEn ? `
+                <div class="suggestion-chip" data-question="How to calculate Net from Gross salary?">How to calculate Net from Gross?</div>
+                <div class="suggestion-chip" data-question="ARR, MRR, CAC, LTV SaaS formulas?">ARR, MRR, CAC, LTV formulas?</div>
+                <div class="suggestion-chip" data-question="Vietnam probation law regulations?">Probation law rules?</div>
+                <div class="suggestion-chip" data-question="How to take the BD Personality Test?">Take Personality Test?</div>
+                <div class="suggestion-chip" data-question="How to find enterprise PIC contacts?">Find Enterprise PIC?</div>
+            ` : `
+                <div class="suggestion-chip" data-question="Cách tính lương Net từ Gross?">Cách tính lương Net từ Gross?</div>
+                <div class="suggestion-chip" data-question="Tra cứu Công thức ARR, MRR, CAC, LTV?">Công thức ARR, MRR, CAC, LTV?</div>
+                <div class="suggestion-chip" data-question="Hết thử việc công ty im lặng thì sao?">Hết thử việc im lặng?</div>
+                <div class="suggestion-chip" data-question="Tôi muốn làm bài test tính cách BD">Làm Test Tính Cách BD?</div>
+                <div class="suggestion-chip" data-question="Liên hệ trực tiếp Founder Peter Vo?">Liên hệ Founder Peter Vo?</div>
+            `;
+        }
+    });
+
 });

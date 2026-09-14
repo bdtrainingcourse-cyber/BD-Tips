@@ -63,31 +63,31 @@ function searchKnowledge(query, chunks) {
 function detectNavTag(message, replyText) {
   const combined = (message + ' ' + (replyText || '')).toLowerCase();
   
-  if (/test|trắc nghiệm|trac nghiem|tính cách|tinh cach|phong cách bd/i.test(combined)) {
+  if (/test|quiz|personality|archetype|trắc nghiệm|trac nghiem|tính cách|tinh cach|phong cách bd/i.test(combined)) {
     return 'personality-test';
   }
-  if (/lương|luong|salary|gross|net|thuế tncn|thue tncn|bhxh|ote/i.test(combined)) {
+  if (/salary|gross|net|take-home|tax|insurance|lương|luong|thuế tncn|thue tncn|bhxh|ote/i.test(combined)) {
     return 'salary';
   }
-  if (/luật|luat|thử việc|thu viec|nghỉ việc|nghi viec|thôi việc|thoi viec|sa thải|bồi thường/i.test(combined)) {
+  if (/labor|labour|law|probation|notice|severance|contract|luật|luat|thử việc|thu viec|nghỉ việc|nghi viec|thôi việc|thoi viec|sa thải|bồi thường/i.test(combined)) {
     return 'labor-law';
   }
-  if (/email|cold mail|outreach|viết mail|soạn mail|đánh giá email/i.test(combined)) {
+  if (/email|cold mail|outreach|subject line|open rate|viết mail|soạn mail|đánh giá email/i.test(combined)) {
     return 'email-assistant';
   }
-  if (/kpi|phễu|pheu|doanh số|doanh so|inbound|outbound|conversion rate/i.test(combined)) {
+  if (/kpi|funnel|revenue|pipeline|lead|conversion|phễu|pheu|doanh số|doanh so|inbound|outbound/i.test(combined)) {
     return 'kpi-estimation';
   }
-  if (/nhiệm vụ|nhiem vu|quest|đổi quà|doi qua|trà sữa|tra sua|streak|điểm danh/i.test(combined)) {
+  if (/quest|streak|reward|voucher|milk tea|nhiệm vụ|nhiem vu|đổi quà|doi qua|trà sữa|tra sua|điểm danh/i.test(combined)) {
     return 'quests';
   }
-  if (/tìm pic|tim pic|pic finder|alumni|passcode|mã vip|ma vip/i.test(combined)) {
+  if (/pic|person in charge|alumni|passcode|vip code|tìm pic|tim pic|mã vip|ma vip/i.test(combined)) {
     return 'finder';
   }
-  if (/cộng đồng|cong dong|community|diễn đàn|dien dan|thảo luận deal/i.test(combined)) {
+  if (/community|forum|discuss|deal|cộng đồng|cong dong|diễn đàn|dien dan|thảo luận deal/i.test(combined)) {
     return 'community';
   }
-  if (/ebook|thư viện|thu vien|thuật ngữ|glossary|arr|mrr|cac|ltv/i.test(combined)) {
+  if (/book|ebook|glossary|definition|term|formula|arr|mrr|cac|ltv|thư viện|thu vien|thuật ngữ/i.test(combined)) {
     return 'library';
   }
   return null;
@@ -107,16 +107,20 @@ module.exports = async (req, res) => {
     return res.status(405).json({ error: 'Method Not Allowed' });
   }
 
-  const { message } = req.body;
+  const { message, lang } = req.body;
   if (!message) {
     return res.status(400).json({ error: 'Message is required' });
   }
+
+  const isEnglish = (lang === 'en') || /^(what|how|why|can|is|tell|explain|give|where|who|when)\b/i.test(message.trim());
 
   const apiKey = process.env.GEMINI_API_KEY;
   if (!apiKey) {
     return res.status(200).json({ 
       useFallback: true,
-      reply: 'Không tìm thấy API Key cấu hình cho AI. Hệ thống tự động chuyển sang chế độ Trợ lý Tìm kiếm nhanh ngoại tuyến.' 
+      reply: isEnglish 
+        ? 'AI API Key not configured. Switching automatically to local offline search mode.'
+        : 'Không tìm thấy API Key cấu hình cho AI. Hệ thống tự động chuyển sang chế độ Trợ lý Tìm kiếm nhanh ngoại tuyến.' 
     });
   }
 
@@ -135,27 +139,31 @@ module.exports = async (req, res) => {
 
 MỤC TIÊU VÀ VAI TRÒ CỦA BẠN:
 - Hỗ trợ nhân sự Business Development (BD), Sales B2B, Founder & Quản lý giải đáp các thắc mắc về nghề BD thực chiến, đối chiếu quy định luật pháp, kỹ năng chốt deal và hướng dẫn sử dụng công cụ phù hợp.
-- Trả lời bằng tiếng Việt lịch sự, thông thái, truyền cảm hứng, ngắn gọn, cấu trúc rõ ràng với Markdown.
+- Trả lời bằng Markdown rõ ràng, chuyên nghiệp, thông thái, truyền cảm hứng và ngắn gọn.
+
+QUY TẮC BẮT BUỘC VỀ ĐA NGÔN NGỮ (VIỆT & ANH):
+- Nếu câu hỏi của người dùng bằng TIẾNG ANH hoặc người dùng đang ở chế độ EN (isEnglish = ${isEnglish}): Hãy trả lời hoàn toàn bằng TIẾNG ANH chuyên nghiệp, chuẩn phong cách B2B Business Development quốc tế.
+- Nếu câu hỏi bằng TIẾNG VIỆT: Hãy trả lời bằng tiếng Việt thân thiện, thấu cảm, thực chiến.
 
 QUY TẮC CỐT LÕI VỀ BỘ 9 CÔNG CỤ HIỆN CÓ TRÊN WEBSITE:
 Website B2B BD Tips Portal ĐÃ CÓ ĐẦY ĐỦ 9 công cụ sau đây đang hoạt động:
-1. Trắc nghiệm 4 Phong cách BD Thực chiến (Bài test tính cách BD, swipe card game quẹt thẻ Cú Thông Thái, Sư Tử Quyết Đoán, Đại Bàng Chiến Lược, Cáo Linh Hoạt) -> Thẻ điều hướng: [NAV:personality-test]
-2. Quy đổi Lương Gross - Net (Tính lương Net/Gross chuẩn 2026, BHXH bắt buộc, thuế TNCN lũy tiến, hoa hồng OTE) -> Thẻ điều hướng: [NAV:salary]
-3. Cổng Tra cứu Luật Lao Động 2019 (Thời gian thử việc tối đa 60 ngày, lương thử việc >=85%, thông báo nghỉ việc, trợ cấp thôi việc, 15 case study tranh chấp lao động) -> Thẻ điều hướng: [NAV:labor-law]
-4. Thư viện 9+ Ebook B2B & 142+ Thuật ngữ BD (Tải trọn bộ ebook của Peter Võ, tra cứu thuật ngữ SaaS và công thức ARR, MRR, CAC, LTV) -> Thẻ điều hướng: [NAV:library]
-5. Trợ lý AI Viết & Đánh giá Email B2B (Chấm điểm cold email, phân tích rào cản mở thư, viết lại outreach theo 5 pha ngôn từ) -> Thẻ điều hướng: [NAV:email-assistant]
-6. Ma trận Phễu KPI & Ước tính Doanh số (Tính ngược từ mục tiêu doanh thu ra số MQL, SQL, Discovery Call, Proposal, Win rate cho Inbound & Outbound) -> Thẻ điều hướng: [NAV:kpi-estimation]
-7. Hệ thống Nhiệm vụ Hàng ngày & Đổi Quà Streak (Làm quest duy trì streak, rủ đồng nghiệp nhận Trà Sữa L, 30p Online 1-1 với Peter Võ, Lunch VIP 1-1 với Peter Võ) -> Thẻ điều hướng: [NAV:quests]
-8. Cổng Đặc Quyền Alumni VIP - Tìm PIC Doanh Nghiệp (Dành riêng cho học viên Khóa BD Thực Chiến có Mã Passcode VIP như BD-1272 tra cứu người phụ trách / PIC) -> Thẻ điều hướng: [NAV:finder]
-9. Diễn đàn Cộng Đồng B2B Thực Chiến (Nơi kết nối, chia sẻ kinh nghiệm chiến trường và thảo luận giải quyết các deal hóc búa) -> Thẻ điều hướng: [NAV:community]
+1. Trắc nghiệm 4 Phong cách BD Thực chiến (Bài test tính cách BD / 4 Sales Archetypes Test: Owl, Lion, Eagle, Fox) -> Thẻ điều hướng: [NAV:personality-test]
+2. Quy đổi Lương Gross - Net (Gross - Net Salary Calculator 2026, BHXH bắt buộc, thuế TNCN lũy tiến, hoa hồng OTE) -> Thẻ điều hướng: [NAV:salary]
+3. Cổng Tra cứu Luật Lao Động 2019 (Vietnam Labor Code Reference, thử việc, thôi việc, bồi thường, 15 case study) -> Thẻ điều hướng: [NAV:labor-law]
+4. Thư viện 9+ Ebook B2B & 142+ Thuật ngữ BD (9+ Ebooks & B2B Glossary, ARR, MRR, CAC, LTV) -> Thẻ điều hướng: [NAV:library]
+5. Trợ lý AI Viết & Đánh giá Email B2B (B2B Cold Outreach Assistant & Audit) -> Thẻ điều hướng: [NAV:email-assistant]
+6. Ma trận Phễu KPI & Ước tính Doanh số (KPI & Revenue Funnel Matrix) -> Thẻ điều hướng: [NAV:kpi-estimation]
+7. Hệ thống Nhiệm vụ Hàng ngày & Đổi Quà Streak (Quests & Rewards Streak) -> Thẻ điều hướng: [NAV:quests]
+8. Cổng Đặc Quyền Alumni VIP - Tìm PIC Doanh Nghiệp (Alumni VIP Enterprise PIC Finder) -> Thẻ điều hướng: [NAV:finder]
+9. Diễn đàn Cộng Đồng B2B Thực Chiến (B2B Practitioners Forum) -> Thẻ điều hướng: [NAV:community]
 
 LƯU Ý NGHIÊM NGẶT:
 - Bạn TUYỆT ĐỐI KHÔNG ĐƯỢC NÓI rằng website "chưa có" hoặc "không có" các công cụ trên. Website ĐÃ CÓ TOÀN BỘ 9 CÔNG CỤ TRÊN!
-- Khi người dùng hỏi về bất kỳ công cụ hoặc chủ đề nào liên quan đến 9 công cụ trên, hãy hào hứng xác nhận, hướng dẫn ngắn gọn và LUÔN KẾT THÚC CÂU TRẢ LỜI BẰNG DUY NHẤT 1 THẺ [NAV:...] Ở DÒNG CUỐI CÙNG (ví dụ: [NAV:personality-test]).
+- Khi người dùng hỏi về bất kỳ công cụ hoặc chủ đề nào liên quan đến 9 công cụ trên, hãy hào hứng xác nhận, hướng dẫn ngắn gọn và LUÔN KẾT THÚC CÂU TRẢ LỜI BẰNG DUY NHẤT 1 THẺ [NAV:...] Ở DÒNG CUỐI CÙNG (ví dụ: [NAV:personality-test], [NAV:salary], [NAV:labor-law], [NAV:quests], [NAV:finder], [NAV:library],...).
 
 KẾT NỐI VỚI FOUNDER PETER VÕ (VÕ PHƯỚC TÂN):
 Nếu người dùng quan tâm đến cố vấn deal lớn, coaching 1-1 hay đào tạo doanh nghiệp:
-- SĐT / Zalo: 0931.100.569
+- SĐT / WhatsApp / Zalo: 0931.100.569
 - Email: bdtraining@bdbinhdanhocvu.com
 - LinkedIn: https://www.linkedin.com/in/vp-tan/${ragContext}`;
 
