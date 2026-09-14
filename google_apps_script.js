@@ -266,6 +266,19 @@ function initPicRequestsSheet() {
     const maxRows = Math.max(sheet.getMaxRows(), 50);
     const cbRule = SpreadsheetApp.newDataValidation().requireCheckbox().build();
     sheet.getRange(2, 15, maxRows - 1, 1).setDataValidation(cbRule);
+
+    // Đồng bộ các dòng đã gửi email trước đó hiển thị sẵn dấu tick [✓]
+    const lastRow = sheet.getLastRow();
+    if (lastRow > 1) {
+      const statusVals = sheet.getRange(2, 9, lastRow - 1, 8).getValues();
+      for (let r = 0; r < statusVals.length; r++) {
+        const col9Val = (statusVals[r][0] || "").toString().toLowerCase();
+        const col16Val = (statusVals[r][7] || "").toString().toLowerCase();
+        if (col9Val.includes("đã gửi") || col9Val.includes("da gui") || col16Val.includes("đã gửi") || col16Val.includes("da gui")) {
+          sheet.getRange(r + 2, 15).setValue(true);
+        }
+      }
+    }
   } catch (e) {}
   return sheet;
 }
@@ -407,7 +420,7 @@ function handlePicCheckboxSend(sheet, rowNum) {
     if (sent) {
       sheet.getRange(rowNum, 9).setValue("Đã Gửi PIC [" + Utilities.formatDate(new Date(), "Asia/Ho_Chi_Minh", "dd/MM HH:mm") + "]");
       sheet.getRange(rowNum, 16).setValue("Đã Gửi Email [" + nowStr + "]");
-      sheet.getRange(rowNum, 15).setValue(false); // Uncheck để chống gửi lặp (idempotency)
+      sheet.getRange(rowNum, 15).setValue(true); // Giữ nguyên dấu tích [✓] xác nhận đã gửi thành công
       SpreadsheetApp.flush();
       try {
         SpreadsheetApp.getActiveSpreadsheet().toast("Đã gửi email thông tin PIC thành công tới " + studentEmail, "Hoàn Tất", 5);
