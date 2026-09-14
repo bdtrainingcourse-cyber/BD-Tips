@@ -738,5 +738,33 @@
   {
     "content": "[Thuật ngữ B2B BD] Sunset () - Nhóm: \nĐịnh nghĩa: Hành động ngưng duy trì hoặc loại bỏ một sản phẩm/tính năng cũ.\nBối cảnh sử dụng: 'Thông báo Sunset phiên bản phần mềm cũ để chuyển khách sang bản mới.'",
     "source": "B2B BD Glossary (Từ Điển Thuật Ngữ)"
+  },
+  {
+    "content": "[Hệ Thống Nhiệm Vụ & Quà Tặng Referral - Quests BD] Mốc Quà Tặng BD:\n- Mốc 1 (Rủ đủ 5 bạn): Tặng 01 Ly Trà Sữa Size L mát lạnh hoặc voucher thương hiệu (kèm +250đ thưởng).\n- Mốc 2 (Rủ đủ 10 bạn): 30 Phút Online 1-1 Với Anh Peter Võ tư vấn chiến lược sales pipeline & gỡ rối deal khó chốt (kèm +500đ thưởng).\n- Mốc 3 (Rủ đủ 15 bạn): Buổi Lunch Thân Mật 1-1 Cùng Anh Peter Võ cố vấn sự nghiệp BD cấp cao.\nHọc viên làm nhiệm vụ quests điểm danh hàng ngày duy trì chuỗi Streak và rủ đồng nghiệp cùng học để tích điểm đổi quà.",
+    "source": "Quests & Referral Rewards System (Nhiệm Vụ Đổi Quà BD Bình Dân Học Vụ)"
+  },
+  {
+    "content": "[Cổng Đặc Quyền Alumni VIP - Tìm PIC Doanh Nghiệp] Tính năng dành riêng cho học viên Khóa BD Thực Chiến của Peter Võ:\nHọc viên nhập mã Passcode VIP (ví dụ BD-1272) để mở khóa. Tính năng cho phép tra cứu & gửi yêu cầu tìm thông tin liên hệ (Email, Số điện thoại, Chức vụ) của Person-in-Charge (PIC) và Quyết định viên tại các doanh nghiệp mục tiêu, hỗ trợ tiếp cận trực tiếp mà không qua trung gian.",
+    "source": "Alumni VIP PIC Finder Portal (Tìm PIC Doanh Nghiệp BD)"
+  },
+  {
+    "content": "[Trắc Nghiệm 4 Phong Cách BD Thực Chiến - Test Tính Cách BD] Công cụ bài test trắc nghiệm tính cách BD, swipe card game quẹt thẻ đo lường phong cách bán hàng B2B:\n1. Cú Thông Thái: Phân tích số liệu, chuẩn hóa quy trình, chuyên gia giải pháp.\n2. Sư Tử Quyết Đoán: Tự tin, hướng mục tiêu, chốt deal nhanh, tiên phong mở thị trường.\n3. Đại Bàng Chiến Lược: Xây dựng quan hệ cấp C-Level, tư duy hệ sinh thái, chốt deal lớn.\n4. Cáo Linh Hoạt: Nhạy bén cơ hội, ứng biến đàm phán, networking rộng khắp.\nKhám phá điểm mạnh, điểm yếu và phong cách BD của bản thân qua bài test tính cách thực chiến kèm quà tặng điểm thưởng.",
+    "source": "B2B BD Personality Test (Bài Test Tính Cách BD, Trắc Nghiệm Tính Cách)"
+  },
+  {
+    "content": "[AI Email Assistant & Ma Trận Phễu KPI B2B]:\n- AI Email Assistant: Chấm điểm hiệu quả email bán hàng B2B, phân tích rào cản khiến khách hàng không mở mail, tự động viết lại cold outreach theo 5 pha chuyển mình về ngôn từ.\n- Ma Trận Phễu KPI: Công cụ tính ngược (Reverse Engineering) từ mục tiêu doanh thu ra số lượng MQL, SQL, Discovery Call, Proposal và Deal chốt thực tế cho nhân sự BD Inbound & Outbound.",
+    "source": "B2B AI Tools Suite (Trợ Lý Email AI & Ma Trận Phễu KPI)"
+  },
+  {
+    "content": "[Bảng Tính Quy Đổi Lương Gross - Net & Thuế TNCN 2026]: Công cụ quy đổi lương Gross sang Net và Net sang Gross chuẩn xác nhất, tính chi tiết các khoản bảo hiểm xã hội bắt buộc (BHXH 8%, BHYT 1.5%, BHTN 1%), thuế TNCN lũy tiến từng phần và bảng hoa hồng OTE thực tế cho nhân sự BD Sales.",
+    "source": "Salary Calculator (Quy Đổi Lương Gross Net BD)"
+  },
+  {
+    "content": "[Cổng Tra Cứu Luật Lao Động 2019 & 15 Case Study Tranh Chấp]: Tra cứu nhanh quyền lợi lao động cho nhân sự BD: Thời gian thử việc tối đa 60 ngày, lương thử việc tối thiểu 85%, thời hạn báo trước khi nghỉ việc (30 ngày hoặc 45 ngày), trợ cấp thôi việc, và 15 case study giải quyết tranh chấp lao động thực tế có viện dẫn quy định pháp luật.",
+    "source": "Labor Law Portal (Luật Lao Động & Case Study BD)"
+  },
+  {
+    "content": "[Cộng Đồng BD Thực Chiến]: Diễn đàn kết nối dành cho các chuyên viên Business Development, Sales B2B, Account Executive toàn quốc để thảo luận tình huống deal khó, chia sẻ kinh nghiệm chiến trường và hợp tác kinh doanh.",
+    "source": "B2B BD Community (Cộng Đồng Thực Chiến BD)"
   }
 ]

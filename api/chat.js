@@ -19,29 +19,35 @@ function cleanWord(word) {
     .replace(/[\u0300-\u036f]/g, "");
 }
 
+const STOP_WORDS = new Set([
+  'toi', 'ban', 'minh', 'muon', 'can', 'lam', 'cho', 'voi', 'cua', 'va', 'cac', 'nhung', 
+  'duoc', 'nay', 'do', 'nhu', 'co', 'la', 'o', 'tai', 'de', 'gi', 'nao', 'sao', 'the'
+]);
+
 function searchKnowledge(query, chunks) {
   if (!chunks || chunks.length === 0) return [];
   
-  const queryWords = query.split(/\s+/).map(cleanWord).filter(w => w.length > 1);
+  const queryWords = query.split(/\s+/).map(cleanWord).filter(w => w.length > 1 && !STOP_WORDS.has(w));
   if (queryWords.length === 0) return [];
 
   const scored = chunks.map(chunk => {
     let score = 0;
-    const contentLower = chunk.content.toLowerCase();
+    const combinedText = `${chunk.source || ''} ${chunk.content || ''}`;
+    const contentLower = combinedText.toLowerCase();
     const contentCleaned = cleanWord(contentLower);
     
     queryWords.forEach(word => {
       if (contentCleaned.includes(word)) {
-        score += 1;
+        score += 3;
         if (contentLower.includes(word)) {
-          score += 0.5;
+          score += 1;
         }
       }
     });
 
     const phrase = queryWords.join(' ');
     if (contentCleaned.includes(phrase)) {
-      score += 5;
+      score += 15;
     }
 
     return { chunk, score };
@@ -52,6 +58,39 @@ function searchKnowledge(query, chunks) {
     .sort((a, b) => b.score - a.score)
     .slice(0, 3)
     .map(item => item.chunk);
+}
+
+function detectNavTag(message, replyText) {
+  const combined = (message + ' ' + (replyText || '')).toLowerCase();
+  
+  if (/test|trắc nghiệm|trac nghiem|tính cách|tinh cach|phong cách bd/i.test(combined)) {
+    return 'personality-test';
+  }
+  if (/lương|luong|salary|gross|net|thuế tncn|thue tncn|bhxh|ote/i.test(combined)) {
+    return 'salary';
+  }
+  if (/luật|luat|thử việc|thu viec|nghỉ việc|nghi viec|thôi việc|thoi viec|sa thải|bồi thường/i.test(combined)) {
+    return 'labor-law';
+  }
+  if (/email|cold mail|outreach|viết mail|soạn mail|đánh giá email/i.test(combined)) {
+    return 'email-assistant';
+  }
+  if (/kpi|phễu|pheu|doanh số|doanh so|inbound|outbound|conversion rate/i.test(combined)) {
+    return 'kpi-estimation';
+  }
+  if (/nhiệm vụ|nhiem vu|quest|đổi quà|doi qua|trà sữa|tra sua|streak|điểm danh/i.test(combined)) {
+    return 'quests';
+  }
+  if (/tìm pic|tim pic|pic finder|alumni|passcode|mã vip|ma vip/i.test(combined)) {
+    return 'finder';
+  }
+  if (/cộng đồng|cong dong|community|diễn đàn|dien dan|thảo luận deal/i.test(combined)) {
+    return 'community';
+  }
+  if (/ebook|thư viện|thu vien|thuật ngữ|glossary|arr|mrr|cac|ltv/i.test(combined)) {
+    return 'library';
+  }
+  return null;
 }
 
 module.exports = async (req, res) => {
@@ -92,41 +131,41 @@ module.exports = async (req, res) => {
       }
     }
 
-    const systemPrompt = `Bạn là trợ lý AI thông minh mang tên BeeDee tích hợp trên B2B BD Tips Portal bằng tiếng Việt. 
-Nhiệm vụ của bạn là hỗ trợ người dùng và nhân viên Business Development (BD) giải đáp thắc mắc chuyên sâu và hướng dẫn trải nghiệm hệ thống.
+    const systemPrompt = `Bạn là BeeDee - Chú cú trợ lý AI thông minh đại diện cho B2B BD Tips Portal (https://www.bdbinhdanhocvu.com) của BD Bình Dân Học Vụ do Founder Peter Võ (Võ Phước Tân) xây dựng.
 
-1. ĐỐI CHIẾU VỚI CÁC TÀI LIỆU & CHỨC NĂNG TRÊN WEBSITE:
-Hãy luôn đối chiếu câu hỏi của người dùng với các tính năng và trang hiện có trên website để điều hướng họ phù hợp:
-- Công cụ Quy đổi Lương Gross - Net (trang salary.html) -> Bổ sung tag [NAV:salary] ở cuối.
-- Cổng Tra cứu Luật Lao Động 2019 và 15 Case Study Tình huống thực tế (trang labor-law.html) -> Bổ sung tag [NAV:labor-law] ở cuối.
-- Công cụ Thuyết Trình & Pitching AI để tạo slide/script pitching (trang pitching.html) -> Bổ sung tag [NAV:pitching] ở cuối.
-- Thư viện Ebook & Bài viết chia sẻ thực chiến (trang library.html) -> Bổ sung tag [NAV:library] ở cuối.
-- Trợ lý AI viết và đánh giá Email B2B (trang email-assistant.html) -> Giới thiệu người dùng truy cập trang Hỗ trợ viết Email.
-- Thử thách minigame B2B Challenge (trang index.html#minigame-section) -> Gợi ý chơi thử minigame.
+MỤC TIÊU VÀ VAI TRÒ CỦA BẠN:
+- Hỗ trợ nhân sự Business Development (BD), Sales B2B, Founder & Quản lý giải đáp các thắc mắc về nghề BD thực chiến, đối chiếu quy định luật pháp, kỹ năng chốt deal và hướng dẫn sử dụng công cụ phù hợp.
+- Trả lời bằng tiếng Việt lịch sự, thông thái, truyền cảm hứng, ngắn gọn, cấu trúc rõ ràng với Markdown.
 
-2. DẪN DẮT CONVERSATION (MỞ ĐẦU, GỢI Ý & KẾT THÚC):
-- Hãy duy trì cuộc hội thoại bằng thái độ cởi mở, tích cực và chuyên nghiệp.
-- Chủ động đưa ra các câu hỏi gợi ý thêm ở cuối câu trả lời để kích thích người dùng tìm hiểu thêm (Ví dụ: "Bạn có muốn tôi hướng dẫn cách tính thử bảo hiểm bắt buộc không?", "Bạn có cần tìm hiểu cách viết email tiếp cận PIC sau khi tìm thấy email của họ không?").
-- Nếu người dùng đã giải quyết xong thắc mắc hoặc gửi lời cảm ơn/chào tạm biệt, hãy đưa ra câu trả lời kết thúc hội thoại lịch sự, tóm tắt giải pháp và chúc họ một ngày làm việc hiệu quả.
+QUY TẮC CỐT LÕI VỀ BỘ 9 CÔNG CỤ HIỆN CÓ TRÊN WEBSITE:
+Website B2B BD Tips Portal ĐÃ CÓ ĐẦY ĐỦ 9 công cụ sau đây đang hoạt động:
+1. Trắc nghiệm 4 Phong cách BD Thực chiến (Bài test tính cách BD, swipe card game quẹt thẻ Cú Thông Thái, Sư Tử Quyết Đoán, Đại Bàng Chiến Lược, Cáo Linh Hoạt) -> Thẻ điều hướng: [NAV:personality-test]
+2. Quy đổi Lương Gross - Net (Tính lương Net/Gross chuẩn 2026, BHXH bắt buộc, thuế TNCN lũy tiến, hoa hồng OTE) -> Thẻ điều hướng: [NAV:salary]
+3. Cổng Tra cứu Luật Lao Động 2019 (Thời gian thử việc tối đa 60 ngày, lương thử việc >=85%, thông báo nghỉ việc, trợ cấp thôi việc, 15 case study tranh chấp lao động) -> Thẻ điều hướng: [NAV:labor-law]
+4. Thư viện 9+ Ebook B2B & 142+ Thuật ngữ BD (Tải trọn bộ ebook của Peter Võ, tra cứu thuật ngữ SaaS và công thức ARR, MRR, CAC, LTV) -> Thẻ điều hướng: [NAV:library]
+5. Trợ lý AI Viết & Đánh giá Email B2B (Chấm điểm cold email, phân tích rào cản mở thư, viết lại outreach theo 5 pha ngôn từ) -> Thẻ điều hướng: [NAV:email-assistant]
+6. Ma trận Phễu KPI & Ước tính Doanh số (Tính ngược từ mục tiêu doanh thu ra số MQL, SQL, Discovery Call, Proposal, Win rate cho Inbound & Outbound) -> Thẻ điều hướng: [NAV:kpi-estimation]
+7. Hệ thống Nhiệm vụ Hàng ngày & Đổi Quà Streak (Làm quest duy trì streak, rủ đồng nghiệp nhận Trà Sữa L, 30p Online 1-1 với Peter Võ, Lunch VIP 1-1 với Peter Võ) -> Thẻ điều hướng: [NAV:quests]
+8. Cổng Đặc Quyền Alumni VIP - Tìm PIC Doanh Nghiệp (Dành riêng cho học viên Khóa BD Thực Chiến có Mã Passcode VIP như BD-1272 tra cứu người phụ trách / PIC) -> Thẻ điều hướng: [NAV:finder]
+9. Diễn đàn Cộng Đồng B2B Thực Chiến (Nơi kết nối, chia sẻ kinh nghiệm chiến trường và thảo luận giải quyết các deal hóc búa) -> Thẻ điều hướng: [NAV:community]
 
-3. HƯỚNG DẪN KẾT NỐI TƯ VẤN CÙNG FOUNDER PETER VO:
-- TUYỆT ĐỐI KHÔNG giới thiệu hay đề cập đến bất kỳ dịch vụ hay lớp đào tạo ngoài nào.
-- Khi người dùng hỏi về tư vấn chuyên sâu, coaching cá nhân hoặc lời khuyên phát triển sự nghiệp BD, hãy hướng dẫn họ kết nối trực tiếp với Founder Peter Vo (SĐT/Zalo: 0931.100.569 | LinkedIn: https://www.linkedin.com/in/vp-tan/) hoặc tham khảo Thư viện Ebook & Thuật ngữ BD (library.html).
+LƯU Ý NGHIÊM NGẶT:
+- Bạn TUYỆT ĐỐI KHÔNG ĐƯỢC NÓI rằng website "chưa có" hoặc "không có" các công cụ trên. Website ĐÃ CÓ TOÀN BỘ 9 CÔNG CỤ TRÊN!
+- Khi người dùng hỏi về bất kỳ công cụ hoặc chủ đề nào liên quan đến 9 công cụ trên, hãy hào hứng xác nhận, hướng dẫn ngắn gọn và LUÔN KẾT THÚC CÂU TRẢ LỜI BẰNG DUY NHẤT 1 THẺ [NAV:...] Ở DÒNG CUỐI CÙNG (ví dụ: [NAV:personality-test]).
 
-Quy tắc điều hướng (Smart Navigation Router):
-If người dùng hỏi hoặc có ý định sử dụng một trong các tính năng sau, hãy bổ sung các thẻ đánh dấu điều hướng ở dòng cuối cùng của câu trả lời theo đúng định dạng chính xác bên dưới:
-- Nếu hỏi về tính lương, đổi lương gross net: [NAV:salary]
-- Nếu hỏi về thử việc, nghỉ việc, luật lao động, bảo hiểm: [NAV:labor-law]
-- Nếu hỏi về thuyết trình, pitching, tạo slide, kịch bản pitching: [NAV:pitching]
-- Nếu hỏi về cẩm nang, bài viết, sách, ebook, thuật ngữ, công thức ARR/MRR/CAC/LTV: [NAV:library]
-
-Hãy trả lời chuyên nghiệp, tập trung vào giải pháp cho nhân viên BD, định dạng văn bản rõ ràng bằng markdown.${ragContext}`;
+KẾT NỐI VỚI FOUNDER PETER VÕ (VÕ PHƯỚC TÂN):
+Nếu người dùng quan tâm đến cố vấn deal lớn, coaching 1-1 hay đào tạo doanh nghiệp:
+- SĐT / Zalo: 0931.100.569
+- Email: bdtraining@bdbinhdanhocvu.com
+- LinkedIn: https://www.linkedin.com/in/vp-tan/${ragContext}`;
 
     const postData = JSON.stringify({
+      system_instruction: {
+        parts: [{ text: systemPrompt }]
+      },
       contents: [{
-        parts: [{
-          text: `${systemPrompt}\n\nCâu hỏi của người dùng: "${message}"`
-        }]
+        role: "user",
+        parts: [{ text: message }]
       }]
     });
 
@@ -149,7 +188,16 @@ Hãy trả lời chuyên nghiệp, tập trung vào giải pháp cho nhân viên
         try {
           const parsed = JSON.parse(responseBody);
           if (parsed.candidates && parsed.candidates[0] && parsed.candidates[0].content && parsed.candidates[0].content.parts[0]) {
-            const text = parsed.candidates[0].content.parts[0].text;
+            let text = parsed.candidates[0].content.parts[0].text;
+            
+            // Safety guard: Ensure nav tag is attached if missing
+            if (!text.includes('[NAV:')) {
+              const detected = detectNavTag(message, text);
+              if (detected) {
+                text = text.trim() + `\n\n[NAV:${detected}]`;
+              }
+            }
+            
             res.status(200).json({ reply: text });
           } else {
             res.status(200).json({ useFallback: true, reply: 'AI response candidates empty' });
