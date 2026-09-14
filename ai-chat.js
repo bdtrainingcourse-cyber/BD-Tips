@@ -78,8 +78,8 @@ document.addEventListener('DOMContentLoaded', () => {
             navLabel: "⚡ Quy Đổi Lương Ngay"
         },
         {
-            keywords: [/tính cách/, /tinh cach/, /trắc nghiệm/, /trac nghiem/, /phong cách bd/, /phong cach/, /cú thông thái/, /sư tử/, /đại bàng/, /cáo thợ săn/, /personality/i],
-            reply: "Hãy thử ngay bài **Trắc Nghiệm 4 Phong Cách BD Thực Chiến**! Bạn sẽ khám phá mình thuộc mẫu chiến binh nào: Cú Thông Thái (Chiến lược), Sư Tử Chỉ Huy (Quyết đoán), Đại Bàng Săn Deal (Thống lĩnh) hay Cáo Linh Hoạt (Mềm dẻo), kèm lộ trình thăng tiến và quà tặng điểm thưởng.",
+            keywords: [/tính cách/, /tinh cach/, /trắc nghiệm/, /trac nghiem/, /phong cách bd/, /phong cach/, /cú thông thái/, /sư tử/, /đại bàng/, /cáo thợ săn/, /personality/, /test/, /bài test/, /bai test/i],
+            reply: "Hãy thử ngay bài **Trắc Nghiệm 4 Phong Cách BD Thực Chiến (Bài Test Tính Cách BD)**! Bạn sẽ khám phá mình thuộc mẫu chiến binh nào: Cú Thông Thái (Chiến lược), Sư Tử Chỉ Huy (Quyết đoán), Đại Bàng Săn Deal (Thống lĩnh) hay Cáo Linh Hoạt (Mềm dẻo), kèm lộ trình thăng tiến và quà tặng điểm thưởng.",
             navTarget: "personality-test",
             navLabel: "📊 Làm Test Tính Cách BD Ngay"
         },
