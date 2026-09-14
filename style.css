@@ -605,6 +605,18 @@ body.dark-theme .nav-register-btn {
         border: none !important;
         flex-shrink: 0 !important;
     }
+    .nav-user-hud.is-logged-in {
+        padding: 4px 9px !important;
+        background: rgba(243, 168, 59, 0.12) !important;
+        border: 1px solid rgba(243, 168, 59, 0.35) !important;
+        border-radius: 16px !important;
+        cursor: pointer !important;
+        gap: 4px !important;
+    }
+    body.dark-theme .nav-user-hud.is-logged-in {
+        background: rgba(243, 168, 59, 0.18) !important;
+        border-color: rgba(243, 168, 59, 0.45) !important;
+    }
     .nav-user-hud .nav-login-btn {
         padding: 5px 9px !important;
         font-size: 0.72rem !important;
@@ -623,7 +635,14 @@ body.dark-theme .nav-register-btn {
         margin-left: 0 !important;
     }
     .nav-user-hud #navbar-user-name {
-        display: none !important;
+        display: inline-block !important;
+        max-width: 68px !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+        white-space: nowrap !important;
+        font-size: 0.74rem !important;
+        font-weight: 700 !important;
+        vertical-align: middle !important;
     }
 
     #live-user-counter {

@@ -773,11 +773,50 @@ function injectNavbarUserHUD() {
     updateNavbarUserHUD();
 }
 
+function getAlumniVipSession() {
+    try {
+        const raw = localStorage.getItem('alumni_vip_session');
+        if (!raw) return null;
+        const session = JSON.parse(raw);
+        if (session && (session.isVip || session.email)) {
+            return session;
+        }
+    } catch (e) {}
+    return null;
+}
+
+function syncAlumniVipToNavbar() {
+    const session = getAlumniVipSession();
+    if (!session) return null;
+    
+    if (localStorage.getItem('streak_active') !== 'true') {
+        localStorage.setItem('streak_active', 'true');
+    }
+    const currentName = localStorage.getItem('streak_name');
+    if (!currentName || currentName === 'Chiến thần') {
+        const vipName = (session.nickname || session.name || 'Alumni VIP').trim();
+        localStorage.setItem('streak_name', vipName);
+    }
+    if (!localStorage.getItem('streak_email') && session.email) {
+        localStorage.setItem('streak_email', session.email);
+    }
+    if (!localStorage.getItem('streak_user_id') && session.userId) {
+        localStorage.setItem('streak_user_id', session.userId);
+    }
+    if (localStorage.getItem('b2b_user_verified') !== 'true') {
+        localStorage.setItem('b2b_user_verified', 'true');
+    }
+    localStorage.setItem('b2b_is_vip', 'true');
+    return session;
+}
+
 function renderProfileDropdownContent(dropdownEl) {
-    const email = localStorage.getItem('streak_email') || '';
-    const name = localStorage.getItem('streak_name') || 'Chiến thần';
+    const vipSession = getAlumniVipSession();
+    const isVip = !!vipSession || (localStorage.getItem('b2b_is_vip') === 'true');
+    const email = localStorage.getItem('streak_email') || (vipSession ? vipSession.email : '');
+    const name = localStorage.getItem('streak_name') || (vipSession ? (vipSession.nickname || vipSession.name) : 'Chiến thần');
     const points = localStorage.getItem('b2b_points_balance') || '0';
-    const verified = localStorage.getItem('b2b_user_verified') === 'true';
+    const verified = (localStorage.getItem('b2b_user_verified') === 'true') || isVip;
     
     let history = [];
     try {
@@ -800,10 +839,20 @@ function renderProfileDropdownContent(dropdownEl) {
         <div style="border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 10px;">
             <div style="font-weight: 800; font-size: 0.9rem; color: #f59e0b; display: flex; align-items: center; justify-content: space-between; gap: 8px;">
                 <span style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 150px;">${name}</span>
-                <span class="${verified ? 'badge-verified' : 'badge-unverified'}">${verified ? 'Đã xác thực' : 'Chưa xác thực'}</span>
+                <span class="${isVip ? 'badge-verified' : (verified ? 'badge-verified' : 'badge-unverified')}" style="${isVip ? 'background: rgba(245, 158, 11, 0.2); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.4);' : ''}">${isVip ? '⭐ ALUMNI VIP' : (verified ? 'Đã xác thực' : 'Chưa xác thực')}</span>
             </div>
             <div style="font-size: 0.72rem; color: #cbd5e1; margin-top: 4px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${email}">${email}</div>
         </div>
+        ${isVip ? `
+        <div style="background: rgba(243, 168, 59, 0.08); border: 1px solid rgba(243, 168, 59, 0.2); border-radius: 8px; padding: 8px 10px; margin-top: 8px; margin-bottom: 8px;">
+            <div style="font-size: 0.7rem; color: #f59e0b; font-weight: 700; text-transform: uppercase;">🎯 Đặc Quyền Alumni VIP:</div>
+            <div style="font-size: 0.8rem; color: #f1f5f9; font-weight: 600; margin-top: 3px;">
+                Mã VIP: <span style="color: #fbbf24;">${vipSession ? (vipSession.vipCode || vipSession.userId || 'Kích Hoạt') : 'Kích Hoạt'}</span>
+                ${vipSession && vipSession.remainingCredits !== undefined ? ` • Còn <span style="color: #10b981;">${vipSession.remainingCredits}</span> lượt tìm PIC` : ''}
+            </div>
+            <a href="finder.html" style="display: inline-block; font-size: 0.75rem; color: #f3a83b; text-decoration: underline; margin-top: 4px;">Vào Cổng Tìm PIC Alumni &rarr;</a>
+        </div>
+        ` : ''}
         <div>
             <div style="font-size: 0.7rem; color: #94a3b8; font-weight: 700; text-transform: uppercase; margin-bottom: 4px;">Số dư tài khoản:</div>
             <div style="font-size: 1.1rem; font-weight: 800; color: #f3a83b; display: flex; align-items: center; gap: 4px;">⚡ ${points} BD-Points</div>
@@ -827,6 +876,8 @@ function renderProfileDropdownContent(dropdownEl) {
             localStorage.removeItem('b2b_points_balance');
             localStorage.removeItem('b2b_user_verified');
             localStorage.removeItem('b2b_points_history');
+            localStorage.removeItem('alumni_vip_session');
+            localStorage.removeItem('b2b_is_vip');
             window.location.reload();
         }
     });
@@ -1033,8 +1084,55 @@ window.showGlobalLoginModal = function() {
                 const res = await fetch(checkUrl);
                 const data = await res.json();
 
-                if (res.status === 401 || data.error) {
-                    alert(data.error || 'Mật khẩu không chính xác!');
+                if (res.status === 401 || data.error || !data.exists) {
+                    // Fallback check: Kiểm tra nếu là Học Viên Alumni VIP đăng nhập bằng Mật Khẩu VIP (Passcode)
+                    try {
+                        const vipResp = await fetch(`/api/log-email?action=verifyAlumni&email=${encodeURIComponent(email)}&passcode=${encodeURIComponent(pwd)}`);
+                        if (vipResp.ok) {
+                            const vipData = await vipResp.json();
+                            if (vipData && vipData.success && vipData.isAlumni) {
+                                const vipSession = {
+                                    isVip: true,
+                                    name: vipData.name,
+                                    nickname: vipData.nickname,
+                                    email: vipData.email || email,
+                                    remainingCredits: vipData.remainingCredits !== undefined ? vipData.remainingCredits : 3,
+                                    expiry: vipData.expiry || '3 Tháng',
+                                    vipCode: vipData.vipCode || pwd,
+                                    userId: vipData.userId || null
+                                };
+                                localStorage.setItem('alumni_vip_session', JSON.stringify(vipSession));
+                                localStorage.setItem('streak_active', 'true');
+                                localStorage.setItem('streak_name', (vipSession.nickname || vipSession.name || 'Alumni VIP').trim());
+                                localStorage.setItem('streak_email', vipSession.email);
+                                if (vipSession.userId) localStorage.setItem('streak_user_id', vipSession.userId);
+                                localStorage.setItem('b2b_is_vip', 'true');
+                                localStorage.setItem('b2b_user_verified', 'true');
+                                
+                                overlay.classList.remove('active');
+                                updateNavbarUserHUD();
+                                updateUIElements();
+                                
+                                if (window.showGlobalNotification) {
+                                    window.showGlobalNotification(
+                                        '⭐ Chào Mừng Alumni VIP!',
+                                        `Chào mừng <strong>${vipSession.nickname || vipSession.name}</strong>! Bạn đã kích hoạt đặc quyền Alumni VIP thành công.`
+                                    );
+                                } else {
+                                    alert(`Chào mừng Alumni VIP ${vipSession.nickname || vipSession.name}!`);
+                                }
+                                return;
+                            }
+                        }
+                    } catch (vipErr) {
+                        console.warn('Fallback check verifyAlumni failed:', vipErr);
+                    }
+
+                    if (res.status === 401 || data.error) {
+                        alert(data.error || 'Mật khẩu không chính xác!');
+                    } else {
+                        alert('Email này chưa đăng ký tài khoản! Vui lòng đăng ký tham gia B2B Challenge ở trang chủ để mở tài khoản mới.');
+                    }
                     return;
                 }
 
@@ -1119,21 +1217,25 @@ function updateNavbarUserHUD() {
         return;
     }
     
-    const active = localStorage.getItem('streak_active') === 'true';
+    const vipSession = typeof syncAlumniVipToNavbar === 'function' ? syncAlumniVipToNavbar() : null;
+    const active = (localStorage.getItem('streak_active') === 'true') || !!vipSession;
     if (active) {
         hud.classList.remove('hidden');
+        hud.classList.add('is-logged-in');
         hud.style.display = 'flex';
         hud.style.background = '';
         hud.style.border = '';
         hud.style.padding = '';
         hud.style.cursor = 'pointer';
-        const name = localStorage.getItem('streak_name') || 'Chiến thần';
+        
+        const isVip = !!vipSession || (localStorage.getItem('b2b_is_vip') === 'true');
+        const name = localStorage.getItem('streak_name') || (vipSession ? (vipSession.nickname || vipSession.name) : 'Chiến thần');
         const points = localStorage.getItem('b2b_points_balance') || '0';
         
         hud.innerHTML = `
             <span style="font-size: 1rem; line-height: 1;">🦉</span>
-            <span id="navbar-user-name" style="max-width: 90px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${name}</span>: 
-            <span id="navbar-user-points" style="color: var(--primary); margin-left: 2px;">${points}</span>đ
+            <span id="navbar-user-name" style="max-width: 90px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${name}</span>
+            ${isVip ? `<span class="nav-badge pro" style="font-size: 0.58rem; padding: 1px 5px; margin-left: 2px;">VIP</span>` : `: <span id="navbar-user-points" style="color: var(--primary); margin-left: 2px;">${points}</span>đ`}
             <div id="navbar-profile-dropdown" class="profile-dropdown-card hidden"></div>
         `;
         
@@ -1150,6 +1252,7 @@ function updateNavbarUserHUD() {
         };
     } else {
         hud.classList.remove('hidden');
+        hud.classList.remove('is-logged-in');
         hud.style.display = 'flex';
         hud.style.background = 'none';
         hud.style.border = 'none';
@@ -1839,8 +1942,27 @@ function initGlobalComponents() {
                 border-color: rgba(255, 255, 255, 0.15) !important;
                 color: #cbd5e1 !important;
             }
+            .nav-user-hud.is-logged-in {
+                padding: 4px 9px !important;
+                background: rgba(243, 168, 59, 0.12) !important;
+                border: 1px solid rgba(243, 168, 59, 0.35) !important;
+                border-radius: 16px !important;
+                cursor: pointer !important;
+                gap: 4px !important;
+            }
+            body.dark-theme .nav-user-hud.is-logged-in {
+                background: rgba(243, 168, 59, 0.18) !important;
+                border-color: rgba(243, 168, 59, 0.45) !important;
+            }
             .nav-user-hud #navbar-user-name {
-                display: none !important;
+                display: inline-block !important;
+                max-width: 68px !important;
+                overflow: hidden !important;
+                text-overflow: ellipsis !important;
+                white-space: nowrap !important;
+                font-size: 0.74rem !important;
+                font-weight: 700 !important;
+                vertical-align: middle !important;
             }
             .mobile-menu-toggle {
                 width: 32px !important;

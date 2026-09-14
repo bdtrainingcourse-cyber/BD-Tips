@@ -1164,6 +1164,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (session) {
             localStorage.setItem('alumni_vip_session', JSON.stringify(session));
+            localStorage.setItem('streak_active', 'true');
+            localStorage.setItem('streak_name', (session.nickname || session.name || 'Alumni VIP').trim());
+            if (session.email) localStorage.setItem('streak_email', session.email);
+            if (session.userId) localStorage.setItem('streak_user_id', session.userId);
+            localStorage.setItem('b2b_is_vip', 'true');
+            localStorage.setItem('b2b_user_verified', 'true');
+            if (typeof updateNavbarUserHUD === 'function') updateNavbarUserHUD();
             renderVipSession(session);
             return true;
         } else {
@@ -1189,6 +1196,12 @@ document.addEventListener('DOMContentLoaded', () => {
     if (btnLockVip) {
         btnLockVip.addEventListener('click', () => {
             localStorage.removeItem('alumni_vip_session');
+            localStorage.removeItem('streak_active');
+            localStorage.removeItem('streak_name');
+            localStorage.removeItem('streak_email');
+            localStorage.removeItem('streak_user_id');
+            localStorage.removeItem('b2b_is_vip');
+            if (typeof updateNavbarUserHUD === 'function') updateNavbarUserHUD();
             renderVipSession(null);
         });
     }
@@ -1320,6 +1333,15 @@ document.addEventListener('DOMContentLoaded', () => {
         if (savedSession) {
             try {
                 const sess = JSON.parse(savedSession);
+                if (sess && (sess.isVip || sess.email)) {
+                    localStorage.setItem('streak_active', 'true');
+                    localStorage.setItem('streak_name', (sess.nickname || sess.name || 'Alumni VIP').trim());
+                    if (sess.email) localStorage.setItem('streak_email', sess.email);
+                    if (sess.userId) localStorage.setItem('streak_user_id', sess.userId);
+                    localStorage.setItem('b2b_is_vip', 'true');
+                    localStorage.setItem('b2b_user_verified', 'true');
+                    if (typeof updateNavbarUserHUD === 'function') updateNavbarUserHUD();
+                }
                 renderVipSession(sess);
             } catch (e) {
                 renderVipSession(null);
@@ -1361,6 +1383,7 @@ document.addEventListener('DOMContentLoaded', () => {
             session.nickname = cleanNick;
             localStorage.setItem('alumni_vip_session', JSON.stringify(session));
             localStorage.setItem('streak_name', cleanNick);
+            if (typeof updateNavbarUserHUD === 'function') updateNavbarUserHUD();
             
             renderVipSession(session);
 
