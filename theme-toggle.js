@@ -568,7 +568,11 @@ window.closeQuestWelcomeBanner = function() {
 
 function showQuestWelcomeBanner() {
     if (document.getElementById('streak-welcome-banner')) return;
-    const message = '🦉 Chào chiến thần! Hôm nay bạn chưa tích luỹ điểm nào đâu nhé. Mau làm 1 hành động thực chiến để tích BD-Points đổi quà ngay đi nào!';
+    const isEn = (window.BDI18n && window.BDI18n.getLang() === 'en') || (localStorage.getItem('bd_lang') === 'en');
+    const message = isEn
+        ? '🦉 Hello warrior! You haven\'t earned any points today. Take 1 tactical action now to accumulate BD-Points and redeem gifts!'
+        : '🦉 Chào chiến thần! Hôm nay bạn chưa tích luỹ điểm nào đâu nhé. Mau làm 1 hành động thực chiến để tích BD-Points đổi quà ngay đi nào!';
+    const btnText = isEn ? 'I\'ll do it now!' : 'Tôi đi làm ngay!';
 
     const bannerHtml = `
         <div id="streak-welcome-banner" style="position: fixed; bottom: 20px; right: 20px; background: rgba(30, 20, 10, 0.95); backdrop-filter: blur(10px); border: 1.5px solid #f3a83b; border-radius: 12px; padding: 15px; max-width: 320px; box-shadow: 0 10px 25px rgba(0,0,0,0.3); display: flex; align-items: flex-start; gap: 12px; z-index: 9999; font-family: sans-serif; animation: slideInUp 0.5s ease;">
@@ -576,7 +580,7 @@ function showQuestWelcomeBanner() {
             <img src="/bd_mascot.png" alt="Cú" style="width: 40px; height: 40px; object-fit: contain; flex-shrink: 0;" onerror="this.src='https://bdbinhdanhocvu.com/bd_mascot.png'" />
             <div style="flex: 1;">
                 <p style="margin: 0; font-size: 0.8rem; line-height: 1.4; color: #ecd9c6; padding-right: 10px;">${message}</p>
-                <button onclick="window.dismissQuestWelcomeBanner()" style="margin-top: 8px; background: transparent; border: 1px solid #f3a83b; color: #f3a83b; border-radius: 4px; padding: 3px 10px; font-size: 0.7rem; cursor: pointer; transition: all 0.2s;">Tôi đi làm ngay!</button>
+                <button onclick="window.dismissQuestWelcomeBanner()" style="margin-top: 8px; background: transparent; border: 1px solid #f3a83b; color: #f3a83b; border-radius: 4px; padding: 3px 10px; font-size: 0.7rem; cursor: pointer; transition: all 0.2s;">${btnText}</button>
             </div>
         </div>
     `;

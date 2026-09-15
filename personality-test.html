@@ -424,6 +424,8 @@
             scores = { E: 0, I: 0, S: 0, N: 0, T: 0, F: 0, J: 0, P: 0 };
             
             const root = document.getElementById('quiz-root-box');
+            const isEn = (window.BDI18n && window.BDI18n.getLang() === 'en') || (localStorage.getItem('bd_lang') === 'en');
+            const t = (s) => (isEn && window.BDI18n ? window.BDI18n.t(s) : s);
             
             // Build the card stack HTML (reverse order so Card 0 is the last child and renders on top)
             let cardsHtml = '';
@@ -431,10 +433,10 @@
                 const s = STATEMENTS[i];
                 cardsHtml += `
                     <div class="swipe-card" data-idx="${i}">
-                        <div class="card-hint">🦉 QUAN ĐIỂM THỰC CHIẾN</div>
-                        <div class="card-body-text">"${s.text}"</div>
+                        <div class="card-hint">${isEn ? '🦉 PRACTICAL PERSPECTIVE' : '🦉 QUAN ĐIỂM THỰC CHIẾN'}</div>
+                        <div class="card-body-text">"${t(s.text)}"</div>
                         <div style="font-size: 0.75rem; color: var(--text-light);">
-                            Thẻ số ${i + 1}/${STATEMENTS.length}
+                            ${isEn ? `Card ${i + 1}/${STATEMENTS.length}` : `Thẻ số ${i + 1}/${STATEMENTS.length}`}
                         </div>
                     </div>
                 `;
@@ -450,13 +452,13 @@
                 </div>
                 
                 <div class="swipe-actions">
-                    <button onclick="handleBtnSwipe(false)" class="swipe-btn disagree" title="Không đồng ý / Swipe Left">❌</button>
-                    <span style="font-size: 0.82rem; color: var(--text-light); font-weight: bold;">ĐỒNG Ý QUẸT PHẢI &bull; GHÉT QUẸT TRÁI</span>
-                    <button onclick="handleBtnSwipe(true)" class="swipe-btn agree" title="Đồng ý / Swipe Right">✅</button>
+                    <button onclick="handleBtnSwipe(false)" class="swipe-btn disagree" title="${isEn ? 'Disagree / Swipe Left' : 'Không đồng ý / Swipe Left'}">❌</button>
+                    <span style="font-size: 0.82rem; color: var(--text-light); font-weight: bold;">${isEn ? 'AGREE SWIPE RIGHT • DISAGREE SWIPE LEFT' : 'ĐỒNG Ý QUẸT PHẢI &bull; GHÉT QUẸT TRÁI'}</span>
+                    <button onclick="handleBtnSwipe(true)" class="swipe-btn agree" title="${isEn ? 'Agree / Swipe Right' : 'Đồng ý / Swipe Right'}">✅</button>
                 </div>
                 
                 <div class="keyboard-info">
-                    Mẹo: Nhấn phím <span class="keyboard-key">←</span> để Không đồng ý, phím <span class="keyboard-key">→</span> để Đồng ý.
+                    ${isEn ? 'Tip: Press <span class="keyboard-key">←</span> for Disagree, <span class="keyboard-key">→</span> for Agree.' : 'Mẹo: Nhấn phím <span class="keyboard-key">←</span> để Không đồng ý, phím <span class="keyboard-key">→</span> để Đồng ý.'}
                 </div>
             `;
             
@@ -641,6 +643,7 @@
         }
 
         function renderPureCSSChart(isCert = false) {
+            const isEn = (window.BDI18n && window.BDI18n.getLang() === 'en') || (localStorage.getItem('bd_lang') === 'en');
             // Compute percentages (each out of 3 statements)
             const E_pct = Math.round((scores.E / 3) * 100);
             const I_pct = 100 - E_pct;
@@ -661,15 +664,25 @@
                 ? 'margin: 25px 0; background: #fafaf9; padding: 20px; border-radius: 12px; border: 1px solid #e2e8f0; text-align: left;'
                 : 'margin: 20px 0; background: rgba(255,255,255,0.03); padding: 20px; border-radius: 16px; border: 1px solid var(--border-color); text-align: left;';
 
+            const chartTitle = isEn ? 'B2B BD Personality Chart' : 'Biểu Đồ Tính Cách BD B2B';
+            const labelE = isEn ? `Extravert (E): ${E_pct}%` : `Hướng Ngoại (E): ${E_pct}%`;
+            const labelI = isEn ? `Introvert (I): ${I_pct}%` : `Hướng Nội (I): ${I_pct}%`;
+            const labelS = isEn ? `Sensing (S): ${S_pct}%` : `Thực Tế (S): ${S_pct}%`;
+            const labelN = isEn ? `Intuition (N): ${N_pct}%` : `Trực Giác (N): ${N_pct}%`;
+            const labelT = isEn ? `Thinking (T): ${T_pct}%` : `Lý Trí (T): ${T_pct}%`;
+            const labelF = isEn ? `Feeling (F): ${F_pct}%` : `Cảm Xúc (F): ${F_pct}%`;
+            const labelJ = isEn ? `Judging (J): ${J_pct}%` : `Kỷ Luật (J): ${J_pct}%`;
+            const labelP = isEn ? `Perceiving (P): ${P_pct}%` : `Linh Hoạt (P): ${P_pct}%`;
+
             return `
                 <div class="bd-chart-container" style="${containerStyle}">
-                    <h4 style="margin: 0 0 15px 0; font-size: 0.95rem; font-weight: 800; color: #d97706; text-transform: uppercase; letter-spacing: 0.5px;">Biểu Đồ Tính Cách BD B2B</h4>
+                    <h4 style="margin: 0 0 15px 0; font-size: 0.95rem; font-weight: 800; color: #d97706; text-transform: uppercase; letter-spacing: 0.5px;">${chartTitle}</h4>
                     
                     <!-- EI -->
                     <div style="margin-bottom: 12px;">
                         <div style="display: flex; justify-content: space-between; font-size: 0.78rem; font-weight: 700; margin-bottom: 4px; color: ${labelColor};">
-                            <span>Hướng Ngoại (E): ${E_pct}%</span>
-                            <span>Hướng Nội (I): ${I_pct}%</span>
+                            <span>${labelE}</span>
+                            <span>${labelI}</span>
                         </div>
                         <div style="width: 100%; height: 10px; background: ${barBg}; border-radius: 5px; display: flex; overflow: hidden; border: ${border};">
                             <div style="width: ${E_pct}%; height: 100%; background: #f3a83b;"></div>
@@ -680,8 +693,8 @@
                     <!-- SN -->
                     <div style="margin-bottom: 12px;">
                         <div style="display: flex; justify-content: space-between; font-size: 0.78rem; font-weight: 700; margin-bottom: 4px; color: ${labelColor};">
-                            <span>Thực Tế (S): ${S_pct}%</span>
-                            <span>Trực Giác (N): ${N_pct}%</span>
+                            <span>${labelS}</span>
+                            <span>${labelN}</span>
                         </div>
                         <div style="width: 100%; height: 10px; background: ${barBg}; border-radius: 5px; display: flex; overflow: hidden; border: ${border};">
                             <div style="width: ${S_pct}%; height: 100%; background: #f3a83b;"></div>
@@ -692,8 +705,8 @@
                     <!-- TF -->
                     <div style="margin-bottom: 12px;">
                         <div style="display: flex; justify-content: space-between; font-size: 0.78rem; font-weight: 700; margin-bottom: 4px; color: ${labelColor};">
-                            <span>Lý Trí (T): ${T_pct}%</span>
-                            <span>Cảm Xúc (F): ${F_pct}%</span>
+                            <span>${labelT}</span>
+                            <span>${labelF}</span>
                         </div>
                         <div style="width: 100%; height: 10px; background: ${barBg}; border-radius: 5px; display: flex; overflow: hidden; border: ${border};">
                             <div style="width: ${T_pct}%; height: 100%; background: #f3a83b;"></div>
@@ -704,8 +717,8 @@
                     <!-- JP -->
                     <div style="margin-bottom: 5px;">
                         <div style="display: flex; justify-content: space-between; font-size: 0.78rem; font-weight: 700; margin-bottom: 4px; color: ${labelColor};">
-                            <span>Kỷ Luật (J): ${J_pct}%</span>
-                            <span>Linh Hoạt (P): ${P_pct}%</span>
+                            <span>${labelJ}</span>
+                            <span>${labelP}</span>
                         </div>
                         <div style="width: 100%; height: 10px; background: ${barBg}; border-radius: 5px; display: flex; overflow: hidden; border: ${border};">
                             <div style="width: ${J_pct}%; height: 100%; background: #f3a83b;"></div>
@@ -721,29 +734,31 @@
             const resultType = calculateBDResult();
             const p = PERSONAS[resultType];
             const chartHtml = renderPureCSSChart(false);
+            const isEn = (window.BDI18n && window.BDI18n.getLang() === 'en') || (localStorage.getItem('bd_lang') === 'en');
+            const t = (s) => (isEn && window.BDI18n ? window.BDI18n.t(s) : s);
             
             root.innerHTML = `
                 <div class="progress-bar-container">
                     <div class="progress-bar-fill" style="width: 100%"></div>
                 </div>
                 <div style="font-size: 0.8rem; font-weight: bold; color: #10b981; text-transform: uppercase; margin-bottom: 5px;">
-                    🎉 KẾT QUẢ PHÂN TÍCH TÍNH CÁCH BD B2B
+                    ${isEn ? '🎉 B2B BD PERSONALITY ANALYSIS RESULT' : '🎉 KẾT QUẢ PHÂN TÍCH TÍNH CÁCH BD B2B'}
                 </div>
                 
                 <div class="mascot-result-box">
-                    <img src="${p.mascot}" alt="${p.title}">
+                    <img src="${p.mascot}" alt="${t(p.title)}">
                 </div>
                 
-                <h2 class="result-title">${p.title}</h2>
-                <div class="result-compatibility">${p.compatibility}</div>
+                <h2 class="result-title">${t(p.title)}</h2>
+                <div class="result-compatibility">${t(p.compatibility)}</div>
                 
                 <!-- Pure CSS Visual Chart -->
                 ${chartHtml}
                 
                 <div class="result-description">
-                    ${p.description}
+                    ${t(p.description)}
                     <br><br>
-                    <strong style="color: var(--primary);">${p.advice}</strong>
+                    <strong style="color: var(--primary);">${t(p.advice)}</strong>
                 </div>
                 
                 <!-- Linkedin Promotion Banner -->
@@ -755,53 +770,53 @@
                 
                 <!-- Reward Gift Code Box -->
                 <div class="reward-badge-panel">
-                    <h5 style="margin: 0; font-size: 0.82rem; font-weight: 800; color: var(--primary);">🎁 QUÀ TẶNG THỰC CHIẾN TỪ CÚ BEEDEE</h5>
-                    <p style="margin: 4px 0 10px 0; font-size: 0.76rem; color: var(--text-light);">Bạn nhận ngay 50 BD-Points! Sao chép mã dưới đây rồi dán vào mục <b>Nhiệm Vụ</b>:</p>
+                    <h5 style="margin: 0; font-size: 0.82rem; font-weight: 800; color: var(--primary);">${isEn ? '🎁 PRACTICAL GIFT FROM BEEDEE OWL' : '🎁 QUÀ TẶNG THỰC CHIẾN TỪ CÚ BEEDEE'}</h5>
+                    <p style="margin: 4px 0 10px 0; font-size: 0.76rem; color: var(--text-light);">${isEn ? 'You got 50 BD-Points! Copy the code below and paste into the <b>Quests</b> tab:' : 'Bạn nhận ngay 50 BD-Points! Sao chép mã dưới đây rồi dán vào mục <b>Nhiệm Vụ</b>:'}</p>
                     <div style="display: flex; gap: 8px; justify-content: center; align-items: center;">
                         <span id="gift-code-badge" style="font-family: monospace; font-size: 0.95rem; font-weight: bold; background: rgba(0,0,0,0.15); color: #fff; padding: 6px 14px; border-radius: 6px; border: 1px solid var(--border-color); letter-spacing: 1px;">BDMATCH50</span>
-                        <button onclick="copyCode()" class="btn btn-secondary" style="padding: 6px 12px; font-size: 0.72rem; font-weight: bold; border-radius: 6px; cursor: pointer; border: 1px solid var(--border-color); background: rgba(255,255,255,0.05); color: var(--text-main);">Sao Chép</button>
+                        <button onclick="copyCode()" class="btn btn-secondary" style="padding: 6px 12px; font-size: 0.72rem; font-weight: bold; border-radius: 6px; cursor: pointer; border: 1px solid var(--border-color); background: rgba(255,255,255,0.05); color: var(--text-main);">${isEn ? 'Copy' : 'Sao Chép'}</button>
                     </div>
                 </div>
 
                 <!-- Personal Code Card -->
                 <div style="margin: 20px 0; background: rgba(0,0,0,0.15); border: 1.5px solid var(--border-color); border-radius: 16px; padding: 16px; text-align: center;">
                     <div style="font-size: 0.72rem; font-weight: bold; color: var(--text-light); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px;">
-                        🔑 MÃ SỐ TÍNH CÁCH CỦA BẠN (DÙNG ĐỂ SO KÈO):
+                        ${isEn ? '🔑 YOUR PERSONALITY CODE (FOR MATCHING):' : '🔑 MÃ SỐ TÍNH CÁCH CỦA BẠN (DÙNG ĐỂ SO KÈO):'}
                     </div>
                     <div style="display: flex; gap: 8px; justify-content: center; align-items: center;">
                         <span id="personal-personality-code" style="font-family: monospace; font-size: 1.1rem; font-weight: 800; color: #f59e0b; background: rgba(0,0,0,0.2); padding: 6px 14px; border-radius: 6px; border: 1px dashed var(--primary); letter-spacing: 1px;"></span>
-                        <button onclick="copyPersonalCode()" class="btn btn-secondary" style="padding: 6px 12px; font-size: 0.72rem; font-weight: bold; border-radius: 6px; cursor: pointer; border: 1px solid var(--border-color); background: rgba(255,255,255,0.05); color: var(--text-main);">Sao Chép Mã</button>
+                        <button onclick="copyPersonalCode()" class="btn btn-secondary" style="padding: 6px 12px; font-size: 0.72rem; font-weight: bold; border-radius: 6px; cursor: pointer; border: 1px solid var(--border-color); background: rgba(255,255,255,0.05); color: var(--text-main);">${isEn ? 'Copy Code' : 'Sao Chép Mã'}</button>
                     </div>
                 </div>
 
                 <!-- So Kèo Hợp Tác Section -->
                 <div style="margin: 25px 0; background: rgba(255,255,255,0.02); border: 1px solid var(--border-color); border-radius: 16px; padding: 20px; text-align: left;">
                     <h3 style="margin: 0 0 10px 0; font-size: 1.05rem; font-weight: 800; color: var(--primary); display: flex; align-items: center; gap: 8px;">
-                        ⚔️ SO KÈO HỢP TÁC B2B
+                        ${isEn ? '⚔️ B2B COLLABORATION MATCHUP' : '⚔️ SO KÈO HỢP TÁC B2B'}
                     </h3>
                     <p style="margin: 0 0 15px 0; font-size: 0.78rem; color: var(--text-light); line-height: 1.45;">
-                        Nhập Mã tính cách của đối tác (hoặc chọn nhanh Mascot đại diện của họ) để kiểm tra độ ăn ý và nhận chiến thuật làm việc nhóm từ Peter Võ.
+                        ${isEn ? "Enter your partner's Personality Code (or quickly select their Mascot) to check chemistry and get teamwork tactics from Peter Vo." : 'Nhập Mã tính cách của đối tác (hoặc chọn nhanh Mascot đại diện của họ) để kiểm tra độ ăn ý và nhận chiến thuật làm việc nhóm từ Peter Võ.'}
                     </p>
                     
                     <div style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 15px;">
                         <div>
-                            <label style="display: block; font-size: 0.75rem; font-weight: bold; color: var(--text-main); margin-bottom: 4px;">Cách 1: Nhập Mã tính cách của đối tác</label>
+                            <label style="display: block; font-size: 0.75rem; font-weight: bold; color: var(--text-main); margin-bottom: 4px;">${isEn ? "Method 1: Enter partner's personality code" : 'Cách 1: Nhập Mã tính cách của đối tác'}</label>
                             <div style="display: flex; gap: 8px;">
-                                <input type="text" id="partner-code-input" placeholder="Ví dụ: ARC-1234" style="flex: 1; padding: 10px 12px; font-size: 0.85rem; border-radius: 8px; border: 1px solid var(--border-color); background: rgba(0,0,0,0.1); color: #fff; text-transform: uppercase;">
-                                <button onclick="matchPartnerByCode()" class="btn btn-primary" style="padding: 10px 18px; font-size: 0.82rem; font-weight: bold; border-radius: 8px; border: none; cursor: pointer;">So Kèo</button>
+                                <input type="text" id="partner-code-input" placeholder="${isEn ? 'E.g.: ARC-1234' : 'Ví dụ: ARC-1234'}" style="flex: 1; padding: 10px 12px; font-size: 0.85rem; border-radius: 8px; border: 1px solid var(--border-color); background: rgba(0,0,0,0.1); color: #fff; text-transform: uppercase;">
+                                <button onclick="matchPartnerByCode()" class="btn btn-primary" style="padding: 10px 18px; font-size: 0.82rem; font-weight: bold; border-radius: 8px; border: none; cursor: pointer;">${isEn ? 'Match' : 'So Kèo'}</button>
                             </div>
                         </div>
                         
-                        <div style="text-align: center; font-size: 0.72rem; font-weight: bold; color: var(--text-light); margin: 2px 0;">— HOẶC —</div>
+                        <div style="text-align: center; font-size: 0.72rem; font-weight: bold; color: var(--text-light); margin: 2px 0;">${isEn ? '— OR —' : '— HOẶC —'}</div>
                         
                         <div>
-                            <label style="display: block; font-size: 0.75rem; font-weight: bold; color: var(--text-main); margin-bottom: 4px;">Cách 2: Chọn nhanh Mascot phỏng đoán của họ</label>
+                            <label style="display: block; font-size: 0.75rem; font-weight: bold; color: var(--text-main); margin-bottom: 4px;">${isEn ? 'Method 2: Quickly pick their estimated mascot' : 'Cách 2: Chọn nhanh Mascot phỏng đoán của họ'}</label>
                             <select id="partner-mascot-select" onchange="matchPartnerByMascot(this.value)" style="width: 100%; padding: 10px 12px; font-size: 0.85rem; border-radius: 8px; border: 1px solid var(--border-color); background: var(--card-bg); color: var(--text-main);">
-                                <option value="">-- Chọn Mascot đối tác --</option>
-                                <option value="commander">Tổng Tư Lệnh Săn Deal (Commander)</option>
-                                <option value="architect">Kiến Trúc Sư Công Nghệ (Architect)</option>
-                                <option value="champion">Đại Sứ Khách Hàng (Champion)</option>
-                                <option value="farmer">Nông Dân Chiến Lược (Farmer)</option>
+                                <option value="">${isEn ? '-- Select partner mascot --' : '-- Chọn Mascot đối tác --'}</option>
+                                <option value="commander">${isEn ? 'B2B Commander' : 'Tổng Tư Lệnh Săn Deal (Commander)'}</option>
+                                <option value="architect">${isEn ? 'Tech BD Architect' : 'Kiến Trúc Sư Công Nghệ (Architect)'}</option>
+                                <option value="champion">${isEn ? 'Client Champion' : 'Đại Sứ Khách Hàng (Champion)'}</option>
+                                <option value="farmer">${isEn ? 'Strategic Farmer' : 'Nông Dân Chiến Lược (Farmer)'}</option>
                             </select>
                         </div>
                     </div>
@@ -815,7 +830,7 @@
                 <!-- Social Sharing Actions -->
                 <div style="margin-top: 15px;">
                     <div style="font-size: 0.72rem; font-weight: 800; color: var(--text-light); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px;">
-                        📢 Chia sẻ kết quả của bạn:
+                        ${isEn ? '📢 Share your result:' : '📢 Chia sẻ kết quả của bạn:'}
                     </div>
                     <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-bottom: 20px;">
                         <button onclick="shareResultLinkedIn()" class="btn btn-secondary" style="padding: 8px 16px; font-size: 0.78rem; font-weight: bold; border-radius: 8px; border: 1.5px solid #0077b5; background: rgba(0, 119, 181, 0.08); color: #0077b5; cursor: pointer; display: flex; align-items: center; gap: 5px;">
@@ -833,17 +848,17 @@
                 <!-- CTA buttons -->
                 <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
                     <button onclick="downloadCertificate('${resultType}')" class="btn btn-primary" style="padding: 12px 28px; font-size: 0.85rem; font-weight: bold; border-radius: 8px; border: none; cursor: pointer;">
-                        📥 Tải Chứng Chỉ Tính Cách
+                        ${isEn ? '📥 Download Personality Certificate' : '📥 Tải Chứng Chỉ Tính Cách'}
                     </button>
                     <button onclick="openChallengeModal()" class="btn btn-secondary" style="padding: 12px 28px; font-size: 0.85rem; font-weight: bold; border-radius: 8px; border: 1.5px solid var(--primary); background: rgba(243,168,59,0.08); color: var(--primary); cursor: pointer; display: flex; align-items: center; gap: 6px;">
-                        ⚔️ Thách Đấu PvP 1v1
+                        ${isEn ? '⚔️ PvP 1v1 Challenge' : '⚔️ Thách Đấu PvP 1v1'}
                     </button>
                 </div>
 
                 <!-- Tiny Retry Link -->
                 <div style="margin-top: 20px;">
                     <a href="javascript:void(0)" onclick="startQuiz()" style="font-size: 0.78rem; color: var(--text-light); text-decoration: underline; font-weight: 500;">
-                        🔄 Thử Lại Bài Trắc Nghiệm
+                        ${isEn ? '🔄 Retake Quiz' : '🔄 Thử Lại Bài Trắc Nghiệm'}
                     </a>
                 </div>
             `;
@@ -1204,36 +1219,39 @@
             const container = document.getElementById('match-result-container');
             if (!container) return;
             
-            const myTitle = PERSONAS[myMascot].title.split(' (')[0];
-            const partnerTitle = PERSONAS[partnerMascot].title.split(' (')[0];
+            const isEn = (window.BDI18n && window.BDI18n.getLang() === 'en') || (localStorage.getItem('bd_lang') === 'en');
+            const t = (s) => (isEn && window.BDI18n ? window.BDI18n.t(s) : s);
+
+            const myTitle = t(PERSONAS[myMascot].title.split(' (')[0]);
+            const partnerTitle = t(PERSONAS[partnerMascot].title.split(' (')[0]);
             
             container.innerHTML = `
                 <div style="text-align: center; margin-bottom: 15px;">
-                    <div style="font-size: 0.72rem; font-weight: bold; color: var(--primary); text-transform: uppercase;">KẾT QUẢ SO KÈO</div>
-                    <div style="font-size: 1.8rem; font-weight: 800; color: #10b981; margin: 5px 0;">${match.score}% ĂN Ý</div>
+                    <div style="font-size: 0.72rem; font-weight: bold; color: var(--primary); text-transform: uppercase;">${isEn ? 'MATCH RESULT' : 'KẾT QUẢ SO KÈO'}</div>
+                    <div style="font-size: 1.8rem; font-weight: 800; color: #10b981; margin: 5px 0;">${match.score}% ${isEn ? 'SYNERGY' : 'ĂN Ý'}</div>
                     <div style="font-size: 0.8rem; font-weight: bold; color: var(--text-main);">${myTitle} & 🤝 & ${partnerTitle}</div>
                 </div>
                 
                 <div style="display: flex; flex-direction: column; gap: 12px; font-size: 0.82rem; line-height: 1.5;">
                     <div style="background: rgba(16, 185, 129, 0.05); border: 1px solid rgba(16, 185, 129, 0.15); padding: 12px; border-radius: 8px;">
-                        <strong style="color: #10b981; display: block; margin-bottom: 4px;">🤝 SONG KIẾM HỢP BÍCH:</strong>
-                        ${match.synergy}
+                        <strong style="color: #10b981; display: block; margin-bottom: 4px;">${isEn ? '🤝 WIN-WIN SYNERGY:' : '🤝 SONG KIẾM HỢP BÍCH:'}</strong>
+                        ${t(match.synergy)}
                     </div>
                     
                     <div style="background: rgba(239, 68, 68, 0.05); border: 1px solid rgba(239, 68, 68, 0.15); padding: 12px; border-radius: 8px;">
-                        <strong style="color: #ef4444; display: block; margin-bottom: 4px;">⚠️ ĐIỂM MÙ & XUNG ĐỘT:</strong>
-                        ${match.blindSpot}
+                        <strong style="color: #ef4444; display: block; margin-bottom: 4px;">${isEn ? '⚠️ BLIND SPOTS & CONFLICTS:' : '⚠️ ĐIỂM MÙ & XUNG ĐỘT:'}</strong>
+                        ${t(match.blindSpot)}
                     </div>
                     
                     <div style="background: rgba(243, 168, 59, 0.05); border: 1px solid rgba(243, 168, 59, 0.15); padding: 12px; border-radius: 8px;">
-                        <strong style="color: var(--primary); display: block; margin-bottom: 4px;">🦉 LỜI KHUYÊN TỪ PETER VÕ:</strong>
-                        ${match.advice}
+                        <strong style="color: var(--primary); display: block; margin-bottom: 4px;">${isEn ? '🦉 ADVICE FROM PETER VO:' : '🦉 LỜI KHUYÊN TỪ PETER VÕ:'}</strong>
+                        ${t(match.advice)}
                     </div>
                 </div>
                 
                 <div style="margin-top: 15px; text-align: center;">
                     <button onclick="shareMatchResult(${match.score}, '${partnerName}')" class="btn btn-secondary" style="padding: 8px 16px; font-size: 0.76rem; font-weight: bold; border-radius: 6px; border: 1px solid var(--border-color); background: rgba(255,255,255,0.05); color: var(--text-main); cursor: pointer;">
-                        🔗 Chia Sẻ Kèo Hợp Tác Này
+                        ${isEn ? '🔗 Share This Matchup' : '🔗 Chia Sẻ Kèo Hợp Tác Này'}
                     </button>
                 </div>
             `;
@@ -1324,6 +1342,23 @@
                         scores = { E: 0, I: 3, S: 0, N: 3, T: 3, F: 0, J: 3, P: 0 };
                     }
                     showResult();
+                }
+            }
+        });
+
+        // Listen for language changes
+        window.addEventListener('bdLanguageChanged', () => {
+            const root = document.getElementById('quiz-root-box');
+            if (!root) return;
+            if (currentIdx === 0 && document.getElementById('start-screen')) {
+                if (window.BDI18n && typeof window.BDI18n.walk === 'function') {
+                    window.BDI18n.walk(document.body);
+                }
+            } else if (currentIdx >= STATEMENTS.length) {
+                showResult();
+            } else {
+                if (window.BDI18n && typeof window.BDI18n.walk === 'function') {
+                    window.BDI18n.walk(root);
                 }
             }
         });

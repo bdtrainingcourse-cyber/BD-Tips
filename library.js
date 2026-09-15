@@ -465,6 +465,9 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         
         if (activeCategory === 'Ebooks' || activeCategory === 'All') {
+            const isEn = (window.BDI18n && window.BDI18n.getLang() === 'en') || (localStorage.getItem('bd_lang') === 'en');
+            const t = (s) => (isEn && window.BDI18n ? window.BDI18n.t(s) : s);
+
             const filteredEbooks = ebooks.filter(e => {
                 const matchesSearch = e.title.toLowerCase().includes(searchQuery) || 
                                       e.description.toLowerCase().includes(searchQuery);
@@ -472,7 +475,7 @@ document.addEventListener('DOMContentLoaded', () => {
             });
 
             if (filteredEbooks.length === 0) {
-                articlesContainer.innerHTML = `<div class="glass-panel" style="grid-column: 1/-1; text-align: center; color: var(--text-muted);">Không tìm thấy ebook nào phù hợp.</div>`;
+                articlesContainer.innerHTML = `<div class="glass-panel" style="grid-column: 1/-1; text-align: center; color: var(--text-muted);">${isEn ? 'No matching ebooks found.' : 'Không tìm thấy ebook nào phù hợp.'}</div>`;
                 return;
             }
 
@@ -501,7 +504,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 const coverHtml = ebook.coverImage ? `
                     <div class="ebook-cover-frame">
-                        <img src="${ebook.coverImage}" data-src="${ebook.coverImage}" alt="${ebook.title}" class="ebook-cover-img" loading="lazy" onerror="this.onerror=null; this.src='https://raw.githubusercontent.com/bdtrainingcourse-cyber/BD-Tips/main/' + this.getAttribute('data-src');">
+                        <img src="${ebook.coverImage}" data-src="${ebook.coverImage}" alt="${t(ebook.title)}" class="ebook-cover-img" loading="lazy" onerror="this.onerror=null; this.src='https://raw.githubusercontent.com/bdtrainingcourse-cyber/BD-Tips/main/' + this.getAttribute('data-src');">
                         <span class="ebook-cover-badge-overlay" style="${badgeStyle}">${badgePrefix}${ebook.badge || 'PDF Ebook'}</span>
                     </div>
                 ` : `<div style="font-size: 2.2rem; margin-bottom: 10px;">${ebook.icon || '📚'}</div>`;
@@ -511,33 +514,33 @@ document.addEventListener('DOMContentLoaded', () => {
                         ${coverHtml}
                         <div class="card-meta" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
                             <span class="category-badge" style="background: rgba(162, 10, 10, 0.15); border: 1px solid var(--primary); color: var(--primary); padding: 3px 8px; border-radius: 6px; font-size: 0.75rem; font-weight: 700;">PDF Ebook</span>
-                            <span id="dl-counter-${ebook.id}" class="article-date-text" style="font-size: 0.82rem; font-weight: 700; color: var(--text-muted); transition: all 0.3s ease;">🔥 ${liveCount.toLocaleString('vi-VN')} Lượt Tải</span>
+                            <span id="dl-counter-${ebook.id}" class="article-date-text" style="font-size: 0.82rem; font-weight: 700; color: var(--text-muted); transition: all 0.3s ease;">🔥 ${liveCount.toLocaleString(isEn ? 'en-US' : 'vi-VN')} ${isEn ? 'Downloads' : 'Lượt Tải'}</span>
                         </div>
-                        <h3 class="card-title" style="font-size: 1.15rem; margin-bottom: 8px; color: var(--text-main); font-weight: 700;">${ebook.title}</h3>
-                        <p class="card-desc" style="font-size: 0.9rem; color: var(--text-light); line-height: 1.5; margin-bottom: 15px;">${ebook.description}</p>
+                        <h3 class="card-title" style="font-size: 1.15rem; margin-bottom: 8px; color: var(--text-main); font-weight: 700;">${t(ebook.title)}</h3>
+                        <p class="card-desc" style="font-size: 0.9rem; color: var(--text-light); line-height: 1.5; margin-bottom: 15px;">${t(ebook.description)}</p>
                     </div>
                     
                     <div>
                         <!-- Social Share Bar with Brand SVG Icons -->
                         <div class="ebook-share-bar">
-                            <span class="ebook-share-label">Chia sẻ:</span>
+                            <span class="ebook-share-label">${isEn ? 'Share:' : 'Chia sẻ:'}</span>
                             <div class="ebook-share-actions">
-                                <button class="ebook-share-btn share-linkedin" title="Chia sẻ qua LinkedIn" aria-label="Chia sẻ qua LinkedIn">
+                                <button class="ebook-share-btn share-linkedin" title="${isEn ? 'Share via LinkedIn' : 'Chia sẻ qua LinkedIn'}" aria-label="${isEn ? 'Share via LinkedIn' : 'Chia sẻ qua LinkedIn'}">
                                     <svg viewBox="0 0 24 24" fill="currentColor">
                                         <path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.75M6.46 10.9v8.37H9.2V10.9H6.46M7.83 6.45a1.65 1.65 0 0 0-1.66 1.66 1.66 1.66 0 0 0 1.66 1.66 1.66 1.66 0 0 0 1.66-1.66 1.65 1.65 0 0 0-1.66-1.66Z"/>
                                     </svg>
                                 </button>
-                                <button class="ebook-share-btn share-facebook" title="Chia sẻ qua Facebook" aria-label="Chia sẻ qua Facebook">
+                                <button class="ebook-share-btn share-facebook" title="${isEn ? 'Share via Facebook' : 'Chia sẻ qua Facebook'}" aria-label="${isEn ? 'Share via Facebook' : 'Chia sẻ qua Facebook'}">
                                     <svg viewBox="0 0 24 24" fill="currentColor">
                                         <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
                                     </svg>
                                 </button>
-                                <button class="ebook-share-btn share-tiktok" title="Chia sẻ qua TikTok" aria-label="Chia sẻ qua TikTok">
+                                <button class="ebook-share-btn share-tiktok" title="${isEn ? 'Share via TikTok' : 'Chia sẻ qua TikTok'}" aria-label="${isEn ? 'Share via TikTok' : 'Chia sẻ qua TikTok'}">
                                     <svg viewBox="0 0 24 24" fill="currentColor">
                                         <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1.04-.1z"/>
                                     </svg>
                                 </button>
-                                <button class="ebook-share-btn share-copy" title="Sao chép link cẩm nang" aria-label="Sao chép link cẩm nang">
+                                <button class="ebook-share-btn share-copy" title="${isEn ? 'Copy guide link' : 'Sao chép link cẩm nang'}" aria-label="${isEn ? 'Copy guide link' : 'Sao chép link cẩm nang'}">
                                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                                         <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
                                         <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
@@ -547,8 +550,8 @@ document.addEventListener('DOMContentLoaded', () => {
                         </div>
 
                         <div class="card-footer" style="display: flex; justify-content: space-between; align-items: center; width: 100%; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 12px;">
-                            <span class="author-name-text" style="font-size: 0.85rem; color: var(--text-light);">Tác giả: <strong style="color: var(--primary);">${ebook.author}</strong></span>
-                            <button class="btn btn-primary download-trigger-btn" style="padding: 8px 18px; font-size: 0.85rem; font-weight:700; border-radius: 20px;">Tải Ebook PDF &darr;</button>
+                            <span class="author-name-text" style="font-size: 0.85rem; color: var(--text-light);">${isEn ? 'Author:' : 'Tác giả:'} <strong style="color: var(--primary);">${ebook.author}</strong></span>
+                            <button class="btn btn-primary download-trigger-btn" style="padding: 8px 18px; font-size: 0.85rem; font-weight:700; border-radius: 20px;">${isEn ? 'Download PDF Ebook &darr;' : 'Tải Ebook PDF &darr;'}</button>
                         </div>
                     </div>
                 `;
@@ -702,7 +705,9 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         // 2. User mới HOẶC User đã đăng ký nhưng chưa xác thực email -> Mở popup đăng ký nhận Ebook qua email
-        downloadEbookTitle.textContent = ebook.title;
+        const isEn = (window.BDI18n && window.BDI18n.getLang() === 'en') || (localStorage.getItem('bd_lang') === 'en');
+        const t = (s) => (isEn && window.BDI18n ? window.BDI18n.t(s) : s);
+        downloadEbookTitle.textContent = t(ebook.title);
 
         const modalTitleEl = document.querySelector('#download-modal .modal-title');
         const modalNoticeEl = document.getElementById('download-modal-notice');
@@ -713,16 +718,16 @@ document.addEventListener('DOMContentLoaded', () => {
             // User đã có email lưu trong máy nhưng chưa xác thực
             regEmail.value = currentEmail;
             regFirstName.value = localStorage.getItem('streak_name') || '';
-            if (modalTitleEl) modalTitleEl.textContent = "Nhận Ebook & Kích Hoạt Tài Khoản";
-            if (modalNoticeEl) modalNoticeEl.innerHTML = `💡 Nhập email nhận Ebook để Cú BeeDee gửi trọn bộ file PDF đính kèm trực tiếp qua hòm thư của bạn kèm link kích hoạt (+15đ ⚡).`;
-            if (submitBtn) submitBtn.textContent = "📨 Gửi Ebook Đến Email Của Tôi ➔";
+            if (modalTitleEl) modalTitleEl.textContent = isEn ? "Get Ebook & Activate Account" : "Nhận Ebook & Kích Hoạt Tài Khoản";
+            if (modalNoticeEl) modalNoticeEl.innerHTML = isEn ? `💡 Enter your email to receive this Ebook directly with full attached PDF plus account activation link (+15pts ⚡).` : `💡 Nhập email nhận Ebook để Cú BeeDee gửi trọn bộ file PDF đính kèm trực tiếp qua hòm thư của bạn kèm link kích hoạt (+15đ ⚡).`;
+            if (submitBtn) submitBtn.textContent = isEn ? "📨 Send Ebook to My Email ➔" : "📨 Gửi Ebook Đến Email Của Tôi ➔";
         } else {
             // User mới lần đầu
             regEmail.value = '';
             regFirstName.value = '';
-            if (modalTitleEl) modalTitleEl.textContent = "Đăng Ký Nhận Ebook Qua Email";
-            if (modalNoticeEl) modalNoticeEl.innerHTML = `💡 Ebook sẽ được gửi tự động qua email của bạn kèm file PDF đính kèm và link kích hoạt tài khoản (+15đ ⚡).`;
-            if (submitBtn) submitBtn.textContent = "📨 Gửi Ebook Đến Email & Xác Thực ➔";
+            if (modalTitleEl) modalTitleEl.textContent = isEn ? "Register to Receive Ebook via Email" : "Đăng Ký Nhận Ebook Qua Email";
+            if (modalNoticeEl) modalNoticeEl.innerHTML = isEn ? `💡 Ebook will be sent automatically to your email with attached PDF and account activation link (+15pts ⚡).` : `💡 Ebook sẽ được gửi tự động qua email của bạn kèm file PDF đính kèm và link kích hoạt tài khoản (+15đ ⚡).`;
+            if (submitBtn) submitBtn.textContent = isEn ? "📨 Send Ebook & Verify Email ➔" : "📨 Gửi Ebook Đến Email & Xác Thực ➔";
         }
 
         downloadModal.classList.remove('hidden');
@@ -1090,4 +1095,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Handle browser navigation back/forward with ebook query/hash
     window.addEventListener('popstate', handleEbookDeepLink);
+
+    // Listen for language changes
+    window.addEventListener('bdLanguageChanged', () => {
+        const isEn = (window.BDI18n && window.BDI18n.getLang() === 'en') || (localStorage.getItem('bd_lang') === 'en');
+        if (searchInput) {
+            searchInput.placeholder = isEn 
+                ? "Search B2B Ebooks, professional articles..." 
+                : "Tìm kiếm nhanh cẩm nang Ebook, bài viết chuyên môn B2B...";
+        }
+        renderArticles();
+        if (window.BDI18n && typeof window.BDI18n.walk === 'function') {
+            window.BDI18n.walk(document.body);
+        }
+    });
 });

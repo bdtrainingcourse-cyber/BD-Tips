@@ -261,6 +261,8 @@ document.addEventListener('DOMContentLoaded', () => {
     // Render Legal Rules
     function renderRules() {
         rulesContainer.innerHTML = '';
+        const isEn = (window.BDI18n && window.BDI18n.getLang() === 'en') || (localStorage.getItem('bd_lang') === 'en');
+        const t = (s) => (isEn && window.BDI18n ? window.BDI18n.t(s) : s);
         
         const filtered = legalRules.filter(r => {
             const matchesCategory = activeCategory === 'All' || activeCategory === 'Case Study' || r.category === activeCategory;
@@ -271,7 +273,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         if (filtered.length === 0) {
-            rulesContainer.innerHTML = `<div class="glass-panel text-center" style="color: var(--text-muted);">Không tìm thấy quy định pháp lý nào.</div>`;
+            rulesContainer.innerHTML = `<div class="glass-panel text-center" style="color: var(--text-muted);">${isEn ? 'No matching legal regulations found.' : 'Không tìm thấy quy định pháp lý nào.'}</div>`;
             return;
         }
 
@@ -281,13 +283,13 @@ document.addEventListener('DOMContentLoaded', () => {
             card.innerHTML = `
                 <div class="law-header">
                     <div class="law-title-box">
-                        <h3>${rule.title}</h3>
-                        <span class="law-article-code">${rule.article}</span>
+                        <h3>${t(rule.title)}</h3>
+                        <span class="law-article-code">${t(rule.article)}</span>
                     </div>
-                    <span class="status-badge scraped" style="font-size: 0.7rem;">${rule.category}</span>
+                    <span class="status-badge scraped" style="font-size: 0.7rem;">${t(rule.category)}</span>
                 </div>
                 <div class="law-body">
-                    <p>${rule.content}</p>
+                    <p>${t(rule.content)}</p>
                 </div>
             `;
             rulesContainer.appendChild(card);
@@ -296,9 +298,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Open Case Study Modal
     function openCaseModal(caseStudy) {
-        modalCaseTitle.textContent = caseStudy.title;
-        modalCaseCategory.textContent = caseStudy.category;
-        modalCaseArticle.textContent = caseStudy.article || "Bộ luật Lao động 2019";
+        const isEn = (window.BDI18n && window.BDI18n.getLang() === 'en') || (localStorage.getItem('bd_lang') === 'en');
+        const t = (s) => (isEn && window.BDI18n ? window.BDI18n.t(s) : s);
+
+        modalCaseTitle.textContent = t(caseStudy.title);
+        modalCaseCategory.textContent = t(caseStudy.category);
+        modalCaseArticle.textContent = t(caseStudy.article || "Bộ luật Lao động 2019");
         
         if (caseStudy.citationUrl) {
             modalCaseCitationLink.href = caseStudy.citationUrl;
@@ -307,9 +312,9 @@ document.addEventListener('DOMContentLoaded', () => {
             modalCaseCitationLink.style.display = 'none';
         }
 
-        modalCaseScenario.innerHTML = caseStudy.scenario.replace(/\n/g, '<br>');
-        modalCaseAnalysis.innerHTML = caseStudy.analysis.replace(/\n/g, '<br>');
-        modalCaseResolution.innerHTML = caseStudy.resolution.replace(/\n/g, '<br>');
+        modalCaseScenario.innerHTML = t(caseStudy.scenario).replace(/\n/g, '<br>');
+        modalCaseAnalysis.innerHTML = t(caseStudy.analysis).replace(/\n/g, '<br>');
+        modalCaseResolution.innerHTML = t(caseStudy.resolution).replace(/\n/g, '<br>');
         caseModal.classList.remove('hidden');
 
         // Trigger action-based quest/point increase
@@ -325,6 +330,8 @@ document.addEventListener('DOMContentLoaded', () => {
     // Render Case Studies
     function renderCases() {
         casesContainer.innerHTML = '';
+        const isEn = (window.BDI18n && window.BDI18n.getLang() === 'en') || (localStorage.getItem('bd_lang') === 'en');
+        const t = (s) => (isEn && window.BDI18n ? window.BDI18n.t(s) : s);
         
         const filtered = caseStudies.filter(c => {
             const matchesCategory = activeCategory === 'All' || activeCategory === 'Case Study' || c.category === activeCategory;
@@ -335,7 +342,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         if (filtered.length === 0) {
-            casesContainer.innerHTML = `<div class="glass-panel text-center" style="color: var(--text-muted);">Không có tình huống thực tế nào phù hợp.</div>`;
+            casesContainer.innerHTML = `<div class="glass-panel text-center" style="color: var(--text-muted);">${isEn ? 'No matching case studies found.' : 'Không có tình huống thực tế nào phù hợp.'}</div>`;
             return;
         }
 
@@ -344,12 +351,12 @@ document.addEventListener('DOMContentLoaded', () => {
             card.className = 'glass-panel case-card';
             card.innerHTML = `
                 <div class="case-header">
-                    <h3>${cs.title}</h3>
-                    <span class="status-badge guessed" style="font-size: 0.7rem;">${cs.category}</span>
+                    <h3>${t(cs.title)}</h3>
+                    <span class="status-badge guessed" style="font-size: 0.7rem;">${t(cs.category)}</span>
                 </div>
-                <p class="case-card-desc">${cs.desc}</p>
+                <p class="case-card-desc">${t(cs.desc)}</p>
                 <div class="case-card-footer">
-                    <span class="resolve-badge">💡 Xem hướng dẫn giải quyết &rarr;</span>
+                    <span class="resolve-badge">💡 ${isEn ? 'View resolution guide &rarr;' : 'Xem hướng dẫn giải quyết &rarr;'}</span>
                 </div>
             `;
             card.addEventListener('click', () => {
@@ -410,4 +417,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Initialize Dashboard
     renderDashboard();
+
+    // Listen for language changes
+    window.addEventListener('bdLanguageChanged', () => {
+        const isEn = (window.BDI18n && window.BDI18n.getLang() === 'en') || (localStorage.getItem('bd_lang') === 'en');
+        if (searchInput) {
+            searchInput.placeholder = isEn 
+                ? "Search laws, topics (probation, leave, resignation...)..." 
+                : "Tìm kiếm điều luật, chủ đề (thử việc, nghỉ phép, thôi việc...)...";
+        }
+        renderDashboard();
+        if (window.BDI18n && typeof window.BDI18n.walk === 'function') {
+            window.BDI18n.walk(document.body);
+        }
+    });
 });
