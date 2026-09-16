@@ -41,6 +41,7 @@ function onOpen() {
       .addSeparator()
       .addItem("🧹 Dọn Dẹp Dữ Liệu 3 Email Test (bdtrainingcourse, bdmastery, ocsen)", "menuCleanTestingEmails")
       .addItem("🔧 Sửa Lỗi Record Line 17 & 18 (Chuẩn Hóa Học Viên Đăng Ký)", "menuFixRegistrationTemplateMismatch")
+      .addItem("⚡ Sửa Họ Tên 'Alumni VIP' Về Tên Thật (Tab Học Viên Đăng Ký)", "menuFixAlumniNamesInRegistrationSheet")
       .addToUi();
   } catch (e) {
     Logger.log("onOpen error: " + e.message);
@@ -537,6 +538,8 @@ function doPost(e) {
       return createJsonResponse(cleanAllTestingRecords(postData.keepEmail || "vptanaia@gmail.com"));
     } else if (action === "fixRegistrationTemplateMismatch") {
       return createJsonResponse(fixRegistrationTemplateMismatch());
+    } else if (action === "fixAlumniNamesInRegistrationSheet") {
+      return createJsonResponse(fixAlumniNamesInRegistrationSheet());
     } else if (postData.tool === "course-registration") {
       return handleCourseRegistration(postData);
     } else {
@@ -587,6 +590,11 @@ function doGet(e) {
         return createJsonResponse({ success: false, error: "Unauthorized: Invalid secretKey." });
       }
       return createJsonResponse(fixRegistrationTemplateMismatch());
+    } else if (action === "fixAlumniNamesInRegistrationSheet") {
+      if (params.secretKey !== B2B_SECRET_KEY) {
+        return createJsonResponse({ success: false, error: "Unauthorized: Invalid secretKey." });
+      }
+      return createJsonResponse(fixAlumniNamesInRegistrationSheet());
     } else if (action === "verifyUser") {
       const points = params.points ? parseInt(params.points, 10) : 15;
       return verifyUser(email, points);
@@ -864,7 +872,7 @@ function getCombinedUsersList() {
             usersMap[aEmail].isVip = true;
             usersMap[aEmail].verified = true; // VIP luôn được xem là đã xác thực
             if (aVipPass) usersMap[aEmail].vipCode = aVipPass;
-            if (aName && (!usersMap[aEmail].name || usersMap[aEmail].name === "Học viên" || usersMap[aEmail].name === "Khách")) {
+            if (aName && (!usersMap[aEmail].name || usersMap[aEmail].name === "Học viên" || usersMap[aEmail].name === "Khách" || usersMap[aEmail].name === "Alumni VIP")) {
               usersMap[aEmail].name = aName;
             }
           } else {
@@ -962,6 +970,22 @@ function updateUsersDailyEmailTimestamp(emails, timestampStr) {
     // Nếu có email VIP nào vừa được gửi mà chưa có dòng trong "Học Viên Đăng Ký", tự động thêm dòng!
     const regHeaders = sheet.getDataRange().getValues()[0];
     const regIdx = getHeaderIndices(regHeaders);
+
+    // Lấy mapping tên thật từ sheet "Học Viên Đã Học"
+    const ssDaily = SpreadsheetApp.getActiveSpreadsheet();
+    const sheetAlumniDaily = ssDaily.getSheetByName("Học Viên Đã Học");
+    const alumniNameMap = {};
+    if (sheetAlumniDaily) {
+      const aDailyData = sheetAlumniDaily.getDataRange().getValues();
+      for (let r = 1; r < aDailyData.length; r++) {
+        const aName = (aDailyData[r][0] || "").toString().trim();
+        const aEmail = (aDailyData[r][1] || "").toString().toLowerCase().trim();
+        if (aEmail && aName) {
+          alumniNameMap[aEmail] = aName;
+        }
+      }
+    }
+
     for (let j = 0; j < targetEmails.length; j++) {
       const sentEmail = targetEmails[j];
       if (!updatedEmails.has(sentEmail)) {
@@ -969,11 +993,12 @@ function updateUsersDailyEmailTimestamp(emails, timestampStr) {
           ? "UID_43NNTFBGK"
           : ("UID_" + sentEmail.split('@')[0].toUpperCase().replace(/[^A-Z0-9]/g, ''));
         const timeNow = emailTimeMap[sentEmail] || defaultFormattedTime;
+        const realName = alumniNameMap[sentEmail.toLowerCase().trim()] || "Chiến Binh BD";
         
         const newRow = new Array(regHeaders.length).fill("");
         if (regIdx.id !== -1) newRow[regIdx.id] = standardUid;
         if (regIdx.date !== -1) newRow[regIdx.date] = timeNow;
-        if (regIdx.name !== -1) newRow[regIdx.name] = "Alumni VIP";
+        if (regIdx.name !== -1) newRow[regIdx.name] = realName;
         if (regIdx.email !== -1) newRow[regIdx.email] = sentEmail;
         if (regIdx.verified !== -1) newRow[regIdx.verified] = "Đã xác thực";
         if (regIdx.points !== -1) newRow[regIdx.points] = 50;
@@ -2792,3 +2817,100 @@ function menuFixRegistrationTemplateMismatch() {
     ui.alert("Hoàn Tất Chuẩn Hóa!", res.message, ui.ButtonSet.OK);
   }
 }
+
+/**
+ * Tự động sửa cột "Họ và tên" trong tab "Học Viên Đăng Ký":
+ * Tìm các dòng đang có tên "Alumni VIP" (hoặc rỗng, "Học viên", "Khách") và đối chiếu Email
+ * với tab "Học Viên Đã Học" để điền lại Họ và Tên thật chính xác!
+ */
+function fixAlumniNamesInRegistrationSheet() {
+  try {
+    const ss = SpreadsheetApp.getActiveSpreadsheet();
+    const sheetReg = ss.getSheetByName("Học Viên Đăng Ký") || ss.getSheetByName("Học Viên Đã Đăng Ký");
+    if (!sheetReg) return { success: false, error: "Không tìm thấy sheet 'Học Viên Đăng Ký'" };
+
+    const sheetAlumni = ss.getSheetByName("Học Viên Đã Học");
+    if (!sheetAlumni) return { success: false, error: "Không tìm thấy sheet 'Học Viên Đã Học'" };
+
+    // 1. Quét map email -> tên thật từ "Học Viên Đã Học"
+    const aData = sheetAlumni.getDataRange().getValues();
+    const alumniNameMap = {};
+    for (let r = 1; r < aData.length; r++) {
+      const aName = (aData[r][0] || "").toString().trim();
+      const aEmail = (aData[r][1] || "").toString().toLowerCase().trim();
+      if (aEmail && aName) {
+        alumniNameMap[aEmail] = aName;
+      }
+    }
+
+    // 2. Quét "Học Viên Đăng Ký"
+    const regData = sheetReg.getDataRange().getValues();
+    if (regData.length <= 1) return { success: false, message: "Sheet đăng ký rỗng hoặc chỉ có tiêu đề." };
+
+    const headers = regData[0];
+    const idx = getHeaderIndices(headers);
+    const emailCol = idx.email !== -1 ? idx.email : 3;
+    const nameCol = idx.name !== -1 ? idx.name : 2;
+
+    const updatedList = [];
+    const numRows = regData.length - 1;
+    const nameRange = sheetReg.getRange(2, nameCol + 1, numRows, 1);
+    const nameValues = nameRange.getValues();
+    let hasChanges = false;
+
+    for (let i = 0; i < numRows; i++) {
+      const row = regData[i + 1];
+      const rowEmail = (row[emailCol] || "").toString().toLowerCase().trim();
+      const currentName = (row[nameCol] || "").toString().trim();
+
+      if (alumniNameMap[rowEmail]) {
+        const correctName = alumniNameMap[rowEmail];
+        // Nếu tên đang là "Alumni VIP", "Học viên", "Khách" hoặc rỗng
+        if (currentName === "Alumni VIP" || !currentName || currentName === "Học viên" || currentName === "Khách") {
+          nameValues[i][0] = correctName;
+          updatedList.push({
+            row: i + 2,
+            email: rowEmail,
+            oldName: currentName,
+            newName: correctName
+          });
+          hasChanges = true;
+        }
+      }
+    }
+
+    if (hasChanges) {
+      nameRange.setValues(nameValues);
+      SpreadsheetApp.flush();
+    }
+
+    return {
+      success: true,
+      updatedCount: updatedList.length,
+      updatedList: updatedList,
+      message: "Đã sửa thành công " + updatedList.length + " dòng từ 'Alumni VIP' về Họ Tên thật."
+    };
+  } catch (err) {
+    Logger.log("fixAlumniNamesInRegistrationSheet error: " + err.message);
+    return { success: false, error: err.message };
+  }
+}
+
+function menuFixAlumniNamesInRegistrationSheet() {
+  const ui = SpreadsheetApp.getUi();
+  const resp = ui.alert(
+    "Xác Nhận Sửa Họ Tên Alumni VIP",
+    "Thao tác này sẽ quét toàn bộ sheet 'Học Viên Đăng Ký', tìm các dòng có tên 'Alumni VIP' và tự động đối chiếu với tab 'Học Viên Đã Học' để điền lại Họ và Tên thật chính xác.\n\nBạn có muốn thực hiện ngay?",
+    ui.ButtonSet.YES_NO
+  );
+
+  if (resp === ui.Button.YES) {
+    const res = fixAlumniNamesInRegistrationSheet();
+    if (res.success) {
+      ui.alert("Hoàn Tất Sửa Tên!", res.message, ui.ButtonSet.OK);
+    } else {
+      ui.alert("Lỗi Sửa Tên", res.error || "Không xác định", ui.ButtonSet.OK);
+    }
+  }
+}
+
