@@ -206,8 +206,11 @@
 
                 <form id="vip-auth-form" class="vip-gate-form">
                     <div class="form-group">
-                        <label for="vip-passcode-input" style="color: #ffffff; font-weight: 700; font-size: 0.95rem;">Mật Khẩu VIP Cá Nhân <span style="color: #f3a83b;">*</span></label>
-                        <input type="password" id="vip-passcode-input" class="vip-input" placeholder="Nhập Mật khẩu VIP riêng trong email của bạn (VD: BD-xxxx)..." required autocomplete="current-password">
+                        <label for="vip-passcode-input" style="color: #ffffff; font-weight: 700; font-size: 0.95rem;">Mã VIP / Passcode Được Cấp Riêng (Đã gửi trong email) <span style="color: #f3a83b;">*</span></label>
+                        <input type="text" id="vip-passcode-input" class="vip-input" placeholder="Nhập Mã VIP đã gửi qua email (VD: BD-0021 hoặc BDTHUCCHIEN)..." required autocomplete="off">
+                        <p style="color: #fbbf24; font-size: 0.8rem; margin-top: 5px; margin-bottom: 0;">
+                            💡 <em>Lưu ý: Đây là Mã VIP được cấp sẵn qua email thông báo, không phải mật khẩu tài khoản tự tạo. Nếu chưa nhận được, hãy kiểm tra mục Spam hoặc email thông báo ra mắt.</em>
+                        </p>
                     </div>
 
                     <div class="form-group">
@@ -215,14 +218,14 @@
                         <input type="email" id="vip-email-input" class="vip-input" placeholder="Ví dụ: name@company.com" autocomplete="email">
                     </div>
 
-                    <div id="vip-error-msg" class="vip-error-msg">Mật khẩu VIP chưa chính xác hoặc email không có trong danh sách Alumni. Vui lòng kiểm tra lại.</div>
+                    <div id="vip-error-msg" class="vip-error-msg">Mã VIP chưa chính xác hoặc email không có trong danh sách Alumni. Vui lòng kiểm tra lại.</div>
 
                     <button type="submit" id="btn-unlock-vip" class="btn btn-primary" style="padding: 14px; font-weight: 800; font-size: 1.05rem; margin-top: 10px; width: 100%; box-shadow: 0 4px 18px rgba(243, 168, 59, 0.35);">
                         🚀 Mở Khóa Đặc Quyền Alumni VIP
                     </button>
 
                     <p class="vip-security-note">
-                        🔒 <strong>Cơ chế bảo mật:</strong> Mỗi học viên được cấp một Mật khẩu VIP riêng biệt gửi qua email. Mật khẩu gắn liền với hạn mức 3 contacts/tháng của bạn, vui lòng <strong>không chia sẻ cho người lạ</strong> để tránh bị dùng mất lượt nhé!
+                        🔒 <strong>Cơ chế bảo mật:</strong> Mỗi học viên được cấp một Mã VIP riêng biệt gửi qua email. Mã VIP gắn liền với hạn mức 3 contacts/tháng của bạn, vui lòng <strong>không chia sẻ cho người lạ</strong> để tránh bị dùng mất lượt nhé!
                     </p>
                 </form>
             </div>

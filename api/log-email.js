@@ -38,6 +38,38 @@ const TYPO_MAP = {
   'iclod.com': 'icloud.com'
 };
 
+const HMAC_SECRET = process.env.B2B_SECRET_KEY || process.env.RESEND_API_KEY || '2108330119Snail!!-b2b-secure-reset';
+
+function generateResetToken(email) {
+  const expiresAt = Date.now() + 3600000; // 1 hour validity
+  const hmac = crypto.createHmac('sha256', HMAC_SECRET)
+    .update(`${(email || '').toLowerCase().trim()}:${expiresAt}`)
+    .digest('hex')
+    .substring(0, 16);
+  return `${expiresAt}_${hmac}`;
+}
+
+function verifyResetToken(email, token) {
+  if (!token || typeof token !== 'string') return false;
+  if (token.includes('_')) {
+    const [expiresAtStr, hmac] = token.split('_');
+    const expiresAt = parseInt(expiresAtStr, 10);
+    if (isNaN(expiresAt) || Date.now() > expiresAt) {
+      return false;
+    }
+    const expectedHmac = crypto.createHmac('sha256', HMAC_SECRET)
+      .update(`${(email || '').toLowerCase().trim()}:${expiresAt}`)
+      .digest('hex')
+      .substring(0, 16);
+    try {
+      return crypto.timingSafeEqual(Buffer.from(hmac), Buffer.from(expectedHmac));
+    } catch (e) {
+      return false;
+    }
+  }
+  return false;
+}
+
 async function validateEmail(email) {
   if (!email || !email.includes('@')) {
     return { valid: false, error: 'Email không hợp lệ!' };
@@ -812,7 +844,7 @@ module.exports = async (req, res) => {
       return res.status(200).json({
         success: true,
         exists: true,
-        legacyUser: !hasPassword,
+        legacyUser: !localUser.password,
         user: {
           id: localUser.id,
           email: localUser.email,
@@ -1047,9 +1079,51 @@ module.exports = async (req, res) => {
     }
 
     return res.status(200).json({ success: true, message: 'Unsubscribed successfully', email: cleanEmail });
+  } else if (action === 'setPassword') {
+    if (!cleanEmail || !password) {
+      return res.status(400).json({ success: false, error: 'Email và mật khẩu là bắt buộc.' });
+    }
+    if (password.length < 6) {
+      return res.status(400).json({ success: false, error: 'Mật khẩu phải chứa ít nhất 6 ký tự!' });
+    }
+    if (!localUser) {
+      return res.status(404).json({ success: false, error: 'Không tìm thấy tài khoản người dùng với email này!' });
+    }
+    const passwordHash = crypto.createHash('sha256').update(password).digest('hex');
+    localUser.password = passwordHash;
+    localUser.lastIp = clientIp;
+    localUser.lastActive = timestamp;
+    writeUsers(users);
+
+    if (webhookUrl) {
+      try {
+        await httpPost(webhookUrl, {
+          action: 'syncUser',
+          email: cleanEmail,
+          userId: localUser.id,
+          password: passwordHash,
+          name: localUser.name,
+          points: localUser.points
+        });
+      } catch (err) {
+        console.warn('[SHEETS_SYNC_WARN] Failed to sync new password to sheets:', err.message);
+      }
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: 'Thiết lập mật khẩu thành công!',
+      user: {
+        id: localUser.id,
+        email: localUser.email,
+        name: localUser.name,
+        points: localUser.points,
+        verified: !!localUser.verified
+      }
+    });
   } else if (action === 'forgotPassword') {
     if (localUser) {
-      const resetToken = Math.random().toString(36).substr(2, 9).toUpperCase();
+      const resetToken = generateResetToken(cleanEmail);
       const resetExpires = Date.now() + 3600000;
       
       localUser.resetToken = resetToken;
@@ -1087,7 +1161,10 @@ module.exports = async (req, res) => {
   } else if (action === 'resetPassword') {
     if (localUser) {
       const { reset_token } = params;
-      if (!localUser.resetToken || localUser.resetToken !== reset_token || Date.now() > localUser.resetExpires) {
+      const isValidHmac = verifyResetToken(cleanEmail, reset_token);
+      const isValidLocal = localUser.resetToken && localUser.resetToken === reset_token && (Date.now() <= (localUser.resetExpires || 0));
+
+      if (!isValidHmac && !isValidLocal) {
         return res.status(400).json({ error: 'Mã khôi phục mật khẩu không hợp lệ hoặc đã hết hạn!' });
       }
       

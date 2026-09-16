@@ -865,11 +865,46 @@ function renderProfileDropdownContent(dropdownEl) {
             <div style="font-size: 0.7rem; color: #94a3b8; font-weight: 700; text-transform: uppercase; margin-bottom: 6px;">Lịch sử hoạt động gần đây:</div>
             <div class="history-list-compact">${historyHtml}</div>
         </div>
-        <div style="display: flex; gap: 8px; justify-content: flex-end; margin-top: 4px; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 10px;">
+        <div style="display: flex; gap: 8px; justify-content: space-between; align-items: center; margin-top: 4px; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 10px;">
+            <button id="btn-profile-change-pwd" style="background: rgba(243, 168, 59, 0.15); border: 1px solid rgba(243, 168, 59, 0.3); color: #fbbf24; padding: 5px 12px; border-radius: 6px; font-size: 0.72rem; font-weight: 700; cursor: pointer; transition: all 0.2s ease;">🔒 Đổi Mật Khẩu</button>
             <button id="btn-profile-logout" style="background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.3); color: #f87171; padding: 5px 12px; border-radius: 6px; font-size: 0.72rem; font-weight: 700; cursor: pointer; transition: all 0.2s ease;">Đăng Xuất</button>
         </div>
     `;
     
+    const changePwdBtn = dropdownEl.querySelector('#btn-profile-change-pwd');
+    if (changePwdBtn) {
+        changePwdBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            dropdownEl.classList.remove('active');
+            window.showPasswordSetupModal(async (newPwd) => {
+                try {
+                    const res = await fetch('/api/log-email', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            action: 'setPassword',
+                            email: email,
+                            password: newPwd
+                        })
+                    });
+                    const data = await res.json();
+                    if (data.success) {
+                        alert('🎉 Đổi mật khẩu thành công! Mật khẩu mới đã được lưu an toàn.');
+                    } else {
+                        alert(data.error || 'Không thể cập nhật mật khẩu, vui lòng thử lại sau.');
+                    }
+                } catch (err) {
+                    console.error('Failed to change password:', err);
+                    alert('Có lỗi xảy ra khi cập nhật mật khẩu.');
+                }
+            }, {
+                title: '🔒 ĐỔI MẬT KHẨU TÀI KHOẢN',
+                description: `Nhập mật khẩu mới cho tài khoản ${email}:`,
+                buttonText: 'Lưu Mật Khẩu Mới'
+            });
+        });
+    }
+
     dropdownEl.querySelector('#btn-profile-logout').addEventListener('click', (e) => {
         e.stopPropagation();
         if (confirm('Bạn có chắc chắn muốn đăng xuất tài khoản?')) {
@@ -887,20 +922,24 @@ function renderProfileDropdownContent(dropdownEl) {
     });
 }
 
-window.showPasswordSetupModal = function(onSubmitCallback) {
+let currentPasswordSetupCallback = null;
+
+window.showPasswordSetupModal = function(onSubmitCallback, options = {}) {
+    currentPasswordSetupCallback = onSubmitCallback;
     let overlay = document.getElementById('global-password-setup-modal');
     if (!overlay) {
         overlay = document.createElement('div');
         overlay.id = 'global-password-setup-modal';
         overlay.className = 'global-modal-overlay';
         overlay.innerHTML = `
-            <div class="global-modal-box" style="max-width: 400px; background: #1e293b; border: 1px solid rgba(243, 168, 59, 0.3); border-radius: 12px; padding: 25px;">
+            <div class="global-modal-box" style="max-width: 400px; background: #1e293b; border: 1px solid rgba(243, 168, 59, 0.3); border-radius: 12px; padding: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); position: relative;">
                 <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 15px; margin-bottom: 20px;">
-                    <h3 style="font-size: 1.25rem; font-weight: 800; color: #f59e0b; margin: 0; display: flex; align-items: center; gap: 8px;">
+                    <h3 id="setup-password-modal-title" style="font-size: 1.25rem; font-weight: 800; color: #f59e0b; margin: 0; display: flex; align-items: center; gap: 8px;">
                         🔒 THIẾT LẬP MẬT KHẨU
                     </h3>
+                    <button id="btn-close-setup-password-modal" style="background: none; border: none; color: #94a3b8; font-size: 1.5rem; line-height: 1; cursor: pointer; padding: 0 5px;" title="Đóng">&times;</button>
                 </div>
-                <p style="font-size: 0.85rem; color: #cbd5e1; margin-bottom: 18px; line-height: 1.5;">
+                <p id="setup-password-modal-desc" style="font-size: 0.85rem; color: #cbd5e1; margin-bottom: 18px; line-height: 1.5;">
                     Vui lòng tạo mật khẩu cho tài khoản của bạn để bảo mật điểm thưởng và lịch sử cá nhân.
                 </p>
                 <div style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 22px;">
@@ -908,13 +947,14 @@ window.showPasswordSetupModal = function(onSubmitCallback) {
                     <input id="setup-password-confirm" type="password" placeholder="Xác nhận lại mật khẩu..." style="padding: 10px 14px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.15); background: #0f172a; color: #cbd5e1; font-size: 0.88rem; outline: none;" />
                 </div>
                 <div style="display: flex; justify-content: flex-end; gap: 10px;">
+                    <button id="btn-setup-password-cancel" style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.15); color: #cbd5e1; padding: 8px 16px; border-radius: 8px; font-weight: 600; cursor: pointer;">Hủy</button>
                     <button id="btn-setup-password-submit" style="background: linear-gradient(135deg, #f3a83b 0%, #f59e0b 100%); border: none; color: #fff; padding: 8px 24px; border-radius: 8px; font-weight: 700; cursor: pointer;">Lưu & Tiếp Tục</button>
                 </div>
             </div>
         `;
         document.body.appendChild(overlay);
 
-        overlay.querySelector('#btn-setup-password-submit').addEventListener('click', () => {
+        const handlePasswordSubmit = () => {
             const pwd = overlay.querySelector('#setup-password-input').value;
             const confirmPwd = overlay.querySelector('#setup-password-confirm').value;
             if (!pwd || pwd.length < 6) {
@@ -926,13 +966,49 @@ window.showPasswordSetupModal = function(onSubmitCallback) {
                 return;
             }
             overlay.classList.remove('active');
-            onSubmitCallback(pwd);
+            if (typeof currentPasswordSetupCallback === 'function') {
+                currentPasswordSetupCallback(pwd);
+            }
+        };
+
+        overlay.querySelector('#btn-setup-password-submit').addEventListener('click', handlePasswordSubmit);
+        overlay.querySelector('#btn-setup-password-cancel').addEventListener('click', () => {
+            overlay.classList.remove('active');
         });
+        overlay.querySelector('#btn-close-setup-password-modal').addEventListener('click', () => {
+            overlay.classList.remove('active');
+        });
+        overlay.querySelector('#setup-password-confirm').addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') handlePasswordSubmit();
+        });
+        overlay.querySelector('#setup-password-input').addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                overlay.querySelector('#setup-password-confirm').focus();
+            }
+        });
+    }
+
+    // Dynamic Title and Description
+    const titleEl = overlay.querySelector('#setup-password-modal-title');
+    if (titleEl) {
+        titleEl.textContent = options.title || '🔒 THIẾT LẬP MẬT KHẨU';
+    }
+    const descEl = overlay.querySelector('#setup-password-modal-desc');
+    if (descEl) {
+        descEl.textContent = options.description || 'Vui lòng tạo mật khẩu cho tài khoản của bạn để bảo mật điểm thưởng và lịch sử cá nhân.';
+    }
+    const submitBtn = overlay.querySelector('#btn-setup-password-submit');
+    if (submitBtn) {
+        submitBtn.textContent = options.buttonText || 'Lưu & Tiếp Tục';
     }
 
     overlay.querySelector('#setup-password-input').value = '';
     overlay.querySelector('#setup-password-confirm').value = '';
     overlay.classList.add('active');
+    setTimeout(() => {
+        const input = overlay.querySelector('#setup-password-input');
+        if (input) input.focus();
+    }, 100);
 };
 
 window.showPasswordChallengeModal = function(onSubmitCallback) {

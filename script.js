@@ -6348,7 +6348,45 @@ if (document.readyState === 'loading') {
         } else if (isRegistered && !isVerified) {
             // Registered but not verified
             mascotImg.src = 'mascot_email.jpg?v=2.3.13';
-            greetingText.innerHTML = `Bạn tích được <strong>${balance} BD-Points</strong> rồi đó, nhưng chưa cài mật khẩu. Cài ngay kẻo ví điểm bay màu nha!`;
+            greetingText.innerHTML = `Bạn tích được <strong>${balance} BD-Points</strong> rồi đó, nhưng chưa cài mật khẩu. <a href="javascript:void(0)" id="btn-mascot-setup-pwd" style="color: #f59e0b; font-weight: 700; text-decoration: underline; margin-left: 4px;">Cài ngay kẻo ví điểm bay màu nha! 👉</a>`;
+            setTimeout(() => {
+                const mascotSetupBtn = document.getElementById('btn-mascot-setup-pwd');
+                if (mascotSetupBtn) {
+                    mascotSetupBtn.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        const email = localStorage.getItem('streak_email') || '';
+                        if (typeof window.showPasswordSetupModal === 'function') {
+                            window.showPasswordSetupModal(async (newPassword) => {
+                                try {
+                                    const res = await fetch('/api/log-email', {
+                                        method: 'POST',
+                                        headers: { 'Content-Type': 'application/json' },
+                                        body: JSON.stringify({
+                                            action: 'setPassword',
+                                            email: email,
+                                            password: newPassword
+                                        })
+                                    });
+                                    const data = await res.json();
+                                    if (data.success) {
+                                        alert('🎉 Cài đặt mật khẩu thành công! Ví điểm của bạn đã được bảo vệ an toàn.');
+                                        localStorage.setItem('b2b_user_has_password', 'true');
+                                        window.location.reload();
+                                    } else {
+                                        alert(data.error || 'Có lỗi xảy ra, vui lòng thử lại sau.');
+                                    }
+                                } catch (err) {
+                                    alert('Lỗi kết nối máy chủ.');
+                                }
+                            }, {
+                                title: '🔒 THIẾT LẬP MẬT KHẨU BẢO VỆ ĐIỂM',
+                                description: `Tạo mật khẩu cho tài khoản ${email} để bảo vệ ${balance} BD-Points:`,
+                                buttonText: 'Lưu Mật Khẩu'
+                            });
+                        }
+                    });
+                }
+            }, 100);
         } else {
             // Verified User -> Day of the week specific mascot and messages!
             const day = new Date().getDay(); // 0 = CN, 1 = T2, 2 = T3, 3 = T4, 4 = T5, 5 = T6, 6 = T7
