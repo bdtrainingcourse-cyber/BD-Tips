@@ -302,22 +302,38 @@
                     </select>
                 </div>
 
-                <!-- Media Preview Container (Displays selected images or video) -->
-                <div id="composerMediaPreview" class="hidden" style="border-radius: 12px; padding: 10px; background: rgba(0,0,0,0.15); border: 1px solid var(--border-color); display: flex; flex-direction: column; gap: 10px;">
-                    <div id="mediaPreviewGrid" style="display: flex; gap: 8px; flex-wrap: wrap;"></div>
-                    <div style="font-size: 0.72rem; color: var(--text-light); text-align: left;" id="mediaUploadCounter">Đã chọn: 0 ảnh, 0 video</div>
+                <!-- Media Capacity Guidelines Hint -->
+                <div style="background: rgba(59, 130, 246, 0.07); border-radius: 8px; border: 1px solid rgba(59, 130, 246, 0.22); padding: 8px 12px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; font-size: 0.76rem; color: var(--text-light);">
+                    <span style="display: flex; align-items: center; gap: 6px;">
+                        💡 <strong style="color: var(--text-main);">Khuyến khích dung lượng:</strong>
+                    </span>
+                    <div style="display: flex; gap: 14px; flex-wrap: wrap;">
+                        <span>🖼️ <b>Ảnh:</b> &lt; 5MB/tấm (Tối đa 20 ảnh)</span>
+                        <span>📄 <b>PDF:</b> &lt; 15MB/file (Tối đa 5 file)</span>
+                        <span>🎥 <b>Video:</b> &lt; 10MB</span>
+                    </div>
+                </div>
+
+                <!-- Media Preview Container (Displays selected images, PDF files or video) -->
+                <div id="composerMediaPreview" class="hidden" style="border-radius: 12px; padding: 12px; background: rgba(0,0,0,0.15); border: 1px solid var(--border-color); display: flex; flex-direction: column; gap: 10px;">
+                    <div id="mediaPreviewGrid" style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center;"></div>
+                    <div style="font-size: 0.74rem; color: var(--text-light); text-align: left;" id="mediaUploadCounter">Đã chọn: 0/20 ảnh, 0/5 PDF, 0 video</div>
                 </div>
 
                 <!-- Hidden file inputs -->
                 <input type="file" id="mediaPhotoInput" accept="image/*" multiple style="display: none;">
+                <input type="file" id="mediaPdfInput" accept="application/pdf,.pdf" multiple style="display: none;">
                 <input type="file" id="mediaVideoInput" accept="video/*" style="display: none;">
 
                 <!-- Bottom Toolbar & Submit Button -->
                 <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 15px; margin-top: 10px; border-top: 1px solid var(--border-color); padding-top: 15px;">
                     <!-- Media selection buttons -->
-                    <div style="display: flex; align-items: center; gap: 8px;">
-                        <button type="button" id="btnAttachPhoto" class="btn" style="background: rgba(255,255,255,0.03); border: 1px solid var(--border-color); padding: 8px 14px; border-radius: 8px; display: flex; align-items: center; gap: 6px; font-size: 0.85rem; font-weight: 600; color: var(--text-main); cursor: pointer; transition: all 0.2s;">
-                            🖼️ Ảnh
+                    <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                        <button type="button" id="btnAttachPhoto" class="btn" style="background: rgba(255,255,255,0.03); border: 1px solid var(--border-color); padding: 8px 14px; border-radius: 8px; display: flex; align-items: center; gap: 6px; font-size: 0.85rem; font-weight: 600; color: var(--text-main); cursor: pointer; transition: all 0.2s;" title="Đăng ít nhất 15 ảnh (tối đa 20 ảnh, khuyến khích < 5MB)">
+                            🖼️ Ảnh (Tối đa 20)
+                        </button>
+                        <button type="button" id="btnAttachPdf" class="btn" style="background: rgba(239, 68, 68, 0.08); border: 1px solid rgba(239, 68, 68, 0.35); padding: 8px 14px; border-radius: 8px; display: flex; align-items: center; gap: 6px; font-size: 0.85rem; font-weight: 700; color: #ef4444; cursor: pointer; transition: all 0.2s;" title="Đính kèm tài liệu PDF (tối đa 5 file, khuyến khích < 15MB)">
+                            📄 File PDF
                         </button>
                         <button type="button" id="btnAttachVideo" class="btn" style="background: rgba(255,255,255,0.03); border: 1px solid var(--border-color); padding: 8px 14px; border-radius: 8px; display: flex; align-items: center; gap: 6px; font-size: 0.85rem; font-weight: 600; color: var(--text-main); cursor: pointer; transition: all 0.2s;">
                             🎥 Video
@@ -374,6 +390,17 @@
         </div>
     </div>
 
-    <script src="community.js?v=2.3.49"></script>
+    <!-- Fullscreen Community Image Lightbox Modal -->
+    <div id="communityLightbox" class="modal-overlay" style="display: none; position: fixed; inset: 0; z-index: 99999; background: rgba(0,0,0,0.92); backdrop-filter: blur(8px); align-items: center; justify-content: center;">
+        <button type="button" id="lightboxCloseBtn" style="position: absolute; top: 20px; right: 25px; background: rgba(255,255,255,0.15); border: none; color: #fff; width: 44px; height: 44px; border-radius: 50%; font-size: 26px; cursor: pointer; display: flex; align-items: center; justify-content: center; z-index: 100000; transition: all 0.2s;" onmouseover="this.style.background='rgba(239,68,68,0.85)'" onmouseout="this.style.background='rgba(255,255,255,0.15)'" title="Đóng (Esc)">&times;</button>
+        <button type="button" id="lightboxPrevBtn" style="position: absolute; left: 20px; top: 50%; transform: translateY(-50%); background: rgba(255,255,255,0.15); border: none; color: #fff; width: 48px; height: 48px; border-radius: 50%; font-size: 28px; cursor: pointer; display: flex; align-items: center; justify-content: center; z-index: 100000; transition: all 0.2s;" onmouseover="this.style.background='rgba(243,168,59,0.9)'" onmouseout="this.style.background='rgba(255,255,255,0.15)'" title="Ảnh trước (Mũi tên trái)">&#10094;</button>
+        <button type="button" id="lightboxNextBtn" style="position: absolute; right: 20px; top: 50%; transform: translateY(-50%); background: rgba(255,255,255,0.15); border: none; color: #fff; width: 48px; height: 48px; border-radius: 50%; font-size: 28px; cursor: pointer; display: flex; align-items: center; justify-content: center; z-index: 100000; transition: all 0.2s;" onmouseover="this.style.background='rgba(243,168,59,0.9)'" onmouseout="this.style.background='rgba(255,255,255,0.15)'" title="Ảnh tiếp (Mũi tên phải)">&#10095;</button>
+        <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; max-width: 90vw; max-height: 90vh;">
+            <img id="lightboxImg" src="" style="max-width: 88vw; max-height: 80vh; object-fit: contain; border-radius: 12px; box-shadow: 0 10px 40px rgba(0,0,0,0.6); transition: transform 0.2s;">
+            <div id="lightboxCaption" style="margin-top: 14px; color: #f8fafc; font-size: 0.92rem; font-weight: 700; text-align: center; background: rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.15); padding: 6px 18px; border-radius: 20px; letter-spacing: 0.5px;"></div>
+        </div>
+    </div>
+
+    <script src="community.js?v=2.3.50"></script>
 </body>
 </html>

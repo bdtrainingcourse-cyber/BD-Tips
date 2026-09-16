@@ -76,7 +76,79 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    let attachedFiles = []; // Array of { file: File, type: 'image'|'video', previewUrl: string, base64: string }
+    function formatFileSize(bytes) {
+        if (!bytes || isNaN(bytes)) return 'Tài liệu PDF';
+        if (bytes < 1024) return bytes + ' B';
+        if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+        return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+    }
+
+    function compressAndReadImage(file, maxDimension = 1920, quality = 0.85) {
+        return new Promise((resolve) => {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const img = new Image();
+                img.onload = () => {
+                    let width = img.width;
+                    let height = img.height;
+
+                    if (width <= maxDimension && height <= maxDimension && file.size <= 1.5 * 1024 * 1024) {
+                        resolve(e.target.result);
+                        return;
+                    }
+
+                    if (width > height) {
+                        if (width > maxDimension) {
+                            height = Math.round((height * maxDimension) / width);
+                            width = maxDimension;
+                        }
+                    } else {
+                        if (height > maxDimension) {
+                            width = Math.round((width * maxDimension) / height);
+                            height = maxDimension;
+                        }
+                    }
+
+                    const canvas = document.createElement('canvas');
+                    canvas.width = width;
+                    canvas.height = height;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, width, height);
+
+                    const compressedDataUrl = canvas.toDataURL('image/jpeg', quality);
+                    resolve(compressedDataUrl);
+                };
+                img.onerror = () => resolve(e.target.result);
+                img.src = e.target.result;
+            };
+            reader.onerror = () => resolve(null);
+            reader.readAsDataURL(file);
+        });
+    }
+
+    function base64ToBlob(base64Data, contentType = 'application/pdf') {
+        try {
+            const base64Clean = base64Data.includes(',') ? base64Data.split(',')[1] : base64Data;
+            const byteCharacters = atob(base64Clean);
+            const sliceSize = 512;
+            const byteArrays = [];
+            for (let offset = 0; offset < byteCharacters.length; offset += sliceSize) {
+                const slice = byteCharacters.slice(offset, offset + sliceSize);
+                const byteNumbers = new Array(slice.length);
+                for (let i = 0; i < slice.length; i++) {
+                    byteNumbers[i] = slice.charCodeAt(i);
+                }
+                const byteArray = new Uint8Array(byteNumbers);
+                byteArrays.push(byteArray);
+            }
+            return new Blob(byteArrays, { type: contentType });
+        } catch (err) {
+            console.error('Error converting base64 to blob:', err);
+            return null;
+        }
+    }
+
+    let attachedFiles = []; // Array of { file: File, type: 'image'|'video'|'pdf', previewUrl?: string, base64: string, name?: string, size?: number }
 
     // DOM Elements
     const postsContainer = document.getElementById('posts-container');
@@ -934,21 +1006,61 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // Fetch and render IndexedDB media
             const mediaContainer = card.querySelector(`#media-container-${post.id}`);
-            if (mediaContainer && post.mediaType && (post.mediaUrl === null || post.mediaUrl.startsWith('data:') || post.mediaUrl.startsWith('post-'))) {
+            if (mediaContainer && post.mediaType) {
                 getPostMedia(post.id).then(mediaItems => {
                     if (mediaItems && mediaItems.length > 0) {
                         const photos = mediaItems.filter(m => m.type === 'image');
                         const videos = mediaItems.filter(m => m.type === 'video');
+                        const pdfs = mediaItems.filter(m => m.type === 'pdf');
                         
                         let html = '';
+
+                        // 1. Photos rendering with Smart Grid (15+ photos)
                         if (photos.length > 0) {
-                            const gridCols = photos.length === 1 ? '1fr' : photos.length === 2 ? '1fr 1fr' : 'repeat(3, 1fr)';
-                            html += `<div style="display: grid; grid-template-columns: ${gridCols}; gap: 6px; margin-top: 10px;">`;
-                            photos.forEach(p => {
-                                html += `<img src="${p.data}" style="width: 100%; height: ${photos.length === 1 ? '200px' : '100px'}; object-fit: cover; border-radius: 8px; cursor: zoom-in;" onclick="window.openImageLightbox(event, '${p.data}')">`;
-                            });
-                            html += `</div>`;
+                            if (photos.length === 1) {
+                                html += `
+                                    <div style="margin-top: 10px; border-radius: 10px; overflow: hidden; max-height: 240px; cursor: zoom-in;" onclick="window.openImageLightbox(event, 0, '${post.id}')">
+                                        <img src="${photos[0].data}" style="width: 100%; height: 220px; object-fit: cover; border-radius: 10px; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='none'">
+                                    </div>
+                                `;
+                            } else if (photos.length === 2) {
+                                html += `<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-top: 10px;">`;
+                                photos.forEach((p, idx) => {
+                                    html += `<img src="${p.data}" style="width: 100%; height: 140px; object-fit: cover; border-radius: 8px; cursor: zoom-in;" onclick="window.openImageLightbox(event, ${idx}, '${post.id}')">`;
+                                });
+                                html += `</div>`;
+                            } else if (photos.length === 3) {
+                                html += `<div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-top: 10px;">`;
+                                photos.forEach((p, idx) => {
+                                    html += `<img src="${p.data}" style="width: 100%; height: 110px; object-fit: cover; border-radius: 8px; cursor: zoom-in;" onclick="window.openImageLightbox(event, ${idx}, '${post.id}')">`;
+                                });
+                                html += `</div>`;
+                            } else if (photos.length === 4) {
+                                html += `<div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; margin-top: 10px;">`;
+                                photos.forEach((p, idx) => {
+                                    html += `<img src="${p.data}" style="width: 100%; height: 110px; object-fit: cover; border-radius: 8px; cursor: zoom-in;" onclick="window.openImageLightbox(event, ${idx}, '${post.id}')">`;
+                                });
+                                html += `</div>`;
+                            } else {
+                                // 5 to 20 photos: 4 items, 4th item has +N overlay badge
+                                html += `<div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; margin-top: 10px;">`;
+                                for (let i = 0; i < 3; i++) {
+                                    html += `<img src="${photos[i].data}" style="width: 100%; height: 110px; object-fit: cover; border-radius: 8px; cursor: zoom-in;" onclick="window.openImageLightbox(event, ${i}, '${post.id}')">`;
+                                }
+                                html += `
+                                    <div class="photo-grid-overlay-container" onclick="window.openImageLightbox(event, 3, '${post.id}')" style="height: 110px;">
+                                        <img src="${photos[3].data}" style="width: 100%; height: 110px; object-fit: cover;">
+                                        <div class="photo-grid-more-overlay">
+                                            <span>+${photos.length - 3}</span>
+                                            <span style="font-size: 0.72rem; font-weight: 600; opacity: 0.9;">ảnh khác</span>
+                                        </div>
+                                    </div>
+                                `;
+                                html += `</div>`;
+                            }
                         }
+
+                        // 2. Videos rendering
                         if (videos.length > 0) {
                             videos.forEach(v => {
                                 html += `
@@ -958,6 +1070,34 @@ document.addEventListener('DOMContentLoaded', () => {
                                 `;
                             });
                         }
+
+                        // 3. PDF Documents rendering
+                        if (pdfs.length > 0) {
+                            pdfs.forEach((pdf, pIdx) => {
+                                const fName = pdf.name || 'Tai-lieu-B2B.pdf';
+                                const fSize = formatFileSize(pdf.size);
+                                html += `
+                                    <div class="b2b-pdf-card" onclick="event.stopPropagation();">
+                                        <div style="display: flex; align-items: center; gap: 12px; overflow: hidden; flex: 1;">
+                                            <div class="pdf-icon-box">📄</div>
+                                            <div style="display: flex; flex-direction: column; overflow: hidden; text-align: left;">
+                                                <span style="font-size: 0.88rem; font-weight: 700; color: var(--text-main); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${fName}">${fName}</span>
+                                                <span style="font-size: 0.72rem; color: var(--text-light); margin-top: 2px;">${fSize} • Tài liệu PDF B2B</span>
+                                            </div>
+                                        </div>
+                                        <div style="display: flex; gap: 8px; align-items: center; flex-shrink: 0;">
+                                            <button type="button" class="community-pdf-btn-view" onclick="window.viewPdfDocument('${post.id}', ${pIdx}, event)">
+                                                👁️ Xem Ngay
+                                            </button>
+                                            <button type="button" class="community-pdf-btn-download" onclick="window.downloadPdfDocument('${post.id}', ${pIdx}, event)">
+                                                ⬇️ Tải Về
+                                            </button>
+                                        </div>
+                                    </div>
+                                `;
+                            });
+                        }
+
                         mediaContainer.innerHTML = html;
                     }
                 });
@@ -1353,21 +1493,26 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Fetch and render IndexedDB media for details view
         const detailsMediaContainer = document.getElementById(`details-media-container-${post.id}`);
-        if (detailsMediaContainer && post.mediaType && (post.mediaUrl === null || post.mediaUrl.startsWith('data:') || post.mediaUrl.startsWith('post-'))) {
+        if (detailsMediaContainer && post.mediaType) {
             getPostMedia(post.id).then(mediaItems => {
                 if (mediaItems && mediaItems.length > 0) {
                     const photos = mediaItems.filter(m => m.type === 'image');
                     const videos = mediaItems.filter(m => m.type === 'video');
+                    const pdfs = mediaItems.filter(m => m.type === 'pdf');
                     
                     let html = '';
+
+                    // 1. Photos rendering in detail (full gallery view)
                     if (photos.length > 0) {
-                        const gridCols = photos.length === 1 ? '1fr' : photos.length === 2 ? '1fr 1fr' : 'repeat(3, 1fr)';
+                        const gridCols = photos.length === 1 ? '1fr' : photos.length === 2 ? 'repeat(2, 1fr)' : 'repeat(auto-fill, minmax(140px, 1fr))';
                         html += `<div style="display: grid; grid-template-columns: ${gridCols}; gap: 8px; margin-top: 15px;">`;
-                        photos.forEach(p => {
-                            html += `<img src="${p.data}" style="width: 100%; height: ${photos.length === 1 ? '350px' : '150px'}; object-fit: cover; border-radius: 12px; cursor: zoom-in;" onclick="window.openImageLightbox(event, '${p.data}')">`;
+                        photos.forEach((p, idx) => {
+                            html += `<img src="${p.data}" style="width: 100%; height: ${photos.length === 1 ? '340px' : '140px'}; object-fit: cover; border-radius: 10px; cursor: zoom-in; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='none'" onclick="window.openImageLightbox(event, ${idx}, '${post.id}')">`;
                         });
                         html += `</div>`;
                     }
+
+                    // 2. Videos rendering
                     if (videos.length > 0) {
                         videos.forEach(v => {
                             html += `
@@ -1377,6 +1522,34 @@ document.addEventListener('DOMContentLoaded', () => {
                             `;
                         });
                     }
+
+                    // 3. PDF Documents rendering in detail
+                    if (pdfs.length > 0) {
+                        pdfs.forEach((pdf, pIdx) => {
+                            const fName = pdf.name || 'Tai-lieu-B2B.pdf';
+                            const fSize = formatFileSize(pdf.size);
+                            html += `
+                                <div class="b2b-pdf-card" style="margin-top: 15px;">
+                                    <div style="display: flex; align-items: center; gap: 14px; overflow: hidden; flex: 1;">
+                                        <div class="pdf-icon-box" style="width: 48px; height: 48px; font-size: 1.8rem;">📄</div>
+                                        <div style="display: flex; flex-direction: column; overflow: hidden; text-align: left;">
+                                            <span style="font-size: 0.95rem; font-weight: 700; color: var(--text-main); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${fName}">${fName}</span>
+                                            <span style="font-size: 0.78rem; color: var(--text-light); margin-top: 2px;">${fSize} • Tài liệu đính kèm chính thức</span>
+                                        </div>
+                                    </div>
+                                    <div style="display: flex; gap: 10px; align-items: center; flex-shrink: 0;">
+                                        <button type="button" class="community-pdf-btn-view" onclick="window.viewPdfDocument('${post.id}', ${pIdx}, event)">
+                                            👁️ Đọc Trực Tiếp
+                                        </button>
+                                        <button type="button" class="community-pdf-btn-download" onclick="window.downloadPdfDocument('${post.id}', ${pIdx}, event)">
+                                            ⬇️ Tải Về Máy
+                                        </button>
+                                    </div>
+                                </div>
+                            `;
+                        });
+                    }
+
                     detailsMediaContainer.innerHTML = html;
                 }
             });
@@ -1524,8 +1697,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Rich Social Media Composer Handle
     const btnAttachPhoto = document.getElementById('btnAttachPhoto');
+    const btnAttachPdf = document.getElementById('btnAttachPdf');
     const btnAttachVideo = document.getElementById('btnAttachVideo');
     const mediaPhotoInput = document.getElementById('mediaPhotoInput');
+    const mediaPdfInput = document.getElementById('mediaPdfInput');
     const mediaVideoInput = document.getElementById('mediaVideoInput');
     const composerMediaPreview = document.getElementById('composerMediaPreview');
     const composerCategory = document.getElementById('composerCategory');
@@ -1571,8 +1746,10 @@ document.addEventListener('DOMContentLoaded', () => {
         grid.innerHTML = '';
         
         const photosCount = attachedFiles.filter(f => f.type === 'image').length;
+        const pdfsCount = attachedFiles.filter(f => f.type === 'pdf').length;
         const videosCount = attachedFiles.filter(f => f.type === 'video').length;
-        counter.textContent = `Đã chọn: ${photosCount} ảnh (tối đa 10), ${videosCount} video (tối đa 1)`;
+        
+        counter.innerHTML = `Đã chọn: <b style="color: var(--primary);">${photosCount}/20 ảnh</b>, <b style="color: #ef4444;">${pdfsCount}/5 PDF</b>${videosCount > 0 ? `, <b>${videosCount}/1 video</b>` : ''} <span style="color: #10b981; margin-left: 8px; font-weight: 600;">(Khuyến khích: Ảnh &lt; 5MB, PDF &lt; 15MB)</span>`;
 
         if (attachedFiles.length > 0) {
             composerMediaPreview.classList.remove('hidden');
@@ -1581,56 +1758,96 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         attachedFiles.forEach((item, index) => {
-            const wrapper = document.createElement('div');
-            wrapper.style.position = 'relative';
-            wrapper.style.width = '70px';
-            wrapper.style.height = '70px';
-            wrapper.style.borderRadius = '8px';
-            wrapper.style.overflow = 'hidden';
-            wrapper.style.border = '1px solid var(--border-color)';
-            wrapper.style.background = '#000';
-            wrapper.style.display = 'flex';
-            wrapper.style.alignItems = 'center';
-            wrapper.style.justifyContent = 'center';
+            if (item.type === 'image' || item.type === 'video') {
+                const wrapper = document.createElement('div');
+                wrapper.style.position = 'relative';
+                wrapper.style.width = '70px';
+                wrapper.style.height = '70px';
+                wrapper.style.borderRadius = '8px';
+                wrapper.style.overflow = 'hidden';
+                wrapper.style.border = '1px solid var(--border-color)';
+                wrapper.style.background = '#000';
+                wrapper.style.display = 'flex';
+                wrapper.style.alignItems = 'center';
+                wrapper.style.justifyContent = 'center';
 
-            if (item.type === 'image') {
-                wrapper.innerHTML = `<img src="${item.previewUrl}" style="width: 100%; height: 100%; object-fit: cover;">`;
-            } else {
-                wrapper.innerHTML = `<span style="font-size: 1.5rem;">🎥</span>`;
+                if (item.type === 'image') {
+                    wrapper.innerHTML = `<img src="${item.previewUrl}" style="width: 100%; height: 100%; object-fit: cover;">`;
+                } else {
+                    wrapper.innerHTML = `<span style="font-size: 1.5rem;">🎥</span>`;
+                }
+
+                const removeBtn = document.createElement('button');
+                removeBtn.type = 'button';
+                removeBtn.innerHTML = '&times;';
+                removeBtn.style.position = 'absolute';
+                removeBtn.style.top = '2px';
+                removeBtn.style.right = '2px';
+                removeBtn.style.width = '18px';
+                removeBtn.style.height = '18px';
+                removeBtn.style.borderRadius = '50%';
+                removeBtn.style.background = 'rgba(0,0,0,0.7)';
+                removeBtn.style.color = '#fff';
+                removeBtn.style.border = 'none';
+                removeBtn.style.display = 'flex';
+                removeBtn.style.alignItems = 'center';
+                removeBtn.style.justifyContent = 'center';
+                removeBtn.style.fontSize = '13px';
+                removeBtn.style.cursor = 'pointer';
+                removeBtn.style.fontWeight = 'bold';
+
+                removeBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    if (item.previewUrl) URL.revokeObjectURL(item.previewUrl);
+                    attachedFiles.splice(index, 1);
+                    updateMediaPreviewGrid();
+                });
+
+                wrapper.appendChild(removeBtn);
+                grid.appendChild(wrapper);
+            } else if (item.type === 'pdf') {
+                const pdfBadge = document.createElement('div');
+                pdfBadge.className = 'pdf-preview-badge';
+                pdfBadge.innerHTML = `
+                    <span style="font-size: 1.35rem; flex-shrink: 0;">📄</span>
+                    <div style="display: flex; flex-direction: column; overflow: hidden; text-align: left; padding-right: 18px;">
+                        <span style="font-size: 0.78rem; font-weight: 700; color: var(--text-main); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 140px;" title="${item.name}">${item.name}</span>
+                        <span style="font-size: 0.68rem; color: var(--text-light);">${formatFileSize(item.size)}</span>
+                    </div>
+                `;
+
+                const removeBtn = document.createElement('button');
+                removeBtn.type = 'button';
+                removeBtn.innerHTML = '&times;';
+                removeBtn.style.position = 'absolute';
+                removeBtn.style.top = '4px';
+                removeBtn.style.right = '4px';
+                removeBtn.style.width = '18px';
+                removeBtn.style.height = '18px';
+                removeBtn.style.borderRadius = '50%';
+                removeBtn.style.background = 'rgba(239, 68, 68, 0.8)';
+                removeBtn.style.color = '#fff';
+                removeBtn.style.border = 'none';
+                removeBtn.style.display = 'flex';
+                removeBtn.style.alignItems = 'center';
+                removeBtn.style.justifyContent = 'center';
+                removeBtn.style.fontSize = '12px';
+                removeBtn.style.cursor = 'pointer';
+                removeBtn.style.fontWeight = 'bold';
+
+                removeBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    attachedFiles.splice(index, 1);
+                    updateMediaPreviewGrid();
+                });
+
+                pdfBadge.appendChild(removeBtn);
+                grid.appendChild(pdfBadge);
             }
-
-            const removeBtn = document.createElement('button');
-            removeBtn.type = 'button';
-            removeBtn.innerHTML = '&times;';
-            removeBtn.style.position = 'absolute';
-            removeBtn.style.top = '2px';
-            removeBtn.style.right = '2px';
-            removeBtn.style.width = '16px';
-            removeBtn.style.height = '16px';
-            removeBtn.style.borderRadius = '50%';
-            removeBtn.style.background = 'rgba(0,0,0,0.6)';
-            removeBtn.style.color = '#fff';
-            removeBtn.style.border = 'none';
-            removeBtn.style.display = 'flex';
-            removeBtn.style.alignItems = 'center';
-            removeBtn.style.justifyContent = 'center';
-            removeBtn.style.fontSize = '12px';
-            removeBtn.style.cursor = 'pointer';
-            removeBtn.style.fontWeight = 'bold';
-
-            removeBtn.addEventListener('click', (e) => {
-                e.stopPropagation();
-                URL.revokeObjectURL(item.previewUrl);
-                attachedFiles.splice(index, 1);
-                updateMediaPreviewGrid();
-            });
-
-            wrapper.appendChild(removeBtn);
-            grid.appendChild(wrapper);
         });
     }
 
-    // Attach Photo Trigger
+    // Attach Photo Trigger (Supports at least 15 photos, up to 20 photos with smart compression)
     if (btnAttachPhoto && mediaPhotoInput) {
         btnAttachPhoto.addEventListener('click', () => {
             mediaPhotoInput.click();
@@ -1638,25 +1855,71 @@ document.addEventListener('DOMContentLoaded', () => {
         mediaPhotoInput.addEventListener('change', async (e) => {
             const files = Array.from(e.target.files);
             const currentPhotosCount = attachedFiles.filter(f => f.type === 'image').length;
-            if (currentPhotosCount + files.length > 10) {
-                alert('⚠️ Bạn chỉ được đăng tối đa 10 hình ảnh!');
+            if (currentPhotosCount + files.length > 20) {
+                alert(`⚠️ Bạn chỉ được đăng tối đa 20 hình ảnh mỗi bài đăng! (Hiện tại đã chọn ${currentPhotosCount} ảnh)`);
                 return;
             }
             
             for (let file of files) {
-                if (file.size > 1.5 * 1024 * 1024) {
-                    alert(`⚠️ Ảnh "${file.name}" vượt quá dung lượng 1.5MB! Để hệ thống hoạt động ổn định lâu dài, vui lòng chọn ảnh nhẹ hơn.`);
+                if (file.size > 10 * 1024 * 1024) {
+                    alert(`⚠️ Ảnh "${file.name}" vượt quá 10MB! Khuyến khích ảnh < 5MB để đảm bảo tải trang tốt nhất.`);
                     continue;
                 }
-                const previewUrl = URL.createObjectURL(file);
-                const base64 = await readFileAsBase64(file);
-                attachedFiles.push({
-                    type: 'image',
-                    previewUrl,
-                    base64
-                });
+                try {
+                    const previewUrl = URL.createObjectURL(file);
+                    const base64 = await compressAndReadImage(file);
+                    attachedFiles.push({
+                        type: 'image',
+                        name: file.name,
+                        size: file.size,
+                        previewUrl,
+                        base64
+                    });
+                } catch(err) {
+                    console.error('Error processing image:', err);
+                }
             }
             updateMediaPreviewGrid();
+            mediaPhotoInput.value = '';
+        });
+    }
+
+    // Attach PDF Trigger (Supports up to 5 PDF files, < 15MB recommended)
+    if (btnAttachPdf && mediaPdfInput) {
+        btnAttachPdf.addEventListener('click', () => {
+            mediaPdfInput.click();
+        });
+        mediaPdfInput.addEventListener('change', async (e) => {
+            const files = Array.from(e.target.files);
+            const currentPdfCount = attachedFiles.filter(f => f.type === 'pdf').length;
+            if (currentPdfCount + files.length > 5) {
+                alert(`⚠️ Bạn chỉ được đính kèm tối đa 5 file PDF mỗi bài đăng! (Hiện tại đã chọn ${currentPdfCount} file)`);
+                return;
+            }
+
+            for (let file of files) {
+                if (!file.name.toLowerCase().endsWith('.pdf') && file.type !== 'application/pdf') {
+                    alert(`⚠️ File "${file.name}" không phải định dạng tài liệu PDF hợp lệ!`);
+                    continue;
+                }
+                if (file.size > 25 * 1024 * 1024) {
+                    alert(`⚠️ File PDF "${file.name}" vượt quá 25MB! Khuyến khích tài liệu < 15MB để cộng đồng tải & đọc nhanh nhất.`);
+                    continue;
+                }
+                try {
+                    const base64 = await readFileAsBase64(file);
+                    attachedFiles.push({
+                        type: 'pdf',
+                        name: file.name,
+                        size: file.size,
+                        base64: base64
+                    });
+                } catch(err) {
+                    console.error('Error reading PDF:', err);
+                }
+            }
+            updateMediaPreviewGrid();
+            mediaPdfInput.value = '';
         });
     }
 
@@ -1681,11 +1944,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 const base64 = await readFileAsBase64(file);
                 attachedFiles.push({
                     type: 'video',
+                    name: file.name,
+                    size: file.size,
                     previewUrl,
                     base64
                 });
             }
             updateMediaPreviewGrid();
+            mediaVideoInput.value = '';
         });
     }
 
@@ -1743,6 +2009,7 @@ document.addEventListener('DOMContentLoaded', () => {
             attachedFiles = [];
             
             if (mediaPhotoInput) mediaPhotoInput.value = '';
+            if (mediaPdfInput) mediaPdfInput.value = '';
             if (mediaVideoInput) mediaVideoInput.value = '';
             if (composerMediaPreview) {
                 const grid = document.getElementById('mediaPreviewGrid');
@@ -1803,15 +2070,25 @@ document.addEventListener('DOMContentLoaded', () => {
             let firstUrl = null;
             const hasImages = attachedFiles.some(f => f.type === 'image');
             const hasVideos = attachedFiles.some(f => f.type === 'video');
-            if (hasImages && hasVideos) {
+            const hasPdfs = attachedFiles.some(f => f.type === 'pdf');
+
+            const mediaTypes = [];
+            if (hasImages) mediaTypes.push('image');
+            if (hasVideos) mediaTypes.push('video');
+            if (hasPdfs) mediaTypes.push('pdf');
+
+            if (mediaTypes.length > 1) {
                 type = 'mixed';
-                firstUrl = attachedFiles[0].base64;
-            } else if (hasImages) {
-                type = 'image';
-                firstUrl = attachedFiles[0].base64;
+            } else if (mediaTypes.length === 1) {
+                type = mediaTypes[0];
+            }
+
+            if (hasImages) {
+                firstUrl = attachedFiles.find(f => f.type === 'image').base64;
             } else if (hasVideos) {
-                type = 'video';
-                firstUrl = attachedFiles[0].base64;
+                firstUrl = attachedFiles.find(f => f.type === 'video').base64;
+            } else if (hasPdfs) {
+                firstUrl = 'pdf-attachment';
             }
 
             const newPost = {
@@ -1833,7 +2110,12 @@ document.addEventListener('DOMContentLoaded', () => {
             };
 
             if (attachedFiles.length > 0) {
-                const mediaToSave = attachedFiles.map(f => ({ type: f.type, data: f.base64 }));
+                const mediaToSave = attachedFiles.map(f => ({
+                    type: f.type,
+                    name: f.name || (f.type === 'pdf' ? 'Tai-lieu-B2B.pdf' : 'media'),
+                    size: f.size || 0,
+                    data: f.base64
+                }));
                 savePostMedia(newPost.id, mediaToSave);
             }
 
@@ -2137,6 +2419,157 @@ document.addEventListener('DOMContentLoaded', () => {
         
         alert(`⚔️ NHẬN THÁCH ĐẤU TỪ CỘNG ĐỒNG!\n\nHệ thống sẽ đưa bạn tới Minigame "${gameId === 'puzzle-negotiation' ? 'Đàm phán B2B' : gameId === 'puzzle-kpi' ? 'KPI Master' : 'Luật Lao Động'}". Vượt qua mốc ${score} điểm của ${author} để nhận +50 BD-Points nhé!`);
         window.location.href = `index.html?challenge=true&challenger=${encodeURIComponent(author)}&mascot=Expert&score=${score}&gameId=${gameId}&postId=${postId}`;
+    };
+
+    // --- LIGHTBOX VIEWER ENGINE ---
+    let currentLightboxPhotos = [];
+    let currentLightboxIndex = 0;
+
+    const lightboxModal = document.getElementById('communityLightbox');
+    const lightboxImg = document.getElementById('lightboxImg');
+    const lightboxCaption = document.getElementById('lightboxCaption');
+    const lightboxCloseBtn = document.getElementById('lightboxCloseBtn');
+    const lightboxPrevBtn = document.getElementById('lightboxPrevBtn');
+    const lightboxNextBtn = document.getElementById('lightboxNextBtn');
+
+    function updateLightboxDisplay() {
+        if (!lightboxModal || !lightboxImg || currentLightboxPhotos.length === 0) return;
+        const currentSrc = currentLightboxPhotos[currentLightboxIndex];
+        lightboxImg.src = currentSrc;
+        if (lightboxCaption) {
+            lightboxCaption.textContent = `Ảnh ${currentLightboxIndex + 1} / ${currentLightboxPhotos.length}`;
+        }
+        if (lightboxPrevBtn) {
+            lightboxPrevBtn.style.display = currentLightboxPhotos.length > 1 ? 'flex' : 'none';
+        }
+        if (lightboxNextBtn) {
+            lightboxNextBtn.style.display = currentLightboxPhotos.length > 1 ? 'flex' : 'none';
+        }
+    }
+
+    function showLightbox() {
+        if (lightboxModal) {
+            lightboxModal.style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+            updateLightboxDisplay();
+        }
+    }
+
+    function closeLightbox() {
+        if (lightboxModal) {
+            lightboxModal.style.display = 'none';
+            document.body.style.overflow = '';
+        }
+    }
+
+    if (lightboxCloseBtn) {
+        lightboxCloseBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            closeLightbox();
+        });
+    }
+
+    if (lightboxModal) {
+        lightboxModal.addEventListener('click', (e) => {
+            if (e.target === lightboxModal) {
+                closeLightbox();
+            }
+        });
+    }
+
+    if (lightboxPrevBtn) {
+        lightboxPrevBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (currentLightboxPhotos.length > 1) {
+                currentLightboxIndex = (currentLightboxIndex - 1 + currentLightboxPhotos.length) % currentLightboxPhotos.length;
+                updateLightboxDisplay();
+            }
+        });
+    }
+
+    if (lightboxNextBtn) {
+        lightboxNextBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (currentLightboxPhotos.length > 1) {
+                currentLightboxIndex = (currentLightboxIndex + 1) % currentLightboxPhotos.length;
+                updateLightboxDisplay();
+            }
+        });
+    }
+
+    document.addEventListener('keydown', (e) => {
+        if (!lightboxModal || lightboxModal.style.display !== 'flex') return;
+        if (e.key === 'Escape') {
+            closeLightbox();
+        } else if (e.key === 'ArrowLeft' && currentLightboxPhotos.length > 1) {
+            currentLightboxIndex = (currentLightboxIndex - 1 + currentLightboxPhotos.length) % currentLightboxPhotos.length;
+            updateLightboxDisplay();
+        } else if (e.key === 'ArrowRight' && currentLightboxPhotos.length > 1) {
+            currentLightboxIndex = (currentLightboxIndex + 1) % currentLightboxPhotos.length;
+            updateLightboxDisplay();
+        }
+    });
+
+    window.openImageLightbox = function(event, index, postIdOrData) {
+        if (event) event.stopPropagation();
+        if (typeof postIdOrData === 'string' && (postIdOrData.startsWith('data:') || postIdOrData.startsWith('http'))) {
+            currentLightboxPhotos = [postIdOrData];
+            currentLightboxIndex = 0;
+            showLightbox();
+            return;
+        }
+
+        const postId = postIdOrData;
+        getPostMedia(postId).then(items => {
+            const photos = items.filter(m => m.type === 'image');
+            if (photos.length > 0) {
+                currentLightboxPhotos = photos.map(p => p.data);
+                currentLightboxIndex = Math.max(0, Math.min(index || 0, currentLightboxPhotos.length - 1));
+                showLightbox();
+            }
+        });
+    };
+
+    // --- PDF DOCUMENT VIEWER & DOWNLOAD HELPER ---
+    window.viewPdfDocument = function(postId, pdfIndex, event) {
+        if (event) event.stopPropagation();
+        getPostMedia(postId).then(items => {
+            const pdfs = items.filter(m => m.type === 'pdf');
+            if (pdfs.length > pdfIndex) {
+                const targetPdf = pdfs[pdfIndex];
+                const blob = base64ToBlob(targetPdf.data, 'application/pdf');
+                if (blob) {
+                    const blobUrl = URL.createObjectURL(blob);
+                    window.open(blobUrl, '_blank');
+                    setTimeout(() => URL.revokeObjectURL(blobUrl), 120000);
+                } else {
+                    alert('⚠️ Không thể tải tài liệu PDF. Vui lòng thử lại!');
+                }
+            }
+        });
+    };
+
+    window.downloadPdfDocument = function(postId, pdfIndex, event) {
+        if (event) event.stopPropagation();
+        getPostMedia(postId).then(items => {
+            const pdfs = items.filter(m => m.type === 'pdf');
+            if (pdfs.length > pdfIndex) {
+                const targetPdf = pdfs[pdfIndex];
+                const blob = base64ToBlob(targetPdf.data, 'application/pdf');
+                if (blob) {
+                    const blobUrl = URL.createObjectURL(blob);
+                    const link = document.createElement('a');
+                    link.href = blobUrl;
+                    link.download = targetPdf.name || 'Tai-lieu-B2B.pdf';
+                    document.body.appendChild(link);
+                    link.click();
+                    link.remove();
+                    setTimeout(() => URL.revokeObjectURL(blobUrl), 30000);
+                } else {
+                    alert('⚠️ Không thể tải xuống file PDF. Vui lòng thử lại!');
+                }
+            }
+        });
     };
 
     // Inject styles for badge-challenge
