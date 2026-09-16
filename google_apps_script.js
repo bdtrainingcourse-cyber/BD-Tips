@@ -696,7 +696,8 @@ function checkEmail(email, name) {
           email: cleanEmail,
           points: idx.points !== -1 && !isNaN(parseInt(row[idx.points], 10)) ? parseInt(row[idx.points], 10) : 25,
           avatar: "",
-          verified: isVerified
+          verified: isVerified,
+          password: (idx.password !== -1 && row[idx.password]) ? String(row[idx.password]).trim() : ""
         };
         
         return createJsonResponse({ exists: true, user: userData });
