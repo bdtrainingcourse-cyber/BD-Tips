@@ -7123,6 +7123,7 @@ if (document.readyState === 'loading') {
         const gridBox = container.querySelector('#wend-grid-container');
         const currentWordEl = container.querySelector('#wend-current-word');
         
+        const isDarkTheme = document.body.classList.contains('dark-theme');
         grid.forEach((row, r) => {
             row.forEach((letter, c) => {
                 const btn = document.createElement('button');
@@ -7133,22 +7134,23 @@ if (document.readyState === 'loading') {
                 btn.style.height = '48px';
                 btn.style.fontSize = '1.1rem';
                 btn.style.fontWeight = '900';
-                btn.style.background = 'rgba(255,255,255,0.06)';
-                btn.style.border = '1px solid rgba(255,255,255,0.15)';
+                btn.style.background = isDarkTheme ? 'rgba(255,255,255,0.06)' : '#ffffff';
+                btn.style.border = isDarkTheme ? '1px solid rgba(255,255,255,0.15)' : '1.5px solid #cbd5e1';
                 btn.style.borderRadius = '10px';
-                btn.style.color = '#ffffff';
+                btn.style.color = isDarkTheme ? '#ffffff' : '#0f172a';
+                btn.style.boxShadow = isDarkTheme ? 'none' : '0 2px 4px rgba(0,0,0,0.04)';
                 btn.style.cursor = 'pointer';
                 btn.style.transition = 'all 0.2s ease';
                 
                 btn.addEventListener('click', () => {
                     if (btn.classList.contains('selected')) {
                         btn.classList.remove('selected');
-                        btn.style.background = 'rgba(255,255,255,0.06)';
-                        btn.style.borderColor = 'rgba(255,255,255,0.15)';
+                        btn.style.background = isDarkTheme ? 'rgba(255,255,255,0.06)' : '#ffffff';
+                        btn.style.borderColor = isDarkTheme ? 'rgba(255,255,255,0.15)' : '#cbd5e1';
                         selectedLetters = selectedLetters.filter(item => !(item.r === r && item.c === c));
                     } else {
                         btn.classList.add('selected');
-                        btn.style.background = 'rgba(56, 189, 248, 0.3)';
+                        btn.style.background = isDarkTheme ? 'rgba(56, 189, 248, 0.3)' : '#e0f2fe';
                         btn.style.borderColor = '#38bdf8';
                         selectedLetters.push({ r, c, letter });
                     }
@@ -7195,81 +7197,212 @@ if (document.readyState === 'loading') {
         });
     }
 
-    // --- GAME 2: B2B ZIP (Path Finder Dynamic Level) ---
+    // --- GAME 2: B2B ZIP (Sales Path Finder Dynamic Level & Educational Scenarios) ---
     function renderDualZipGame(container, usr, oppLevel) {
-        let pipelineStages = [
-            { id: 1, name: '1. Lead Gen 🎯' },
-            { id: 2, name: '2. ICP Qualify 🔍' },
-            { id: 3, name: '3. Cold Outreach ✉️' },
-            { id: 4, name: '4. Product Pitch 📢' },
-            { id: 5, name: '5. Proposal 📄' },
-            { id: 6, name: '6. Closed Won 🏆' }
-        ];
+        const isDarkTheme = document.body.classList.contains('dark-theme');
         
-        let distractors = [
-            { id: 99, name: 'Spam Mail ❌' },
-            { id: 98, name: 'Discount 50% ❌' },
-            { id: 97, name: 'Ghosted ❌' }
+        // Ngân hàng Kịch Bản B2B Thực Chiến phong phú (Không bao giờ trùng lặp, không theo 1 thứ tự icon đơn điệu)
+        const SCENARIOS = [
+            {
+                title: "Phễu Săn Inbound Lead Doanh Nghiệp (Enterprise SaaS)",
+                icon: "🏢",
+                stages: [
+                    { id: 1, name: "Tiếp nhận MQL từ Ebook / Webinar", icon: "📥" },
+                    { id: 2, name: "Khảo sát Nhu cầu & Chấm điểm BANT", icon: "🔍" },
+                    { id: 3, name: "Discovery Call & Đọc vị Buying Center", icon: "👥" },
+                    { id: 4, name: "Demo Giải pháp May đo theo Case Study", icon: "📢" },
+                    { id: 5, name: "Thuyết phục Hội đồng Bảo mật & IT", icon: "🛡️" },
+                    { id: 6, name: "Đàm phán Thương mại & Điều khoản SLA", icon: "⚖️" },
+                    { id: 7, name: "Ký Hợp đồng & Kick-off Triển khai", icon: "🏆" }
+                ],
+                distractors: [
+                    { id: 91, name: "Báo giá kịch sàn ngay khi khách tải tài liệu", icon: "💸" },
+                    { id: 92, name: "Demo tính năng đại trà không hỏi pain point", icon: "⚡" },
+                    { id: 93, name: "Bỏ qua phòng Pháp chế & IT khi deal lớn", icon: "⚠️" },
+                    { id: 94, name: "Chốt hợp đồng miệng không gửi biên bản", icon: "🛑" },
+                    { id: 95, name: "Hứa hẹn tính năng chưa có để ép lấy deal", icon: "💣" }
+                ]
+            },
+            {
+                title: "Chiến Dịch Outbound ABM Săn Cá Lớn (Account-Based Selling)",
+                icon: "🎯",
+                stages: [
+                    { id: 1, name: "Nghiên cứu Top 50 Doanh nghiệp Mục tiêu", icon: "📊" },
+                    { id: 2, name: "Đọc vị PIC & Mapping Sơ đồ Nhân sự", icon: "🔎" },
+                    { id: 3, name: "Gửi Cold Email Cá nhân hóa theo Nỗi đau", icon: "✉️" },
+                    { id: 4, name: "Cuộc gọi Đặt hẹn & Khai thác câu hỏi SPIN", icon: "📞" },
+                    { id: 5, name: "Trình bày Đề xuất Giải pháp & Tính ROI", icon: "📑" },
+                    { id: 6, name: "Chốt Kế hoạch Thử nghiệm Proof-of-Concept", icon: "🤝" },
+                    { id: 7, name: "Ký Hợp đồng Khung Đối tác Chiến lược", icon: "🏆" }
+                ],
+                distractors: [
+                    { id: 91, name: "Bắn email spam hàng loạt không lọc ICP", icon: "💣" },
+                    { id: 92, name: "Ép khách hàng chốt ngay lần đầu gặp mặt", icon: "⚡" },
+                    { id: 93, name: "Giảm giá vội vàng khi khách hàng chê đắt", icon: "💸" },
+                    { id: 94, name: "Bỏ qua người dùng thực tế chỉ nói với sếp", icon: "⚠️" },
+                    { id: 95, name: "Bỏ cuộc ngay khi nhận lời từ chối đầu tiên", icon: "🛑" }
+                ]
+            },
+            {
+                title: "Phễu Mở Rộng & Giữ Chân Khách Hàng (Account Expansion & Upsell)",
+                icon: "🚀",
+                stages: [
+                    { id: 1, name: "Đo lường Chỉ số Sức khỏe Tài khoản (Health Score)", icon: "📈" },
+                    { id: 2, name: "Họp Đánh giá Định kỳ Hiệu quả QBR", icon: "💼" },
+                    { id: 3, name: "Phát hiện Điểm nghẽn Mới của Khách hàng", icon: "💡" },
+                    { id: 4, name: "Đề xuất Gói Nâng cấp Tính năng & License", icon: "🚀" },
+                    { id: 5, name: "Bảo vệ Ngân sách Bổ sung với CFO", icon: "⚖️" },
+                    { id: 6, name: "Ký Phụ lục Gia hạn & Nâng cấp Toàn diện", icon: "🏆" }
+                ],
+                distractors: [
+                    { id: 91, name: "Chờ đến sát ngày hết hạn mới liên hệ khách", icon: "🛑" },
+                    { id: 92, name: "Cố nài ép mua gói cao khi khách phàn nàn lỗi", icon: "💣" },
+                    { id: 93, name: "Bỏ rơi khách sau khi nhận hoa hồng năm đầu", icon: "⚠️" },
+                    { id: 94, name: "Không hỗ trợ khách đào tạo nhân sự mới", icon: "⚡" }
+                ]
+            },
+            {
+                title: "Quy Trình Đấu Thầu Mua Sắm Doanh Nghiệp (B2B Procurement & RFP)",
+                icon: "📋",
+                stages: [
+                    { id: 1, name: "Phân tích Hồ sơ Yêu cầu Đấu thầu (RFP Review)", icon: "📋" },
+                    { id: 2, name: "Khảo sát Hiện trường & Phỏng vấn Stakeholders", icon: "🏢" },
+                    { id: 3, name: "Thiết kế Phương án Kỹ thuật & Bảng Giá Chi tiết", icon: "📐" },
+                    { id: 4, name: "Thuyết trình Giải pháp trước Hội đồng Chấm thầu", icon: "🎙️" },
+                    { id: 5, name: "Thương thảo Điều khoản Thanh toán & Bảo hành", icon: "🤝" },
+                    { id: 6, name: "Ký Hợp đồng Cung cấp Dịch vụ (Master Agreement)", icon: "🏆" }
+                ],
+                distractors: [
+                    { id: 91, name: "Nộp hồ sơ dự thầu sát giờ thiếu chứng từ", icon: "⚠️" },
+                    { id: 92, name: "Cắt giảm tiêu chuẩn kỹ thuật để hạ giá thầu", icon: "💸" },
+                    { id: 93, name: "Từ chối làm rõ yêu cầu kỹ thuật với ban dự án", icon: "🛑" },
+                    { id: 94, name: "Tự ý thay đổi nhân sự chủ chốt không báo trước", icon: "💣" }
+                ]
+            }
         ];
-        
-        if (oppLevel >= 2) {
-            pipelineStages = [
-                { id: 1, name: '1. Inbound Lead 🎯' },
-                { id: 2, name: '2. BANT Scoring 🔍' },
-                { id: 3, name: '3. Demo Solution 📢' },
-                { id: 4, name: '4. Security Audit 🛡️' },
-                { id: 5, name: '5. Procurement ⚖️' },
-                { id: 6, name: '6. Board Sign-off ✍️' },
-                { id: 7, name: '7. Closed Won 🏆' }
-            ];
-            distractors.push({ id: 96, name: 'Price War ❌' }, { id: 95, name: 'Red Tape ❌' });
-        }
+
+        // Chọn kịch bản linh hoạt dựa trên level hoặc ngẫu nhiên
+        const scenarioIndex = (oppLevel - 1) % SCENARIOS.length;
+        const currentScenario = SCENARIOS[scenarioIndex];
+        const pipelineStages = currentScenario.stages;
+        const distractors = currentScenario.distractors;
         
         let currentStep = 1;
         const totalSteps = pipelineStages.length;
         
+        const headerBg = isDarkTheme ? 'rgba(0,0,0,0.4)' : '#f1f5f9';
+        const headerBorder = isDarkTheme ? 'rgba(255,255,255,0.1)' : '#cbd5e1';
+        const headerColor = isDarkTheme ? '#e2e8f0' : '#1e293b';
+
         container.innerHTML = `
-            <div style="font-size: 0.82rem; color: #cbd5e1; margin-bottom: 12px; background: rgba(0,0,0,0.3); padding: 10px 14px; border-radius: 10px;">
-                💡 <b>Nhiệm vụ (Cấp ${oppLevel}):</b> Nhấp chọn đúng thứ tự ${totalSteps} bước phễu bán hàng từ <b>1 ➔ ${totalSteps}</b> (Coi chừng bẫy distractor)!
+            <div id="zip-instruction-box" style="font-size: 0.84rem; color: ${headerColor}; margin-bottom: 14px; background: ${headerBg}; border: 1px solid ${headerBorder}; padding: 12px 16px; border-radius: 12px; line-height: 1.5;">
+                <div style="font-weight: 800; color: #10b981; margin-bottom: 4px; display: flex; align-items: center; gap: 6px;">
+                    <span>${currentScenario.icon}</span>
+                    <span>KỊCH BẢN B2B (CẤP ${oppLevel}): ${currentScenario.title}</span>
+                </div>
+                <div id="zip-current-prompt" style="font-size: 0.82rem; color: #f59e0b; font-weight: 700;">
+                    👉 Mục tiêu: Hãy tìm & nhấp chọn BƯỚC 1 (Bước bắt đầu phễu)!
+                </div>
             </div>
             
-            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; max-width: 460px; margin: 0 auto;" id="zip-pipeline-grid">
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; max-width: 520px; margin: 0 auto;" id="zip-pipeline-grid">
                 <!-- Pipeline Cards -->
             </div>
         `;
         
         const gridBox = container.querySelector('#zip-pipeline-grid');
+        const promptEl = container.querySelector('#zip-current-prompt');
+        
+        // Trộn ngẫu nhiên các thẻ
         const shuffled = [...pipelineStages, ...distractors].sort(() => Math.random() - 0.5);
             
         shuffled.forEach(stage => {
             const btn = document.createElement('button');
-            btn.textContent = stage.name;
-            btn.style.padding = '14px 8px';
-            btn.style.fontSize = '0.82rem';
-            btn.style.fontWeight = 'bold';
-            btn.style.background = 'rgba(255,255,255,0.06)';
-            btn.style.border = '1.5px solid rgba(255,255,255,0.15)';
+            btn.className = 'zip-stage-btn';
+            
+            // Render icon cùng text đầy đủ, KHÔNG để lộ số 1, 2 hay icon distractor ❌
+            btn.innerHTML = `
+                <div style="font-size: 1.25rem; margin-bottom: 4px; line-height: 1;">${stage.icon}</div>
+                <div style="font-size: 0.78rem; font-weight: 700; line-height: 1.35;">${stage.name}</div>
+            `;
+            
+            btn.style.padding = '12px 8px';
+            btn.style.minHeight = '72px';
             btn.style.borderRadius = '12px';
-            btn.style.color = '#ffffff';
             btn.style.cursor = 'pointer';
-            btn.style.transition = 'all 0.2s ease';
+            btn.style.transition = 'all 0.25s cubic-bezier(0.4, 0, 0.2, 1)';
+            btn.style.display = 'flex';
+            btn.style.flexDirection = 'column';
+            btn.style.alignItems = 'center';
+            btn.style.justifyContent = 'center';
+            btn.style.textAlign = 'center';
+            btn.style.boxSizing = 'border-box';
+            
+            // Màu sắc tương phản chuẩn theo Theme: Nền sáng chữ đen đậm, Nền tối chữ trắng
+            if (isDarkTheme) {
+                btn.style.background = 'rgba(255,255,255,0.06)';
+                btn.style.border = '1.5px solid rgba(255,255,255,0.15)';
+                btn.style.color = '#f8fafc';
+            } else {
+                btn.style.background = '#ffffff';
+                btn.style.border = '1.5px solid #cbd5e1';
+                btn.style.color = '#0f172a';
+                btn.style.boxShadow = '0 2px 5px rgba(0,0,0,0.04)';
+            }
             
             btn.addEventListener('click', () => {
                 if (stage.id === currentStep) {
-                    btn.style.background = 'rgba(16, 185, 129, 0.4)';
+                    // Bước ĐÚNG
+                    btn.style.background = isDarkTheme ? 'rgba(16, 185, 129, 0.35)' : '#ecfdf5';
                     btn.style.borderColor = '#10b981';
-                    btn.style.color = '#34d399';
+                    btn.style.color = isDarkTheme ? '#34d399' : '#065f46';
+                    btn.style.boxShadow = '0 0 12px rgba(16, 185, 129, 0.4)';
+                    btn.style.transform = 'scale(0.97)';
                     btn.disabled = true;
+                    btn.innerHTML = `
+                        <div style="font-size: 1.25rem; margin-bottom: 4px; line-height: 1;">✅</div>
+                        <div style="font-size: 0.76rem; font-weight: 800; line-height: 1.35;">Bước ${currentStep}: ${stage.name}</div>
+                    `;
                     
-                    updatePlayerProgress((currentStep / totalSteps) * 100, `Đã thông suốt bước: ${stage.name}`, usr, oppLevel);
+                    updatePlayerProgress((currentStep / totalSteps) * 100, `Đã chọn đúng Bước ${currentStep}: <strong>${stage.name}</strong>`, usr, oppLevel);
                     currentStep++;
+                    
+                    if (currentStep <= totalSteps) {
+                        if (promptEl) {
+                            promptEl.innerHTML = `✅ Đã xong Bước ${currentStep - 1} ➔ Hãy chọn tiếp <b style="color: #3b82f6;">BƯỚC ${currentStep} / ${totalSteps}</b>!`;
+                        }
+                    } else {
+                        if (promptEl) {
+                            promptEl.innerHTML = `<span style="color: #10b981; font-weight: 800;">🎉 XUẤT SẮC! Bạn đã hoàn thành toàn bộ phễu B2B!</span>`;
+                        }
+                    }
                 } else {
-                    btn.style.background = 'rgba(239, 68, 68, 0.4)';
+                    // Bấm SAI hoặc bấm trúng Bẫy (Distractor)
+                    btn.style.background = isDarkTheme ? 'rgba(239, 68, 68, 0.35)' : '#fef2f2';
                     btn.style.borderColor = '#ef4444';
+                    btn.style.color = isDarkTheme ? '#fca5a5' : '#991b1b';
+                    btn.style.boxShadow = '0 0 12px rgba(239, 68, 68, 0.4)';
+                    
+                    if (promptEl) {
+                        promptEl.innerHTML = `<span style="color: #ef4444;">⚠️ <b>"${stage.name}"</b> chưa phải bước tiếp theo hoặc là bẫy! Hãy suy xét lại logic phễu.</span>`;
+                    }
+                    
+                    // Phạt nhẹ 1s trừ thời gian
+                    if (battleTimeLeft > 3) {
+                        battleTimeLeft = Math.max(1, battleTimeLeft - 1);
+                        const timerEl = document.getElementById('dual-battle-timer');
+                        if (timerEl) timerEl.textContent = `${battleTimeLeft}s`;
+                    }
+                    
                     setTimeout(() => {
-                        btn.style.background = 'rgba(255,255,255,0.06)';
-                        btn.style.borderColor = 'rgba(255,255,255,0.15)';
-                    }, 500);
+                        btn.style.background = isDarkTheme ? 'rgba(255,255,255,0.06)' : '#ffffff';
+                        btn.style.borderColor = isDarkTheme ? 'rgba(255,255,255,0.15)' : '#cbd5e1';
+                        btn.style.color = isDarkTheme ? '#f8fafc' : '#0f172a';
+                        btn.style.boxShadow = isDarkTheme ? 'none' : '0 2px 5px rgba(0,0,0,0.04)';
+                        if (currentStep <= totalSteps && promptEl) {
+                            promptEl.innerHTML = `👉 Hãy tìm & nhấp chọn <b style="color: #f59e0b;">BƯỚC ${currentStep} / ${totalSteps}</b>!`;
+                        }
+                    }, 700);
                 }
             });
             
@@ -7279,6 +7412,11 @@ if (document.readyState === 'loading') {
 
     // --- GAME 3: B2B TANGO (Reasoning Grid Dynamic Level) ---
     function renderDualTangoGame(container, usr, oppLevel) {
+        const isDarkTheme = document.body.classList.contains('dark-theme');
+        const headerBg = isDarkTheme ? 'rgba(0,0,0,0.4)' : '#f1f5f9';
+        const headerBorder = isDarkTheme ? 'rgba(255,255,255,0.1)' : '#cbd5e1';
+        const headerColor = isDarkTheme ? '#e2e8f0' : '#1e293b';
+
         let grid = [
             ['🤝', '', '', '❌'],
             ['', '❌', '🤝', ''],
@@ -7294,7 +7432,7 @@ if (document.readyState === 'loading') {
         ];
         
         container.innerHTML = `
-            <div style="font-size: 0.82rem; color: #cbd5e1; margin-bottom: 12px; background: rgba(0,0,0,0.3); padding: 10px 14px; border-radius: 10px;">
+            <div style="font-size: 0.82rem; color: ${headerColor}; margin-bottom: 12px; background: ${headerBg}; border: 1px solid ${headerBorder}; padding: 10px 14px; border-radius: 10px;">
                 💡 <b>Nhiệm vụ (Cấp ${oppLevel}):</b> Điền deal 🤝 và ❌ sao cho mỗi hàng và cột có số lượng bằng nhau!
             </div>
             
@@ -7311,10 +7449,11 @@ if (document.readyState === 'loading') {
                 btn.textContent = val || '❓';
                 btn.style.height = '54px';
                 btn.style.fontSize = '1.4rem';
-                btn.style.background = val ? 'rgba(255,255,255,0.1)' : 'rgba(56,189,248,0.1)';
-                btn.style.border = '1.5px solid rgba(255,255,255,0.15)';
+                btn.style.background = isDarkTheme ? (val ? 'rgba(255,255,255,0.1)' : 'rgba(56,189,248,0.1)') : (val ? '#e2e8f0' : '#ffffff');
+                btn.style.border = isDarkTheme ? '1.5px solid rgba(255,255,255,0.15)' : '1.5px solid #cbd5e1';
                 btn.style.borderRadius = '10px';
-                btn.style.color = '#ffffff';
+                btn.style.color = isDarkTheme ? '#ffffff' : '#0f172a';
+                btn.style.boxShadow = isDarkTheme ? 'none' : '0 2px 4px rgba(0,0,0,0.04)';
                 btn.style.cursor = val ? 'default' : 'pointer';
                 
                 if (!val) {
@@ -7342,11 +7481,16 @@ if (document.readyState === 'loading') {
 
     // --- GAME 4: B2B QUEENS (BD Territory Alignment Dynamic Level) ---
     function renderDualQueensGame(container, usr, oppLevel) {
+        const isDarkTheme = document.body.classList.contains('dark-theme');
+        const headerBg = isDarkTheme ? 'rgba(0,0,0,0.4)' : '#f1f5f9';
+        const headerBorder = isDarkTheme ? 'rgba(255,255,255,0.1)' : '#cbd5e1';
+        const headerColor = isDarkTheme ? '#e2e8f0' : '#1e293b';
+
         const size = oppLevel >= 2 ? 5 : 4;
         let queensPlaced = [];
         
         container.innerHTML = `
-            <div style="font-size: 0.82rem; color: #cbd5e1; margin-bottom: 12px; background: rgba(0,0,0,0.3); padding: 10px 14px; border-radius: 10px;">
+            <div style="font-size: 0.82rem; color: ${headerColor}; margin-bottom: 12px; background: ${headerBg}; border: 1px solid ${headerBorder}; padding: 10px 14px; border-radius: 10px;">
                 💡 <b>Nhiệm vụ (Cấp ${oppLevel}):</b> Đặt ${size} Vương miện (👑) vào lưới ${size}x${size} sao cho không có 2 người nào cùng hàng, cột hay đường chéo!
             </div>
             
@@ -7363,10 +7507,11 @@ if (document.readyState === 'loading') {
                 btn.textContent = '·';
                 btn.style.height = size === 5 ? '46px' : '54px';
                 btn.style.fontSize = '1.3rem';
-                btn.style.background = 'rgba(255,255,255,0.06)';
-                btn.style.border = '1.5px solid rgba(255,255,255,0.15)';
+                btn.style.background = isDarkTheme ? 'rgba(255,255,255,0.06)' : '#ffffff';
+                btn.style.border = isDarkTheme ? '1.5px solid rgba(255,255,255,0.15)' : '1.5px solid #cbd5e1';
                 btn.style.borderRadius = '8px';
-                btn.style.color = '#ffffff';
+                btn.style.color = isDarkTheme ? '#ffffff' : '#0f172a';
+                btn.style.boxShadow = isDarkTheme ? 'none' : '0 2px 4px rgba(0,0,0,0.04)';
                 btn.style.cursor = 'pointer';
                 
                 btn.addEventListener('click', () => {
@@ -7374,7 +7519,7 @@ if (document.readyState === 'loading') {
                     if (existingIdx !== -1) {
                         queensPlaced.splice(existingIdx, 1);
                         btn.textContent = '·';
-                        btn.style.background = 'rgba(255,255,255,0.06)';
+                        btn.style.background = isDarkTheme ? 'rgba(255,255,255,0.06)' : '#ffffff';
                     } else {
                         if (queensPlaced.length >= size) {
                             alert(`Bạn chỉ được đặt tối đa ${size} Vương miện (👑) thôi nhé!`);

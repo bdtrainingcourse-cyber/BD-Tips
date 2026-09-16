@@ -411,6 +411,62 @@ async function sendPicResultEmail({ email, name, nickname, targetCompany, target
 }
 
 
+async function sendVipReminderRound2Email({ email, name, nickname, vipCode, scheduledAt, headers = {} }) {
+  const code = vipCode || 'BDTHUCCHIEN';
+  const magicLink = `https://www.bdbinhdanhocvu.com/finder.html?email=${encodeURIComponent(email)}&vip_pass=${encodeURIComponent(code)}`;
+  const subject = `[Nhắc Nhẹ] Kích Hoạt 3 Lượt Tìm PIC & Mở Khóa Hệ Sinh Thái 9 Vũ Khí B2B Của Bạn`;
+  
+  const contentHtml = `
+    <p>Chào <strong>${name || 'Bạn'}</strong> (<em>${nickname || 'Chiến Binh BD'}</em>),</p>
+    <p>Hôm Thứ Ba vừa qua, Peter có gửi email ra mắt <strong>Hệ Sinh Thái 9 Vũ Khí B2B</strong> và tặng riêng bạn đặc quyền <strong>3 contacts/tháng kết nối Person-in-Charge (PIC)</strong>.</p>
+    <p>Chỉ trong 24 giờ qua, đã có rất nhiều anh em cựu học viên kích hoạt thành công và bắt đầu gửi yêu cầu tìm PIC tới mạng lưới 30.000+ kết nối LinkedIn của Peter.</p>
+    
+    <div style="background: #f0fdf4; border-left: 4px solid #10b981; padding: 14px 18px; border-radius: 8px; margin: 20px 0; text-align: left;">
+      <strong style="color: #065f46; font-size: 15px; display: block; margin-bottom: 6px;">🎯 ĐỪNG BỎ LỠ 3 ĐẶC QUYỀN ALUMNI VIP THÁNG NÀY:</strong>
+      <ul style="margin: 0; padding-left: 18px; color: #166534; font-size: 13.5px; line-height: 1.6;">
+        <li><strong>1. 3 Contacts/Tháng Tìm PIC:</strong> Peter Võ trực tiếp kết nối PIC khối HR &amp; Marketing cho bạn, duy trì liên tục trong 3 tháng đầu tiên (tổng 9 contacts).</li>
+        <li><strong>2. Vé Mời VIP Đồng Đội (Giver Mentality):</strong> Tặng bạn bè đồng nghiệp nhận +50 BD-Points và tải Ebook thực chiến đầu tiên; bạn nhận +50đ/bạn và tự động mở khóa các Mốc Quà (<em>Trà sữa size L</em>, <em>30 Phút Online 1-1</em>, <em>Buổi Lunch trực tiếp cùng Peter Võ</em>).</li>
+        <li><strong>3. Mở Khóa Trọn Đời 9 Công Cụ &amp; Thư Viện Ebook:</strong> Trọn quyền sử dụng toàn bộ tính năng hỗ trợ nghề BD.</li>
+      </ul>
+    </div>
+
+    <p>Peter biết đầu tuần công việc bộn bề với nhiều dự án dễ làm trôi thư, nên Peter gửi lại bạn liên kết đăng nhập 1-chạm cá nhân hóa dưới đây để bạn không bỏ lỡ quyền lợi tháng này:</p>
+
+    <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 14px 18px; font-size: 13px; color: #475569; margin: 20px 0; text-align: left;">
+      <strong>Thông Tin Đăng Nhập Riêng Của Bạn:</strong><br>
+      • Email học viên: <code>${email}</code><br>
+      • User ID / Mã VIP riêng: <strong style="color: #b45309;">${code}</strong><br>
+      • Đăng nhập 1-chạm: Chỉ cần bấm nút bên dưới, hệ thống sẽ tự động đăng nhập không cần gõ mật khẩu.
+    </div>
+  `;
+
+  const unsubUrl = `https://www.bdbinhdanhocvu.com/api/log-email?action=unsubscribe&email=${encodeURIComponent(email)}`;
+  const defaultHeaders = {
+    'List-Unsubscribe': `<${unsubUrl}>`,
+    'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click',
+    ...headers
+  };
+
+  const html = renderHtmlEmailTemplate({
+    greeting: null,
+    message: contentHtml,
+    buttonText: 'Kích Hoạt Quyền Lợi VIP 1-Chạm Ngay &rarr;',
+    buttonUrl: magicLink,
+    mascotUrl: 'https://www.bdbinhdanhocvu.com/mascot_quests.jpg',
+    unsubscribeUrl: unsubUrl,
+    email: email
+  });
+
+  return sendResendEmail({
+    to: email,
+    subject: subject,
+    html: html,
+    text: stripHtml(html),
+    scheduledAt: scheduledAt || null,
+    headers: defaultHeaders
+  });
+}
+
 module.exports = {
   sendResendEmail,
   sendEbookEmail,
@@ -418,6 +474,7 @@ module.exports = {
   sendWelcomeRegistrationEmail,
   sendResetPasswordEmail,
   sendVipLaunchingResendEmail,
+  sendVipReminderRound2Email,
   sendPicResultEmail,
   renderHtmlEmailTemplate,
   stripHtml

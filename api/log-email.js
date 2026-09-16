@@ -9,6 +9,7 @@ const {
   sendWelcomeRegistrationEmail,
   sendResetPasswordEmail,
   sendVipLaunchingResendEmail,
+  sendVipReminderRound2Email,
   sendPicResultEmail
 } = require('./_email-helper');
 
@@ -898,6 +899,71 @@ module.exports = async (req, res) => {
       nickname: resolvedNickname,
       vipCode: resolvedVipCode,
       message: `Đã gửi email VIP Launching thành công tới ${cleanEmail} qua Resend!`,
+      error: vipRes && vipRes.error ? vipRes.error : null
+    });
+  } else if (action === 'sendVipReminderRound2') {
+    if (!cleanEmail || !cleanEmail.includes('@')) {
+      return res.status(400).json({ success: false, error: 'Email không hợp lệ.' });
+    }
+    const ALLOWED_TEST_EMAILS = [
+      'vptanaia@gmail.com',
+      'bdtrainingcourse@gmail.com',
+      'bdmastery.ai@petervo.vn',
+      'ocsen.fashion@gmail.com',
+      'bdtraining@bdbinhdanhocvu.com'
+    ];
+    if (req.query.test === 'true' && !ALLOWED_TEST_EMAILS.includes(cleanEmail)) {
+      return res.status(403).json({ success: false, error: 'Chỉ được phép gửi thử tới các email admin đã được whitelist.' });
+    }
+    const reqBody = (req.body && typeof req.body === 'object') ? req.body : {};
+    
+    // Query Google Sheets tab "Học Viên Đã Học"
+    let resolvedName = '';
+    let resolvedNickname = '';
+    let resolvedVipCode = '';
+
+    if (webhookUrl) {
+      try {
+        const getUrl = `${webhookUrl}?action=getAlumniList&secretKey=${encodeURIComponent(process.env.B2B_SECRET_KEY || '2108330119Snail!!')}`;
+        const sheetRes = await httpGet(getUrl);
+        if (sheetRes.ok) {
+          const sData = await sheetRes.json();
+          if (sData && sData.success && Array.isArray(sData.alumni)) {
+            const matchedAlumni = sData.alumni.find(a => (a.email || '').toLowerCase().trim() === cleanEmail);
+            if (matchedAlumni) {
+              if (matchedAlumni.name) resolvedName = matchedAlumni.name.trim();
+              if (matchedAlumni.nickname) resolvedNickname = matchedAlumni.nickname.trim();
+              if (matchedAlumni.vipCode) resolvedVipCode = matchedAlumni.vipCode.trim();
+            }
+          }
+        }
+      } catch (sheetErr) {
+        console.warn('[ALUMNI_SHEET_LOOKUP_ERR]', sheetErr.message);
+      }
+    }
+
+    if (!resolvedName) resolvedName = (reqBody.name || req.query.name || name || (localUser ? localUser.name : '') || '').trim();
+    if (!resolvedName && cleanEmail) {
+      const handle = cleanEmail.split('@')[0].replace(/[._-]/g, ' ');
+      resolvedName = handle.charAt(0).toUpperCase() + handle.slice(1);
+    }
+    if (!resolvedNickname) resolvedNickname = (reqBody.nickname || req.query.nickname || (localUser ? localUser.nickname : '') || 'Chiến Thần BD').trim();
+    if (!resolvedVipCode) resolvedVipCode = (reqBody.vipCode || req.query.vipCode || (localUser ? localUser.vipCode : '') || 'BDTHUCCHIEN').trim();
+
+    const vipRes = await sendVipReminderRound2Email({
+      email: cleanEmail,
+      name: resolvedName || 'Chiến Binh BD',
+      nickname: resolvedNickname,
+      vipCode: resolvedVipCode
+    });
+    return res.status(200).json({
+      success: !!(vipRes && vipRes.ok),
+      resendId: vipRes && vipRes.data ? vipRes.data.id : null,
+      recipient: cleanEmail,
+      name: resolvedName,
+      nickname: resolvedNickname,
+      vipCode: resolvedVipCode,
+      message: `Đã gửi email VIP Reminder Round 2 thành công tới ${cleanEmail} qua Resend!`,
       error: vipRes && vipRes.error ? vipRes.error : null
     });
   } else if (action === 'updateAlumniNickname' || action === 'updateNickname') {
