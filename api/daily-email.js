@@ -783,6 +783,10 @@ YÊU CẦU NỘI DUNG & PHONG CÁCH:
   const uniqueRecipients = [];
   const alreadySentUsers = [];
   const optedOutUsers = [];
+  const skippedVipUsers = [];
+
+  const isThursday = vnNow.getUTCDay() === 4;
+  const shouldExcludeVip = req.query.excludeVip === 'true' || (isThursday && req.query.includeVip !== 'true');
 
   for (const u of targetUsers) {
     const cleanE = (u.email || '').toLowerCase().trim();
@@ -792,6 +796,15 @@ YÊU CẦU NỘI DUNG & PHONG CÁCH:
       if (u.unsubscribed === true) {
         console.log(`[DAILY_EMAIL_CRON] User opted out, skipping: ${cleanE}`);
         optedOutUsers.push(cleanE);
+        continue;
+      }
+
+      // Operational Guard: Skip VIP users on Thursday (or when excludeVip=true)
+      // to ensure no clash/overlap with the dedicated VIP Reminder Round 2 campaign!
+      const isVipUser = Boolean(u.isVip || u.tool === 'VIP-Alumni-Daily' || u.tool === 'VIP-Alumni-Lounge');
+      if (shouldExcludeVip && isVipUser) {
+        console.log(`[DAILY_EMAIL_CRON] Skipping VIP user to prevent duplicate with VIP Reminder: ${cleanE}`);
+        skippedVipUsers.push(cleanE);
         continue;
       }
 
@@ -822,7 +835,8 @@ YÊU CẦU NỘI DUNG & PHONG CÁCH:
       message: `Tất cả user (${alreadySentUsers.length} người) đã nhận email reminder hôm nay (${todayStrDisplay}). Hệ thống tự động khóa để bảo đảm KHÔNG gửi trùng lặp và bảo vệ uy tín hòm thư (domain reputation). Dùng ?force=true nếu muốn ép gửi lại.`,
       date: todayStrDisplay,
       alreadySentCount: alreadySentUsers.length,
-      alreadySentUsers: alreadySentUsers.map(u => u.email)
+      alreadySentUsers: alreadySentUsers.map(u => u.email),
+      skippedVipCount: skippedVipUsers.length
     });
   }
 
@@ -836,7 +850,8 @@ YÊU CẦU NỘI DUNG & PHONG CÁCH:
       eligibleRecipients: uniqueRecipients.map(u => u.email),
       eligibleCount: uniqueRecipients.length,
       alreadySentCount: alreadySentUsers.length,
-      alreadySentUsers: alreadySentUsers.map(u => u.email)
+      alreadySentUsers: alreadySentUsers.map(u => u.email),
+      skippedVipCount: skippedVipUsers.length
     });
   }
 
@@ -956,6 +971,7 @@ YÊU CẦU NỘI DUNG & PHONG CÁCH:
     timelineWindow: '07:00 - 11:00 (GMT+7)',
     intervalMinutes: (intervalMs / 60000).toFixed(2),
     totalRecipients: uniqueRecipients.length,
+    skippedVipCount: skippedVipUsers.length,
     successfulSchedules: dispatchResults.filter(r => r.ok).length,
     firstScheduledAtVN: dispatchResults.length > 0 ? dispatchResults[0].scheduledTimeVN : null,
     lastScheduledAtVN: dispatchResults.length > 0 ? dispatchResults[dispatchResults.length - 1].scheduledTimeVN : null,
