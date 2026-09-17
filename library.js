@@ -683,23 +683,30 @@ document.addEventListener('DOMContentLoaded', () => {
         const currentEmail = localStorage.getItem('streak_email');
         const isVerifiedLocal = localStorage.getItem('b2b_user_verified') === 'true';
 
-        // 1. User đã đăng ký VÀ email đã xác thực -> Kiểm tra hạn mức tải trực tiếp về máy
-        if (currentEmail && isVerifiedLocal) {
-            const ebookCredits = parseInt(localStorage.getItem('b2b_unlocked_ebook_credits') || '0', 10);
-            const streakUnlocked = ebookCredits > 0 || localStorage.getItem('b2b_streak_unlocked_ebook') === 'true';
-            
-            if (!streakUnlocked) {
-                // Check Daily Download Limit (1 per day default + bonus credits)
-                const todayDl = getTodayDownloads();
-                const allowedDl = 1 + getTodayBonusCredits();
+        // CHÍNH SÁCH NGHIÊM NGẶT: Tối đa 1 Ebook / Ngày (kể cả tải trực tiếp hay nhận qua Email!)
+        const ebookCredits = parseInt(localStorage.getItem('b2b_unlocked_ebook_credits') || '0', 10);
+        const todayDl = getTodayDownloads();
+        const allowedDl = 1 + getTodayBonusCredits() + ebookCredits;
 
-                if (todayDl >= allowedDl) {
-                    // Daily limit reached -> Open retention modal
-                    limitModal.classList.remove('hidden');
-                    return;
-                }
+        if (todayDl >= allowedDl) {
+            // Daily limit reached -> Open retention modal immediately
+            const isEn = (window.BDI18n && window.BDI18n.getLang() === 'en') || (localStorage.getItem('bd_lang') === 'en');
+            const limitModalTitle = document.querySelector('#limit-modal .modal-title');
+            const limitModalDesc = document.querySelector('#limit-modal p');
+            if (limitModalTitle) {
+                limitModalTitle.textContent = isEn ? "Daily Ebook Limit Reached (1/Day)" : "Đã Đạt Hạn Mức Ebook Hôm Nay (1 Cuốn/Ngày)";
             }
+            if (limitModalDesc) {
+                limitModalDesc.textContent = isEn 
+                    ? "You have already received 1 Ebook today! Check your inbox to read, or participate in Mini Games / BD Community to unlock extra downloads."
+                    : "Hôm nay bạn đã nhận 1 Ebook rồi (kể cả qua Email)! Hãy kiểm tra hòm thư để đọc hoặc tham gia Mini Game / Cộng đồng BD để mở khóa thêm lượt tải nhé!";
+            }
+            limitModal.classList.remove('hidden');
+            return;
+        }
 
+        // 1. User đã đăng ký VÀ email đã xác thực -> Tải trực tiếp về máy
+        if (currentEmail && isVerifiedLocal) {
             triggerDownload(ebook);
             return;
         }
@@ -857,8 +864,25 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        const ebookTitle = currentSelectedEbook ? currentSelectedEbook.title : 'Cẩm nang B2B BD';
-        const downloadLink = currentSelectedEbook ? (window.location.origin + '/' + encodeURIComponent(currentSelectedEbook.fileUrl)) : window.location.href;
+        const ebookCredits = parseInt(localStorage.getItem('b2b_unlocked_ebook_credits') || '0', 10);
+        const todayDl = getTodayDownloads();
+        const allowedDl = 1 + getTodayBonusCredits() + ebookCredits;
+        if (todayDl >= allowedDl) {
+            closeDownloadModal();
+            const isEn = (window.BDI18n && window.BDI18n.getLang() === 'en') || (localStorage.getItem('bd_lang') === 'en');
+            const limitModalTitle = document.querySelector('#limit-modal .modal-title');
+            const limitModalDesc = document.querySelector('#limit-modal p');
+            if (limitModalTitle) {
+                limitModalTitle.textContent = isEn ? "Daily Limit Reached (1 Ebook / Day)" : "Đã Đạt Hạn Mức Ebook Hôm Nay (1 Cuốn/Ngày)";
+            }
+            if (limitModalDesc) {
+                limitModalDesc.textContent = isEn 
+                    ? "You have already received 1 Ebook today! Check your inbox to read, or participate in Mini Games / BD Community to unlock extra downloads."
+                    : "Hôm nay bạn đã nhận 1 Ebook rồi (kể cả qua Email)! Hãy kiểm tra hòm thư để đọc hoặc tham gia Mini Game / Cộng đồng BD để mở khóa thêm lượt tải nhé!";
+            }
+            limitModal.classList.remove('hidden');
+            return;
+        }
 
         const submitBtn = downloadForm.querySelector('button[type="submit"]');
         if (submitBtn) {
@@ -893,24 +917,25 @@ document.addEventListener('DOMContentLoaded', () => {
                 submitBtn.disabled = false;
                 submitBtn.textContent = '📨 Gửi Ebook Đến Email Của Tôi ➔';
             }
-            if (data.error) {
-                if (data.error === 'email_already_used') {
-                    alert('Email này đã được dùng để tải Ebook trước đây. Bạn cần tham gia Mini Game hoặc Cộng đồng BD để tích điểm mở khóa Ebook mới!');
-                    closeDownloadModal();
-                    
+            if (data.error || data.limitReached) {
+                closeDownloadModal();
+                if (data.limitReached || data.error === 'daily_limit_reached' || data.error === 'email_already_used') {
                     // Customize and show limit modal
+                    const isEn = (window.BDI18n && window.BDI18n.getLang() === 'en') || (localStorage.getItem('bd_lang') === 'en');
                     const limitModalTitle = document.querySelector('#limit-modal .modal-title');
                     const limitModalDesc = document.querySelector('#limit-modal p');
                     if (limitModalTitle) {
-                        limitModalTitle.textContent = "Cần Tích Điểm Để Mở Khóa Ebook Mới";
+                        limitModalTitle.textContent = isEn ? "Daily Limit Reached (1 Ebook / Day)" : "Đã Đạt Hạn Mức Ebook Hôm Nay (1 Cuốn/Ngày)";
                     }
                     if (limitModalDesc) {
-                        limitModalDesc.textContent = "Email này đã nhận Ebook chào mừng. Để tải Ebook tiếp theo, vui lòng tham gia Mini Game hoặc Cộng Đồng BD để tích lũy điểm mở khóa nhé!";
+                        limitModalDesc.textContent = data.message || (isEn 
+                            ? "You have already received 1 Ebook today! Check your inbox or participate in Mini Games / BD Community to unlock more downloads."
+                            : "Hôm nay bạn đã nhận 1 Ebook qua email rồi! Hãy kiểm tra hòm thư để đọc hoặc tham gia Mini Game / Cộng đồng BD để mở khóa thêm lượt tải nhé!");
                     }
                     limitModal.classList.remove('hidden');
                     return;
                 } else {
-                    alert(data.error);
+                    alert(data.message || data.error);
                     return;
                 }
             }
@@ -952,6 +977,13 @@ document.addEventListener('DOMContentLoaded', () => {
             } else {
                 // User is unverified or new: do NOT direct download, send via email
                 localStorage.setItem('b2b_user_verified', 'false');
+                incrementTodayDownloads();
+                if (currentSelectedEbook) {
+                    incrementEbookDownloadCount(currentSelectedEbook.id);
+                }
+                localStorage.setItem('b2b_has_downloaded_before', 'true');
+                localStorage.setItem('b2b_last_ebook_date', getTodayKey());
+                localStorage.setItem('b2b_last_ebook_title', ebookTitle);
                 try {
                     if (window.updateNavbarUserHUD) {
                         window.updateNavbarUserHUD();

@@ -40,6 +40,14 @@ const TYPO_MAP = {
 
 const HMAC_SECRET = process.env.B2B_SECRET_KEY || process.env.RESEND_API_KEY || '2108330119Snail!!-b2b-secure-reset';
 
+const ALLOWED_TEST_EMAILS = [
+  'vptanaia@gmail.com',
+  'bdtrainingcourse@gmail.com',
+  'bdmastery.ai@petervo.vn',
+  'ocsen.fashion@gmail.com',
+  'bdtraining@bdbinhdanhocvu.com'
+];
+
 function generateResetToken(email) {
   const expiresAt = Date.now() + 3600000; // 1 hour validity
   const hmac = crypto.createHmac('sha256', HMAC_SECRET)
@@ -185,13 +193,6 @@ async function httpGet(url) {
 async function handleScheduleBulkAlumniLaunching(req, res) {
   const ACTIVE_LEADS_WEBHOOK = 'https://script.google.com/macros/s/AKfycbzhevaZUCV0ITOxOeeFTx4lFG4jqknpCFV1EJ4l_L75-zkgmmY0eJlKc68jEgk_mVU/exec';
   const webhookUrl = process.env.GOOGLE_SHEET_COURSE_WEBHOOK || ACTIVE_LEADS_WEBHOOK;
-  const ALLOWED_TEST_EMAILS = [
-    'vptanaia@gmail.com',
-    'bdtrainingcourse@gmail.com',
-    'bdmastery.ai@petervo.vn',
-    'ocsen.fashion@gmail.com',
-    'bdtraining@bdbinhdanhocvu.com'
-  ];
   const isTestMode = req.query.test === 'true';
   const isDryRun = req.query.dryRun === 'true';
   const isForce = req.query.force === 'true';
@@ -617,11 +618,14 @@ module.exports = async (req, res) => {
 
     // REAL HUMAN USER CLICK:
     // 1. Mark local user verified & award 15 points
+    const todayVn = new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Ho_Chi_Minh' }).format(new Date());
     if (localUser) {
       if (!localUser.verified) {
         localUser.verified = true;
         localUser.points = (localUser.points || 0) + 15;
       }
+      localUser.lastEbookDate = todayVn;
+      localUser.lastEbookTitle = ebookTitle || cleanTarget.split('/').pop() || '';
       localUser.lastActive = timestamp;
       localUser.lastIp = clientIp;
       writeUsers(users);
@@ -633,6 +637,8 @@ module.exports = async (req, res) => {
         name: name || 'Học viên',
         points: 40,
         verified: true,
+        lastEbookDate: todayVn,
+        lastEbookTitle: ebookTitle || cleanTarget.split('/').pop() || '',
         lastIp: clientIp,
         lastActive: timestamp
       };
@@ -1254,9 +1260,31 @@ module.exports = async (req, res) => {
 
   console.log(`[USER_LEAD] UserID: ${localUser.id}, Email: ${email}, Name: ${name || 'N/A'}, Action: ${action || 'log'}, Tool: ${tool}, Date: ${timestamp}`);
 
+  // --- Check Daily Ebook Limit (Strict Max 1 Ebook / Day across all channels, including Email) ---
+  const todayVn = new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Ho_Chi_Minh' }).format(new Date());
+  const isWhitelisted = ALLOWED_TEST_EMAILS.includes(cleanEmail);
+  const isForce = req.query.force === 'true' || (req.body && req.body.force === true);
+
+  if (action === 'sendEbookVerificationEmail' || tool === 'ebook-download') {
+    if (localUser && localUser.lastEbookDate === todayVn && !isForce) {
+      console.warn(`[DAILY_EBOOK_LIMIT] Blocked duplicate ebook request for ${cleanEmail} on ${todayVn}`);
+      return res.status(200).json({
+        success: false,
+        limitReached: true,
+        error: 'daily_limit_reached',
+        message: `Hôm nay bạn đã nhận 1 cuốn Ebook ("${localUser.lastEbookTitle || 'Ebook BD'}") rồi! Mỗi học viên chỉ được nhận tối đa 1 Ebook/ngày kể cả qua Email. Vui lòng quay lại vào ngày mai nhé!`
+      });
+    }
+  }
+
   if (!webhookUrl) {
     console.warn(`[SHEETS_SYNC_WARN] Webhook URL not set.`);
     const shouldRequireVerify = (action === 'sendEbookVerificationEmail');
+    if (shouldRequireVerify) {
+      localUser.lastEbookDate = todayVn;
+      localUser.lastEbookTitle = ebookTitle || '';
+      writeUsers(users);
+    }
     return res.status(200).json({ 
       success: true, 
       userId: localUser.id,
@@ -1353,6 +1381,11 @@ module.exports = async (req, res) => {
           ebookTitle: ebookTitle,
           fileUrl: fileUrl || downloadLink
         });
+        localUser.lastEbookDate = todayVn;
+        localUser.lastEbookTitle = ebookTitle || '';
+        localUser.ebookDownloadCount = (localUser.ebookDownloadCount || 0) + 1;
+        localUser.lastActive = timestamp;
+        writeUsers(users);
       } catch (emailErr) {
         console.error('[RESEND_EBOOK_ERROR]', emailErr.message);
       }
