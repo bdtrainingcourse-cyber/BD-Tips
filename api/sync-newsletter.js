@@ -4,6 +4,12 @@ const path = require('path');
 
 const FALLBACK_EBOOKS = [
   {
+    id: "ebook-from-messenger-to-expert",
+    title: "Bạn Đang Làm BD Hay Chỉ Là \"Người Đưa Tin\"? (From Messenger to Expert)",
+    description: "Kỹ năng mềm giúp bạn mở cửa, nhưng kiến thức sản phẩm chuyên sâu mới giúp bạn chốt deal. Khám phá 3 trụ cột (Mindsets, Skillsets, Toolsets) giúp nhân sự BD thoát khỏi cái bẫy 'người đưa tin' để trở thành chuyên gia giải quyết vấn đề tự tin ngồi ngang hàng với C-Level.",
+    coverImage: "ebook-covers/cover-from-messenger-to-expert.png"
+  },
+  {
     id: "ebook-tro-cap-that-nghiep",
     title: "Quy Trình Hưởng Trợ Cấp Thất Nghiệp (TCTN)",
     description: "Cẩm nang hướng dẫn chi tiết từng bước thủ tục, điều kiện hưởng, hồ sơ pháp lý và mốc thời gian nhận trợ cấp thất nghiệp chuẩn xác theo luật lao động.",
